@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "core.h"
+
 
 #include <stdlib.h>
 
@@ -34,11 +36,16 @@ XWIN_API struct xwin_window *xwin_win_create(char *name, s16 w, s16 h)
 		goto err_destroy_hdl;
 	}
 
+	/* Configure OpenGL */
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glViewport(0, 0, w, h);
 
 	/* Set the attributes of the window struct */
+	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
 	win->width = w;
 	win->height = h;
+	win->state = 1;
 	win->handle = hdl; 
 	win->context = ctx;
 
@@ -64,7 +71,7 @@ err_return:
 XWIN_API void xwin_win_destroy(struct xwin_window *win)
 {
 	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		ALARM(ALARM_WARN, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -79,7 +86,7 @@ XWIN_API void xwin_win_destroy(struct xwin_window *win)
 
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to destroy window");
+	ALARM(ALARM_WARN, "Failed to destroy window");
 }
 
 
@@ -118,12 +125,12 @@ XWIN_API void xwin_win_detach(struct xwin_window *window)
 	struct xwin_window *parent;
 
 	if(!window) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		ALARM(ALARM_WARN, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!window->parent) {
-		ALARM(ALARM_ERR, "Window does not have a parent window");
+		ALARM(ALARM_WARN, "Window does not have a parent window");
 		goto err_return;
 	}
 
@@ -142,12 +149,117 @@ XWIN_API void xwin_win_detach(struct xwin_window *window)
 	}
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to detach window");
+	ALARM(ALARM_WARN, "Failed to detach window");
 }
 
 
+XWIN_INTERN s8 xwin_cfnc_close_windows(struct xwin_window *w, void *data)
+{
+	/* SILENCE COMPILER */
+	if(data) {}
+
+	/* First detach the window... */
+	xwin_win_detach(w);
+
+	/* ...then destroy it */
+	xwin_win_destroy(w);
+
+	return 0;
+}
+
+XWIN_API void xwin_win_close(struct xwin_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Recursivly close all windows downwards, starting from win */
+	xwin_win_hlfup(win, &xwin_cfnc_close_windows, NULL);
+
+	return;
+
+err_return:
+	ALARM(ALARM_WARN, "Failed to close window");
+}
+
+struct xwin_win_selector {
+	s8 state;
+
+	s32 id;
+
+	struct xwin_window *win;
+};
+
+
+XWIN_INTERN s8 xwin_cfnc_find_window(struct xwin_window *w, void *data)
+{
+	struct xwin_win_selector *sel = (struct xwin_win_selector *)data;
+
+	/* Check if the window has already been found */
+	if(sel->state == 1) {
+		return 1;
+	}
+
+	/* If the current window is a match, return it and stop the recursion */
+	if(w->id == sel->id) {
+		sel->state = 1;
+		sel->win = w;
+
+		return 1;
+	}
+
+	return 0;
+
+}
+
+XWIN_API struct xwin_window *xwin_win_get(s32 id)
+{
+	struct xwin_win_selector sel;
+	sel.state = 0;
+	sel.id = id;
+	sel.win = NULL;
+
+	/* Recursifly search for the window... */
+	xwin_win_hlfdown(g_xwin_core.main_window, &xwin_cfnc_find_window, &sel);
+
+	/* ...and if the window was found, return it */
+	if(sel.state == 1) {
+		return sel.win;
+	}
+
+	return NULL;
+}
+
+
+
+XWIN_API void xwin_win_hlfdown(struct xwin_window *str,
+		s8 (*cfnc)(struct xwin_window *w, void *data), void *data)
+{
+	s8 i;
+
+	if(!str) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	/* Then apply the callback function to this window struct */
+	if(cfnc(str, data) == 1)
+		return;
+
+	/* Call this function on all children */
+	for(i = 0; i < XWIN_WIN_CHILDREN_LIM; i++) {
+		if(!str->children[i])
+			continue;
+
+		xwin_win_hlfup(str->children[i], cfnc, data);
+	}
+
+	return;
+}
+
 XWIN_API void xwin_win_hlfup(struct xwin_window *str,
-		void (*cfnc)(struct xwin_window *w, void *data), void *data)
+		s8 (*cfnc)(struct xwin_window *w, void *data), void *data)
 {
 	s8 i;
 
@@ -165,7 +277,8 @@ XWIN_API void xwin_win_hlfup(struct xwin_window *str,
 	}
 
 	/* Then apply the callback function to this window struct */
-	cfnc(str, data);
+	if(cfnc(str, data) == 1)
+		return;
 
 	return;
 }

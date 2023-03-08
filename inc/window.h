@@ -5,9 +5,11 @@
 #include "imports.h"
 
 
-
 #define XWIN_WIN_NAME_LIM  	128
 #define XWIN_WIN_CHILDREN_LIM     6
+
+
+#define XWIN_WIN_STATE_VISIBLE    (1<<0)
 
 
 struct xwin_window {
@@ -20,6 +22,13 @@ struct xwin_window {
 	/* The size of the window in pixels */
 	s16 width;
 	s16 height;
+
+	/* 
+	 * The state flags of this window (from lowest to highest):
+	 *
+	 * 0: Visibility
+	 */
+	u8 state;
 
 	/* The SDL_Window-handle */
 	SDL_Window *handle;
@@ -79,16 +88,51 @@ XWIN_API void xwin_win_detach(struct xwin_window *window);
 
 
 /*
+ * Close a window, by first detaching it if necessary and then destroying it.
+ *
+ * @win: Pointer to the window to close
+ */
+XWIN_API void xwin_win_close(struct xwin_window *win);
+
+
+/*
+ * Get a pointer to the window struct using the windowId.
+ *
+ * @id: The id of the window to find
+ *
+ * Returns: Either a pointer to the window struct or NULL if it does not exist
+ */
+XWIN_API struct xwin_window *xwin_win_get(s32 id);
+
+
+
+/*
+ * This function is a higher-level-function which will apply the cfnc-function to
+ * all window structs starting from the str window downwards.
+ *
+ * Note that if the callback function returns 1, the recursion will stop.
+ *
+ * @str: The active window struct, also the one at the top
+ * @cfnc: The callback-function to execute to all window structs
+ * @data: A data pointer which will be passed to every function call
+ */
+XWIN_API void xwin_win_hlfdown(struct xwin_window *str,
+		s8 (*cfnc)(struct xwin_window *w, void *data), void *data);
+
+
+/*
  * This function is a higher-level-function which will apply the cfnc-function to
  * all window structs from the lowest child window struct below start, up to the
  * the str window struct itself.
+ *
+ * Note that if the callback function returns 1, the recursion will stop.
  *
  * @str: The active window struct, also the one at the top
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
 XWIN_API void xwin_win_hlfup(struct xwin_window *str,
-		void (*cfnc)(struct xwin_window *w, void *data), void *data);
+		s8 (*cfnc)(struct xwin_window *w, void *data), void *data);
 
 
 

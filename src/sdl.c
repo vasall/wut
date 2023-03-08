@@ -1,5 +1,7 @@
 #include "sdl.h"
 
+#include "core.h"
+
 
 #include <stdlib.h>
 
