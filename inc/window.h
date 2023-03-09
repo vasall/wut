@@ -9,7 +9,8 @@
 #define XWIN_WIN_CHILDREN_LIM     6
 
 
-#define XWIN_WIN_STATE_VISIBLE    (1<<0)
+#define XWIN_WIN_INFO_MAIN	(1<<0)
+#define XWIN_WIN_INFO_VISIBLE	(1<<1)
 
 
 struct xwin_window {
@@ -26,9 +27,10 @@ struct xwin_window {
 	/* 
 	 * The state flags of this window (from lowest to highest):
 	 *
-	 * 0: Visibility
+	 * 0: Main window
+	 * 1: Visibility
 	 */
-	u8 state;
+	u8 info;
 
 	/* The SDL_Window-handle */
 	SDL_Window *handle;

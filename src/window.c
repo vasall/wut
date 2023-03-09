@@ -1,7 +1,7 @@
 #include "window.h"
 
 #include "core.h"
-
+#include "opengl.h"
 
 #include <stdlib.h>
 
@@ -30,31 +30,29 @@ XWIN_API struct xwin_window *xwin_win_create(char *name, s16 w, s16 h)
 		goto err_free_win;
 	}
 
-	/* Create the SDL-GLContext-handle */
-	if(!(ctx = SDL_GL_CreateContext(hdl))) {
-		ALARM(ALARM_ERR, "Failed to create SDL-GLContext");
-		goto err_destroy_hdl;
-	}
-
-	/* Configure OpenGL */
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	glViewport(0, 0, w, h);
-
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
 	win->width = w;
 	win->height = h;
-	win->state = 1;
+	win->info = XWIN_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
-	win->context = ctx;
 
 	win->parent = NULL;
 	win->children_num = 0;
 	for(i = 0; i < XWIN_WIN_CHILDREN_LIM; i++)
 		win->children[i] = NULL;
 
+	/* Create the SDL-GLContext-handle */
+	if(xwin_gl_create(win) < 0) {
+		ALARM(ALARM_ERR, "Failed to add GL context to window");
+		goto err_destroy_hdl;
+	}
+
+
 	return win;
+
+err_destroy_ctx:
 
 err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
@@ -84,6 +82,7 @@ XWIN_API void xwin_win_destroy(struct xwin_window *win)
 	/* Free the memory used by the window struct */
 	sfree(win);
 
+	return;
 
 err_return:
 	ALARM(ALARM_WARN, "Failed to destroy window");

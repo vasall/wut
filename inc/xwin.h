@@ -53,5 +53,15 @@ XWIN_API s8 xwin_update(void);
 XWIN_API void xwin_render(void);
 
 
+/*
+ * Pull the oldest event from the event pipe.
+ *
+ * @event: A pointer to write the pulled event to, if there is any
+ *
+ * Returns: 1 if an event has been returned, 0 if there are no more events and
+ * 	    -1 if an error occurred
+ */
+XWIN_API s8 xwin_pull_event(struct xwin_event *event);
+
 
 #endif /* _XWIN_XWIN_H */

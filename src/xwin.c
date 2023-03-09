@@ -61,6 +61,9 @@ XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height)
 
 	/* Lastly attach it */
 	if(parent == 0) {
+		/* Mark this window as the main window */
+		win->info = win->info | XWIN_WIN_INFO_MAIN;
+
 		g_xwin_core.main_window = win;
 	}
 	else {
@@ -79,12 +82,7 @@ err_return:
 
 XWIN_API s8 xwin_update(void)
 {
-	SDL_Event evt;
-
-	/* Go through all outstanding events */
-	while(SDL_PollEvent(&evt)) {
-
-	}
+	xwin_evt_process();
 
 	return 0;
 }
@@ -93,4 +91,10 @@ XWIN_API s8 xwin_update(void)
 XWIN_API void xwin_render(void)
 {
 
+}
+
+
+XWIN_API s8 xwin_pull_event(struct xwin_event *event)
+{
+	return xwin_evt_pipe_pull(event);
 }

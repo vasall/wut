@@ -8,9 +8,19 @@
 
 #define XWIN_EVT_PIPE_LIM	64
 
+#define XWIN_EVT_DATA_LIM	128
+
+#define XWIN_EVT_QUIT		1
+
 
 struct xwin_event {
 	u8 type;
+
+	SDL_Event event;
+
+	struct xwin_window *window;
+
+	u8 data[128];
 };
 
 
@@ -34,13 +44,27 @@ XWIN_API void xwin_evt_pipe_clear(void);
 
 
 /*
- * Append a new event to the end of the event pipe.
+ * Directly append a predefined event to the end of the event pipe.
  *
  * @evt: The event to append
  *
  * Returns: Either the new length of the pipe or -1 if an error occurred
  */
 XWIN_API s8 xwin_evt_pipe_append(struct xwin_event evt);
+
+
+/*
+ * Create and append a new event to the event pipe.
+ *
+ * @type: The type of the new event
+ * @win: A pointer to the related window
+ * @data: A pointer to a data buffer to copy in the event struct
+ * @len: The length of the data buffer in bytes
+ *
+ * Returns: Either the new length of the pipe or -1 if an error occurred
+ */
+XWIN_API s8 xwin_evt_pipe_push(u8 type, struct xwin_window *win,
+		void *data, u8 len);
 
 
 /*
@@ -52,7 +76,6 @@ XWIN_API s8 xwin_evt_pipe_append(struct xwin_event evt);
  *          if an error occurred
  */
 XWIN_API s8 xwin_evt_pipe_pull(struct xwin_event *evt);
-
 
 
 
