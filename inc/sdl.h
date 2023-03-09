@@ -1,5 +1,5 @@
-#ifndef _XWIN_SDL_H
-#define _XWIN_SDL_H
+#ifndef _FH_SDL_H
+#define _FH_SDL_H
 
 #include "define.h"
 #include "imports.h"
@@ -23,13 +23,13 @@
  * Returns: 0 on success or -1 if an error occurred
  *
  */
-XWIN_API s8 xwin_sdl_init(void); 
+FH_API s8 fh_sdl_init(void); 
 
 
 /*
  * Shutdown the SDL-API.
  */
-XWIN_API void xwin_sdl_quit(void);
+FH_API void fh_sdl_quit(void);
 
 
-#endif /* _XWIN_SDL_H */
+#endif /* _FH_SDL_H */

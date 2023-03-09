@@ -1,5 +1,5 @@
-#ifndef _XWIN_XWIN_H
-#define _XWIN_XWIN_H
+#ifndef _FH_FREIHAND_H
+#define _FH_FREIHAND_H
 
 #include "define.h"
 #include "imports.h"
@@ -9,17 +9,17 @@
 
 
 /*
- * Initialize the XWIN-framework.
+ * Initialize the FH-framework.
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-XWIN_API s8 xwin_init(void);
+FH_API s8 fh_init(void);
 
 
 /*
- * Shutdown the XWIN-framework and clear the allocated memory.
+ * Shutdown the FH-framework and clear the allocated memory.
  */
-XWIN_API void xwin_quit(void);
+FH_API void fh_quit(void);
 
 
 /*
@@ -33,7 +33,7 @@ XWIN_API void xwin_quit(void);
  *
  * Returns: Either the windowId or -1 if an error occurred
  */
-XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height);
+FH_API s32 fh_add_window(s32 parent, char *name, s32 width, s32 height);
 
 
 /*
@@ -44,13 +44,13 @@ XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height);
  * Returns: 1 if everything is normal, -1 if an error occurred and 1 if the user
  *          requested to close the program
  */
-XWIN_API s8 xwin_update(void);
+FH_API s8 fh_update(void);
 
 
 /*
  * Redraw the window.
  */
-XWIN_API void xwin_render(void);
+FH_API void fh_render(void);
 
 
 /*
@@ -61,7 +61,7 @@ XWIN_API void xwin_render(void);
  * Returns: 1 if an event has been returned, 0 if there are no more events and
  * 	    -1 if an error occurred
  */
-XWIN_API s8 xwin_pull_event(struct xwin_event *event);
+FH_API s8 fh_pull_event(struct fh_event *event);
 
 
-#endif /* _XWIN_XWIN_H */
+#endif /* _FH_FREIHAND_H */

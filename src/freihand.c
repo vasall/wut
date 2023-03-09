@@ -1,16 +1,16 @@
-#include "xwin.h"
+#include "freihand.h"
 
 #include <stdlib.h>
 
 
 
-XWIN_API s8 xwin_init(void)
+FH_API s8 fh_init(void)
 {
 	/* Reset the core */
-	xwin_core_reset();
+	fh_core_reset();
 
 	/* Then initialize the SDL-frameworks */
-	if(xwin_sdl_init() < 0) {
+	if(fh_sdl_init() < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize the XWIN-SDL module");
 		goto err_return;
 	}
@@ -23,24 +23,24 @@ err_return:
 }
 
 
-XWIN_API void xwin_quit(void)
+FH_API void fh_quit(void)
 {
 	/* Close all windows */
-	xwin_win_close(g_xwin_core.main_window);
-	g_xwin_core.main_window = NULL;
+	fh_win_close(g_fh_core.main_window);
+	g_fh_core.main_window = NULL;
 	
 	/* Shutdown SDL */
-	xwin_sdl_quit();
+	fh_sdl_quit();
 
 	/* Reset the core */
-	xwin_core_reset();
+	fh_core_reset();
 }
 
 
-XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height)
+FH_API s32 fh_add_window(s32 parent, char *name, s32 width, s32 height)
 {
-	struct xwin_window *win;
-	struct xwin_window *par;
+	struct fh_window *win;
+	struct fh_window *par;
 		
 	if(parent < 0 || name == NULL || width < 0 || height < 0) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -48,13 +48,13 @@ XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height)
 	}
 
 	/* First find the parent to see if it even exists */
-	if(parent != 0 && !(par = xwin_win_get(parent))) {
+	if(parent != 0 && !(par = fh_win_get(parent))) {
 		ALARM(ALARM_ERR, "Parent could not be found");
 		goto err_return;
 	}
 
 	/* Then create a new window */
-	if(!(win = xwin_win_create(name, width, height)))  {
+	if(!(win = fh_win_create(name, width, height)))  {
 		ALARM(ALARM_ERR, "Failed to create new window");
 		goto err_return;
 	}
@@ -62,12 +62,12 @@ XWIN_API s32 xwin_add_window(s32 parent, char *name, s32 width, s32 height)
 	/* Lastly attach it */
 	if(parent == 0) {
 		/* Mark this window as the main window */
-		win->info = win->info | XWIN_WIN_INFO_MAIN;
+		win->info = win->info | FH_WIN_INFO_MAIN;
 
-		g_xwin_core.main_window = win;
+		g_fh_core.main_window = win;
 	}
 	else {
-		xwin_win_attach(par, win);
+		fh_win_attach(par, win);
 	}
 
 	return win->id;
@@ -80,21 +80,21 @@ err_return:
 
 
 
-XWIN_API s8 xwin_update(void)
+FH_API s8 fh_update(void)
 {
-	xwin_evt_process();
+	fh_evt_process();
 
 	return 0;
 }
 
 
-XWIN_API void xwin_render(void)
+FH_API void fh_render(void)
 {
 
 }
 
 
-XWIN_API s8 xwin_pull_event(struct xwin_event *event)
+FH_API s8 fh_pull_event(struct fh_event *event)
 {
-	return xwin_evt_pipe_pull(event);
+	return fh_evt_pipe_pull(event);
 }

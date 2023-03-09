@@ -1,24 +1,24 @@
-#ifndef _XWIN_WINDOW_H
-#define _XWIN_WINDOW_H
+#ifndef _FH_WINDOW_H
+#define _FH_WINDOW_H
 
 #include "define.h"
 #include "imports.h"
 
 
-#define XWIN_WIN_NAME_LIM  	128
-#define XWIN_WIN_CHILDREN_LIM     6
+#define FH_WIN_NAME_LIM  	128
+#define FH_WIN_CHILDREN_LIM     6
 
 
-#define XWIN_WIN_INFO_MAIN	(1<<0)
-#define XWIN_WIN_INFO_VISIBLE	(1<<1)
+#define FH_WIN_INFO_MAIN	(1<<0)
+#define FH_WIN_INFO_VISIBLE	(1<<1)
 
 
-struct xwin_window {
+struct fh_window {
 	/* The unique identifier for this window */
 	u16 id;
 
 	/* The name of the window */
-	char name[XWIN_WIN_NAME_LIM];
+	char name[FH_WIN_NAME_LIM];
 
 	/* The size of the window in pixels */
 	s16 width;
@@ -39,10 +39,10 @@ struct xwin_window {
 	SDL_GLContext context;
 
 	/* References to both the parent and children windows */
-	struct xwin_window *parent;
+	struct fh_window *parent;
 
 	u8 children_num;
-	struct xwin_window *children[XWIN_WIN_CHILDREN_LIM];
+	struct fh_window *children[FH_WIN_CHILDREN_LIM];
 };
 
 
@@ -58,7 +58,7 @@ struct xwin_window {
  * Returns: Either a pointer to the created window struct or NULL if an error
  *          occurred
  */
-XWIN_API struct xwin_window *xwin_win_create(char *name, s16 w, s16 h);
+FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h);
 
 
 /*
@@ -66,7 +66,7 @@ XWIN_API struct xwin_window *xwin_win_create(char *name, s16 w, s16 h);
  *
  * @win: A pointer to the window struct
  */
-XWIN_API void xwin_win_destroy(struct xwin_window *win);
+FH_API void fh_win_destroy(struct fh_window *win);
 
 
 /*
@@ -77,8 +77,8 @@ XWIN_API void xwin_win_destroy(struct xwin_window *win);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-XWIN_API s8 xwin_win_attach(struct xwin_window *parent,
-		struct xwin_window *window);
+FH_API s8 fh_win_attach(struct fh_window *parent,
+		struct fh_window *window);
 
 
 /*
@@ -86,7 +86,7 @@ XWIN_API s8 xwin_win_attach(struct xwin_window *parent,
  *
  * @window: Pointer to the window struct to detach from the parent
  */
-XWIN_API void xwin_win_detach(struct xwin_window *window);
+FH_API void fh_win_detach(struct fh_window *window);
 
 
 /*
@@ -94,7 +94,7 @@ XWIN_API void xwin_win_detach(struct xwin_window *window);
  *
  * @win: Pointer to the window to close
  */
-XWIN_API void xwin_win_close(struct xwin_window *win);
+FH_API void fh_win_close(struct fh_window *win);
 
 
 /*
@@ -104,7 +104,7 @@ XWIN_API void xwin_win_close(struct xwin_window *win);
  *
  * Returns: Either a pointer to the window struct or NULL if it does not exist
  */
-XWIN_API struct xwin_window *xwin_win_get(s32 id);
+FH_API struct fh_window *fh_win_get(s32 id);
 
 
 
@@ -118,8 +118,8 @@ XWIN_API struct xwin_window *xwin_win_get(s32 id);
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-XWIN_API void xwin_win_hlfdown(struct xwin_window *str,
-		s8 (*cfnc)(struct xwin_window *w, void *data), void *data);
+FH_API void fh_win_hlfdown(struct fh_window *str,
+		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
 
 
 /*
@@ -133,8 +133,8 @@ XWIN_API void xwin_win_hlfdown(struct xwin_window *str,
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-XWIN_API void xwin_win_hlfup(struct xwin_window *str,
-		s8 (*cfnc)(struct xwin_window *w, void *data), void *data);
+FH_API void fh_win_hlfup(struct fh_window *str,
+		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
 
 
 
@@ -144,4 +144,4 @@ XWIN_API void xwin_win_hlfup(struct xwin_window *str,
 
 
 
-#endif /* _XWIN_WINDOW_H */
+#endif /* _FH_WINDOW_H */

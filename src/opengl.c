@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-XWIN_API s8 xwin_gl_init(void)
+FH_API s8 fh_gl_init(void)
 {
 	/* 
 	 * Request opengl 4.2 context.
@@ -23,7 +23,7 @@ XWIN_API s8 xwin_gl_init(void)
 }
 
 
-XWIN_API s8 xwin_gl_create(struct xwin_window *win)
+FH_API s8 fh_gl_create(struct fh_window *win)
 {
 	SDL_GLContext ctx;
 
@@ -56,7 +56,7 @@ err_return:
 }
 
 
-XWIN_API void xwin_gl_destroy(struct xwin_window *win)
+FH_API void fh_gl_destroy(struct fh_window *win)
 {
 	if(!win) {
 		ALARM(ALARM_WARN, "Input parameters invalid");

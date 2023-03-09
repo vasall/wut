@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-XWIN_API s8 xwin_sdl_init(void)
+FH_API s8 fh_sdl_init(void)
 {
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize SDL");
@@ -15,7 +15,7 @@ XWIN_API s8 xwin_sdl_init(void)
 	}
 
 
-	if(xwin_gl_init() < 0) {
+	if(fh_gl_init() < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize the SDL GL module");
 		goto err_return;
 	}
@@ -28,7 +28,7 @@ err_return:
 }
 
 
-XWIN_API void xwin_sdl_quit(void)
+FH_API void fh_sdl_quit(void)
 {
 	SDL_Quit();
 }

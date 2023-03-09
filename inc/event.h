@@ -1,38 +1,38 @@
-#ifndef _XWIN_EVENT_H
-#define _XWIN_EVENT_H
+#ifndef _FH_EVENT_H
+#define _FH_EVENT_H
 
 #include "define.h"
 #include "imports.h"
 #include "window.h"
 
 
-#define XWIN_EVT_PIPE_LIM	64
+#define FH_EVT_PIPE_LIM	64
 
-#define XWIN_EVT_DATA_LIM	128
+#define FH_EVT_DATA_LIM	128
 
-#define XWIN_EVT_QUIT		1
+#define FH_EVT_QUIT		1
 
 
-struct xwin_event {
+struct fh_event {
 	u8 type;
 
 	SDL_Event event;
 
-	struct xwin_window *window;
+	struct fh_window *window;
 
 	u8 data[128];
 };
 
 
 /* Typedefine the standard callback function for events */
-typedef void (*xwin_event_fnc_t)(struct xwin_event evt, void *data);
+typedef void (*fh_event_fnc_t)(struct fh_event evt, void *data);
 
 
 
-struct xwin_event_pipe {
+struct fh_event_pipe {
 	s16 num;
 	s16 off;
-	struct xwin_event evts[XWIN_EVT_PIPE_LIM];
+	struct fh_event evts[FH_EVT_PIPE_LIM];
 };
 
 
@@ -40,7 +40,7 @@ struct xwin_event_pipe {
 /*
  * Reset the event pipe.
  */
-XWIN_API void xwin_evt_pipe_clear(void);
+FH_API void fh_evt_pipe_clear(void);
 
 
 /*
@@ -50,7 +50,7 @@ XWIN_API void xwin_evt_pipe_clear(void);
  *
  * Returns: Either the new length of the pipe or -1 if an error occurred
  */
-XWIN_API s8 xwin_evt_pipe_append(struct xwin_event evt);
+FH_API s8 fh_evt_pipe_append(struct fh_event evt);
 
 
 /*
@@ -63,7 +63,7 @@ XWIN_API s8 xwin_evt_pipe_append(struct xwin_event evt);
  *
  * Returns: Either the new length of the pipe or -1 if an error occurred
  */
-XWIN_API s8 xwin_evt_pipe_push(u8 type, struct xwin_window *win,
+FH_API s8 fh_evt_pipe_push(u8 type, struct fh_window *win,
 		void *data, u8 len);
 
 
@@ -75,7 +75,7 @@ XWIN_API s8 xwin_evt_pipe_push(u8 type, struct xwin_window *win,
  * Returns: Either 1 if an event has been pulled, 0 if the pipe is empty and -1
  *          if an error occurred
  */
-XWIN_API s8 xwin_evt_pipe_pull(struct xwin_event *evt);
+FH_API s8 fh_evt_pipe_pull(struct fh_event *evt);
 
 
 
@@ -89,8 +89,8 @@ XWIN_API s8 xwin_evt_pipe_pull(struct xwin_event *evt);
  * Returns: Either an ID to identify the callback function in the list or -1 if
  *          an error occurred
  */
-XWIN_API s16 xwin_evt_win_bind(struct xwin_window *win, u32 type,
-		xwin_event_fnc_t fnc);
+FH_API s16 fh_evt_win_bind(struct fh_window *win, u32 type,
+		fh_event_fnc_t fnc);
 
 
 /*
@@ -99,7 +99,7 @@ XWIN_API s16 xwin_evt_win_bind(struct xwin_window *win, u32 type,
  * @win: Pointer to the window
  * @eid: The id of the event callback to remove
  */
-XWIN_API void xwin_evt_win_unbind(struct xwin_window *win, s16 eid);
+FH_API void fh_evt_win_unbind(struct fh_window *win, s16 eid);
 
 
 /*
@@ -108,7 +108,7 @@ XWIN_API void xwin_evt_win_unbind(struct xwin_window *win, s16 eid);
  * @win: Pointer to the window
  * @type: The type of the event
  */
-XWIN_API void xwin_evt_win_unbind_type(struct xwin_window *win, u32 type);
+FH_API void fh_evt_win_unbind_type(struct fh_window *win, u32 type);
 
 
 /*
@@ -116,7 +116,7 @@ XWIN_API void xwin_evt_win_unbind_type(struct xwin_window *win, u32 type);
  *
  * @win: Pointer to the window
  */
-XWIN_API void xwin_evt_win_unbind_all(struct xwin_window *win);
+FH_API void fh_evt_win_unbind_all(struct fh_window *win);
 
 
 
@@ -125,7 +125,7 @@ XWIN_API void xwin_evt_win_unbind_all(struct xwin_window *win);
  * If an event can't be handeld internally, it will be appended to the event
  * pipe, so it can be handeld manually.
  */
-XWIN_API void xwin_evt_process(void);
+FH_API void fh_evt_process(void);
 
 
-#endif /* _XWIN_EVENT_H */
+#endif /* _FH_EVENT_H */

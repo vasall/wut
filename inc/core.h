@@ -1,5 +1,5 @@
-#ifndef _XWIN_CORE_H
-#define _XWIN_CORE_H
+#ifndef _FH_CORE_H
+#define _FH_CORE_H
 
 
 #include "define.h"
@@ -8,17 +8,17 @@
 #include "event.h"
 
 
-struct xwin_core_container {
+struct fh_core_container {
 	/* The main window */
-	struct xwin_window *main_window;
+	struct fh_window *main_window;
 
 	/* The event pipe containing all unhandled events */
-	struct xwin_event_pipe event_pipe;
+	struct fh_event_pipe event_pipe;
 };
 
 
 
-XWIN_API struct xwin_core_container g_xwin_core;
+FH_API struct fh_core_container g_fh_core;
 
 
 
@@ -26,10 +26,10 @@ XWIN_API struct xwin_core_container g_xwin_core;
  * Reset everything in the core. This will not free any memory, but just
  * overwrite everything with zeros.
  */
-XWIN_API void xwin_core_reset(void);
+FH_API void fh_core_reset(void);
 
 
 
 
 
-#endif /* _XWIN_CORE_H */
+#endif /* _FH_CORE_H */

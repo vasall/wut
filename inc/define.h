@@ -1,9 +1,9 @@
-#ifndef _XWIN_DEFINE_H
-#define _XWIN_DEFINE_H
+#ifndef _FH_DEFINE_H
+#define _FH_DEFINE_H
 
 
-#define XWIN_API 		extern
-#define XWIN_INTERN		static
+#define FH_API 		extern
+#define FH_INTERN		static
 
 
-#endif /* _XWIN_DEFINE_H */
+#endif /* _FH_DEFINE_H */

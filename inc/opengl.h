@@ -1,5 +1,5 @@
-#ifndef _XWIN_OPENGL_H
-#define _XWIN_OPENGL_H
+#ifndef _FH_OPENGL_H
+#define _FH_OPENGL_H
 
 #include "define.h"
 #include "imports.h"
@@ -13,7 +13,7 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-XWIN_API s8 xwin_gl_init(void);
+FH_API s8 fh_gl_init(void);
 
 
 /*
@@ -23,7 +23,7 @@ XWIN_API s8 xwin_gl_init(void);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-XWIN_API s8 xwin_gl_create(struct xwin_window *win);
+FH_API s8 fh_gl_create(struct fh_window *win);
 
 
 /*
@@ -31,7 +31,7 @@ XWIN_API s8 xwin_gl_create(struct xwin_window *win);
  *
  * @win: Pointer to the window
  */
-XWIN_API void xwin_gl_destroy(struct xwin_window *win);
+FH_API void fh_gl_destroy(struct fh_window *win);
 
 
-#endif /* _XWIN_OPENGL_H */
+#endif /* _FH_OPENGL_H */
