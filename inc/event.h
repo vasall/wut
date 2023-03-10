@@ -36,13 +36,6 @@ struct fh_event_pipe {
 };
 
 
-
-/*
- * Reset the event pipe.
- */
-FH_API void fh_evt_pipe_clear(void);
-
-
 /*
  * Directly append a predefined event to the end of the event pipe.
  *
@@ -76,7 +69,6 @@ FH_API s8 fh_evt_pipe_push(u8 type, struct fh_window *win,
  *          if an error occurred
  */
 FH_API s8 fh_evt_pipe_pull(struct fh_event *evt);
-
 
 
 /*

@@ -43,6 +43,8 @@ struct fh_window {
 
 	u8 children_num;
 	struct fh_window *children[FH_WIN_CHILDREN_LIM];
+
+	/* The body of the  */
 };
 
 
@@ -107,7 +109,6 @@ FH_API void fh_win_close(struct fh_window *win);
 FH_API struct fh_window *fh_win_get(s32 id);
 
 
-
 /*
  * This function is a higher-level-function which will apply the cfnc-function to
  * all window structs starting from the str window downwards.
@@ -118,7 +119,7 @@ FH_API struct fh_window *fh_win_get(s32 id);
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-FH_API void fh_win_hlfdown(struct fh_window *str,
+FH_API void fh_win_hlf_down(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
 
 
@@ -133,13 +134,22 @@ FH_API void fh_win_hlfdown(struct fh_window *str,
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-FH_API void fh_win_hlfup(struct fh_window *str,
+FH_API void fh_win_hlf_up(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
 
 
+/*
+ * Redraw a window.
+ *
+ * @win: Pointer to the window to redraw.
+ */
+FH_API void fh_win_redraw(struct fh_window *win);
 
 
-
+/*
+ * This function will call the fh_win_redraw() function on all visible windows.
+ */
+FH_API void fh_win_redraw_all(void);
 
 
 

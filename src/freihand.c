@@ -26,8 +26,8 @@ err_return:
 FH_API void fh_quit(void)
 {
 	/* Close all windows */
-	fh_win_close(g_fh_core.main_window);
-	g_fh_core.main_window = NULL;
+	fh_win_close(fh_core_get_main_window());
+	fh_core_set_main_window(NULL);
 	
 	/* Shutdown SDL */
 	fh_sdl_quit();
@@ -64,7 +64,8 @@ FH_API s32 fh_add_window(s32 parent, char *name, s32 width, s32 height)
 		/* Mark this window as the main window */
 		win->info = win->info | FH_WIN_INFO_MAIN;
 
-		g_fh_core.main_window = win;
+		/* Set this window as the main window */
+		fh_core_set_main_window(win);
 	}
 	else {
 		fh_win_attach(par, win);
@@ -82,15 +83,18 @@ err_return:
 
 FH_API s8 fh_update(void)
 {
+	/* Check if the quit flag has been triggered */
+	if(fh_core_check_quit())
+		return 0;
+
 	fh_evt_process();
 
-	return 0;
-}
 
 
-FH_API void fh_render(void)
-{
+	/* Redraw all visible windows */
+	fh_win_redraw_all();
 
+	return 1;
 }
 
 

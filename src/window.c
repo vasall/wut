@@ -10,11 +10,15 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 {
 	struct fh_window *win;
 	SDL_Window *hdl;
-	SDL_GLContext ctx;
 	s8 i;
 
 	if(!name || w <= 0 || h <= 0) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(strlen(name) > FH_WIN_NAME_LIM) {
+		ALARM(ALARM_ERR, "Window name is too long");
 		goto err_return;
 	}
 
@@ -51,8 +55,6 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 
 
 	return win;
-
-err_destroy_ctx:
 
 err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
@@ -174,7 +176,7 @@ FH_API void fh_win_close(struct fh_window *win)
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	fh_win_hlfup(win, &fh_cfnc_close_windows, NULL);
+	fh_win_hlf_up(win, &fh_cfnc_close_windows, NULL);
 
 	return;
 
@@ -215,12 +217,15 @@ FH_INTERN s8 fh_cfnc_find_window(struct fh_window *w, void *data)
 FH_API struct fh_window *fh_win_get(s32 id)
 {
 	struct fh_win_selector sel;
+	struct fh_window *main;
+
 	sel.state = 0;
 	sel.id = id;
 	sel.win = NULL;
 
 	/* Recursifly search for the window... */
-	fh_win_hlfdown(g_fh_core.main_window, &fh_cfnc_find_window, &sel);
+	main = fh_core_get_main_window();
+	fh_win_hlf_down(main, &fh_cfnc_find_window, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -232,7 +237,7 @@ FH_API struct fh_window *fh_win_get(s32 id)
 
 
 
-FH_API void fh_win_hlfdown(struct fh_window *str,
+FH_API void fh_win_hlf_down(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
 {
 	s8 i;
@@ -251,13 +256,13 @@ FH_API void fh_win_hlfdown(struct fh_window *str,
 		if(!str->children[i])
 			continue;
 
-		fh_win_hlfup(str->children[i], cfnc, data);
+		fh_win_hlf_down(str->children[i], cfnc, data);
 	}
 
 	return;
 }
 
-FH_API void fh_win_hlfup(struct fh_window *str,
+FH_API void fh_win_hlf_up(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
 {
 	s8 i;
@@ -272,7 +277,7 @@ FH_API void fh_win_hlfup(struct fh_window *str,
 		if(!str->children[i])
 			continue;
 
-		fh_win_hlfup(str->children[i], cfnc, data);
+		fh_win_hlf_up(str->children[i], cfnc, data);
 	}
 
 	/* Then apply the callback function to this window struct */
@@ -280,4 +285,43 @@ FH_API void fh_win_hlfup(struct fh_window *str,
 		return;
 
 	return;
+}
+
+
+FH_API void fh_win_redraw(struct fh_window *win)
+{
+	/* SILENCIO! */
+	if(win) {}
+
+	/* Select context for this window */
+	SDL_GL_MakeCurrent(win->handle, win->context);
+
+	/* Clear the window screen */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+	/* Swap buffer */
+        SDL_GL_SwapWindow(win->handle);
+}
+
+
+
+FH_INTERN s8 fh_win_cfnc_redraw(struct fh_window *win, void *data)
+{
+	/* SILENCIO! */
+	if(data) {}
+
+	if(win->info & FH_WIN_INFO_VISIBLE) {
+		fh_win_redraw(win);
+	}
+
+	return 0;
+}
+
+FH_API void fh_win_redraw_all(void)
+{
+	struct fh_window *main;
+
+	/* Call the fh_win_redraw() function on all visible windows */
+	main = fh_core_get_main_window();
+	fh_win_hlf_down(main, &fh_win_cfnc_redraw, NULL);	
 }

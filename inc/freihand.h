@@ -31,26 +31,18 @@ FH_API void fh_quit(void);
  * @width: The initial width of the window
  * @height: The intial height of the window
  *
- * Returns: Either the windowId or -1 if an error occurred
+ * Returns: Either the window-descriptor(wd > 1) or -1 if an error occurred
  */
 FH_API s32 fh_add_window(s32 parent, char *name, s32 width, s32 height);
 
 
 /*
- * Handle inputs and update the window.
- * If this function returns an error or the return code 1, the window should be
- * closed.
+ * Handle inputs, update and redraw the window.
  *
- * Returns: 1 if everything is normal, -1 if an error occurred and 1 if the user
- *          requested to close the program
+ * Returns: 1 if everything is normal, and 0 if either a fatal error occurred or
+ * 	    the user requested to close the program
  */
 FH_API s8 fh_update(void);
-
-
-/*
- * Redraw the window.
- */
-FH_API void fh_render(void);
 
 
 /*

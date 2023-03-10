@@ -4,13 +4,6 @@
 
 
 
-FH_API void fh_evt_pipe_clear(void)
-{
-	g_fh_core.event_pipe.off = 0;
-	g_fh_core.event_pipe.num = 0;
-}
-
-
 FH_API s8 fh_evt_pipe_append(struct fh_event evt)
 {
 	s16 cnum = g_fh_core.event_pipe.num;
@@ -96,27 +89,35 @@ FH_INTERN void fh_evt_hdl_windowevent(struct fh_event evt)
 		goto err_return;
 	}
 
-	printf("ARRRR\n");
-
 	switch(evt.event.window.event) {
 		case SDL_WINDOWEVENT_CLOSE:
-			printf("Info: %d\n", evt.window->info);
+			/* User requests to close window */
 
 			/* If this window is the main window */
 			if(evt.window->info & FH_WIN_INFO_MAIN) {
-				printf("Close main window\n");
-
 				/* ...quit program */
-				fh_evt_pipe_push(FH_EVT_QUIT, NULL, NULL, 0);
+				fh_core_quit();
 			}
 			/* Otherwise if it's just a normal subwindow */
 			else {
 				/* ...close it */
-				printf("Close window: %s\n", evt.window->name);
-
 				fh_win_close(evt.window);
 			}
 
+			break;
+
+		case SDL_WINDOWEVENT_ENTER:
+			/* Cursor enters window */
+
+			fh_core_set_active_window(evt.window);
+
+			break;
+
+		case SDL_WINDOWEVENT_LEAVE:
+			/* Cursor leaves window */
+
+			fh_core_set_active_window(NULL);
+			
 			break;
 	}
 
@@ -137,18 +138,15 @@ FH_API void fh_evt_process(void)
 	while(SDL_PollEvent(&evt.event)) {	
 
 		/* Get a pointer to the window */
-		evt.window = fh_win_get(evt.event.window.windowID);	
-		printf("%d, %p\n", evt.event.window.windowID, evt.window);
+		evt.window = fh_win_get(evt.event.window.windowID);
 
 
 		switch(evt.event.type) {
 			case SDL_QUIT:
-				printf("Quit program\n");
-				fh_evt_pipe_push(FH_EVT_QUIT, NULL, NULL, 0);
+				fh_core_quit();
 				break;
 
 			case SDL_WINDOWEVENT:
-				printf("Handle window event\n");
 				fh_evt_hdl_windowevent(evt);
 				break;
 		}
