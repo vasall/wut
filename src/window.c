@@ -6,19 +6,24 @@
 #include <stdlib.h>
 
 
+
+
 FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 {
 	struct fh_window *win;
 	SDL_Window *hdl;
+	struct fh_document *doc;
 	s8 i;
+	s8 name_len;
 
 	if(!name || w <= 0 || h <= 0) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(strlen(name) > FH_WIN_NAME_LIM) {
-		ALARM(ALARM_ERR, "Window name is too long");
+	name_len = strlen(name);
+	if(name_len < 1 || name_len > FH_WIN_NAME_LIM) {
+		ALARM(ALARM_ERR, "Window name is invalid");
 		goto err_return;
 	}
 
@@ -53,8 +58,18 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 		goto err_destroy_hdl;
 	}
 
+	/* Create the document contained in the window */
+	if(!(doc = fh_doc_create())) {
+		ALARM(ALARM_ERR, "Failed to create document for window");
+		goto err_destroy_ctx;
+	}
+	win->document = doc;
+
 
 	return win;
+
+err_destroy_ctx:
+	fh_gl_destroy(win);
 
 err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
@@ -127,12 +142,11 @@ FH_API void fh_win_detach(struct fh_window *window)
 
 	if(!window) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
-		goto err_return;
+		return;
 	}
 
 	if(!window->parent) {
-		ALARM(ALARM_WARN, "Window does not have a parent window");
-		goto err_return;
+		return;
 	}
 
 	parent = window->parent;
@@ -148,9 +162,6 @@ FH_API void fh_win_detach(struct fh_window *window)
 			return;
 		}
 	}
-
-err_return:
-	ALARM(ALARM_WARN, "Failed to detach window");
 }
 
 

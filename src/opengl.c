@@ -39,7 +39,7 @@ FH_API s8 fh_gl_create(struct fh_window *win)
 	}
 
 
-	glClearColor(0.094, 0.094, 0.094, 1.0);
+	glClearColor(1, 1, 1, 1.0);
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

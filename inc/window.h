@@ -5,7 +5,7 @@
 #include "imports.h"
 
 
-#define FH_WIN_NAME_LIM  	128
+#define FH_WIN_NAME_LIM  	126
 #define FH_WIN_CHILDREN_LIM     6
 
 
@@ -44,7 +44,8 @@ struct fh_window {
 	u8 children_num;
 	struct fh_window *children[FH_WIN_CHILDREN_LIM];
 
-	/* The body of the  */
+	/* The document contained in this window */
+	struct fh_document *document;
 };
 
 
@@ -84,7 +85,8 @@ FH_API s8 fh_win_attach(struct fh_window *parent,
 
 
 /*
- * Remove the link to the parent window struct for this window.
+ * Remove the link to the parent window struct for this window. This function is
+ * save to call, even if the window doesn't have a parent.
  *
  * @window: Pointer to the window struct to detach from the parent
  */
