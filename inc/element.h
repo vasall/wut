@@ -3,7 +3,8 @@
 
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
+#include "element_style.h"
 
 
 #define FH_ELEMENT_NAME_LIM	126
@@ -45,7 +46,10 @@ struct fh_element {
 	struct fh_element *children[FH_ELEMENT_CHILDREN_LIM];
 
 	/* The type of element */
-	enum fh_element_type type;	
+	enum fh_element_type type;
+
+	/* The style and content attributes for this element */
+	struct fh_element_attributes attributes;
 };
 
 
@@ -66,9 +70,9 @@ FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type);
 /*
  * Destroy a element and free the allocated memory.
  *
- * @element: Pointer to the element to destroy
+ * @ele: Pointer to the element to destroy
  */
-FH_API void fh_ele_destroy(struct fh_element *element);
+FH_API void fh_ele_destroy(struct fh_element *ele);
 
 
 /*

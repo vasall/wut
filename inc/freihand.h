@@ -2,7 +2,7 @@
 #define _FH_FREIHAND_H
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
 #include "core.h"
 #include "sdl.h"
 #include "window.h"
@@ -54,6 +54,17 @@ FH_API s8 fh_update(void);
  * 	    -1 if an error occurred
  */
 FH_API s8 fh_pull_event(struct fh_event *event);
+
+
+/*
+ * Get an element from a window by searching for the given name.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the element to look for
+ *
+ * Returns: Either a pointer to the element or NULL if an error occurred
+ */
+FH_API struct fh_element *fh_get(struct fh_window *win, char *name);
 
 
 #endif /* _FH_FREIHAND_H */

@@ -2,10 +2,14 @@
 #define _FH_OPENGL_H
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
 
 #include "window.h"
 
+
+struct fh_context {
+	void *context;
+};
 
 
 /*
@@ -21,17 +25,18 @@ FH_API s8 fh_gl_init(void);
  *
  * @win: Pointer to the window
  *
- * Returns: 0 on success or -1 if an error occurred
+ * Returns: Either a pointer to the newly created context or NULL if an error
+ * 	    occurred
  */
-FH_API s8 fh_gl_create(struct fh_window *win);
+FH_API struct fh_context *fh_gl_create(struct fh_window *win);
 
 
 /*
  * Destroy a GL context and remove it from a window.
  *
- * @win: Pointer to the window
+ * @win: Pointer to the context
  */
-FH_API void fh_gl_destroy(struct fh_window *win);
+FH_API void fh_gl_destroy(struct fh_context *ctx);
 
 
 #endif /* _FH_OPENGL_H */

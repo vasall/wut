@@ -1,5 +1,7 @@
 #include "freihand.h"
 
+#include "document.h"
+
 #include <stdlib.h>
 
 
@@ -101,4 +103,20 @@ FH_API s8 fh_update(void)
 FH_API s8 fh_pull_event(struct fh_event *event)
 {
 	return fh_evt_pipe_pull(event);
+}
+
+
+FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
+{
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+
+	return fh_doc_find_element(win->document, name);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get element");
+	return NULL;
 }

@@ -2,6 +2,7 @@
 
 #include "core.h"
 #include "opengl.h"
+#include "document.h"
 
 #include <stdlib.h>
 
@@ -13,6 +14,7 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	struct fh_window *win;
 	SDL_Window *hdl;
 	struct fh_document *doc;
+	struct fh_context *ctx;
 	s8 i;
 	s8 name_len;
 
@@ -52,11 +54,12 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++)
 		win->children[i] = NULL;
 
-	/* Create the SDL-GLContext-handle */
-	if(fh_gl_create(win) < 0) {
+	/* Create new OpenGL context */
+	if(!(ctx = fh_gl_create(win))) {
 		ALARM(ALARM_ERR, "Failed to add GL context to window");
 		goto err_destroy_hdl;
 	}
+	win->context = ctx;
 
 	/* Create the document contained in the window */
 	if(!(doc = fh_doc_create())) {
@@ -69,7 +72,7 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	return win;
 
 err_destroy_ctx:
-	fh_gl_destroy(win);
+	fh_gl_destroy(win->context);
 
 err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
@@ -90,8 +93,11 @@ FH_API void fh_win_destroy(struct fh_window *win)
 		goto err_return;
 	}
 
-	/* Delete the SDL-GLContext */	
-	SDL_GL_DeleteContext(win->context);
+	/* Close the document */
+	fh_doc_destroy(win->document);
+
+	/* Delete the OpenGL context */
+	fh_gl_destroy(win->context);
 
 	/* Destroy the SDL window */
 	SDL_DestroyWindow(win->handle);

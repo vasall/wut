@@ -2,7 +2,7 @@
 #define _FH_DOCUMENT_H
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
 #include "window.h"
 #include "element.h"
 
@@ -33,6 +33,17 @@ FH_API struct fh_document *fh_doc_create(void);
  */
 FH_API void fh_doc_destroy(struct fh_document *doc);
 
+
+/*
+ * Get an element contained in the document, by looking for the given name.
+ *
+ * @doc: Pointer to the document the element belongs to
+ * @name: The name of the element to look for
+ *
+ * Returns: Either a pointer to the element if found or NULL if an error
+ * 	    occurred
+ */
+FH_API struct fh_element *fh_doc_find_element(struct fh_document *doc, char *name);
 
 
 #endif /* _FH_DOCUMENT_H */

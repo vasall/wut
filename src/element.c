@@ -60,6 +60,17 @@ err_return:
 }
 
 
+FH_API void fh_ele_destroy(struct fh_element *ele)
+{
+	if(!ele) {
+		return;
+	}
+
+
+	sfree(ele);
+}
+
+
 FH_API s8 fh_ele_attach(struct fh_element *parent, struct fh_element *ele)
 {
 	s8 i;
@@ -124,18 +135,34 @@ FH_API void fh_ele_detach(struct fh_element *ele)
 }
 
 
-FH_API void fh_ele_remove(struct fh_element *ele)
+FH_INTERN s8 fh_cfnc_remove_elements(struct fh_element *ele, void *data)
 {
-	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
+	/* SILENCIO! */
+	if(data) {}
 
 	/* First detach the element from the parent */
 	fh_ele_detach(ele);
 
 	/* ...and finally destroy it */
 	fh_ele_destroy(ele);
+
+	return 0;
+}
+
+FH_API void fh_ele_remove(struct fh_element *ele)
+{
+	if(!ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Recursivly destroy all elements attached to ele and ele itself */
+	fh_ele_hlf_up(ele, &fh_cfnc_remove_elements, NULL);
+
+	return;
+
+err_return:
+	ALARM(ALARM_WARN, "Failed to remove element");
 }
 
 

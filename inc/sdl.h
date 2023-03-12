@@ -2,7 +2,7 @@
 #define _FH_SDL_H
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define SDL_R_MASK 0xff000000

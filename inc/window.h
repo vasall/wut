@@ -2,7 +2,7 @@
 #define _FH_WINDOW_H
 
 #include "define.h"
-#include "imports.h"
+#include "import.h"
 
 
 #define FH_WIN_NAME_LIM  	126
@@ -35,8 +35,8 @@ struct fh_window {
 	/* The SDL_Window-handle */
 	SDL_Window *handle;
 
-	/* The SDL-GL-context */
-	SDL_GLContext context;
+	/* The OpenGL context */
+	struct fh_context *context;
 
 	/* References to both the parent and children windows */
 	struct fh_window *parent;

@@ -35,15 +35,6 @@ err_return:
 }
 
 
-FH_INTERN s8 fh_cfnc_remove_elements(struct fh_element *ele, void *data)
-{
-	/* SILENCIO! */
-	if(data) {}
-
-	fh_ele_remove(ele);
-
-	return 0;
-}
 
 FH_API void fh_doc_destroy(struct fh_document *doc)
 {
@@ -51,10 +42,56 @@ FH_API void fh_doc_destroy(struct fh_document *doc)
 		return;
 
 	/* If the document contains a body, recursivly remove it */
-	if(doc->body) {
-		fh_ele_hlf_up(doc->body, &fh_cfnc_remove_elements, NULL);
+	fh_ele_remove(doc->body);	
+
+	sfree(doc);
+}
+
+
+struct fh_ele_selector {
+	s8 state;
+	char *name;
+	struct fh_element *element;
+};
+
+FH_INTERN s8 fh_cfnc_find_element(struct fh_element *ele, void *data)
+{
+	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
+
+	if(sel->state == 1)
+		return 1;
+
+	if(strcmp(ele->name, sel->name) == 0) {
+		sel->state = 1;
+		sel->element = ele;
+		return 1;
+	}
+
+	return 0;
+}
+
+
+FH_API struct fh_element *fh_doc_find_element(struct fh_document *doc, char *name)
+{
+	struct fh_ele_selector sel;
+
+	if(!doc || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	sel.state = 0;
+	sel.name = name;
+	sel.element = NULL;
+	
+	/* Recursivly search for the element in the document */
+	fh_ele_hlf_down(doc->body, &fh_cfnc_find_element, &sel);
+
+	if(sel.state == 1) {
+		return sel.element;
 	}
 
 
-	sfree(doc);
+err_return:
+	return NULL;
 }

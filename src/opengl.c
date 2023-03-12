@@ -23,17 +23,22 @@ FH_API s8 fh_gl_init(void)
 }
 
 
-FH_API s8 fh_gl_create(struct fh_window *win)
+FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 {
-	SDL_GLContext ctx;
+	struct fh_context *ctx;
 
 	if(!win) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
+	/* Allocate memory for the new context */
+	if(!(ctx = smalloc(sizeof(struct fh_context)))) {
+		ALARM(ALARM_ERR, "Failed to allocate memory for new glcontext");
+		goto err_return;
+	}
 
-	if(!(ctx = SDL_GL_CreateContext(win->handle))) {
+	if(!(ctx->context = SDL_GL_CreateContext(win->handle))) {
 		ALARM(ALARM_ERR, "Failed to create GL context");
 		goto err_return;
 	}
@@ -45,24 +50,23 @@ FH_API s8 fh_gl_create(struct fh_window *win)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
 
-
-	win->context = ctx;
-
-	return 0;
+	return ctx;
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create GL context");
-	return -1;
+	return NULL;
 }
 
 
-FH_API void fh_gl_destroy(struct fh_window *win)
+FH_API void fh_gl_destroy(struct fh_context *ctx)
 {
-	if(!win) {
+	if(!ctx) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
 
-	SDL_GL_DeleteContext(win->context);
+	SDL_GL_DeleteContext(ctx->context);
+
+	sfree(ctx);
 }
