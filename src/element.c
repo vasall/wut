@@ -1,5 +1,8 @@
 #include "element.h"
+
 #include "element_template.h"
+#include "document.h"
+
 
 #include <stdlib.h>
 
@@ -9,6 +12,7 @@
 FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type)
 {
 	struct fh_element *ele;
+	struct fh_style *style_ref;
 	s8 name_len;
 	s8 i;
 
@@ -42,6 +46,12 @@ FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type)
 	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++)
 		ele->children[i] = NULL;
 
+	/* Initialize the style structure */
+	style_ref = (ele->parent) ? &ele->parent->style : NULL;
+	if(fh_style_init(&ele->style, style_ref) < 0) {
+		ALARM(ALARM_ERR, "Failed to initialize style for element");
+		goto err_free_ele;
+	}
 
 	/* Load a template, if there is one for the given type */
 	if(fh_eletemp_load(ele) < 0) {
@@ -91,6 +101,10 @@ FH_API s8 fh_ele_attach(struct fh_element *parent, struct fh_element *ele)
 			parent->children_num++;
 
 			ele->parent = parent;
+
+			ele->document = parent->document;
+			ele->body = parent->body;
+			ele->layer = parent->layer + 1;
 			break;
 		}
 	}
@@ -214,4 +228,55 @@ FH_API void fh_ele_hlf_up(struct fh_element *str,
 		return;
 
 	return;
+}
+
+
+FH_API s8 fh_ele_update(struct fh_element *ele)
+{
+	SDL_Rect rect;
+
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = ele->document->window->width;
+	rect.h = ele->document->window->height;
+	
+
+	fh_style_process(&ele->style, &rect);
+
+	return 0;		
+}
+
+
+FH_API s8 fh_ele_render(struct fh_element *ele)
+{
+	SDL_Rect rect;
+	u32 radii[4];
+	s32 t;
+	struct fh_color col;
+
+	if(!ele) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	radii[0] = 0;
+	radii[1] = 0;
+	radii[2] = 0;
+	radii[3] = 0;
+
+	rect.x = ele->style.position.x;
+	rect.x = ele->style.position.y;
+	rect.w = ele->style.size.width;
+	rect.h = ele->style.size.height;
+
+	t = rand() % 0xff; 
+	col = fh_col_set(0xff - t, t, t / 2, 0xff);
+
+	fh_ren_rect(ele->document->renderer, rect, col);
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to render element");
+	return -1;
 }

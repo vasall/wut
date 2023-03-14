@@ -1,6 +1,7 @@
 #include "freihand.h"
 
 #include "document.h"
+#include "shader.h"
 
 #include <stdlib.h>
 
@@ -16,6 +17,15 @@ FH_API s8 fh_init(void)
 		ALARM(ALARM_ERR, "Failed to initialize the XWIN-SDL module");
 		goto err_return;
 	}
+
+	/* Initialize OpenGL */
+	if(fh_gl_init() < 0) {
+		ALARM(ALARM_ERR, "Failed to initialize the SDL GL module");
+		goto err_return;
+	}
+
+	/* Initialize the global shader list */
+	fh_shader_init();	
 
 	return 0;
 
@@ -106,10 +116,49 @@ FH_API s8 fh_pull_event(struct fh_event *event)
 }
 
 
-FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
+FH_API struct fh_element *fh_add(s32 wd, struct fh_element *parent, char *name,
+		enum fh_element_type type)
 {
-	if(!win || !name) {
+	struct fh_window *win;
+	struct fh_element *ele;
+
+	if(!parent || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Get a pointer to the window */
+	if(!(win = fh_win_get(wd))) {
+		ALARM(ALARM_ERR, "Window could not be found");
+		goto err_return;
+	}
+
+	/* Add element to document */
+	if(!(ele = fh_doc_add_element(win->document, parent, name, type))) {
+		ALARM(ALARM_ERR, "Failed to add element to document");
+		goto err_return;
+	}
+		
+	return ele;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to add element");
+	return NULL;
+}
+
+
+FH_API struct fh_element *fh_get(s32 wd, char *name)
+{
+	struct fh_window *win;
+
+	if(!name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Get a pointer to the window */
+	if(!(win = fh_win_get(wd))) {
+		ALARM(ALARM_ERR, "Window could not be found");
 		goto err_return;
 	}
 
@@ -119,4 +168,85 @@ FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
 err_return:
 	ALARM(ALARM_ERR, "Failed to get element");
 	return NULL;
+}
+
+
+FH_API s8 fh_load_shader(char *name, const char *vshader_src,
+		const char *fshader_src)
+{
+	struct fh_shader *shader;
+
+	if(!name || !vshader_src || !fshader_src) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shader = fh_shader_create(name, vshader_src, fshader_src))) {
+		ALARM(ALARM_ERR, "Failed to create new shader");
+		goto err_return;
+	}
+
+	if(fh_shader_insert(shader) < 0) {
+		ALARM(ALARM_ERR, "Failed to insert new shader");
+		goto err_destroy_shader;
+	}
+
+	return 0;
+
+err_destroy_shader:
+	fh_shader_destroy(shader);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to load shader");
+	return -1;
+}
+
+
+FH_API void fh_remove_shader(char *name)
+{
+	if(!name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_shader_remove(name);
+}
+
+
+FH_API struct fh_shader *fh_get_shader(char *name)
+{
+	if(!name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	return fh_shader_get(name, NULL);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get shader");
+	return NULL;
+}
+
+
+FH_API s8 fh_set_ui_shader(char *name)
+{
+	struct fh_shader *shader;
+
+	if(!name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shader = fh_shader_get(name, NULL))) {
+		ALARM(ALARM_ERR, "Shader not found");
+		goto err_return;
+	}
+
+	fh_core_set_ui_shader(shader);
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to set UI shader");
+	return -1;
 }

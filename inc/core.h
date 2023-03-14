@@ -6,7 +6,7 @@
 #include "import.h"
 #include "window.h"
 #include "event.h"
-
+#include "shader.h"
 
 struct fh_core_container {
 	/* 
@@ -23,6 +23,12 @@ struct fh_core_container {
 
 	/* Pointer to the active window, or NULL if none is active */
 	struct fh_window *active_window;
+
+	/* A list of all loaded shaders */
+	struct fh_shader_list *shaders;
+
+	/* The shader used for rendering the UI */
+	struct fh_shader *ui_shader;
 };
 
 
@@ -91,6 +97,22 @@ FH_API void fh_core_set_active_window(struct fh_window *win);
  * Returns: Pointer to the active window
  */
 FH_API struct fh_window *fh_core_get_active_window(void);
+
+
+/*
+ * Set the UI shader.
+ *
+ * @shader: Pointer to the shader
+ */
+FH_API void fh_core_set_ui_shader(struct fh_shader *shader);
+
+
+/*
+ * Get the UI shader.
+ *
+ * Returns: Pointer to the UI shader
+ */
+FH_API struct fh_shader *fh_core_get_ui_shader(void);
 
 
 #endif /* _FH_CORE_H */

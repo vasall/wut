@@ -104,11 +104,11 @@ FH_API void fh_win_close(struct fh_window *win);
 /*
  * Get a pointer to the window struct using the windowId.
  *
- * @id: The id of the window to find
+ * @wd: The window descriptor
  *
  * Returns: Either a pointer to the window struct or NULL if it does not exist
  */
-FH_API struct fh_window *fh_win_get(s32 id);
+FH_API struct fh_window *fh_win_get(s32 wd);
 
 
 /*

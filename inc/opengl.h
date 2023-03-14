@@ -39,4 +39,9 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win);
 FH_API void fh_gl_destroy(struct fh_context *ctx);
 
 
+/*
+ * Print info about OpenGL in the console.
+ */
+FH_API void fh_gl_print_info(void);
+
 #endif /* _FH_OPENGL_H */

@@ -5,7 +5,10 @@
 #include "import.h"
 #include "core.h"
 #include "sdl.h"
+#include "opengl.h"
 #include "window.h"
+#include "document.h"
+#include "element.h"
 
 
 /*
@@ -57,14 +60,68 @@ FH_API s8 fh_pull_event(struct fh_event *event);
 
 
 /*
+ * Add a new element to the document of window.
+ *
+ * @wd: The window descriptor
+ * @parent: A pointer to the parent element
+ * @name: The name of the element
+ * @type: The type of the new element
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API struct fh_element *fh_add(s32 wd, struct fh_element *parent, char *name,
+		enum fh_element_type type);
+
+
+/*
  * Get an element from a window by searching for the given name.
  *
- * @win: Pointer to the window
+ * @win: The window descriptor
  * @name: The name of the element to look for
  *
  * Returns: Either a pointer to the element or NULL if an error occurred
  */
-FH_API struct fh_element *fh_get(struct fh_window *win, char *name);
+FH_API struct fh_element *fh_get(s32 wd, char *name);
 
+
+/*
+ * Load a shader.
+ *
+ * @name: The name of the shader
+ * @vshader_src: The path to the vertex shader file
+ * @fshader_src: The path to the fragment shader file
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_load_shader(char *name, const char *vshader_src,
+		const char *fshader_src);
+
+
+/*
+ * Remove a shader from the global shader list.
+ *
+ * @name: The name of the shader
+ */
+FH_API void fh_remove_shader(char *name);
+
+
+/*
+ * Get a pointer to a shader from the global shader list.
+ *
+ * @name: The name of the shader
+ *
+ * Returns: Either a pointer to the shader or NULL if an error occurred
+ */
+FH_API struct fh_shader *fh_get_shader(char *name);
+
+
+/*
+ * Select a shader to be the UI shader.
+ *
+ * @name: The name of the shader
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_set_ui_shader(char *name);
 
 #endif /* _FH_FREIHAND_H */

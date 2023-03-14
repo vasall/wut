@@ -62,7 +62,7 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	win->context = ctx;
 
 	/* Create the document contained in the window */
-	if(!(doc = fh_doc_create())) {
+	if(!(doc = fh_doc_create(win))) {
 		ALARM(ALARM_ERR, "Failed to create document for window");
 		goto err_destroy_ctx;
 	}
@@ -231,13 +231,13 @@ FH_INTERN s8 fh_cfnc_find_window(struct fh_window *w, void *data)
 
 }
 
-FH_API struct fh_window *fh_win_get(s32 id)
+FH_API struct fh_window *fh_win_get(s32 wd)
 {
 	struct fh_win_selector sel;
 	struct fh_window *main;
 
 	sel.state = 0;
-	sel.id = id;
+	sel.id = wd;
 	sel.win = NULL;
 
 	/* Recursifly search for the window... */
@@ -315,6 +315,9 @@ FH_API void fh_win_redraw(struct fh_window *win)
 
 	/* Clear the window screen */
         glClear(GL_COLOR_BUFFER_BIT);
+
+	/* Render the document onto the window */
+	fh_doc_render(win->document);
 
 	/* Swap buffer */
         SDL_GL_SwapWindow(win->handle);

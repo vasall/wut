@@ -21,6 +21,12 @@ FH_API void fh_core_reset(void)
 
 	/* Reset active window */
 	fh_core_set_active_window(NULL);
+
+	/* Close the shader list */
+	fh_shader_close();
+
+	/* Reset the UI shader */
+	fh_core_set_ui_shader(NULL);
 }
 
 
@@ -64,4 +70,16 @@ FH_API void fh_core_set_active_window(struct fh_window *win)
 FH_API struct fh_window *fh_core_get_active_window(void)
 {
 	return g_fh_core.active_window;
+}
+
+
+FH_API void fh_core_set_ui_shader(struct fh_shader *shader)
+{
+	g_fh_core.ui_shader = shader;
+}
+
+
+FH_API struct fh_shader *fh_core_get_ui_shader(void)
+{
+	return g_fh_core.ui_shader;
 }

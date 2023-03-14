@@ -32,4 +32,10 @@ FH_API s8 fh_sdl_init(void);
 FH_API void fh_sdl_quit(void);
 
 
+/*
+ * Print relevant information about SDL and it parts in the console.
+ */
+FH_API void fh_sdl_print_info(void);
+
+
 #endif /* _FH_SDL_H */

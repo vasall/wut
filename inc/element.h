@@ -5,6 +5,7 @@
 #include "define.h"
 #include "import.h"
 #include "element_style.h"
+#include "renderer.h"
 
 
 #define FH_ELEMENT_NAME_LIM	126
@@ -18,6 +19,7 @@ enum fh_element_type {
 	FH_BUTTON,
 	FH_INPUT,
 	FH_IMAGE,
+	FH_OPENGL,
 	FH_CUSTOM
 };
 
@@ -48,8 +50,8 @@ struct fh_element {
 	/* The type of element */
 	enum fh_element_type type;
 
-	/* The style and content attributes for this element */
-	struct fh_element_attributes attributes;
+	/* The style structure for this element */
+	struct fh_style style;
 };
 
 
@@ -129,6 +131,26 @@ FH_API void fh_ele_hlf_down(struct fh_element *str,
 FH_API void fh_ele_hlf_up(struct fh_element *str,
 		s8 (*cfnc)(struct fh_element *w, void *data), void *data);
 
+
+
+/*
+ * Update the element, update the shape and then finally reapply the style.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_ele_update(struct fh_element *ele);
+
+
+/*
+ * Render an element onto a canvas using the given renderer.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_ele_render(struct fh_element *ele);
 
 
 

@@ -7,14 +7,11 @@
 
 
 struct fh_color {	
-	u8 data[4];
+	u8 red;
+	u8 green;
+	u8 blue;
+	u8 alpha;
 
-	union {
-		u8 red;
-		u8 green;
-		u8 blue;
-		u8 alpha;
-	} codes;
 };
 
 
@@ -29,8 +26,17 @@ struct fh_color {
  *
  * Returns: A color object
  */
-FH_API struct fh_color FH_COL_NEW(u8 red, u8 green, u8 blue, u8 alpha);
+FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha);
 
+
+/*
+ * Get the color as an 32 bit unsigned integer.
+ *
+ * @color: The color
+ *
+ * Returns: The color code
+ */
+FH_API u32 fh_color_get(struct fh_color color);
 
 
 #endif /* FH_COLOR_H */
