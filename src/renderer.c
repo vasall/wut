@@ -6,6 +6,58 @@
 
 
 
+const float FH_STANDARD_CORNERS[18] = {
+	1,  1,  0,
+	-1,  1,  0, 
+	-1, -1,  0,
+	-1, -1,  0,  
+	1, -1,  0,  
+	1,  1,  0
+};
+
+const float FH_STANDARD_UV[12] = {
+	1,  0,
+	0,  0,  
+	0,  1,
+	0,  1,  
+	1,  1,  
+	1,  0
+};
+
+
+FH_INTERN s8 fh_ren_init_buffers(struct fh_renderer *ren)
+{
+	u16 tmp;
+
+	/* Generate a new VAO and bind it */
+	glGenVertexArrays(1, &ren->vao);
+	glBindVertexArray(ren->vao);
+
+	/*
+	 * Create two buffers to store the vertex positions and the
+	 * texture-coordinates.
+	 */
+	glGenBuffers(2, ren->bao);
+
+	/* Write the vertex-positions */
+	glBindBuffer(GL_ARRAY_BUFFER, ren->bao[0]);
+	tmp = 18 * sizeof(float);
+	glBufferData(GL_ARRAY_BUFFER, tmp, FH_STANDARD_CORNERS, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	/* Write the texture-coordinates */
+	glBindBuffer(GL_ARRAY_BUFFER, ren->bao[1]);
+	tmp = 12 * sizeof(float);
+	glBufferData(GL_ARRAY_BUFFER, tmp, FH_STANDARD_UV, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	/* Unbind the VAO */
+	glBindVertexArray(0);
+
+	return 0;
+}
 
 
 FH_API struct fh_renderer *fh_ren_create(u32 w, u32 h, struct fh_shader *shd)
@@ -28,8 +80,23 @@ FH_API struct fh_renderer *fh_ren_create(u32 w, u32 h, struct fh_shader *shd)
 		goto err_free_ren;
 	}
 
+
+
+	/* Create the GL Texture */
+	glGenTextures(1, &ren->texture);
+	glBindTexture(GL_TEXTURE_2D, ren->texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, 
+			GL_UNSIGNED_BYTE, ren->surface->pixels);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
 	return ren;
 
+err_free_surface:
+	SDL_FreeSurface(ren->surface);
 
 err_free_ren:
 	sfree(ren);
@@ -92,6 +159,8 @@ FH_API s8 fh_ren_resize(struct fh_renderer *ren, u32 w, u32 h)
 	 */
 	ren->surface = newsurf;
 
+	/* TODO: RESIZE TEXTURE */
+
 	return 0;
 
 err_return:
@@ -100,46 +169,89 @@ err_return:
 }
 
 
-FH_API void fh_ren_render(struct fh_window *win, struct fh_renderer *ren)
+FH_API void fh_ren_render(struct fh_renderer *ren, struct fh_window *win, struct fh_context *ctx)
 {
-	u32 tex;
-	SDL_Surface *surf;
+	static u8 flg = 0;
+	u32 tmp;
 
-	surf = ren->surface;
+	u32 vao;
 
-	/*
-	 * Select the context
-	 */
-	SDL_GL_MakeCurrent(win->handle, win->context->context);
+	u32 vbo;
 
-	/*
-	 * Create an OpenGL texture from the SDL surface.
-	 */
-	glGenTextures(1, &tex);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w, surf->h, 0, GL_RGBA,
-			GL_UNSIGNED_BYTE, surf->pixels);
+	u32 loc_position;
 
-	/*
-	 * Set up the texture parameters.
-	 */
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	u32 shaderProgram;
 
-	/*
-	 * Draw the texture onto the context
-	 */
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(-1, -1);
-	glTexCoord2f(1, 0); glVertex2f(1, -1);
-	glTexCoord2f(1, 1); glVertex2f(1, 1);
-	glTexCoord2f(0, 1); glVertex2f(-1, 1);
-	glEnd();
+	f32 vertices[24] = {
+  		0.0, 0.0,
+  		0.5, 0.0,
+  		0.5, 0.5,
+  
+  		0.0, 0.0,
+  		0.0, 0.5,
+  		-0.5, 0.5,
+  
+ 		0.0, 0.0,
+ 		-0.5, 0.0,
+ 		-0.5, -0.5,
+ 
+ 		0.0, 0.0,
+ 		0.0, -0.5,
+ 		0.5, -0.5,
+ 	};
 
-	/*
-	 * Clean up the texture.
-	 */
-	glDeleteTextures(1, &tex);	
+	if(!ren || !win || !ctx)
+		return;
+
+
+	if(flg != 0)
+		return;
+
+	printf("Renderer %p\n", ren);
+	printf("Shader: %s\n", ren->shader->name);
+
+	flg = 1;
+
+	shaderProgram = ren->shader->program;
+
+
+	/* Select context for this window */
+	SDL_GL_MakeCurrent(win->handle, win->context);
+
+	/* Clear the window screen */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+
+
+
+	/* Create a vertex-array-object (short VAO) */
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	/* Create a Vector Buffer Object that will store the vertices on video memory */
+	glGenBuffers(1, &vbo);
+
+	/* Allocate space and upload the data from CPU to GPU */
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	tmp = sizeof(vertices);
+	glBufferData(GL_ARRAY_BUFFER, tmp, vertices, GL_STATIC_DRAW);
+
+	fh_shader_use(ren->shader);
+
+	/* Get the location of the attributes that enters in the vertex shader */
+	loc_position = glGetAttribLocation(shaderProgram, "position");
+
+	/* Specify how the data for position can be accessed */
+	glVertexAttribPointer(loc_position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	/* Enable the attribute */
+	glEnableVertexAttribArray(loc_position);
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 12);
+
+	/* Swap buffer */
+        SDL_GL_SwapWindow(win->handle);
 }
 
 
@@ -162,6 +274,7 @@ err_return:
 	ALARM(ALARM_ERR, "Failed to copy from one renderer to another");
 	return -1;
 }
+
 
 FH_API void fh_ren_fill_circle(struct fh_renderer *ren, s32 x, s32 y,
 		s32 radius, struct fh_color color)
@@ -205,6 +318,9 @@ FH_API void fh_ren_fill_circle(struct fh_renderer *ren, s32 x, s32 y,
 	/* Unlock the surface */
 	SDL_UnlockSurface(surf);
 }
+
+
+
 
 FH_API void fh_ren_rounded_rect(struct fh_renderer *ren, SDL_Rect rect,
 		u32 *radii, struct fh_color color)
@@ -297,10 +413,95 @@ FH_API void fh_ren_rounded_rect(struct fh_renderer *ren, SDL_Rect rect,
 FH_API void fh_ren_rect(struct fh_renderer *ren, SDL_Rect rect,
 		struct fh_color color)
 {
+	u32 colcode;
+
 	if(!ren) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	SDL_FillRect(ren->surface, &rect, fh_color_get(color));
+
+	colcode = fh_color_get(color);
+	printf("[%d, %d, %d, %d]: %08x\n", rect.x, rect.y, rect.w, rect.h, colcode);
+	SDL_FillRect(ren->surface, &rect, colcode);
+}
+
+FH_INTERN void fh_print_surface(SDL_Surface *surf) {
+	int i, j;
+	Uint32 pixel;
+	Uint8 r, g, b, a;
+
+	/* Loop through each pixel in the surface */
+	for (i = 0; i < surf->h; i++) {
+		for (j = 0; j < surf->w; j++) {
+			/* Get the pixel value */
+			pixel = ((u32 *)surf->pixels)[i * surf->w + j];
+
+			/* Extract the RGBA components */
+			SDL_GetRGBA(pixel, surf->format, &r, &g, &b, &a);
+
+			/* Print the pixel value to the console */
+			printf("(%d, %d): %d, %d, %d, %d\n", j, i, r, g, b, a);
+		}
+	}
+}
+
+
+
+FH_API void fh_ren_to_texture(struct fh_renderer *ren)
+{
+	SDL_Surface *surf;
+
+	static int c = 0;
+
+	if(!ren) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+
+	/* Copy the suface onto the texture */
+	surf = ren->surface;
+	glBindTexture(GL_TEXTURE_2D, ren->texture);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, surf->w, surf->h,
+			GL_RGBA, GL_UNSIGNED_BYTE, surf->pixels);
+
+	if(c == 0) {
+		c = 1;
+
+		printf("C!!\n");
+		SDL_SaveBMP(ren->surface, "out.bmp");
+	}
+}
+
+FH_API void fh_ren_red_texture(struct fh_renderer *ren)
+{
+	GLuint texture;
+	u32 width;
+	u32 height;
+
+	width = 100;
+	height = 100;
+
+	/* Generate texture */
+	glGenTextures(1, &texture);
+
+	/* Bind texture */
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	/* Set texture parameters */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	/* Create texture data */
+	GLubyte* data = (GLubyte*)malloc(width * height * 4);
+	memset(data, 255, width * height * 4);
+
+	/* Upload texture data */
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+	/* Free texture data */
+	free(data);
+
+	ren->texture = texture;
 }

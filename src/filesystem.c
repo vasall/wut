@@ -30,7 +30,7 @@ FH_API s8 fh_fs_load(const char *pth, char **out)
 		goto err_close_fd;
 	}
 
-	if((bytes_read = fread(buf, 1, file_size, fd)) != file_size) {
+	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
 		ALARM(ALARM_ERR, "Failed to read file");
 		goto err_free_buf;
 	}

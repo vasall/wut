@@ -250,7 +250,6 @@ FH_API s8 fh_ele_update(struct fh_element *ele)
 FH_API s8 fh_ele_render(struct fh_element *ele)
 {
 	SDL_Rect rect;
-	u32 radii[4];
 	s32 t;
 	struct fh_color col;
 
@@ -259,15 +258,19 @@ FH_API s8 fh_ele_render(struct fh_element *ele)
 		goto err_return;
 	}
 
-	radii[0] = 0;
-	radii[1] = 0;
-	radii[2] = 0;
-	radii[3] = 0;
 
-	rect.x = ele->style.position.x;
-	rect.x = ele->style.position.y;
+
 	rect.w = ele->style.size.width;
 	rect.h = ele->style.size.height;
+	rect.x = ele->style.position.x - (rect.w / 2);
+	rect.y = ele->style.position.y - (rect.h / 2);
+
+	printf("Render %s:  [%d, %d, %d, %d]\n",
+			ele->name,
+			rect.x,
+			rect.y,
+			rect.w,
+			rect.h);
 
 	t = rand() % 0xff; 
 	col = fh_col_set(0xff - t, t, t / 2, 0xff);

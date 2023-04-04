@@ -88,13 +88,15 @@ FH_API struct fh_element *fh_get(s32 wd, char *name);
  * Load a shader.
  *
  * @name: The name of the shader
- * @vshader_src: The path to the vertex shader file
- * @fshader_src: The path to the fragment shader file
+ * @v_src: The path to the vertex shader file
+ * @f_src: The path to the fragment shader file
+ * @var_num: The number of input variables for the shader
+ * @vars: The names of the input variables
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_load_shader(char *name, const char *vshader_src,
-		const char *fshader_src);
+FH_API s8 fh_load_shader(char *name, const char *v_src, const char *f_src,
+		u8 var_num, char **vars);
 
 
 /*

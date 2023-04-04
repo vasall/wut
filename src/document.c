@@ -211,6 +211,8 @@ FH_INTERN s8 fh_doc_cfnc_render_elements(struct fh_element *ele, void *data)
 	/* SILENCIO! */
 	if(data) {}
 
+	printf("Render: %s\n", ele->name);
+
 	fh_ele_render(ele);
 
 	return 0;
@@ -224,11 +226,16 @@ FH_API s8 fh_doc_render(struct fh_document *doc)
 		goto err_return;
 	}
 
+#if 0
 	/* First render all elements onto the document surface */
 	fh_ele_hlf_down(doc->body, &fh_doc_cfnc_render_elements, NULL);	
-	
+
+	/* Then convert the surface to the texture */
+	fh_ren_to_texture(doc->renderer);
+#endif
+
 	/* Then draw the surface onto the window */
-	
+	fh_ren_render(doc->renderer, doc->window, doc->window->context);			
 		
 	return 0;
 

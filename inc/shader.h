@@ -8,7 +8,7 @@
 
 
 struct fh_shader_variable {
-	char *name;
+	char name[256];
 
 	u32 location;
 };
@@ -25,14 +25,6 @@ struct fh_shader {
 	u8 var_num;
 	struct fh_shader_variable *vars;
 };
-
-
-struct fh_shader_list {
-	u16 			num;
-	struct fh_shader 	*shaders[FH_SHADER_LIM];
-};
-
-
 
 /*
  * Initialize the global shader list.
@@ -78,7 +70,7 @@ FH_API void fh_shader_remove(char *name);
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
 FH_API struct fh_shader *fh_shader_create(char *name, const char *vshader_src,
-		const char *fshader_src, s8 var_num, char *vars);
+		const char *fshader_src, s8 var_num, char **vars);
 
 
 /*
@@ -93,10 +85,29 @@ FH_API void fh_shader_destroy(struct fh_shader *shader);
  * Get a shader from the global shader list.
  *
  * @name: The name of the shader to get
- * @slot: If not NULL, the slot number will be written to this pointer
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shader_get(char *name, u16 *slot);
+FH_API struct fh_shader *fh_shader_get(char *name);
+
+
+/*
+ * Activate a shader so it can be used for rendering.
+ *
+ * @shd: Pointer to the shader to use
+ */
+FH_API void fh_shader_use(struct fh_shader *shd); 
+
+
+/*
+ * Unuse the active shader.
+ */
+FH_API void fh_shader_unuse(void);
+
+
+/*
+ * The remove callback function given to the shader table.
+ */
+FH_API void fh_shader_rmv_fnc(u32 size, void *ptr);
 
 #endif

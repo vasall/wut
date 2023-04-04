@@ -8,6 +8,9 @@
 #include "color.h"
 
 struct fh_renderer {
+	/* A reference to the GL context */
+	struct fh_context *context;
+
 	/* The size of the canvas */
 	u32 width;
 	u32 height;
@@ -18,7 +21,7 @@ struct fh_renderer {
 	/*  */
 	u32 vao;
 	u32 bao[2];
-	u32 tex;
+	u32 texture;
 
 	/* The surface to draw on */
 	SDL_Surface *surface;
@@ -26,6 +29,7 @@ struct fh_renderer {
 	/* The extension data depending on the type */
 	void *data;	
 };
+
 
 
 /*
@@ -63,10 +67,9 @@ FH_API s8 fh_ren_resize(struct fh_renderer *ren, u32 w, u32 h);
 /*
  * Draw on the window.
  *
- * @win: Pointer to the window
  * @ren: Pointer to the renderer
  */
-FH_API void fh_ren_render(struct fh_window *win, struct fh_renderer *ren);
+FH_API void fh_ren_render(struct fh_renderer *ren, struct fh_window *win, struct fh_context *ctx);
 
 
 /*
@@ -93,5 +96,17 @@ FH_API void fh_ren_rounded_rect(struct fh_renderer *ren, SDL_Rect rect,
 
 FH_API void fh_ren_rect(struct fh_renderer *ren, SDL_Rect rect,
 		struct fh_color color);
+
+
+
+/*
+ * Write the surface to the texture.
+ *
+ * @ren: Pointer to the texture.
+ */
+FH_API void fh_ren_to_texture(struct fh_renderer *ren);
+
+
+FH_API void fh_ren_red_texture(struct fh_renderer *ren);
 
 #endif /* _FH_RENDERER_H */

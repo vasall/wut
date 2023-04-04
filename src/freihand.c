@@ -171,17 +171,17 @@ err_return:
 }
 
 
-FH_API s8 fh_load_shader(char *name, const char *vshader_src,
-		const char *fshader_src)
+FH_API s8 fh_load_shader(char *name, const char *v_src,
+		const char *f_src, u8 var_num, char **vars)
 {
 	struct fh_shader *shader;
 
-	if(!name || !vshader_src || !fshader_src) {
+	if(!name || !v_src || !f_src) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(shader = fh_shader_create(name, vshader_src, fshader_src))) {
+	if(!(shader = fh_shader_create(name, v_src, f_src, var_num, vars))) {
 		ALARM(ALARM_ERR, "Failed to create new shader");
 		goto err_return;
 	}
@@ -220,7 +220,7 @@ FH_API struct fh_shader *fh_get_shader(char *name)
 		goto err_return;
 	}
 
-	return fh_shader_get(name, NULL);
+	return fh_shader_get(name);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to get shader");
@@ -237,7 +237,7 @@ FH_API s8 fh_set_ui_shader(char *name)
 		goto err_return;
 	}
 
-	if(!(shader = fh_shader_get(name, NULL))) {
+	if(!(shader = fh_shader_get(name))) {
 		ALARM(ALARM_ERR, "Shader not found");
 		goto err_return;
 	}

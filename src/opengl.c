@@ -2,6 +2,78 @@
 
 #include <stdlib.h>
 
+static void GLAPIENTRY gl_callback(GLenum source,
+				GLenum type,
+				GLuint id,
+				GLenum severity,
+				GLsizei length,
+				const GLchar *message,
+				const void *userParam)
+{
+	char *type_string;
+	char *severity_string;
+
+	(void) source;
+	(void) id;
+	(void) length;
+	(void) userParam;
+
+	if(severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+		return;
+
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		type_string = "GL ERROR"; 
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		type_string = "GL DEPRECATED"; 
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		type_string = "GL UNDEFINED"; 
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		type_string = "GL PORTABILITY"; 
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		type_string = "GL PERFORMANCE"; 
+		break;
+	case GL_DEBUG_TYPE_OTHER:
+		type_string = "GL MESSAGE"; 
+		break;
+	case GL_DEBUG_TYPE_MARKER:
+		type_string = "GL MARKER"; 
+		break;
+	case GL_DEBUG_TYPE_PUSH_GROUP:
+		type_string = "GL PUSH"; 
+		break;
+	case GL_DEBUG_TYPE_POP_GROUP:
+		type_string = "GL POP"; 
+		break;
+	default:
+		type_string = "";
+		break;
+	}
+
+	switch (severity)
+	{
+	case GL_DEBUG_SEVERITY_HIGH:
+		severity_string = "\033[31mHIGH SEVERITY";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		severity_string = "\033[33mMEDIUM SEVERITY";
+		break;
+	case GL_DEBUG_SEVERITY_LOW:
+		severity_string = "\033[36mLOW SEVERITY";
+		break;
+	default:
+		severity_string = "";
+		break;
+	}
+
+	fprintf(stderr, "%s: %s %s\033[0m\n", severity_string, type_string,
+						message);
+}
+
 
 FH_API s8 fh_gl_init(void)
 {
@@ -13,13 +85,15 @@ FH_API s8 fh_gl_init(void)
 	 * but it should default to the core profile.
 	 */
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
+#if 0
 	/* Turn on double buffering with a 24bit Z buffer.
 	 * You may need to change this to 16 or 32 for your system */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+#endif
 
 	return 0;
 }
@@ -46,11 +120,14 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 	}
 
 
-	glClearColor(1, 1, 1, 1.0);
+	glClearColor(0, 0, 0, 1.0);
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(gl_callback, 0);
 
 	return ctx;
 

@@ -7,25 +7,32 @@
 #include "window.h"
 #include "event.h"
 #include "shader.h"
+#include "model.h"
 
 struct fh_core_container {
+	/* The main window and by that all windows attached to it */
+	struct fh_window *main_window;
+
+	/* The event pipe containing all unhandled events */
+	struct fh_event_pipe event_pipe;
+
+	/* A table of all loaded shaders */
+	struct dbs_table *shaders;
+
+	/* A table containing all textures */
+	struct dbs_table *textures;
+
+	/* A table containing all loaded models */
+	struct dbs_table *models;
+
 	/* 
 	 * If this var is set to 1, fh_update() will return 0, promting the
 	 * programm to exit.
 	 */
 	s8 quit;
 
-	/* The main window */
-	struct fh_window *main_window;
-
-	/* The event pipe containing all unhandled events */
-	struct fh_event_pipe event_pipe;
-
 	/* Pointer to the active window, or NULL if none is active */
 	struct fh_window *active_window;
-
-	/* A list of all loaded shaders */
-	struct fh_shader_list *shaders;
 
 	/* The shader used for rendering the UI */
 	struct fh_shader *ui_shader;

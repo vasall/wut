@@ -8,7 +8,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h> 
 
+#include "../../dumbstruct/inc/dumbstruct.h"
 #include "../../gentils/inc/gentils.h"
-
 
 #endif /* _FH_IMPORT_H */

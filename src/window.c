@@ -310,17 +310,21 @@ FH_API void fh_win_redraw(struct fh_window *win)
 	/* SILENCIO! */
 	if(win) {}
 
+#if 0
 	/* Select context for this window */
 	SDL_GL_MakeCurrent(win->handle, win->context);
 
 	/* Clear the window screen */
         glClear(GL_COLOR_BUFFER_BIT);
+#endif
 
 	/* Render the document onto the window */
 	fh_doc_render(win->document);
 
+#if 0
 	/* Swap buffer */
         SDL_GL_SwapWindow(win->handle);
+#endif
 }
 
 
