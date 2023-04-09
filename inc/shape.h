@@ -2,6 +2,7 @@
 #define _FH_SHAPE_H
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 
 

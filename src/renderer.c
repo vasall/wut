@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include "alarm.h"
+#include "system.h"
 #include "opengl.h"
 
 #include <stdlib.h>
@@ -65,7 +67,7 @@ FH_API struct fh_renderer *fh_ren_create(u32 w, u32 h, struct fh_shader *shd)
 	struct fh_renderer *ren;
 
 	/* Allocate memory for renderer */
-	if(!(ren = smalloc(sizeof(struct fh_renderer)))) {
+	if(!(ren = fh_malloc(sizeof(struct fh_renderer)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for renderer");
 		goto err_return;
 	}
@@ -99,7 +101,7 @@ err_free_surface:
 	SDL_FreeSurface(ren->surface);
 
 err_free_ren:
-	sfree(ren);
+	fh_free(ren);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create renderer");
@@ -117,11 +119,11 @@ FH_API void fh_ren_destroy(struct fh_renderer *ren)
 
 	/* Free the data buffer if there is one */
 	if(ren->data)
-		sfree(ren->data);
+		fh_free(ren->data);
 
 
 	/* Finally free the renderer struct itself */
-	sfree(ren);
+	fh_free(ren);
 }
 
 
@@ -236,7 +238,7 @@ FH_API void fh_ren_render(struct fh_renderer *ren, struct fh_window *win, struct
 	tmp = sizeof(vertices);
 	glBufferData(GL_ARRAY_BUFFER, tmp, vertices, GL_STATIC_DRAW);
 
-	fh_shader_use(ren->shader);
+	fh_shd_use(ren->shader);
 
 	/* Get the location of the attributes that enters in the vertex shader */
 	loc_position = glGetAttribLocation(shaderProgram, "position");

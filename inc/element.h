@@ -3,6 +3,7 @@
 
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 #include "element_style.h"
 #include "renderer.h"

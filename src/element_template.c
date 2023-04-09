@@ -1,5 +1,8 @@
 #include "element_template.h"
 
+#include "alarm.h"
+#include "system.h"
+
 #include <stdlib.h>
 
 

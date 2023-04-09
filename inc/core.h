@@ -3,10 +3,13 @@
 
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 #include "window.h"
 #include "event.h"
+#include "camera.h"
 #include "shader.h"
+#include "texture.h"
 #include "model.h"
 
 struct fh_core_container {
@@ -17,13 +20,19 @@ struct fh_core_container {
 	struct fh_event_pipe event_pipe;
 
 	/* A table of all loaded shaders */
-	struct dbs_table *shaders;
+	struct fh_table *shaders;
 
 	/* A table containing all textures */
-	struct dbs_table *textures;
+	struct fh_table *textures;
 
 	/* A table containing all loaded models */
-	struct dbs_table *models;
+	struct fh_table *models;
+
+	/* A table containing all fonts */
+	struct fh_table *fonts;
+
+	/* A table containing all cameras */
+	struct fh_table *cameras;
 
 	/* 
 	 * If this var is set to 1, fh_update() will return 0, promting the

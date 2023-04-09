@@ -2,64 +2,58 @@
 #define _FH_MODEL_H
 
 #include "define.h"
+#include "datatype.h"
+#include "table.h"
 #include "import.h"
 
 
 #define FH_MODEL_NAME_LIM		128
 #define FH_MODEL_ATTRIB_LIM		12
+#define FH_MODEL_UNIFORM_LIM		6
 #define FH_MODEL_ATTRIB_NAME_LIM	128
+#define FH_MODEL_UNIFORM_NAME_LIM	128
 
 
-struct fh_model_attribute {
-	/* The name of the attribute */
-	char name[FH_MODEL_ATTRIB_NAME_LIM];
+struct fh_model_uniform {
+	/* The name of the uniform buffer */
+	char name[FH_MODEL_UNIFORM_NAME_LIM];
 
-	/* The location in the shader */
-	u8 location;
+	/* The size of the uniform buffer in bytes */
+	u32 size;
+
+	/* The uniform buffer */
+	void *data;
+
+	u32 bao;
 };
 
 
 
 struct fh_model {
-	/*
-	 * The name of the model.
-	 */
+	/* The name of the model */
 	char name[FH_MODEL_NAME_LIM];
 
-	/*
-	 * The indices for rendering the model.
-	 */
-	u32 index_number;
-	u32 *index_data;
-
-	/*
-	 * The data for all vertices.
-	 */
+	/* The vertex data */
 	u32 vertex_number;
-	u32 vertex_size;
-	u8 *vertex_data;
+	u16 vertex_stride;
+	u8 *vertex_buffer;
 
-	/*
-	 * The array handles used by OpenGL.
-	 */
+	/* The index data */
+	u32 index_number;
+	u32 *index_buffer;
+
+	/* The vertex-array-object and buffer-array-objects */
 	u32 vao;
+	u32 bao;
 	u32 ebo;
-	u32 *bao;
 
-	/* The uniform buffer */
-	void *uniform_buffer;
+	/* References to both the shader and texture */
+	struct fh_shader *shader;
+	struct fh_texture *texture;
 
-	/*
-	 * The attributes in used by the model in the shader.
-	 */
-	u8 attribute_number;
-	struct fh_model_attribute attributes[FH_MODEL_ATTRIB_LIM];
-
-	/* The name of the shader used for rendering the model */
-	char shader_name[512];
-
-	/* The name of the texture used for rendering the model */
-	char texture_name[512];
+	/* The uniform buffers for this model */
+	u8 uniform_number;
+	struct fh_model_uniform uniforms[FH_MODEL_UNIFORM_LIM];
 };
 
 
@@ -70,7 +64,7 @@ struct fh_model {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API u8 fh_mdl_init(void);
+FH_API s8 fh_mdl_init(void);
 
 
 /*
@@ -80,28 +74,25 @@ FH_API void fh_mdl_close(void);
 
 
 /*
- * Create a new model and prepare for further configuration.
+ * Destroy a model, close all OpenGL entries and free the allocated memory.
  *
- * @name: The name of the new model
- *
- * Returns: Either a pointer to the newly created model or NULL if an error
- * 	    occurred
+ * @mdl: Pointer to the model
  */
-FH_API struct fh_model *fh_mdl_create(char *name);
+FH_API void fh_mdl_destroy(struct fh_model *mdl);
 
 
 /*
- * Finalize the model and add it to the model list.
+ * Insert model into the model table. 
  *
  * @mdl: Pointer to the model
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_mdl_finalize(struct fh_model *mdl);
+FH_API s8 fh_mdl_insert(struct fh_model *mdl);
 
 
 /*
- * Remove a model from the models table.
+ * Remove a model from the model table.
  *
  * @mdl: Pointer to the model
  */
@@ -109,12 +100,11 @@ FH_API void fh_mdl_remove(struct fh_model *mdl);
 
 
 /*
- * Destroy a model, close all OpenGL entries and free the allocated memory.
- *
+ * Render a model.
+ * 
  * @mdl: Pointer to the model
  */
-FH_API void fh_mdl_destroy(struct fh_model *mdl);
-
+FH_API void fh_mdl_render(struct fh_model *mdl);
 
 
 

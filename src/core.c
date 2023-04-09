@@ -1,5 +1,7 @@
 #include "core.h"
 
+#include "alarm.h"
+#include "system.h"
 
 #include <stdlib.h>
 
@@ -22,8 +24,17 @@ FH_API void fh_core_reset(void)
 	/* Reset active window */
 	fh_core_set_active_window(NULL);
 
-	/* Close the shader list */
-	fh_shader_close();
+	/* Close the shader table */
+	fh_shd_close();
+
+	/* Close the texture table */
+	fh_tex_close();
+
+	/* Close the model table */
+	fh_mdl_close();
+
+	/* Close the camera table */
+	fh_cam_close();
 
 	/* Reset the UI shader */
 	fh_core_set_ui_shader(NULL);

@@ -2,13 +2,18 @@
 #define _FH_FREIHAND_H
 
 #include "define.h"
+#include "datatype.h"
+#include "table.h"
 #include "import.h"
+#include "system.h"
 #include "core.h"
 #include "sdl.h"
 #include "opengl.h"
+#include "camera.h"
 #include "window.h"
 #include "document.h"
 #include "element.h"
+#include "model_constructor.h"
 
 
 /*
@@ -85,19 +90,30 @@ FH_API struct fh_element *fh_get(s32 wd, char *name);
 
 
 /*
- * Load a shader.
+ * This function will take the given source code for the vertex- and
+ * fragment-shader and create a new OpenGL shader program and add it to the
+ * shader table.
  *
  * @name: The name of the shader
- * @v_src: The path to the vertex shader file
- * @f_src: The path to the fragment shader file
- * @var_num: The number of input variables for the shader
- * @vars: The names of the input variables
+ * @v_src: The source code for the vertex-shader
+ * @f_src: The source code for the fragment-shader
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_load_shader(char *name, const char *v_src, const char *f_src,
-		u8 var_num, char **vars);
+FH_API s8 fh_create_shader(char *name, char *v_src, char *f_src);
 
+
+/*
+ * Load the given vertex- and fragment-shader-files and create an OpenGL shader
+ * program and add it to the shader table.
+ *
+ * @name: The name of the shader
+ * @v_pth: The path to the vertex shader file
+ * @f_pth: The path to the fragment shader file
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_load_shader(char *name, char *v_pth, char *f_pth);
 
 /*
  * Remove a shader from the global shader list.

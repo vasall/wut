@@ -2,15 +2,22 @@
 #define _FH_SHADER_H
 
 #include "define.h"
+#include "datatype.h"
+#include "table.h"
 #include "import.h"
 
-#define FH_SHADER_LIM	128
+#define FH_SHADER_LIM		128
+#define FH_SHADER_VAR_LIM	16
 
+struct fh_shader_var {
+	char name[64];
+	char type[16];
+	u16 location;
+};
 
-struct fh_shader_variable {
-	char name[256];
-
-	u32 location;
+struct fh_shader_inputs {
+	u8 num;
+	struct fh_shader_var vars[FH_SHADER_VAR_LIM];
 };
 
 
@@ -21,9 +28,8 @@ struct fh_shader {
 	/* The shader program descriptor */
 	u32 program;
 
-	/* The variables used by this shader */
-	u8 var_num;
-	struct fh_shader_variable *vars;
+	/* The inputs for the shader */
+	struct fh_shader_inputs inputs;
 };
 
 /*
@@ -31,13 +37,13 @@ struct fh_shader {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_shader_init(void);
+FH_API s8 fh_shd_init(void);
 
 
 /*
  * Destroy the global shader-list and free the allocated memory.
  */
-FH_API void fh_shader_close(void);
+FH_API void fh_shd_close(void);
 
 
 /*
@@ -47,7 +53,7 @@ FH_API void fh_shader_close(void);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_shader_insert(struct fh_shader *shader);
+FH_API s8 fh_shd_insert(struct fh_shader *shader);
 
 
 /*
@@ -55,22 +61,33 @@ FH_API s8 fh_shader_insert(struct fh_shader *shader);
  *
  * @name: The name of the shader to remove
  */
-FH_API void fh_shader_remove(char *name);
+FH_API void fh_shd_remove(char *name);
 
 
 /*
- * Create a new shader.
+ * Create a new shader. This function will automatically extract all input
+ * variables for the vertex shader.
  *
  * @name: The name of the shader
- * @vshader_src: The path to the vertex-shader
- * @fshader_src: The path to the fragment-shader
- * @var_num: The number of variables used by the shader
- * @vars: An array containing the names of all variables
+ * @v_src: The source code for the vertex-shader
+ * @f_src: The source code for the fragment-shader
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shader_create(char *name, const char *vshader_src,
-		const char *fshader_src, s8 var_num, char **vars);
+FH_API struct fh_shader *fh_shd_create(char *name, char *v_src, char *f_src);
+
+
+/*
+ * This function will load the source code from the vertex- and
+ * fragment-shader files and pass it onto the fh_shd_create() function.
+ *
+ * @name: The name of the shader
+ * @v_pth: The path to the vertex-shader
+ * @f_pth: The path ot the fragment-shader
+ *
+ * Returns: Either a pointer to the shader or NULL if an error occurred
+ */
+FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth);
 
 
 /*
@@ -78,7 +95,7 @@ FH_API struct fh_shader *fh_shader_create(char *name, const char *vshader_src,
  *
  * @shader: A pointer to the shader to destroy
  */
-FH_API void fh_shader_destroy(struct fh_shader *shader);
+FH_API void fh_shd_destroy(struct fh_shader *shader);
 
 
 /*
@@ -88,7 +105,7 @@ FH_API void fh_shader_destroy(struct fh_shader *shader);
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shader_get(char *name);
+FH_API struct fh_shader *fh_shd_get(char *name);
 
 
 /*
@@ -96,18 +113,37 @@ FH_API struct fh_shader *fh_shader_get(char *name);
  *
  * @shd: Pointer to the shader to use
  */
-FH_API void fh_shader_use(struct fh_shader *shd); 
+FH_API void fh_shd_use(struct fh_shader *shd); 
 
 
 /*
  * Unuse the active shader.
  */
-FH_API void fh_shader_unuse(void);
+FH_API void fh_shd_unuse(void);
+
+
+/*
+ * Get the location of a input variable in the shader.
+ *
+ * @shd: Pointer to the shader
+ * @var: The name of the variable
+ *
+ * Returns: The location or -1 if an error occurred
+ */
+FH_API s8 fh_shd_loc(struct fh_shader *shd, char *var);
+
+
+/*
+ * Display all attributes of the shader in the console.
+ *
+ * @shd: Pointer to the shader
+ */
+FH_API void fh_shd_show_attrib(struct fh_shader *shd);
 
 
 /*
  * The remove callback function given to the shader table.
  */
-FH_API void fh_shader_rmv_fnc(u32 size, void *ptr);
+FH_API void fh_shd_rmv_fnc(u32 size, void *ptr);
 
 #endif

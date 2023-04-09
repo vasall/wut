@@ -17,7 +17,7 @@ MKFILE_PTH := $(abspath $(lastword $(MAKEFILE_LIST)))
 MKFILE_DIR := $(dir $(MKFILE_PTH))
 
 # All subdirectories in the lib-folder
-LIB_PTH    := lib
+LIB_PTH    := ../
 LIB_DIRS   := $(sort $(dir $(wildcard $(MKFILE_DIR)$(LIB_PTH)/*/)))
 
 # The compiler to use

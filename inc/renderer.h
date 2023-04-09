@@ -2,6 +2,7 @@
 #define _FH_RENDERER_H
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 #include "window.h"
 #include "shader.h"

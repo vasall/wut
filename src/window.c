@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "alarm.h"
+#include "system.h"
 #include "core.h"
 #include "opengl.h"
 #include "document.h"
@@ -30,7 +32,7 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	}
 
 	/* Allocate the memory for the window struct */
-	if(!(win = smalloc(sizeof(struct fh_window)))) {
+	if(!(win = fh_malloc(sizeof(struct fh_window)))) {
 		ALARM(ALARM_ERR, "Failed to allocate the window struct");
 		goto err_return;
 	}
@@ -78,7 +80,7 @@ err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
 
 err_free_win:
-	sfree(win);
+	fh_free(win);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create window");
@@ -103,7 +105,7 @@ FH_API void fh_win_destroy(struct fh_window *win)
 	SDL_DestroyWindow(win->handle);
 
 	/* Free the memory used by the window struct */
-	sfree(win);
+	fh_free(win);
 
 	return;
 

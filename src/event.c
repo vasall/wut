@@ -1,5 +1,8 @@
 #include "event.h"
 
+#include "alarm.h"
+#include "system.h"
+
 #include "core.h"
 
 
@@ -133,7 +136,7 @@ FH_API void fh_evt_process(void)
 {
 	struct fh_event evt;
 
-	szeros(&evt, sizeof(struct fh_event));
+	fh_zeros(&evt, sizeof(struct fh_event));
 
 	while(SDL_PollEvent(&evt.event)) {	
 
@@ -153,5 +156,5 @@ FH_API void fh_evt_process(void)
 
 	}
 
-	szeros(&evt, sizeof(struct fh_event));
+	fh_zeros(&evt, sizeof(struct fh_event));
 }

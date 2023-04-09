@@ -2,6 +2,7 @@
 #define _FH_WINDOW_H
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 
 

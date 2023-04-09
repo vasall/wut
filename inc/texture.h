@@ -2,6 +2,8 @@
 #define _FH_TEXTURE_H
 
 #include "define.h"
+#include "datatype.h"
+#include "table.h"
 #include "import.h"
 
 
@@ -36,6 +38,38 @@ FH_API void fh_tex_close(void);
 
 
 /*
+ * Create a new texture.
+ *
+ * @name: The name of the texture
+ * @w: The width of the texture in pixels
+ * @h: The height of the texture in pixels
+ * @px: The RGBA pixel data
+ *
+ * Returns: Either a pointer to the created texture or NULL if an error occurred
+ */
+FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, u8 *px);
+
+
+/*
+ * Load an image and create a new texture using it.
+ *
+ * @name: The name of the texture
+ * @pth: The path to the file
+ *
+ * Returns: Either a pointer to the texture or NULL if an error occurred
+ */
+FH_API struct fh_texture *fh_tex_load(char *name, char *pth);
+
+
+/*
+ * Destroy a texture.
+ *
+ * @tex: Pointer to the texture
+ */
+FH_API void fh_tex_destroy(struct fh_texture *tex);
+
+
+/*
  * Add a new texture to the texture table.
  *
  * @tex: Pointer to a texture
@@ -54,27 +88,6 @@ FH_API void fh_tex_remove(char *name);
 
 
 /*
- * Create a new texture.
- *
- * @name: The name of the texture
- * @w: The width of the texture in pixels
- * @h: The height of the texture in pixels
- * @px: The RGBA pixel data
- *
- * Returns: Either a pointer to the created texture or NULL if an error occurred
- */
-FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, u8 *px);
-
-
-/*
- * Destroy a texture.
- *
- * @tex: Pointer to the texture
- */
-FH_API void fh_tex_destroy(struct fh_texture *tex);
-
-
-/*
  * Update the texture and overwrite with the new pixel data.
  * Note that for this function to work, the texture has to already exist in the
  * texture table.
@@ -87,6 +100,16 @@ FH_API void fh_tex_destroy(struct fh_texture *tex);
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_tex_set(struct fh_texture *tex, u16 w, u16 h, u8 *px);
+
+
+/*
+ * Get a pointer to a texture from the texture table.
+ *
+ * @name: The name of the texture
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API struct fh_texture *fh_tex_get(char *name);
 
 
 /*

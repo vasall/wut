@@ -1,5 +1,7 @@
 #include "color.h"
 
+#include "alarm.h"
+
 #include <stdlib.h>
 
 

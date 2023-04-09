@@ -1,5 +1,8 @@
 #include "opengl.h"
 
+#include "alarm.h"
+#include "system.h"
+
 #include <stdlib.h>
 
 static void GLAPIENTRY gl_callback(GLenum source,
@@ -109,7 +112,7 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 	}
 
 	/* Allocate memory for the new context */
-	if(!(ctx = smalloc(sizeof(struct fh_context)))) {
+	if(!(ctx = fh_malloc(sizeof(struct fh_context)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for new glcontext");
 		goto err_return;
 	}
@@ -120,7 +123,7 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 	}
 
 
-	glClearColor(0, 0, 0, 1.0);
+	glClearColor(1, 1, 1, 1.0);
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -147,7 +150,7 @@ FH_API void fh_gl_destroy(struct fh_context *ctx)
 
 	SDL_GL_DeleteContext(ctx->context);
 
-	sfree(ctx);
+	fh_free(ctx);
 }
 
 FH_API void fh_gl_print_info(void)

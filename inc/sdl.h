@@ -2,6 +2,7 @@
 #define _FH_SDL_H
 
 #include "define.h"
+#include "datatype.h"
 #include "import.h"
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN

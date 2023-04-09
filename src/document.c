@@ -1,7 +1,9 @@
 #include "document.h"
 
-#include <stdlib.h>
+#include "alarm.h"
+#include "system.h"
 
+#include <stdlib.h>
 
 
 FH_API struct fh_document *fh_doc_create(struct fh_window *win)
@@ -9,7 +11,7 @@ FH_API struct fh_document *fh_doc_create(struct fh_window *win)
 	struct fh_document *doc;
 
 	/* Allocate memory for the document */
-	if(!(doc = szalloc(sizeof(struct fh_document)))) {
+	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for document");
 		goto err_return;
 	}
@@ -49,7 +51,7 @@ err_destroy_body:
 	fh_ele_destroy(doc->body);
 
 err_free_doc:
-	sfree(doc);
+	fh_free(doc);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create new document");
@@ -66,7 +68,7 @@ FH_API void fh_doc_destroy(struct fh_document *doc)
 	/* If the document contains a body, recursivly remove it */
 	fh_ele_remove(doc->body);	
 
-	sfree(doc);
+	fh_free(doc);
 }
 
 

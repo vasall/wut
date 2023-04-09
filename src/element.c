@@ -1,5 +1,7 @@
 #include "element.h"
 
+#include "alarm.h"
+#include "system.h"
 #include "element_template.h"
 #include "document.h"
 
@@ -28,7 +30,7 @@ FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type)
 	}
 
 	
-	if(!(ele = szalloc(sizeof(struct fh_element)))) {
+	if(!(ele = fh_zalloc(sizeof(struct fh_element)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for new element");
 		goto err_return;
 	}
@@ -62,7 +64,7 @@ FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type)
 	return ele;
 
 err_free_ele:
-	sfree(ele);
+	fh_free(ele);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create new element");
@@ -77,7 +79,7 @@ FH_API void fh_ele_destroy(struct fh_element *ele)
 	}
 
 
-	sfree(ele);
+	fh_free(ele);
 }
 
 

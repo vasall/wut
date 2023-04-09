@@ -1,5 +1,8 @@
 #include "flex.h"
 
+#include "alarm.h"
+#include "system.h"
+
 #include <stdlib.h>
 
 

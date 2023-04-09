@@ -1,5 +1,7 @@
 #include "sdl.h"
 
+#include "alarm.h"
+#include "system.h"
 #include "core.h"
 #include "opengl.h"
 
@@ -15,7 +17,12 @@ FH_API s8 fh_sdl_init(void)
 	}
 
 	if(TTF_Init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize TTF");
+		ALARM(ALARM_ERR, "Failed to initialize SDL_TTF");
+		goto err_quit_sdl;
+	}
+
+	if(IMG_Init(IMG_INIT_PNG) < 0) {
+		ALARM(ALARM_ERR, "Failed to initialize SDL_IMG");
 		goto err_quit_sdl;
 	}
 	
