@@ -4,6 +4,7 @@
 #include "system.h"
 #include "shader.h"
 #include "texture.h"
+#include "camera.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -14,6 +15,8 @@ FH_INTERN u32 fh_mdlc_type_size(GLenum type) {
 	switch(type) {
 		case GL_FLOAT: return sizeof(f32);
 	}
+
+	return 0;
 }
 
 
@@ -150,6 +153,8 @@ FH_API void fh_mdlc_uniform(struct fh_model_c *c, char *name, u32 size)
 	strcpy(u->name, name);
 	u->size = size;
 
+	c->unibuf_num++;
+
 #if FH_MDLC_DEBUG
 	printf("Set uniform %s with size %d\n", name, size);
 #endif
@@ -260,6 +265,7 @@ FH_INTERN void fh_mdlc_create_objs(struct fh_model *mdl, struct fh_model_c *c)
 	/* Create the element-buffer-object */
 	glGenBuffers(1, &mdl->ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->ebo);
+	size = mdl->index_number * U32_S;
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, mdl->index_buffer,
 			GL_STATIC_DRAW);
 
@@ -332,7 +338,8 @@ FH_INTERN void fh_mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
 
 FH_INTERN void fh_mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 {
-	s32 i;
+	u32 i;
+	s32 j;
 	struct fh_model_c_unibuf *unibuf;
 	struct fh_model_uniform *uniform;	
 
@@ -361,6 +368,8 @@ FH_INTERN void fh_mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 		glBindBuffer(GL_UNIFORM_BUFFER, uniform->bao);
 		glBufferData(GL_UNIFORM_BUFFER, uniform->size, NULL,
 				GL_STATIC_DRAW);
+
+		printf("UNIFORM: %d\n", uniform->bao);
 	}
 
 	mdl->uniform_number = c->unibuf_num;
@@ -369,8 +378,10 @@ FH_INTERN void fh_mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 	return;
 
 err_free:
-	for(i--;i >= 0; i--)
+	for(j = i - 1;j >= 0; j--) {
+		uniform = &mdl->uniforms[j];
 		fh_free(uniform->data);
+	}
 }
 
 
@@ -452,6 +463,14 @@ FH_API struct fh_model *fh_mdlc_finish(struct fh_model_c *c)
 	 */
 	fh_mdlc_init_uniforms(mdl, c);
 
+	mdl->cam = fh_cam_create("main", 60, 800.0/600.0, 0.24, 1000.0);
+	
+	mat4_idt(mdl->unibuf.mpos);
+	mat4_idt(mdl->unibuf.mrot);
+	mat4_idt(mdl->unibuf.view);
+	mat4_idt(mdl->unibuf.proj);
+
+	mdl->x = 0;
 
 	printf("\n\n");
 	printf(">>> Indices (num %d):\n", mdl->index_number);

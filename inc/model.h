@@ -27,6 +27,13 @@ struct fh_model_uniform {
 	u32 bao;
 };
 
+struct cam_p {
+          mat4_t mpos;
+          mat4_t mrot;
+          mat4_t view;
+          mat4_t proj;
+};
+
 
 
 struct fh_model {
@@ -54,6 +61,11 @@ struct fh_model {
 	/* The uniform buffers for this model */
 	u8 uniform_number;
 	struct fh_model_uniform uniforms[FH_MODEL_UNIFORM_LIM];
+
+	struct cam_p unibuf;
+	struct fh_camera *cam;
+	float x;
+	float r;
 };
 
 

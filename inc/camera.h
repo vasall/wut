@@ -263,7 +263,6 @@ FH_API void fh_cam_tgl_mode(struct fh_camera *cam);
 FH_API void fh_cam_update(struct fh_camera *cam);
 
 
-
 /* The callback function to call when removing an entry from the camera table */
 FH_API void fh_cam_rmv_fnc(u32 size, void *ptr);
 

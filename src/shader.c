@@ -118,7 +118,7 @@ err_return:
 
 }
 
-FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
+FH_INTERN s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 {
 	char *line = str;
 	struct fh_shader_var *var;
@@ -127,8 +127,6 @@ FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 	char *end;
 	s32 len;
 	char loc_str[512];
-
-	s32 c = 0;
 
 	if(!inp || !str) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -188,9 +186,6 @@ err_return:
 FH_API struct fh_shader *fh_shd_create(char *name, char *v_src, char *f_src)
 {
 	struct fh_shader *shader;
-
-	u16 tmp;
-	u16 i;
 
 	u32 vshader;
 	u32 fshader;
@@ -296,7 +291,6 @@ FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth)
 	char *v_buf;
 	char *f_buf;
 	struct fh_shader *shader;
-	u64 size;
 
 	if(!name || !v_pth || !f_pth) {
 		ALARM(ALARM_ERR, "Input parameters invalid");

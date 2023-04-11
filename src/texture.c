@@ -2,6 +2,7 @@
 
 #include "alarm.h"
 #include "system.h"
+#include "file.h"
 #include "core.h"
 #include "table.h"
 
@@ -201,6 +202,7 @@ FH_API void fh_tex_use(struct fh_texture *tex)
 		return;
 	}
 
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 }
 
@@ -214,6 +216,9 @@ FH_API void fh_tex_unuse(void)
 FH_API void fh_tex_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_texture *tex;
+
+	/* SILENCIO */
+	if(size) {}
 
 	if(!ptr)
 		return;

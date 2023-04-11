@@ -56,6 +56,8 @@ FH_API struct fh_camera *fh_cam_create(char *name, f32 aov, f32 asp, f32 near,
 	}
 
 	strcpy(cam->name, name);
+	cam->mode = FH_CAM_WIDE;
+
 
 	/* Set the default position of the camera */
 	vec3_clr(cam->pos);
@@ -131,25 +133,25 @@ FH_API void fh_cam_remove(struct fh_camera *cam)
 }
 
 
-FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t mat)
+FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t proj)
 {
 	if(!cam) {
-		mat4_idt(mat);
+		mat4_idt(proj);
 		return;
 	}
 
-	mat4_cpy(mat, cam->proj_m);
+	mat4_cpy(proj, cam->proj_m);
 }
 
 
-FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t mat)
+FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t view)
 {
 	if(!cam) {
-		mat4_idt(mat);
+		mat4_idt(view);
 		return;
 	}
 
-	mat4_cpy(mat, cam->view_m);
+	mat4_cpy(view, cam->view_m);
 }
 
 
