@@ -25,21 +25,6 @@ FH_API s8 fh_init(void)
 		goto err_quit_sdl;
 	}
 
-	/*
-	 * Initialize the global data tables.
-	 */
-	if(fh_shd_init() < 0)
-		goto err_quit_sdl;
-
-	if(fh_tex_init() < 0)
-		goto err_quit_sdl;
-
-	if(fh_mdl_init() < 0)
-		goto err_quit_sdl;
-
-	if(fh_cam_init() < 0)
-		goto err_quit_sdl;
-
 	return 0;
 
 err_quit_sdl:
@@ -68,45 +53,6 @@ FH_API void fh_quit(void)
 }
 
 
-FH_API s32 fh_add_window(s32 parent, char *name, s32 width, s32 height)
-{
-	struct fh_window *win;
-	struct fh_window *par;
-		
-	if(parent < 0 || name == NULL || width < 0 || height < 0) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	/* First find the parent to see if it even exists */
-	if(parent != 0 && !(par = fh_win_get(parent))) {
-		ALARM(ALARM_ERR, "Parent could not be found");
-		goto err_return;
-	}
-
-	/* Then create a new window */
-	if(!(win = fh_win_create(name, width, height)))
-		goto err_return;
-
-	/* Lastly attach it */
-	if(parent == 0) {
-		/* Mark this window as the main window */
-		win->info = win->info | FH_WIN_INFO_MAIN;
-
-		/* Set this window as the main window */
-		fh_core_set_main_window(win);
-	}
-	else {
-		fh_win_attach(par, win);
-	}
-
-	return win->id;
-		
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create add new window");
-	return -1;
-}
 
 
 
@@ -133,20 +79,82 @@ FH_API s8 fh_pull_event(struct fh_event *event)
 }
 
 
-FH_API struct fh_element *fh_add(s32 wd, struct fh_element *parent, char *name,
-		enum fh_element_type type)
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                  WINDOW
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
+		s32 width, s32 height)
 {
 	struct fh_window *win;
-	struct fh_element *ele;
-
-	if(!parent || !name) {
+		
+	if(name == NULL || width < 0 || height < 0) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	/* Get a pointer to the window */
-	if(!(win = fh_win_get(wd)))
+	/* Then create a new window */
+	if(!(win = fh_win_create(name, width, height)))
 		goto err_return;
+
+	/* If a parent is specified */
+	if(parent != NULL) {
+		fh_win_attach(parent, win);
+	}
+	/* Otherwise... */
+	else {
+		/* Mark this window as the main window */
+		win->info = win->info | FH_WIN_INFO_MAIN;
+
+		/* Set this window as the main window */
+		fh_core_set_main_window(win);
+	}
+
+	return win;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create add new window");
+	return NULL;
+}
+
+
+FH_API void fh_activate_window(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	fh_win_activate(win);
+}
+
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                 DOCUMENT
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_API struct fh_element *fh_add(struct fh_window *win,
+		struct fh_element *parent, char *name,
+		enum fh_element_type type)
+{
+	struct fh_element *ele;
+
+	if(!win || !parent || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
 
 	/* Add element to document */
 	if(!(ele = fh_doc_add_element(win->document, parent, name, type)))
@@ -160,19 +168,12 @@ err_return:
 }
 
 
-FH_API struct fh_element *fh_get(s32 wd, char *name)
+FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
 {
-	struct fh_window *win;
-
-	if(!name) {
+	if(!win || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
-
-	/* Get a pointer to the window */
-	if(!(win = fh_win_get(wd)))
-		goto err_return;
-
 
 	return fh_doc_find_element(win->document, name);
 
@@ -182,11 +183,21 @@ err_return:
 }
 
 
-FH_API s8 fh_create_shader(char *name, char *v_src, char *f_src)
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                  SHADER
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_API s8 fh_create_shader(struct fh_window *win, char *name,
+		char *v_src, char *f_src)
 {
 	struct fh_shader *shader;
 
-	if(!name || !v_src || !f_src) {
+	if(!win || !name || !v_src || !f_src) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
@@ -194,7 +205,7 @@ FH_API s8 fh_create_shader(char *name, char *v_src, char *f_src)
 	if(!(shader = fh_shd_create(name, v_src, f_src)))
 		goto err_return;
 
-	if(fh_shd_insert(shader) < 0)
+	if(fh_shd_insert(win, shader) < 0)
 		goto err_destroy_shader;
 
 	return 0;
@@ -208,11 +219,12 @@ err_return:
 }
 
 
-FH_API s8 fh_load_shader(char *name, char *v_pth, char *f_pth)
+FH_API s8 fh_load_shader(struct fh_window *win, char *name,
+		char *v_pth, char *f_pth)
 {
 	struct fh_shader *shader;
 
-	if(!name || !v_pth || !f_pth) {
+	if(!win || !name || !v_pth || !f_pth) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
@@ -220,7 +232,7 @@ FH_API s8 fh_load_shader(char *name, char *v_pth, char *f_pth)
 	if(!(shader = fh_shd_load(name, v_pth, f_pth)))
 		goto err_return;
 
-	if(fh_shd_insert(shader) < 0)
+	if(fh_shd_insert(win, shader) < 0)
 		goto err_destroy_shader;
 
 	return 0;
@@ -234,25 +246,32 @@ err_return:
 }
 
 
-FH_API void fh_remove_shader(char *name)
+FH_API void fh_remove_shader(struct fh_window *win, char *name)
 {
-	if(!name) {
+	struct fh_shader *shader;
+
+	if(!win || !name) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	fh_shd_remove(name);
+	if(!(shader = fh_shd_get(win, name))) {
+		ALARM(ALARM_WARN, "Shader not found");
+		return;
+	}
+
+	fh_shd_remove(win, shader);
 }
 
 
-FH_API struct fh_shader *fh_get_shader(char *name)
+FH_API struct fh_shader *fh_get_shader(struct fh_window *win, char *name)
 {
-	if(!name) {
+	if(!win || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	return fh_shd_get(name);
+	return fh_shd_get(win, name);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to get shader");
@@ -260,25 +279,227 @@ err_return:
 }
 
 
-FH_API s8 fh_set_ui_shader(char *name)
-{
-	struct fh_shader *shader;
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                 TEXTURE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
 
-	if(!name) {
+
+FH_API s8 fh_create_texture(struct fh_window *win, char *name, u16 w, u16 h,
+		GLenum format, u8 *px)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name || w < 1 || h < 1 || !px) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(tex = fh_tex_create(name, w, h, format, px)))
+		goto err_return;
+
+	if(fh_tex_insert(win, tex) < 0)
+		goto err_destroy_tex;
+
+	return 0;
+
+err_destroy_tex:
+	fh_tex_destroy(tex);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new texture");
+	return -1;
+}
+
+
+FH_API s8 fh_load_texture(struct fh_window *win, char *name, char *pth)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name || !pth) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(shader = fh_shd_get(name))) {
-		ALARM(ALARM_ERR, "Shader not found");
+	if(!(tex = fh_tex_load(name, pth)))
 		goto err_return;
-	}
 
-	fh_core_set_ui_shader(shader);
+	if(fh_tex_insert(win, tex))
+		goto err_destroy_tex;
 
 	return 0;
 
+err_destroy_tex:
+	fh_tex_destroy(tex);
+
 err_return:
-	ALARM(ALARM_ERR, "Failed to set UI shader");
+	ALARM(ALARM_ERR, "Failed to load new texture");
 	return -1;
 }
+
+
+FH_API void fh_remove_texture(struct fh_window *win, char *name)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(tex = fh_tex_get(win, name)))
+		return;
+
+	fh_tex_remove(win, tex);
+}
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                 CAMERA
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_API struct fh_camera *fh_create_camera(struct fh_window *win, char *name,
+		struct fh_camera_info info)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_create(name, info)))
+		goto err_return;
+
+	if(fh_cam_insert(win, cam) < 0)
+		goto err_destroy_cam;
+
+	return cam;
+
+err_destroy_cam:
+	fh_cam_destroy(cam);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new camera");
+	return NULL;
+}
+
+
+FH_API void fh_remove_camera(struct fh_window *win, char *name)
+{
+	struct fh_camera *cam;
+	
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name)))
+		return;
+
+	fh_cam_remove(win, cam);
+}
+
+
+FH_API void fh_get_view(struct fh_window *win, char *name, mat4_t out)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		goto err_return;
+	}
+
+	fh_cam_get_view(cam, out);
+
+	return;
+
+err_return:
+	mat4_idt(out);
+}
+
+
+FH_API void fh_get_projection(struct fh_window *win, char *name, mat4_t out)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		goto err_return;
+	}
+
+	fh_cam_get_proj(cam, out);
+	
+	return;
+
+err_return:
+	mat4_idt(out);
+}
+
+
+FH_API void fh_set_camera_position(struct fh_window *win, char *name,
+		vec3_t pos)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		return;
+	}
+
+	vec3_cpy(cam->pos, pos);
+
+	return;
+}
+
+
+FH_API void fh_move_camera(struct fh_window *win, char *name, vec3_t del)
+{
+	struct fh_camera *cam;
+
+	if(!name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		return;
+	}
+
+	vec3_add(cam->pos, del, cam->pos);
+}
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *                                MODEL
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+

@@ -10,22 +10,25 @@
 
 
 
-FH_API s8 fh_shd_init(void)
+FH_API s8 fh_shd_init(struct fh_window *win)
 {
 	struct fh_table *tbl;
 	float vec[3];
 
-	vec3_set(vec, 1, 2, 3);
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
 
-	printf("Create shader table\n");
+	vec3_set(vec, 1, 2, 3);
 
 	if(!(tbl = fh_tbl_create(&fh_shd_rmv_fnc))) {
 		ALARM(ALARM_ERR, "Failed to create fh_table");
 		goto err_return;
 	}
 
-	/* Attach shader table to global core */
-	g_fh_core.shaders = tbl;
+	/* Attach the shader table to a window */
+	win->shaders = tbl;
 
 	return 0;
 
@@ -35,19 +38,24 @@ err_return:
 }
 
 
-FH_API void fh_shd_close(void)
+FH_API void fh_shd_close(struct fh_window *win)
 {
-	fh_tbl_destroy(g_fh_core.shaders);
-	g_fh_core.shaders = NULL;
+	if(!win) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_tbl_destroy(win->shaders);
+	win->shaders = NULL;
 }
 
 
-FH_API s8 fh_shd_insert(struct fh_shader *shader)
+FH_API s8 fh_shd_insert(struct fh_window *win, struct fh_shader *shader)
 {
 	u32 size;
 	void **p;
 
-	if(!shader) {
+	if(!win || !shader) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
@@ -55,7 +63,7 @@ FH_API s8 fh_shd_insert(struct fh_shader *shader)
 	size = sizeof(struct fh_shader);
 	p = (void **)&shader;
 
-	if(fh_tbl_add(g_fh_core.shaders, shader->name, size, p) < 0) {
+	if(fh_tbl_add(win->shaders, shader->name, size, p) < 0) {
 		ALARM(ALARM_ERR, "Failed to insert entry into fh_table");
 		goto err_return;
 	}
@@ -68,15 +76,16 @@ err_return:
 }
 
 
-FH_API void fh_shd_remove(char *name)
+FH_API void fh_shd_remove(struct fh_window *win, struct fh_shader *shader)
 {
-	if(!name) {
+	if(!win || !shader) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	fh_tbl_rmv(g_fh_core.shaders, name);
+	fh_tbl_rmv(win->shaders, shader->name);
 }
+
 
 FH_INTERN s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
 {
@@ -103,8 +112,6 @@ FH_INTERN s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
 		ALARM(ALARM_ERR, "Failed to compile vertex shader");
 		goto err_delete_shd;
 	}
-
-	printf("Shader %d\n", shd);
 
 	*shd_out = shd;
 	return 0;
@@ -165,10 +172,8 @@ FH_INTERN s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 
 		/* Advance to next line */
 		while(*line != '\n' && *line != '\0') {
-			printf("%c", *line);
 			line++;
 		}
-		printf("\n");
 		if (*line == '\n') {
 			line++;
 		}
@@ -222,8 +227,6 @@ FH_API struct fh_shader *fh_shd_create(char *name, char *v_src, char *f_src)
 
 	if(fh_shd_new_shader(GL_FRAGMENT_SHADER, f_src, &fshader) < 0)
 		goto err_delete_vshader;
-
-	printf("B\n");
 
 
 	/*
@@ -345,7 +348,7 @@ FH_API void fh_shd_destroy(struct fh_shader *shader)
 }
 
 
-FH_API struct fh_shader *fh_shd_get(char *name)
+FH_API struct fh_shader *fh_shd_get(struct fh_window *win, char *name)
 {
 	struct fh_shader *shader;
 
@@ -354,7 +357,7 @@ FH_API struct fh_shader *fh_shd_get(char *name)
 		goto err_return;
 	}
 
-	if(fh_tbl_get(g_fh_core.shaders, name, NULL, (void **)&shader) != 1) {
+	if(fh_tbl_get(win->shaders, name, NULL, (void **)&shader) != 1) {
 		ALARM(ALARM_ERR, "Shader could not be found in fh_table");
 		goto err_return;
 	}

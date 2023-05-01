@@ -63,6 +63,7 @@ FH_API struct fh_table *fh_tbl_create(void (*fnc)(u32 size, void *ptr))
 	return tbl;
 }
 
+
 FH_API void fh_tbl_destroy(struct fh_table *tbl)
 {
 	struct fh_table_entry *runner;

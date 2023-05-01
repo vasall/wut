@@ -15,16 +15,23 @@ FH_INTERN vec3_t FH_CAM_FORWARD =  {0.0, 1.0, 0.0};
 FH_INTERN vec3_t FH_CAM_UP =       {0.0, 0.0, 1.0};
 
 
-FH_API s8 fh_cam_init(void)
+FH_API s8 fh_cam_init(struct fh_window *win)
 {
 	struct fh_table *tbl;
+
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
 
 	if(!(tbl = fh_tbl_create(&fh_cam_rmv_fnc))) {
 		ALARM(ALARM_ERR, "Failed to create camera table");
 		goto err_return;
 	}
 
-	g_fh_core.cameras = tbl;
+	/* Attach the camera table to the window */
+	win->cameras = tbl;
+
 	return 0;
 
 err_return:
@@ -33,15 +40,14 @@ err_return:
 }
 
 
-FH_API void fh_cam_close(void)
+FH_API void fh_cam_close(struct fh_window *win)
 {
-	fh_tbl_destroy(g_fh_core.cameras);
-	g_fh_core.cameras = NULL;
+	fh_tbl_destroy(win->cameras);
+	win->cameras = NULL;
 }
 
 
-FH_API struct fh_camera *fh_cam_create(char *name, f32 aov, f32 asp, f32 near,
-		f32 far)
+FH_API struct fh_camera *fh_cam_create(char *name, struct fh_camera_info info)
 {
 	struct fh_camera *cam;
 
@@ -57,6 +63,7 @@ FH_API struct fh_camera *fh_cam_create(char *name, f32 aov, f32 asp, f32 near,
 
 	strcpy(cam->name, name);
 	cam->mode = FH_CAM_WIDE;
+	cam->info = info;
 
 
 	/* Set the default position of the camera */
@@ -74,12 +81,8 @@ FH_API struct fh_camera *fh_cam_create(char *name, f32 aov, f32 asp, f32 near,
 
 	mat4_idt(cam->forw_m);
 
-	/* Create the proj_mection matrix */
-	mat4_idt(cam->proj_m);
-	fh_cam_proj_mat(cam, aov, asp, near, far);
-
-	/* Create the view-matrix */
-	mat4_idt(cam->view_m);
+	/* Calculate the projection- and view-matrix */
+	fh_cam_update_proj(cam);
 	fh_cam_update_view(cam);
 
 	return cam;
@@ -99,19 +102,19 @@ FH_API void fh_cam_destroy(struct fh_camera *cam)
 }
 
 
-FH_API s8 fh_cam_insert(struct fh_camera *cam)
+FH_API s8 fh_cam_insert(struct fh_window *win, struct fh_camera *cam)
 {
 	u32 size;
 	void **p;
 
-	if(!cam) {
+	if(!win || !cam) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	size = sizeof(struct fh_camera);
 	p = (void **)&cam;
-	if(fh_tbl_add(g_fh_core.cameras, cam->name, size, p) < 0) {
+	if(fh_tbl_add(win->cameras, cam->name, size, p) < 0) {
 		ALARM(ALARM_ERR, "Failed to insert into fh_table");
 		goto err_return;
 	}
@@ -124,34 +127,59 @@ err_return:
 }
 
 
-FH_API void fh_cam_remove(struct fh_camera *cam)
+FH_API void fh_cam_remove(struct fh_window *win, struct fh_camera *cam)
 {
-	if(!cam)
-		return;
-
-	fh_tbl_rmv(g_fh_core.cameras, cam->name);
-}
-
-
-FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t proj)
-{
-	if(!cam) {
-		mat4_idt(proj);
+	if(!win || !cam) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	mat4_cpy(proj, cam->proj_m);
+	fh_tbl_rmv(win->cameras, cam->name);
 }
 
 
-FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t view)
+FH_API struct fh_camera *fh_cam_get(struct fh_window *win, char *name)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(fh_tbl_get(win->cameras, name, NULL, (void **)&cam) != 1) {
+		ALARM(ALARM_ERR, "Camera could not be found in fh_table");
+		goto err_return;
+	}
+
+	return cam;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get camera from the camera table");
+	return NULL;
+
+}
+
+
+FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t out)
 {
 	if(!cam) {
-		mat4_idt(view);
+		mat4_idt(out);
 		return;
 	}
 
-	mat4_cpy(view, cam->view_m);
+	mat4_cpy(out, cam->view_m);
+}
+
+
+FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t out)
+{
+	if(!cam) {
+		mat4_idt(out);
+		return;
+	}
+
+	mat4_cpy(out, cam->proj_m);
 }
 
 
@@ -296,19 +324,22 @@ FH_API void fh_cam_look_at(struct fh_camera *cam, vec3_t trg)
 }
 
 
-FH_API void fh_cam_proj_mat(struct fh_camera *cam, f32 aov, f32 asp, f32 near,
-		f32 far)
+FH_API void fh_cam_update_proj(struct fh_camera *cam)
 {
+	f32 aov;
+	f32 asp;
+	f32 near;
+	f32 far;
 	f32 bottom;
 	f32 top;
 	f32 left;
 	f32 right;
 	f32 tangent;
 
-	cam->aov = aov;
-	cam->asp = asp;
-	cam->near = near;
-	cam->far = far;
+	aov = cam->info.area_of_view;
+	asp = cam->info.aspect_ratio;
+	near = cam->info.near;
+	far = cam->info.far;
 
 	tangent = near * tan(aov * 0.5 * M_PI / 180);
 
@@ -316,6 +347,8 @@ FH_API void fh_cam_proj_mat(struct fh_camera *cam, f32 aov, f32 asp, f32 near,
 	bottom = -top;
 	right = top * asp;
 	left = -right; 
+
+	mat4_idt(cam->proj_m);
 
 	cam->proj_m[0x0] = (2 * near) / (right - left);
 	cam->proj_m[0x5] = (2 * near) / (top - bottom); 	

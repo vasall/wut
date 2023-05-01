@@ -6,6 +6,9 @@
 #include <stdlib.h>
 
 
+#define FH_FS_DEBUG 1
+
+
 FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 {
 	FILE *fd;
@@ -104,16 +107,99 @@ err_return:
 }
 
 
-FH_API s8 fh_fs_png(const char *pth, u32 *w, u32 *h, u8 **out)
+/*
+ * This function will map the SDL_PixelFormatEnum to the OpenGL pixel format
+ * enum.
+ */
+FH_INTERN GLenum fh_fs_map_format(SDL_PixelFormatEnum pixelFormat)
+{
+    switch (pixelFormat)
+    {
+        case SDL_PIXELFORMAT_RGB332:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_RGB444:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_RGB555:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_BGR555:
+            return GL_BGR;
+        case SDL_PIXELFORMAT_ARGB4444:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_RGBA4444:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_ABGR4444:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_BGRA4444:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_ARGB1555:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_RGBA5551:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_ABGR1555:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_BGRA5551:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_RGB565:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_BGR565:
+            return GL_BGR;
+        case SDL_PIXELFORMAT_RGB24:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_BGR24:
+            return GL_BGR;
+        case SDL_PIXELFORMAT_RGB888:
+            return GL_RGB;
+        case SDL_PIXELFORMAT_RGBX8888:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_BGR888:
+            return GL_BGR;
+        case SDL_PIXELFORMAT_BGRX8888:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_ARGB8888:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_RGBA8888:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_ABGR8888:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_BGRA8888:
+            return GL_BGRA;
+        case SDL_PIXELFORMAT_ARGB2101010:
+            return GL_RGBA;
+        case SDL_PIXELFORMAT_YV12:
+            return GL_RED;
+        case SDL_PIXELFORMAT_IYUV:
+            return GL_RED;
+        case SDL_PIXELFORMAT_YUY2:
+            return GL_RED;
+        case SDL_PIXELFORMAT_UYVY:
+            return GL_RED;
+        case SDL_PIXELFORMAT_YVYU:
+            return GL_RED;
+        default:
+            return 0; /* Invalid pixel format */
+    }
+
+    return 0;
+}
+
+
+FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
 {
 	SDL_Surface *surf;
 	u8 *buf;
 	u64 size;
+	
+	if(!pth || !out) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
 
 	if(!(surf = IMG_Load(pth))) {
 		ALARM(ALARM_ERR, "Failed to open and read file");
 		goto err_return;
 	}
+
 
 	size = surf->pitch * surf->h;
 
@@ -123,11 +209,13 @@ FH_API s8 fh_fs_png(const char *pth, u32 *w, u32 *h, u8 **out)
 	}
 
 	memcpy(buf, surf->pixels, size);
-	SDL_FreeSurface(surf);
 
-	*w = surf->w;
-	*h = surf->h;
-	*out = buf;
+	out->w = surf->w;
+	out->h = surf->h;
+	out->format = GL_RGBA;
+	out->data = buf;
+
+	SDL_FreeSurface(surf);
 
 	return 0;
 
@@ -137,4 +225,13 @@ err_free_surface:
 err_return:
 	ALARM(ALARM_ERR, "Failed to load PNG file");
 	return -1;
+}
+
+
+FH_API void fh_fs_image_cleanup(struct fh_fs_r_image *img)
+{
+	if(!img)
+		return;
+
+	fh_free(img->data);
 }

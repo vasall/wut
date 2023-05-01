@@ -47,6 +47,25 @@ struct fh_window {
 
 	/* The document contained in this window */
 	struct fh_document *document;
+
+	/*
+	 * Resources used by this window.
+	 */
+
+	/* Shaders */
+	struct fh_table *shaders;
+
+	/* Textures */
+	struct fh_table *textures;
+
+	/* Models */
+	struct fh_table *models;
+
+	/* Fonts */
+	struct fh_table *fonts;
+
+	/* Cameras */
+	struct fh_table *cameras;
 };
 
 
@@ -154,6 +173,13 @@ FH_API void fh_win_redraw(struct fh_window *win);
  */
 FH_API void fh_win_redraw_all(void);
 
+
+/*
+ * Activate a window to enable rendering.
+ *
+ * @w: A pointer to the window
+ */
+FH_API void fh_win_activate(struct fh_window *w);
 
 
 

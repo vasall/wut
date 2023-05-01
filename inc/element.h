@@ -6,7 +6,6 @@
 #include "datatype.h"
 #include "import.h"
 #include "element_style.h"
-#include "renderer.h"
 
 
 #define FH_ELEMENT_NAME_LIM	126

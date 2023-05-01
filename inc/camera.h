@@ -4,6 +4,7 @@
 #include "define.h"
 #include "import.h"
 #include "datatype.h"
+#include "window.h"
 
 #define FH_CAM_NAME_LIM		128
 #define FH_CAM_PITCH_LIM	50.0
@@ -14,7 +15,15 @@ enum fh_cam_mode {
 };
 
 
+struct fh_camera_info {
+	f32 area_of_view;
+	f32 aspect_ratio;
+	f32 near;
+	f32 far;	
+};
+
 struct fh_camera {
+	/* The name of the camera */
 	char name[FH_CAM_NAME_LIM];
 
 	enum fh_cam_mode mode;
@@ -24,50 +33,47 @@ struct fh_camera {
 	vec3_t v_forward;
 	vec3_t v_right;
 
-	f32 aov;
-	f32 asp;
-	f32 near;
-	f32 far;
+	struct fh_camera_info info;
 
 	vec3_t aim;
 	f32 dist;
 	mat4_t forw_m;
 
-	mat4_t proj_m;
 	mat4_t view_m;
+	mat4_t proj_m;
 
 	f32 sens;
 };
 
 
 /*
- * Initialize the camera table.
+ * Initialize the camera table for a window.
+ * 
+ * @win: Pointer to the window
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_cam_init(void);
+FH_API s8 fh_cam_init(struct fh_window *win);
 
 
 /*
  * Close the camera table and free the allocated memory.
+ *
+ * @win: Pointer to the window
  */
-FH_API void fh_cam_close(void);
+FH_API void fh_cam_close(struct fh_window *win);
 
 
 /*
  * Create a new camera.
  *
  * @name: The name of the camera
- * @aov: The angle-of-view
- * @asp: The aspect-ratio of the view
- * @near: The near-limit
- * @far: The far-limit
+ * @info: A buffer containing essential info about the camera
  *
  * Returns: Either a pointer to the newly created camera or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_camera *fh_cam_create(char *name, f32 aov, f32 asp, f32 near,
-		f32 far);
+FH_API struct fh_camera *fh_cam_create(char *name, struct fh_camera_info info);
 
 
 /*
@@ -81,29 +87,33 @@ FH_API void fh_cam_destroy(struct fh_camera *cam);
 /*
  * Insert a newly created camera into the camera table.
  *
+ * @win: Pointer to the window
  * @cam: Pointer to the camera
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_cam_insert(struct fh_camera *cam);
+FH_API s8 fh_cam_insert(struct fh_window *win, struct fh_camera *cam);
 
 
 /*
  * Remove a camera from the camera table.
  *
+ * @win: Pointer to the window
  * @cam: Pointer to the camera
  */
-FH_API void fh_cam_remove(struct fh_camera *cam);
+FH_API void fh_cam_remove(struct fh_window *win,struct fh_camera *cam);
 
 
 /*
- * Get the current projection-matrix of a camera.
- * If the camera if NULL, the matrix will become an Identity-Matrix.
+ * Get a camera from the camera table.
  *
- * @cam: Pointer to the camera
- * @mat: A matrix to write the projection-matrix to
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ *
+ * Returns: A pointer to the camera or NULL if the camera was not found or an
+ * 	    error occurred
  */
-FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t mat);
+FH_API struct fh_camera *fh_cam_get(struct fh_window *win, char *name);
 
 
 /*
@@ -111,9 +121,19 @@ FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t mat);
  * If the camera if NULL, the matrix will become an Identity-Matrix.
  *
  * @cam: Pointer to the camera
- * @mat: A matrix to write the view-matrix to
+ * @out: A matrix to write the view-matrix to
  */
-FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t mat);
+FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t out);
+
+
+/*
+ * Get the current projection-matrix of a camera.
+ * If the camera if NULL, the matrix will become an Identity-Matrix.
+ *
+ * @cam: Pointer to the camera
+ * @out: A matrix to write the projection-matrix to
+ */
+FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t out);
 
 
 /*
@@ -197,17 +217,12 @@ FH_API void fh_cam_look_at(struct fh_camera *cam, vec3_t trg);
 
 
 /*
- * Change the projection matrix and recalculate the projection-matrix with new
- * values.
+ * Recalculate the projection matrix of the camera using the info buffer
+ * attached to the camera.
  *
  * @cam: Pointer to the camera
- * @aov: The new angle-of-view
- * @asp: The new aspect-ation
- * @near: The new near-limit
- * @far: The new far-limit
  */
-FH_API void fh_cam_proj_mat(struct fh_camera *cam, f32 aov, f32 asp, f32 near,
-		f32 far);
+FH_API void fh_cam_update_proj(struct fh_camera *cam);
 
 
 /*

@@ -80,8 +80,6 @@ static void GLAPIENTRY gl_callback(GLenum source,
 
 FH_API s8 fh_gl_init(void)
 {
-	printf("Initialize OpenGL\n");
-
 	/* 
 	 * Request opengl 4.6 context.
 	 * SDL doesn't have the ability to choose which profile at this time of writing,

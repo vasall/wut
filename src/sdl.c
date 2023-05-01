@@ -10,6 +10,8 @@
 
 FH_API s8 fh_sdl_init(void)
 {
+	s32 imgFlags = IMG_INIT_PNG;
+
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize SDL");
 		ALARM(ALARM_ERR, SDL_GetError());
@@ -21,7 +23,7 @@ FH_API s8 fh_sdl_init(void)
 		goto err_quit_sdl;
 	}
 
-	if(IMG_Init(IMG_INIT_PNG) < 0) {
+	if(!(IMG_Init(imgFlags) & imgFlags)) {
 		ALARM(ALARM_ERR, "Failed to initialize SDL_IMG");
 		goto err_quit_sdl;
 	}

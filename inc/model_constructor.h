@@ -3,6 +3,11 @@
 
 #include "define.h"
 #include "datatype.h"
+#include "window.h"
+
+struct fh_model_c;
+
+
 #include "model.h"
 
 
@@ -58,7 +63,6 @@ struct fh_model_c {
 	u32 unibuf_num;
 	struct fh_model_c_unibuf unibufs[FH_MODEL_UNIFORM_LIM]; 
 };
-
 
 
 /*

@@ -19,21 +19,6 @@ struct fh_core_container {
 	/* The event pipe containing all unhandled events */
 	struct fh_event_pipe event_pipe;
 
-	/* A table of all loaded shaders */
-	struct fh_table *shaders;
-
-	/* A table containing all textures */
-	struct fh_table *textures;
-
-	/* A table containing all loaded models */
-	struct fh_table *models;
-
-	/* A table containing all fonts */
-	struct fh_table *fonts;
-
-	/* A table containing all cameras */
-	struct fh_table *cameras;
-
 	/* 
 	 * If this var is set to 1, fh_update() will return 0, promting the
 	 * programm to exit.
@@ -42,9 +27,6 @@ struct fh_core_container {
 
 	/* Pointer to the active window, or NULL if none is active */
 	struct fh_window *active_window;
-
-	/* The shader used for rendering the UI */
-	struct fh_shader *ui_shader;
 };
 
 
@@ -113,22 +95,6 @@ FH_API void fh_core_set_active_window(struct fh_window *win);
  * Returns: Pointer to the active window
  */
 FH_API struct fh_window *fh_core_get_active_window(void);
-
-
-/*
- * Set the UI shader.
- *
- * @shader: Pointer to the shader
- */
-FH_API void fh_core_set_ui_shader(struct fh_shader *shader);
-
-
-/*
- * Get the UI shader.
- *
- * Returns: Pointer to the UI shader
- */
-FH_API struct fh_shader *fh_core_get_ui_shader(void);
 
 
 #endif /* _FH_CORE_H */

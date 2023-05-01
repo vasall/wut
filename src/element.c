@@ -277,8 +277,6 @@ FH_API s8 fh_ele_render(struct fh_element *ele)
 	t = rand() % 0xff; 
 	col = fh_col_set(0xff - t, t, t / 2, 0xff);
 
-	fh_ren_rect(ele->document->renderer, rect, col);
-
 	return 0;
 
 err_return:

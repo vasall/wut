@@ -36,20 +36,35 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out);
 FH_API s8 fh_fs_text(const char *pth, u64 *len, char **out);
 
 
+
+struct fh_fs_r_image {
+	u32 w;
+	u32 h;
+
+	GLenum format;
+
+	u8 *data;
+};
+
 /*
- * Load the pixel data from a PNG file.
- * Note that a buffer will be allocated in this function, and the returned
- * buffer has to be freed after use.
- * The pointers must not be NULL.
+ * Load the pixel data from an image file, preferable a PNG.
+ * Note that after using the image, please call fh_hs_image_cleanup() to prevent
+ * memory leakage.
  *
  * @pth: The path to the file
- * @w: A pointer to write the width of the image to
- * @h: A pointer to write the height of the image to
- * @out: A pointer to write the pixel data to
+ * @out: An image read buffer
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_fs_png(const char *pth, u32 *w, u32 *h, u8 **out);
+FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out);
+
+
+/*
+ * Cleanup after loading an image.
+ *
+ * @img: Pointer to the image read buffer
+ */
+FH_API void fh_fs_image_cleanup(struct fh_fs_r_image *img);
 
 
 #endif /* _FH_FILE_H */

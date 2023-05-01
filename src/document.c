@@ -31,21 +31,13 @@ FH_API struct fh_document *fh_doc_create(struct fh_window *win)
 	doc->body->parent = NULL;
 	doc->body->layer = 0;
 
-	/* Create a renderer for the document */
-	if(!(doc->renderer = fh_ren_create(win->width, win->height, NULL))) {
-		goto err_destroy_body;
-	}
-
 	/* Update the body element */
 	if(fh_doc_update_part(doc->body) < 0) {
 		ALARM(ALARM_ERR, "Failed to update body element");
-		goto err_destroy_renderer;
+		goto err_destroy_body;
 	}
 
 	return doc;
-
-err_destroy_renderer:
-	fh_ren_destroy(doc->renderer);
 
 err_destroy_body:
 	fh_ele_destroy(doc->body);
@@ -228,16 +220,7 @@ FH_API s8 fh_doc_render(struct fh_document *doc)
 		goto err_return;
 	}
 
-#if 0
-	/* First render all elements onto the document surface */
-	fh_ele_hlf_down(doc->body, &fh_doc_cfnc_render_elements, NULL);	
 
-	/* Then convert the surface to the texture */
-	fh_ren_to_texture(doc->renderer);
-#endif
-
-	/* Then draw the surface onto the window */
-	fh_ren_render(doc->renderer, doc->window, doc->window->context);			
 		
 	return 0;
 

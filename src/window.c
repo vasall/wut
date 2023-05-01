@@ -71,7 +71,35 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	win->document = doc;
 
 
+	/*
+	 * Create and intialize the resource tables.
+	 */
+	if(fh_shd_init(win) < 0)
+		goto err_destroy_doc;
+
+	if(fh_tex_init(win) < 0)
+		goto err_close_shd;
+
+	if(fh_mdl_init(win) < 0)
+		goto err_close_tex;
+
+	if(fh_cam_init(win) < 0)
+		goto err_close_mdl;
+
+
 	return win;
+
+err_close_mdl:
+	fh_mdl_close(win);
+
+err_close_tex:
+	fh_tex_close(win);
+
+err_close_shd:
+	fh_shd_close(win);
+
+err_destroy_doc:
+	fh_doc_destroy(win->document);
 
 err_destroy_ctx:
 	fh_gl_destroy(win->context);
@@ -94,6 +122,12 @@ FH_API void fh_win_destroy(struct fh_window *win)
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		goto err_return;
 	}
+
+	/* Close the resource tables */
+	fh_cam_close(win);
+	fh_mdl_close(win);
+	fh_tex_close(win);
+	fh_shd_close(win);
 
 	/* Close the document */
 	fh_doc_destroy(win->document);
@@ -320,10 +354,11 @@ FH_API void fh_win_redraw(struct fh_window *win)
         glClear(GL_COLOR_BUFFER_BIT);
 #endif
 
+
+#if 0
 	/* Render the document onto the window */
 	fh_doc_render(win->document);
 
-#if 0
 	/* Swap buffer */
         SDL_GL_SwapWindow(win->handle);
 #endif
@@ -350,4 +385,15 @@ FH_API void fh_win_redraw_all(void)
 	/* Call the fh_win_redraw() function on all visible windows */
 	main = fh_core_get_main_window();
 	fh_win_hlf_down(main, &fh_win_cfnc_redraw, NULL);	
+}
+
+
+FH_API void fh_win_activate(struct fh_window *w)
+{
+	if(!w) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	SDL_GL_MakeCurrent(w->handle, w->context->context);
 }

@@ -14,9 +14,6 @@ struct fh_document {
 
 	/* The body element, to which all future elements will be attached */
 	struct fh_element *body;
-
-	/* The renderer for this document */
-	struct fh_renderer *renderer;
 };
 
 

@@ -9,17 +9,23 @@
 #include <stdlib.h>
 
 
-FH_API s8 fh_tex_init(void)
+
+FH_API s8 fh_tex_init(struct fh_window *win)
 {
 	struct fh_table *tbl;
+
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
 
 	if(!(tbl = fh_tbl_create(&fh_tex_rmv_fnc))) {
 		ALARM(ALARM_ERR, "Failed to create fh_table");
 		goto err_return;
 	}
 
-	/* Attach the texture table to the global core */
-	g_fh_core.textures = tbl;
+	/* Attach the table to the window */
+	win->textures = tbl;
 
 	return 0;
 
@@ -29,17 +35,17 @@ err_return:
 }
 
 
-FH_API void fh_tex_close(void)
+FH_API void fh_tex_close(struct fh_window *win)
 {
-	fh_tbl_destroy(g_fh_core.textures);
-	g_fh_core.textures = NULL;
+	fh_tbl_destroy(win->textures);
+	win->textures = NULL;
 }
 
 
-FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, u8 *px)
+FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h,
+		GLenum format, u8 *px)
 {
 	struct fh_texture *tex;
-	float ani;
 
 	if(!name || !px) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -52,6 +58,7 @@ FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, u8 *px)
 	}
 
 	strcpy(tex->name, name);
+	tex->format = format;
 	tex->width = w;
 	tex->height = h;
 
@@ -61,16 +68,8 @@ FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, u8 *px)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-			GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &ani);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, ani);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -85,19 +84,29 @@ err_return:
 
 FH_API struct fh_texture *fh_tex_load(char *name, char *pth)
 {
-	u32 w;
-	u32 h;
-	u8 *px;
+	struct fh_fs_r_image img;
+	struct fh_texture *tex;
 
 	if(!name || !pth) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if((fh_fs_png(pth, &w, &h, &px)) < 0)
+	/* First load the raw pixel data from a PNG */
+	if((fh_fs_image(pth, &img)) < 0)
 		goto err_return;
 
-	return fh_tex_create(name, w, h, px);
+	/* Then create an OpenGL texture and past them */
+	if(!(tex = fh_tex_create(name, img.w, img.h, img.format, img.data)))
+		goto err_cleanup_img;
+
+	/* Finally clean up the loading buffer */
+	fh_fs_image_cleanup(&img);
+
+	return tex;
+
+err_cleanup_img:
+	fh_fs_image_cleanup(&img);
 
 
 err_return:
@@ -116,12 +125,12 @@ FH_API void fh_tex_destroy(struct fh_texture *tex)
 }
 
 
-FH_API s8 fh_tex_insert(struct fh_texture *tex)
+FH_API s8 fh_tex_insert(struct fh_window *win, struct fh_texture *tex)
 {
 	u32 size;
 	void **p;
 
-	if(!tex) {
+	if(!win || !tex) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
@@ -129,7 +138,7 @@ FH_API s8 fh_tex_insert(struct fh_texture *tex)
 	size = sizeof(struct fh_texture);
 	p = (void **)&tex;
 
-	if(fh_tbl_add(g_fh_core.textures, tex->name, size, p) < 0) {
+	if(fh_tbl_add(win->textures, tex->name, size, p) < 0) {
 		ALARM(ALARM_ERR, "Failed to add entry to fh_table");
 		goto err_return;
 	}
@@ -142,14 +151,14 @@ err_return:
 }
 
 
-FH_API void fh_tex_remove(char *name)
+FH_API void fh_tex_remove(struct fh_window *win, struct fh_texture *texture)
 {
-	if(!name) {
+	if(!win || !texture) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	fh_tbl_rmv(g_fh_core.textures, name);
+	fh_tbl_rmv(win->textures, texture->name);
 }
 
 
@@ -172,16 +181,16 @@ FH_API s8 fh_tex_set(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 }
 
 
-FH_API struct fh_texture *fh_tex_get(char *name)
+FH_API struct fh_texture *fh_tex_get(struct fh_window *win, char *name)
 {
 	struct fh_texture *tex;
 
-	if(!name) {
+	if(!win || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_tbl_get(g_fh_core.textures, name, NULL, (void **)&tex) != 1) {
+	if(fh_tbl_get(win->textures, name, NULL, (void **)&tex) != 1) {
 		ALARM(ALARM_ERR, "Texture could not be found in fh_table");
 		goto err_return;
 	}
