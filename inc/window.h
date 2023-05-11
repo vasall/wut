@@ -182,5 +182,53 @@ FH_API void fh_win_redraw_all(void);
 FH_API void fh_win_activate(struct fh_window *w);
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Create a new window and attach it to the parent. If 0 is given, it will be
+ * considered the main window.
+ *
+ * @parent: Pointer to the parent window or NULL
+ * @name: The name of the window
+ * @width: The initial width of the window
+ * @height: The intial height of the window
+ *
+ * Returns: Either a pointer to the created window or NULL if an error occurred
+ */
+FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
+		s32 width, s32 height);
+
+
+/*
+ * Activate a window so it can be rendered on.
+ *
+ * @win: Pointer to the window
+ */
+FH_API void fh_activate_window(struct fh_window *win);
+
+
+/*
+ * Clear the window buffer for OpenGL for a given window.
+ *
+ * @win: Pointer to the window
+ */
+FH_API void fh_clear_window(struct fh_window *win);
+
+
+/*
+ * Update the pixels depending on the given inputs and changes.
+ *
+ * @win: Pointer to the window
+ */
+FH_API void fh_redraw_window(struct fh_window *win);
+
+
+
 
 #endif /* _FH_WINDOW_H */

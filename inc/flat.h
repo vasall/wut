@@ -4,36 +4,83 @@
 #include "define.h"
 #include "datatype.h"
 #include "import.h"
+#include "window.h"
+#include "texture.h"
+#include "model.h"
+#include "shader.h"
+
+#define FH_FLAT_NAME_LIM	128
 
 
+/*
+ * A pixel is defined by 4 attributes representing the RGBA-values.
+ * Each value can be set in range of 0 t0 255.
+ */
 struct fh_flat_pixel {
-	f32 r;
-	f32 g;
-	f32 b;
-	f32 a;
+	u8 r;
+	u8 g;
+	u8 b;
+	u8 a;
 };
 
 
 
 struct fh_flat {
-	u32 w;
-	u32 h;
+	char name[FH_FLAT_NAME_LIM];
+
+	/* The position of the flat in the window */
+	u32 x;
+	u32 y;
+
+	/* The size of the flat */
+	u32 width;
+	u32 height;
 
 	struct fh_flat_pixel *pixels;
+
+	/* A pointer to the shader used for rendering the flat struct  */
+	struct fh_shader *shader;
+
+	/* A texture used to render the flat struct using OpenGL */
+	struct fh_texture *texture;
+
+	/* A model to utilize the texture */
+	struct fh_model *model;
 };
 
 
 
 /*
- * Create a new flat surface.
+ * Render a flat struct onto the screen.
  *
+ * @f: Pointer to the flat surface
+ */
+FH_API void fh_flat_render(struct fh_flat *f);
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+/*
+ * Create a new flat surface to enable 2d-rendering.
+ *
+ * @win: A pointer to the window
+ * @x: The x-position in the window
+ * @y: The y-position in the window
  * @w: The initial width
  * @h: The initial height
  *
  * Returns: Either a pointer to the newly created flat surface or NULL if an
  * 	    error occurred
  */
-FH_API struct fh_flat *fh_flat_create(u32 w, u32 h);
+FH_API struct fh_flat *fh_create_flat(char *name, struct fh_window *win,
+		u32 x, u32 y, u32 w, u32 h);
 
 
 /*
@@ -41,20 +88,7 @@ FH_API struct fh_flat *fh_flat_create(u32 w, u32 h);
  *
  * @f: Pointer to the flat surface
  */
-FH_API void fh_flat_destroy(struct fh_flat *f);
-
-
-/*
- * Resize a flat surface.
- *
- * @f: Pointer to the flat surface
- * @w: The new width
- * @h: The new height
- */
-FH_API void fh_flat_resize(struct fh_flat *f, u32 w, u32 h);
-
-
-
+FH_API void fh_destroy_flat(struct fh_flat *f);
 
 
 

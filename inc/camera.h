@@ -281,4 +281,82 @@ FH_API void fh_cam_update(struct fh_camera *cam);
 /* The callback function to call when removing an entry from the camera table */
 FH_API void fh_cam_rmv_fnc(u32 size, void *ptr);
 
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Create a new camera and add it to the camera table.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ * @info: A buffer containing the essential data for the camera
+ *
+ * Returns: Either a pointer to the camera or NULL if an error occurred
+ */
+FH_API struct fh_camera* fh_create_camera(struct fh_window *win, char *name,
+		struct fh_camera_info info);
+
+
+/*
+ * Remove and destroy a camera.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ */
+FH_API void fh_remove_camera(struct fh_window *win, char *name);
+
+
+/*
+ * Get the current view matrix for a camera.
+ * If the camera does not exist or an error occured, an identity-matrix will be
+ * returned.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ * @out: A matrix to write the view matrix to
+ */
+FH_API void fh_get_view(struct fh_window *win, char *name, mat4_t out);
+
+
+/*
+ * Get the current projection matrix for a camera.
+ * If the camera does not exist or an error occured, an identity-matrix will be
+ * returned.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ * @out: A matrix to write the projection matrix to
+ */
+FH_API void fh_get_projection(struct fh_window *win, char *name, mat4_t out);
+
+
+/*
+ * Set the position of a camera.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ * @pos: The new position of the camera
+ */
+FH_API void fh_set_camera_position(struct fh_window *win, char *name,
+		vec3_t pos);
+
+
+/*
+ * Move the camera by a given delta.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the camera
+ * @del: The position difference to move the camera by
+ */
+FH_API void fh_move_camera(struct fh_window *win, char *name, vec3_t del);
+
+
+
+
 #endif /* _FH_CAMERA_H */

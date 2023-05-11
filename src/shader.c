@@ -87,7 +87,7 @@ FH_API void fh_shd_remove(struct fh_window *win, struct fh_shader *shader)
 }
 
 
-FH_INTERN s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
+FH_API s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
 {
 	u32 shd;
 	char info_log[512];
@@ -125,7 +125,7 @@ err_return:
 
 }
 
-FH_INTERN s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
+FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 {
 	char *line = str;
 	struct fh_shader_var *var;
@@ -188,7 +188,8 @@ err_return:
 	return -1;
 }
 
-FH_API struct fh_shader *fh_shd_create(char *name, char *v_src, char *f_src)
+FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
+		const char *f_src)
 {
 	struct fh_shader *shader;
 
@@ -291,8 +292,8 @@ err_return:
 
 FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth)
 {
-	char *v_buf;
-	char *f_buf;
+	char *v_buf = NULL;
+	char *f_buf = NULL;
 	struct fh_shader *shader;
 
 	if(!name || !v_pth || !f_pth) {
@@ -443,3 +444,98 @@ FH_API void fh_shd_rmv_fnc(u32 size, void *ptr)
 	shader = (struct fh_shader *)ptr;
 	fh_shd_destroy(shader);
 }
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API s8 fh_add_shader(struct fh_window *win, char *name,
+		const char *v_src, const char *f_src)
+{
+	struct fh_shader *shader;
+
+	if(!win || !name || !v_src || !f_src) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shader = fh_shd_create(name, v_src, f_src)))
+		goto err_return;
+
+	if(fh_shd_insert(win, shader) < 0)
+		goto err_destroy_shader;
+
+	return 0;
+
+err_destroy_shader:
+	fh_shd_destroy(shader);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new shader");
+	return -1;
+}
+
+
+FH_API s8 fh_load_shader(struct fh_window *win, char *name,
+		char *v_pth, char *f_pth)
+{
+	struct fh_shader *shader;
+
+	if(!win || !name || !v_pth || !f_pth) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shader = fh_shd_load(name, v_pth, f_pth)))
+		goto err_return;
+
+	if(fh_shd_insert(win, shader) < 0)
+		goto err_destroy_shader;
+
+	return 0;
+
+err_destroy_shader:
+	fh_shd_destroy(shader);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to load shader");
+	return -1;
+}
+
+
+FH_API void fh_remove_shader(struct fh_window *win, char *name)
+{
+	struct fh_shader *shader;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(shader = fh_shd_get(win, name))) {
+		ALARM(ALARM_WARN, "Shader not found");
+		return;
+	}
+
+	fh_shd_remove(win, shader);
+}
+
+
+FH_API struct fh_shader *fh_get_shader(struct fh_window *win, char *name)
+{
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	return fh_shd_get(win, name);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get shader");
+	return NULL;
+}
+

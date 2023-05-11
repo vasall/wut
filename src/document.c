@@ -263,3 +263,51 @@ FH_API void fh_doc_tree(struct fh_document *doc)
 
 	fh_ele_hlf_down(doc->body, &fh_cfnc_show_element, NULL);
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API struct fh_element *fh_add(struct fh_window *win,
+		struct fh_element *parent, char *name,
+		enum fh_element_type type)
+{
+	struct fh_element *ele;
+
+	if(!win || !parent || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Add element to document */
+	if(!(ele = fh_doc_add_element(win->document, parent, name, type)))
+		goto err_return;
+		
+	return ele;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to add element");
+	return NULL;
+}
+
+
+FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
+{
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	return fh_doc_find_element(win->document, name);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get element");
+	return NULL;
+}
+
+

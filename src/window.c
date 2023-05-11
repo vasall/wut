@@ -2,6 +2,7 @@
 
 #include "alarm.h"
 #include "system.h"
+#include "predef_resources.h"
 #include "core.h"
 #include "opengl.h"
 #include "document.h"
@@ -9,6 +10,36 @@
 #include <stdlib.h>
 
 
+
+/*
+ * Load the predefined resources necessary for the basic functions of the
+ * window.
+ *
+ * @win: Pointer to the window
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_INTERN s8 fh_win_load_predef(struct fh_window *win)
+{
+	u8 i;
+	char **p;
+
+	/* 				SHADERS 			      */
+	for(i = 0; i < fh_ps_num; i++) {
+		p = fh_ps_lst[i];
+		
+		printf("Load shader: %s\n", p[0]);
+
+		if(fh_load_shader(win, p[0], p[1], p[2]) < 0)
+			goto e;
+	}
+
+	return 0;
+
+e:
+	ALARM(ALARM_ERR, "Failed to load predefined resources");
+	return -1;
+}
 
 
 FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
@@ -70,7 +101,6 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	}
 	win->document = doc;
 
-
 	/*
 	 * Create and intialize the resource tables.
 	 */
@@ -86,8 +116,16 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	if(fh_cam_init(win) < 0)
 		goto err_close_mdl;
 
+	/*
+	 * Load predefined resources.
+	 */
+	if(fh_win_load_predef(win) < 0)
+		goto err_close_cam;
 
 	return win;
+
+err_close_cam:
+	fh_cam_close(win);
 
 err_close_mdl:
 	fh_mdl_close(win);
@@ -397,3 +435,80 @@ FH_API void fh_win_activate(struct fh_window *w)
 
 	SDL_GL_MakeCurrent(w->handle, w->context->context);
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
+		s32 width, s32 height)
+{
+	struct fh_window *win;
+		
+	if(name == NULL || width < 0 || height < 0) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Then create a new window */
+	if(!(win = fh_win_create(name, width, height)))
+		goto err_return;
+
+	/* If a parent is specified */
+	if(parent != NULL) {
+		fh_win_attach(parent, win);
+	}
+	/* Otherwise... */
+	else {
+		/* Mark this window as the main window */
+		win->info = win->info | FH_WIN_INFO_MAIN;
+
+		/* Set this window as the main window */
+		fh_core_set_main_window(win);
+	}
+
+	return win;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create add new window");
+	return NULL;
+}
+
+
+FH_API void fh_activate_window(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	fh_win_activate(win);
+}
+
+
+FH_API void fh_clear_window(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+
+FH_API void fh_redraw_window(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	SDL_GL_SwapWindow(win->handle);
+}
+

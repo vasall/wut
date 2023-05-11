@@ -84,5 +84,13 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base);
 FH_API void fh_bindump(void *p, s32 len);
 
 
+/*
+ * Generate a random string and write it to the given out buffer.
+ *
+ * @out: A char buffer to write the random string to
+ * @size: The number of chars to write
+ */
+FH_API void fh_rand_string(char *out, u16 size);
+
 
 #endif /* _FH_SYSTEM_H */

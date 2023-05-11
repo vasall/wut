@@ -158,3 +158,17 @@ FH_API void fh_evt_process(void)
 
 	fh_zeros(&evt, sizeof(struct fh_event));
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API s8 fh_pull_event(struct fh_event *event)
+{
+	return fh_evt_pipe_pull(event);
+}

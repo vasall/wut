@@ -105,5 +105,40 @@ FH_API s8 fh_doc_render(struct fh_document *doc);
 FH_API void fh_doc_tree(struct fh_document *doc);
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Add a new element to the document of window.
+ *
+ * @win: Pointer to the window
+ * @parent: A pointer to the parent element
+ * @name: The name of the element
+ * @type: The type of the new element
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API struct fh_element *fh_add(struct fh_window *win,
+		struct fh_element *parent, char *name,
+		enum fh_element_type type);
+
+
+/*
+ * Get an element from a window by searching for the given name.
+ *
+ * @win: The window descriptor
+ * @name: The name of the element to look for
+ *
+ * Returns: Either a pointer to the element or NULL if an error occurred
+ */
+FH_API struct fh_element *fh_get(struct fh_window *win, char *name);
+
+
+
 
 #endif /* _FH_DOCUMENT_H */

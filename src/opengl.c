@@ -89,7 +89,7 @@ FH_API s8 fh_gl_init(void)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-#if 0
+#if 1
 	/* Turn on double buffering with a 24bit Z buffer.
 	 * You may need to change this to 16 or 32 for your system */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -125,7 +125,9 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#if 1
 	glEnable(GL_DEPTH_TEST);
+#endif
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(gl_callback, 0);

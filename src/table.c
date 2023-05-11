@@ -107,6 +107,7 @@ FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr)
 	if(!tbl)
 		return -1;
 
+	/* Check if there is already an entry with that name */
 	if(fh_table_find(tbl, name, NULL))
 		return -1;
 

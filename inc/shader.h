@@ -80,7 +80,8 @@ FH_API void fh_shd_remove(struct fh_window *win, struct fh_shader *shader);
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shd_create(char *name, char *v_src, char *f_src);
+FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
+		const char *f_src);
 
 
 /*
@@ -152,5 +153,66 @@ FH_API void fh_shd_show_attrib(struct fh_shader *shd);
  * The remove callback function given to the shader table.
  */
 FH_API void fh_shd_rmv_fnc(u32 size, void *ptr);
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+/*
+ * This function will take the given source code for the vertex- and
+ * fragment-shader and create a new OpenGL shader program and add it to the
+ * shader table.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the shader
+ * @v_src: The source code for the vertex-shader
+ * @f_src: The source code for the fragment-shader
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_add_shader(struct fh_window *win, char *name,
+		const char *v_src, const char *f_src);
+
+
+/*
+ * Load the given vertex- and fragment-shader-files and create an OpenGL shader
+ * program and add it to the shader table.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the shader
+ * @v_pth: The path to the vertex shader file
+ * @f_pth: The path to the fragment shader file
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_load_shader(struct fh_window *win, char *name,
+		char *v_pth, char *f_pth);
+
+
+/*
+ * Remove a shader from the global shader list.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the shader
+ */
+FH_API void fh_remove_shader(struct fh_window *win, char *name);
+
+
+/*
+ * Get a pointer to a shader from the global shader list.
+ *
+ * @win: Pointer to the window
+ * @name: The name of the shader
+ *
+ * Returns: Either a pointer to the shader or NULL if an error occurred
+ */
+FH_API struct fh_shader *fh_get_shader(struct fh_window *win, char *name);
+
 
 #endif

@@ -113,6 +113,8 @@ FH_INTERN void fh_mdl_create_buffers(struct fh_model *mdl)
 	glGenVertexArrays(1, &mdl->vao);
 	glBindVertexArray(mdl->vao);
 
+	printf("mdl vao: %d\n", mdl->vao);
+
 	/* Create the buffer-array-object */
 	glGenBuffers(1, &mdl->bao);
 	glBindBuffer(GL_ARRAY_BUFFER, mdl->bao);
@@ -127,6 +129,8 @@ FH_INTERN void fh_mdl_create_buffers(struct fh_model *mdl)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, mdl->index_buffer,
 			GL_STATIC_DRAW);
 
+
+	glBindVertexArray(0);
 
 #if FH_MDLC_DEBUG
 	printf("Created VAO %d, BAO %d and EBO %d\n", mdl->vao, mdl->bao, mdl->ebo);
@@ -474,14 +478,22 @@ FH_API void fh_mdl_render(struct fh_model *mdl)
 	if(!mdl)
 		return;
 
+	printf("Activate VAO %d\n", mdl->vao);
+
 	/* Activate the vertex-array-object */
 	glBindVertexArray(mdl->vao);
+
+	printf("Use shader %s\n", mdl->shader->name);
 
 	/* Activate shader */
 	fh_shd_use(mdl->shader);
 
+	printf("Activate uniforms\n");
+
 	/* Activate the uniform buffers */
 	fh_mdl_activate_uniforms(mdl);
+
+	printf("Use texture %s\n", mdl->texture->name);
 
 	/* Activate texture */
 	fh_tex_use(mdl->texture);
@@ -489,9 +501,16 @@ FH_API void fh_mdl_render(struct fh_model *mdl)
 	/* Finally render the model */
 	glDrawElements(GL_TRIANGLES, mdl->index_number, GL_UNSIGNED_INT, NULL);
 
+	printf("Unuse texture and shader\n");
+
 	/* Unuse the active texture and shader */
 	fh_tex_unuse();
 	fh_shd_unuse();
+
+	printf("Unuse VAO\n");
+
+	/* Unbind the vertex-array-object */
+	glBindVertexArray(0);
 }
 
 

@@ -121,4 +121,24 @@ FH_API void fh_evt_win_unbind_all(struct fh_window *win);
 FH_API void fh_evt_process(void);
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Pull the oldest event from the event pipe.
+ *
+ * @event: A pointer to write the pulled event to, if there is any
+ *
+ * Returns: 1 if an event has been returned, 0 if there are no more events and
+ * 	    -1 if an error occurred
+ */
+FH_API s8 fh_pull_event(struct fh_event *event);
+
+
+
 #endif /* _FH_EVENT_H */

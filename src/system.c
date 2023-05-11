@@ -110,7 +110,7 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 
 	errno = 0;
 	l = strtol(s, &end, base);
-	
+
 	/* Both checks are needed because INT_MAX == LONG_MAX is possible. */
 	if(l > INT_MAX || (errno == ERANGE && l == LONG_MAX)) {
 		ALARM(ALARM_ERR, "integer overflow");
@@ -124,7 +124,7 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 		ALARM(ALARM_ERR, "inconvertible");
 		goto err_return;
 	}
-	
+
 	*out = l;
 	return 0;
 
@@ -171,4 +171,21 @@ FH_API void fh_bindump(void *p, s32 len)
 	}
 
 	printf("  %s\n", buf);
+}
+
+
+FH_API void fh_rand_string(char *out, u16 size)
+{
+	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK...";
+	u16 i;
+	u8 key;
+
+	if(size) {
+		--size;
+		for (i = 0; i < size; i++) {
+			key = (u8)(rand() %  (sizeof(charset) - 1));
+			out[i] = charset[key];
+		}
+		out[size] = '\0';
+	}
 }

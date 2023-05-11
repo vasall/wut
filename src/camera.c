@@ -498,3 +498,139 @@ FH_API void fh_cam_rmv_fnc(u32 size, void *ptr)
 
 	fh_cam_destroy(cam);
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API struct fh_camera *fh_create_camera(struct fh_window *win, char *name,
+		struct fh_camera_info info)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_create(name, info)))
+		goto err_return;
+
+	if(fh_cam_insert(win, cam) < 0)
+		goto err_destroy_cam;
+
+	return cam;
+
+err_destroy_cam:
+	fh_cam_destroy(cam);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new camera");
+	return NULL;
+}
+
+
+FH_API void fh_remove_camera(struct fh_window *win, char *name)
+{
+	struct fh_camera *cam;
+	
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name)))
+		return;
+
+	fh_cam_remove(win, cam);
+}
+
+
+FH_API void fh_get_view(struct fh_window *win, char *name, mat4_t out)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		goto err_return;
+	}
+
+	fh_cam_get_view(cam, out);
+
+	return;
+
+err_return:
+	mat4_idt(out);
+}
+
+
+FH_API void fh_get_projection(struct fh_window *win, char *name, mat4_t out)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		goto err_return;
+	}
+
+	fh_cam_get_proj(cam, out);
+	
+	return;
+
+err_return:
+	mat4_idt(out);
+}
+
+
+FH_API void fh_set_camera_position(struct fh_window *win, char *name,
+		vec3_t pos)
+{
+	struct fh_camera *cam;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		return;
+	}
+
+	vec3_cpy(cam->pos, pos);
+
+	return;
+}
+
+
+FH_API void fh_move_camera(struct fh_window *win, char *name, vec3_t del)
+{
+	struct fh_camera *cam;
+
+	if(!name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(cam = fh_cam_get(win, name))) {
+		ALARM(ALARM_ERR, "Camera not found");
+		return;
+	}
+
+	vec3_add(cam->pos, del, cam->pos);
+}

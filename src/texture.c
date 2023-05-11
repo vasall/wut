@@ -162,17 +162,16 @@ FH_API void fh_tex_remove(struct fh_window *win, struct fh_texture *texture)
 }
 
 
-FH_API s8 fh_tex_set(struct fh_texture *tex, u16 w, u16 h, u8 *px)
+FH_API s8 fh_tex_set(struct fh_texture *t, u16 x, u16 y, u16 w, u16 h, u8 *px)
 {
-
-	if(!tex || !px) {
+	if(!t || !px) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return -1;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, tex->texture);
+	glBindTexture(GL_TEXTURE_2D, t->texture);
 
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGBA,
+	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -236,3 +235,82 @@ FH_API void fh_tex_rmv_fnc(u32 size, void *ptr)
 
 	fh_tex_destroy(tex);
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API s8 fh_create_texture(struct fh_window *win, char *name, u16 w, u16 h,
+		GLenum format, u8 *px)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name || w < 1 || h < 1 || !px) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(tex = fh_tex_create(name, w, h, format, px)))
+		goto err_return;
+
+	if(fh_tex_insert(win, tex) < 0)
+		goto err_destroy_tex;
+
+	return 0;
+
+err_destroy_tex:
+	fh_tex_destroy(tex);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new texture");
+	return -1;
+}
+
+
+FH_API s8 fh_load_texture(struct fh_window *win, char *name, char *pth)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name || !pth) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(tex = fh_tex_load(name, pth)))
+		goto err_return;
+
+	if(fh_tex_insert(win, tex))
+		goto err_destroy_tex;
+
+	return 0;
+
+err_destroy_tex:
+	fh_tex_destroy(tex);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to load new texture");
+	return -1;
+}
+
+
+FH_API void fh_remove_texture(struct fh_window *win, char *name)
+{
+	struct fh_texture *tex;
+
+	if(!win || !name) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(!(tex = fh_tex_get(win, name)))
+		return;
+
+	fh_tex_remove(win, tex);
+}
+
+
