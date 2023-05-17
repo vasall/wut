@@ -11,43 +11,10 @@
 
 
 
-/*
- * Load the predefined resources necessary for the basic functions of the
- * window.
- *
- * @win: Pointer to the window
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_INTERN s8 fh_win_load_predef(struct fh_window *win)
-{
-	u8 i;
-	char **p;
-
-	/* 				SHADERS 			      */
-	for(i = 0; i < fh_ps_num; i++) {
-		p = fh_ps_lst[i];
-		
-		printf("Load shader: %s\n", p[0]);
-
-		if(fh_load_shader(win, p[0], p[1], p[2]) < 0)
-			goto e;
-	}
-
-	return 0;
-
-e:
-	ALARM(ALARM_ERR, "Failed to load predefined resources");
-	return -1;
-}
-
-
 FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 {
 	struct fh_window *win;
 	SDL_Window *hdl;
-	struct fh_document *doc;
-	struct fh_context *ctx;
 	s8 i;
 	s8 name_len;
 
@@ -87,60 +54,23 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++)
 		win->children[i] = NULL;
 
-	/* Create new OpenGL context */
-	if(!(ctx = fh_gl_create(win))) {
-		ALARM(ALARM_ERR, "Failed to add GL context to window");
+	/* Create the document contained in the window */
+	if(!(win->document = fh_doc_create(win))) {
+		ALARM(ALARM_ERR, "Failed to create document for window");
 		goto err_destroy_hdl;
 	}
-	win->context = ctx;
 
-	/* Create the document contained in the window */
-	if(!(doc = fh_doc_create(win))) {
-		ALARM(ALARM_ERR, "Failed to create document for window");
-		goto err_destroy_ctx;
-	}
-	win->document = doc;
-
-	/*
-	 * Create and intialize the resource tables.
-	 */
-	if(fh_shd_init(win) < 0)
+	/* Create the rendering context used by the window */
+	if(!(win->context = fh_CreateContext(win))) {
+		ALARM(ALARM_ERR, "Failed to create rendering context");
 		goto err_destroy_doc;
-
-	if(fh_tex_init(win) < 0)
-		goto err_close_shd;
-
-	if(fh_mdl_init(win) < 0)
-		goto err_close_tex;
-
-	if(fh_cam_init(win) < 0)
-		goto err_close_mdl;
-
-	/*
-	 * Load predefined resources.
-	 */
-	if(fh_win_load_predef(win) < 0)
-		goto err_close_cam;
+	}
 
 	return win;
 
-err_close_cam:
-	fh_cam_close(win);
-
-err_close_mdl:
-	fh_mdl_close(win);
-
-err_close_tex:
-	fh_tex_close(win);
-
-err_close_shd:
-	fh_shd_close(win);
 
 err_destroy_doc:
 	fh_doc_destroy(win->document);
-
-err_destroy_ctx:
-	fh_gl_destroy(win->context);
 
 err_destroy_hdl:
 	SDL_DestroyWindow(hdl);
@@ -161,17 +91,8 @@ FH_API void fh_win_destroy(struct fh_window *win)
 		goto err_return;
 	}
 
-	/* Close the resource tables */
-	fh_cam_close(win);
-	fh_mdl_close(win);
-	fh_tex_close(win);
-	fh_shd_close(win);
-
 	/* Close the document */
 	fh_doc_destroy(win->document);
-
-	/* Delete the OpenGL context */
-	fh_gl_destroy(win->context);
 
 	/* Destroy the SDL window */
 	SDL_DestroyWindow(win->handle);
@@ -425,16 +346,6 @@ FH_API void fh_win_redraw_all(void)
 	fh_win_hlf_down(main, &fh_win_cfnc_redraw, NULL);	
 }
 
-
-FH_API void fh_win_activate(struct fh_window *w)
-{
-	if(!w) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	SDL_GL_MakeCurrent(w->handle, w->context->context);
-}
 
 
 /*

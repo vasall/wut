@@ -10,8 +10,8 @@
 #define FH_CAM_PITCH_LIM	50.0
 
 enum fh_cam_mode {
-	FH_CAM_FOCUS,
-	FH_CAM_WIDE
+	FH_CAM_FREE,
+	FH_CAM_FOCUS
 };
 
 
@@ -40,120 +40,132 @@ struct fh_camera {
 	mat4_t forw_m;
 
 	mat4_t view_m;
-	mat4_t proj_m;
+	mat4_t projection_m;
 
 	f32 sens;
+
+	/*
+	 * FOCUS-MODE
+	 * 
+	 * With this mode, the camera will focus on a given target.
+	 */
+
+	vec3_t target;		/* The point to focus on */
+	f32 distance;		/* The distance from the target point */
+
+	/* Reference to the context */
+	struct fh_context *context;
 };
 
 
 /*
- * Initialize the camera table for a window.
- * 
- * @win: Pointer to the window
+ * Create and initialize a camera table for a context.
+ *
+ * @ctx: Pointer to the context
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_cam_init(struct fh_window *win);
+FH_API s8 fh_InitCameraTable(struct fh_context *ctx);
 
 
 /*
  * Close the camera table and free the allocated memory.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  */
-FH_API void fh_cam_close(struct fh_window *win);
+FH_API void fh_CloseCameraTable(struct fh_context *ctx);
 
 
 /*
- * Create a new camera.
+ * Create a new camera and add it to the camera table.
  *
+ * @ctx: Pointer to the context
  * @name: The name of the camera
- * @info: A buffer containing essential info about the camera
+ * @info: A buffer containing the essential data for the camera
  *
- * Returns: Either a pointer to the newly created camera or NULL if an error
- * 	    occurred
+ * Returns: Either a pointer to the camera or NULL if an error occurred
  */
-FH_API struct fh_camera *fh_cam_create(char *name, struct fh_camera_info info);
+FH_API struct fh_camera *fh_CreateCamera(struct fh_context *ctx, char *name,
+		struct fh_camera_info info);
 
 
 /*
- * Destroy a camera.
- * 
+ * Remove and destroy a camera.
+ *
  * @cam: Pointer to the camera
  */
-FH_API void fh_cam_destroy(struct fh_camera *cam);
-
-
-/*
- * Insert a newly created camera into the camera table.
- *
- * @win: Pointer to the window
- * @cam: Pointer to the camera
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_cam_insert(struct fh_window *win, struct fh_camera *cam);
-
-
-/*
- * Remove a camera from the camera table.
- *
- * @win: Pointer to the window
- * @cam: Pointer to the camera
- */
-FH_API void fh_cam_remove(struct fh_window *win,struct fh_camera *cam);
+FH_API void fh_RemoveCamera(struct fh_camera *cam);
 
 
 /*
  * Get a camera from the camera table.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  * @name: The name of the camera
  *
- * Returns: A pointer to the camera or NULL if the camera was not found or an
- * 	    error occurred
+ * Returns: A pointer to the camera or NULL if either an error occurred, or the
+ * 	    camera could not be found
  */
-FH_API struct fh_camera *fh_cam_get(struct fh_window *win, char *name);
+FH_API struct fh_camera *fh_GetCamera(struct fh_context *ctx, char *name);
 
 
 /*
- * Get the current view-matrix of a camera.
- * If the camera if NULL, the matrix will become an Identity-Matrix.
+ * Get the current view matrix for a camera.
+ * If the camera does not exist or an error occured, an identity-matrix will be
+ * returned.
  *
  * @cam: Pointer to the camera
- * @out: A matrix to write the view-matrix to
+ * @out: A matrix to write the view matrix to
  */
-FH_API void fh_cam_get_view(struct fh_camera *cam, mat4_t out);
+FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out);
 
 
 /*
- * Get the current projection-matrix of a camera.
- * If the camera if NULL, the matrix will become an Identity-Matrix.
+ * Get the current projection matrix for a camera.
+ * If the camera does not exist or an error occured, an identity-matrix will be
+ * returned.
  *
  * @cam: Pointer to the camera
- * @out: A matrix to write the projection-matrix to
+ * @out: A matrix to write the projection matrix to
  */
-FH_API void fh_cam_get_proj(struct fh_camera *cam, mat4_t out);
+FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out);
 
 
 /*
- * Set the position of the camera. This function will then also update the
- * view-matrix.
- *
- * @cam: Pointer to the camera
- * @pos: The new position of the fh_camera
- */
-FH_API void fh_cam_set_pos(struct fh_camera *cam, vec3_t pos);
-
-
-/*
- * Get the current position of the fh_camera.
+ * Get the current position of a camera.
  * If the camera is NULL, a Null-Vector will be returned.
  *
  * @cam: Pointer to the camera
- * @pos: A vector to write the current position to
+ * @out: A vector to write the position to
  */
-FH_API void fh_cam_get_pos(struct fh_camera *cam, vec3_t pos);
+FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out);
+
+/*
+ * Set the position of a camera.
+ *
+ * @cam: Pointer to the camera
+ * @pos: The new position of the camera
+ */
+FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos);
+
+
+/*
+ * Move the camera by a given delta.
+ *
+ * @cam: Pointer to the camera
+ * @del: The position difference to move the camera by
+ */
+FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del);
+
+
+/*
+ * Get the current direction of a camera.
+ * If the camera is NULL, a Null-Vector will be returned.
+ *
+ * @cam: Pointer to the camera
+ * @out: A vector to write the direction to
+ */
+FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out);
 
 
 /*
@@ -161,86 +173,9 @@ FH_API void fh_cam_get_pos(struct fh_camera *cam, vec3_t pos);
  * view-matrix.
  *
  * @cam: Pointer to the camera
- * @dir: the new direction of the fh_camera
+ * @dir: The new direction of the camera
  */
-FH_API void fh_cam_set_dir(struct fh_camera *cam, vec3_t dir);
-
-
-/*
- * Get the current direction of the fh_camera.
- * If the camera is NULL, a Null-Vector will be returned.
- *
- * @cam: Pointer to the camera
- * @dir: A vector to write the current direction to
- */
-FH_API void fh_cam_get_dir(struct fh_camera *cam, vec3_t dir);
-
-
-/*
- * Change the distance of the fh_camera to the focused object. Note that this
- * function will only work, if the camera is focusing on a point.
- *
- * @cam: Pointer to the camera
- * @val: The cange in zoom
- */
-FH_API void fh_cam_zoom(struct fh_camera *cam, s16 val);
-
-
-/*
- * Change the rotation of the camera. This function will then update the
- * view-matrix of the camera.
- *
- * @cam: Pointer to the camera
- * @d_yaw: The delta-yaw value (up and down)
- * @d_pitch: The delta pitch value (left and right)
- */
-FH_API void fh_cam_rot(struct fh_camera *cam, f32 d_yaw, f32 d_pitch);
-
-
-/*
- * Move the _camera with a certain vector. This function will then update the
- * view-matrix.
- *
- * @cam: Pointer to the camera
- * @mov: The movement-vector the vector is going to be moved by
- */
-FH_API void fh_cam_mov(struct fh_camera *cam, vec3_t mov);
-
-
-/*
- * Focus the camera on a given position and recalculate the view-matrix.
- *
- * @cam: Pointer to the camera
- * @trg: The position to focus on
- */
-FH_API void fh_cam_look_at(struct fh_camera *cam, vec3_t trg);
-
-
-/*
- * Recalculate the projection matrix of the camera using the info buffer
- * attached to the camera.
- *
- * @cam: Pointer to the camera
- */
-FH_API void fh_cam_update_proj(struct fh_camera *cam);
-
-
-/*
- * This function will recalculate the view-matrix of the camera.
- *
- * @cam: Pointer to the camera
- */
-FH_API void fh_cam_update_view(struct fh_camera *cam);
-
-
-/*
- * Set the camera-position and the position to focus the camera on.
- *
- * @cam: Pointer to the camera
- * @pos: The new position of the camera
- * @trg: The position to focus the camera on
- */
-FH_API void fh_cam_set(struct fh_camera *cam, vec3_t pos, vec3_t trg);
+FH_API void fh_SetCameraDirection(struct fh_camera *cam, vec3_t dir);
 
 
 /*
@@ -250,7 +185,7 @@ FH_API void fh_cam_set(struct fh_camera *cam, vec3_t pos, vec3_t trg);
  *
  * Returns: The current mode of the camera
  */
-FH_API enum fh_cam_mode fh_cam_get_mode(struct fh_camera *cam); 
+FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam); 
 
 
 /*
@@ -259,7 +194,7 @@ FH_API enum fh_cam_mode fh_cam_get_mode(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @mode: The new mode of the camera
  */
-FH_API void fh_cam_set_mode(struct fh_camera *cam, enum fh_cam_mode mode);
+FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode);
 
 
 /*
@@ -267,7 +202,39 @@ FH_API void fh_cam_set_mode(struct fh_camera *cam, enum fh_cam_mode mode);
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_cam_tgl_mode(struct fh_camera *cam);
+FH_API void fh_ToggleCameraMode(struct fh_camera *cam);
+
+
+/*
+ * Change the direction of the camera to look at the given point.
+ * This will only work if the camera is in the Free-Mode.
+ *
+ * @cam: Pointer to the camera
+ * @pnt: The point to look at
+ */
+FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt);
+
+
+/*
+ * Switch the camera to focus mode and target a focus point.
+ *
+ * @cam: Pointer to the camera
+ * @trg: The target point to focus on
+ */
+FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg);
+
+
+/*
+ * Zoom by a given value.
+ *
+ * @cam: Pointer to the camera
+ * @f: The value to zoom by
+ */
+FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f);
+
+
+
+FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch);
 
 
 /*
@@ -275,88 +242,6 @@ FH_API void fh_cam_tgl_mode(struct fh_camera *cam);
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_cam_update(struct fh_camera *cam);
-
-
-/* The callback function to call when removing an entry from the camera table */
-FH_API void fh_cam_rmv_fnc(u32 size, void *ptr);
-
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				APPLICATION-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-/*
- * Create a new camera and add it to the camera table.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- * @info: A buffer containing the essential data for the camera
- *
- * Returns: Either a pointer to the camera or NULL if an error occurred
- */
-FH_API struct fh_camera* fh_create_camera(struct fh_window *win, char *name,
-		struct fh_camera_info info);
-
-
-/*
- * Remove and destroy a camera.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- */
-FH_API void fh_remove_camera(struct fh_window *win, char *name);
-
-
-/*
- * Get the current view matrix for a camera.
- * If the camera does not exist or an error occured, an identity-matrix will be
- * returned.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- * @out: A matrix to write the view matrix to
- */
-FH_API void fh_get_view(struct fh_window *win, char *name, mat4_t out);
-
-
-/*
- * Get the current projection matrix for a camera.
- * If the camera does not exist or an error occured, an identity-matrix will be
- * returned.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- * @out: A matrix to write the projection matrix to
- */
-FH_API void fh_get_projection(struct fh_window *win, char *name, mat4_t out);
-
-
-/*
- * Set the position of a camera.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- * @pos: The new position of the camera
- */
-FH_API void fh_set_camera_position(struct fh_window *win, char *name,
-		vec3_t pos);
-
-
-/*
- * Move the camera by a given delta.
- *
- * @win: Pointer to the window
- * @name: The name of the camera
- * @del: The position difference to move the camera by
- */
-FH_API void fh_move_camera(struct fh_window *win, char *name, vec3_t del);
-
-
-
+FH_API void fh_UpdateCamera(struct fh_camera *cam);
 
 #endif /* _FH_CAMERA_H */

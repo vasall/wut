@@ -115,7 +115,7 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 		goto err_return;
 	}
 
-	if(!(ctx->context = SDL_GL_CreateContext(win->handle))) {
+	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
 		ALARM(ALARM_ERR, "Failed to create GL context");
 		goto err_return;
 	}
@@ -125,9 +125,7 @@ FH_API struct fh_context *fh_gl_create(struct fh_window *win)
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if 1
 	glEnable(GL_DEPTH_TEST);
-#endif
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(gl_callback, 0);
@@ -148,7 +146,7 @@ FH_API void fh_gl_destroy(struct fh_context *ctx)
 	}
 
 
-	SDL_GL_DeleteContext(ctx->context);
+	SDL_GL_DeleteContext(ctx->gl_context);
 
 	fh_free(ctx);
 }

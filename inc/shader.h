@@ -1,14 +1,13 @@
 #ifndef _FH_SHADER_H
 #define _FH_SHADER_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
 #include "table.h"
-#include "import.h"
-#include "window.h"
+#include "context.h"
 
 #define FH_SHADER_LIM		128
 #define FH_SHADER_VAR_LIM	16
+
 
 struct fh_shader_var {
 	char name[64];
@@ -31,104 +30,92 @@ struct fh_shader {
 
 	/* The inputs for the shader */
 	struct fh_shader_inputs inputs;
+
+	/* A reference to the context */
+	struct fh_context *context;
 };
 
+
 /*
- * Initialize the shader table for a window.
+ * Create and initialize the shader table for a context.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_shd_init(struct fh_window *win);
+FH_API s8 fh_InitShaderTable(struct fh_context *ctx);
 
 
 /*
- * Destroy the global shader-list and free the allocated memory.
+ * Destroy and free the shader table attached to a context.
+ *
+ * @ctx: Pointer to the context
  */
-FH_API void fh_shd_close(struct fh_window *win);
+FH_API void fh_CloseShaderTable(struct fh_context *ctx);
 
 
 /*
- * Insert a new shader into the shader table of a window.
+ * This function will take the given source code for the vertex- and
+ * fragment-shader and create a new OpenGL shader program and add it to the
+ * shader table.
  *
- * @win: Pointer to the window
- * @shader: The shader to insert
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_shd_insert(struct fh_window *win, struct fh_shader *shader);
-
-
-/*
- * Remove a shader from the shader table of a window.
- * This will also destroy the shader.
- *
- * @win: Pointer to the window
- * @shader: A pointer to the shader to remove
- */
-FH_API void fh_shd_remove(struct fh_window *win, struct fh_shader *shader);
-
-
-/*
- * Create a new shader. This function will automatically extract all input
- * variables for the vertex shader.
- *
+ * @ctx: Pointer to the context
  * @name: The name of the shader
  * @v_src: The source code for the vertex-shader
  * @f_src: The source code for the fragment-shader
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
-		const char *f_src);
+FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
+		const char *v_src, const char *f_src);
 
 
 /*
- * This function will load the source code from the vertex- and
- * fragment-shader files and pass it onto the fh_shd_create() function.
+ * Load the given vertex- and fragment-shader-files and create an OpenGL shader
+ * program and add it to the shader table.
  *
+ * @ctx: Pointer to the context
  * @name: The name of the shader
- * @v_pth: The path to the vertex-shader
- * @f_pth: The path ot the fragment-shader
+ * @v_pth: The path to the vertex shader file
+ * @f_pth: The path to the fragment shader file
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth);
+FH_API struct fh_shader *fh_LoadShader(struct fh_context *ctx, char *name,
+		char *v_pth, char *f_pth);
 
 
 /*
- * Destroy a shader and free the memory.
+ * Remove a shader from the global shader list.
  *
- * @shader: A pointer to the shader to destroy
+ * @shd: Pointer to the shader
  */
-FH_API void fh_shd_destroy(struct fh_shader *shader);
+FH_API void fh_RemoveShader(struct fh_shader *shd);
 
 
 /*
- * Get a shader from the shader table of a window.
+ * Get a pointer to a shader from the global shader list.
  *
- * @win: Pointer to the window
- * @name: The name of the shader to get
+ * @ctx: Pointer to the context
+ * @name: The name of the shader
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_shd_get(struct fh_window *win, char *name);
+FH_API struct fh_shader *fh_GetShader(struct fh_context *ctx, char *name);
 
 
 /*
  * Activate a shader so it can be used for rendering.
  *
- * @shd: Pointer to the shader to use
+ * @shd: Pointer to the shader
  */
-FH_API void fh_shd_use(struct fh_shader *shd); 
+FH_API void fh_UseShader(struct fh_shader *shd); 
 
 
 /*
  * Unuse the active shader.
  */
-FH_API void fh_shd_unuse(void);
-
+FH_API void fh_UnuseShader(void);
 
 /*
  * Get the location of a input variable in the shader.
@@ -138,8 +125,9 @@ FH_API void fh_shd_unuse(void);
  *
  * Returns: The location or -1 if an error occurred
  */
-FH_API s8 fh_shd_loc(struct fh_shader *shd, char *var);
+FH_API s8 fh_ShaderGetLocation(struct fh_shader *shd, char *var);
 
+#if 0
 
 /*
  * Display all attributes of the shader in the console.
@@ -147,72 +135,6 @@ FH_API s8 fh_shd_loc(struct fh_shader *shd, char *var);
  * @shd: Pointer to the shader
  */
 FH_API void fh_shd_show_attrib(struct fh_shader *shd);
-
-
-/*
- * The remove callback function given to the shader table.
- */
-FH_API void fh_shd_rmv_fnc(u32 size, void *ptr);
-
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				APPLICATION-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-
-/*
- * This function will take the given source code for the vertex- and
- * fragment-shader and create a new OpenGL shader program and add it to the
- * shader table.
- *
- * @win: Pointer to the window
- * @name: The name of the shader
- * @v_src: The source code for the vertex-shader
- * @f_src: The source code for the fragment-shader
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_add_shader(struct fh_window *win, char *name,
-		const char *v_src, const char *f_src);
-
-
-/*
- * Load the given vertex- and fragment-shader-files and create an OpenGL shader
- * program and add it to the shader table.
- *
- * @win: Pointer to the window
- * @name: The name of the shader
- * @v_pth: The path to the vertex shader file
- * @f_pth: The path to the fragment shader file
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_load_shader(struct fh_window *win, char *name,
-		char *v_pth, char *f_pth);
-
-
-/*
- * Remove a shader from the global shader list.
- *
- * @win: Pointer to the window
- * @name: The name of the shader
- */
-FH_API void fh_remove_shader(struct fh_window *win, char *name);
-
-
-/*
- * Get a pointer to a shader from the global shader list.
- *
- * @win: Pointer to the window
- * @name: The name of the shader
- *
- * Returns: Either a pointer to the shader or NULL if an error occurred
- */
-FH_API struct fh_shader *fh_get_shader(struct fh_window *win, char *name);
-
+#endif
 
 #endif

@@ -1,9 +1,8 @@
 #ifndef _FH_WINDOW_H
 #define _FH_WINDOW_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
+#include "context.h"
 
 
 #define FH_WIN_NAME_LIM  	126
@@ -36,9 +35,6 @@ struct fh_window {
 	/* The SDL_Window-handle */
 	SDL_Window *handle;
 
-	/* The OpenGL context */
-	struct fh_context *context;
-
 	/* References to both the parent and children windows */
 	struct fh_window *parent;
 
@@ -48,24 +44,8 @@ struct fh_window {
 	/* The document contained in this window */
 	struct fh_document *document;
 
-	/*
-	 * Resources used by this window.
-	 */
-
-	/* Shaders */
-	struct fh_table *shaders;
-
-	/* Textures */
-	struct fh_table *textures;
-
-	/* Models */
-	struct fh_table *models;
-
-	/* Fonts */
-	struct fh_table *fonts;
-
-	/* Cameras */
-	struct fh_table *cameras;
+	/* The rendering context */
+	struct fh_context *context;
 };
 
 

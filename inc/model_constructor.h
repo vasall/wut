@@ -38,15 +38,24 @@ struct fh_model_c_unibuf {
 	u32 size;
 };
 
+enum fh_model_c_type {
+	FH_MODELC_DEFAULT,
+	FH_MODELC_RIGGED,
+	FH_MODELC_CUSTOM
+};
+
 struct fh_model_c {
 	/* The name of the new model */
 	char name[FH_MODEL_NAME_LIM];
 
-	/* The shader to use for this model */
-	char shader[128];
+	/* The construction process to utilize */
+	enum fh_model_c_type type;
 
-	/* The name of the texture to use for this model */
-	char texture[128];
+	/* The shader to use for the model */
+	struct fh_shader *shader;
+
+	/* The texture to use for the model */
+	struct fh_texture *texture;
 
 	/* The number of vertices */
 	u32 vtx_num;
@@ -75,30 +84,58 @@ struct fh_model_c {
  *
  * Returns: A new constructor or NULL if an error occurred
  */
-FH_API struct fh_model_c *fh_mdlc_begin(char *name, u32 vnum,
-		u32 inum, u32 *idx);
+FH_API struct fh_model_c *fh_BeginModelConstr(char *name,
+		u32 vnum, u32 inum, u32 *idx);
 
 
 /*
- * Set the shader of the model during construction.
+ * Finalize construction and get the finished model. This function will also
+ * insert the model into the model table of the given context.
  *
- * @c: Pointer to the model constructor
- * @shader: The name of the shader(which has to be loaded already)
+ * @c: Pointer to the constructor
+ * @ctx: Pointer to the context
+ * @pos: The initial position of the model
+ * @rot: The initial rotation of the model
+ *
+ * Returns: Either a pointer to the finished model or NULL if an error occurred
  */
-FH_API void fh_mdlc_shader(struct fh_model_c *c, char *shader);
+FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
+		struct fh_context *ctx, vec3_t pos, vec3_t rot);
+
+
+/*
+ * After the model constructor has been utilized and is not need anymore, this
+ * function should be called to cleanup everything and free the allocated
+ * memory. The models that have been created using the constructor are
+ * unaffected.
+ *
+ * @c: Pointer to the constructor
+ */
+FH_API void fh_ModelConstrCleanup(struct fh_model_c *c);
 
 
 /*
  * Set the texture of the model during construction.
  *
  * @c: Pointer to the model constructor
- * @texture: The name of the texture(which has to be loaded already)
+ * @tex: Pointer to the texture
  */
-FH_API void fh_mdlc_texture(struct fh_model_c *c, char *texture);
+FH_API void fh_ModelConstrTexture(struct fh_model_c *c, struct fh_texture *tex);
+
+
+/*
+ * Set the shader of the model during construction.
+ *
+ * @c: Pointer to the model constructor
+ * @shd: Pointer to the shader
+ */
+FH_API void fh_ModelConstrShader(struct fh_model_c *c, struct fh_shader *shd);
 
 
 /*
  * Attach a new attribute to the model.
+ *
+ * Use like: fh_ModelConstrAttrib(c, "v_pos", 3, GL_FLOAT, vtx);
  *
  * @c: Pointer to the model constructor
  * @name: The name of the new attribute(has to match the shader input)
@@ -106,35 +143,20 @@ FH_API void fh_mdlc_texture(struct fh_model_c *c, char *texture);
  * @type: The data type of an element
  * @data: The buffer containing the data
  */
-FH_API void fh_mdlc_attrib(struct fh_model_c *c, char *name, u8 size,
+FH_API void fh_ModelConstrAttrib(struct fh_model_c *c, char *name, u8 size,
 		GLenum type, void *data);
 
 
 /*
  * Add a new uniform buffer to the model.
  *
+ * Use like: fh_ModelConstrUniform(c, "camera", sizeof(struct uniform_buffer));
+ *
  * @c: Pointer to the model constructor
  * @name: The name of the uniform buffer
  * @size: The size of the uniform buffer in bytes
  */
-FH_API void fh_mdlc_uniform(struct fh_model_c *c, char *name, u32 size);
-
-
-/*
- * Finalize the model and get the model. To destroy the constructor call
- * fh_mdlc_destroy().
- *
- * @c: Pointer to the model constructor
- */
-FH_API struct fh_model *fh_mdlc_finish(struct fh_model_c *c);
-
-
-/*
- * Destroy the model constructor and free the allocated memory.
- */
-FH_API void fh_mdlc_destroy(struct fh_model_c *c);
-
-
+FH_API void fh_ModelConstrUniform(struct fh_model_c *c, char *name, u32 size);
 
 
 

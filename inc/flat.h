@@ -38,49 +38,27 @@ struct fh_flat {
 
 	struct fh_flat_pixel *pixels;
 
-	/* A pointer to the shader used for rendering the flat struct  */
-	struct fh_shader *shader;
 
 	/* A texture used to render the flat struct using OpenGL */
 	struct fh_texture *texture;
 
-	/* A model to utilize the texture */
-	struct fh_model *model;
+	struct fh_context *context;
 };
-
-
-
-/*
- * Render a flat struct onto the screen.
- *
- * @f: Pointer to the flat surface
- */
-FH_API void fh_flat_render(struct fh_flat *f);
-
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				APPLICATION-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
 
 
 /*
  * Create a new flat surface to enable 2d-rendering.
  *
- * @win: A pointer to the window
- * @x: The x-position in the window
- * @y: The y-position in the window
+ * @ctx: Pointer to the context
+ * @name: The name of the flat
  * @w: The initial width
  * @h: The initial height
  *
  * Returns: Either a pointer to the newly created flat surface or NULL if an
  * 	    error occurred
  */
-FH_API struct fh_flat *fh_create_flat(char *name, struct fh_window *win,
-		u32 x, u32 y, u32 w, u32 h);
+FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name,
+		u32 w, u32 h);
 
 
 /*
@@ -88,7 +66,7 @@ FH_API struct fh_flat *fh_create_flat(char *name, struct fh_window *win,
  *
  * @f: Pointer to the flat surface
  */
-FH_API void fh_destroy_flat(struct fh_flat *f);
+FH_API void fh_DestroyFlat(struct fh_flat *f);
 
 
 

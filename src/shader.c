@@ -1,102 +1,16 @@
 #include "shader.h"
 
-#include "alarm.h"
-#include "system.h"
 #include "core.h"
-#include "file.h"
-#include "system.h"
 
 #include <stdlib.h>
 
 
 
-FH_API s8 fh_shd_init(struct fh_window *win)
-{
-	struct fh_table *tbl;
-	float vec[3];
-
-	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	vec3_set(vec, 1, 2, 3);
-
-	if(!(tbl = fh_tbl_create(&fh_shd_rmv_fnc))) {
-		ALARM(ALARM_ERR, "Failed to create fh_table");
-		goto err_return;
-	}
-
-	/* Attach the shader table to a window */
-	win->shaders = tbl;
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to initialize global shader table");
-	return -1;
-}
-
-
-FH_API void fh_shd_close(struct fh_window *win)
-{
-	if(!win) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	fh_tbl_destroy(win->shaders);
-	win->shaders = NULL;
-}
-
-
-FH_API s8 fh_shd_insert(struct fh_window *win, struct fh_shader *shader)
-{
-	u32 size;
-	void **p;
-
-	if(!win || !shader) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	size = sizeof(struct fh_shader);
-	p = (void **)&shader;
-
-	if(fh_tbl_add(win->shaders, shader->name, size, p) < 0) {
-		ALARM(ALARM_ERR, "Failed to insert entry into fh_table");
-		goto err_return;
-	}
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to insert new shader into shader list");
-	return -1;
-}
-
-
-FH_API void fh_shd_remove(struct fh_window *win, struct fh_shader *shader)
-{
-	if(!win || !shader) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	fh_tbl_rmv(win->shaders, shader->name);
-}
-
-
-FH_API s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
+FH_INTERN s8 shd_new_shader(u32 type, char *src, u32 *shd_out)
 {
 	u32 shd;
 	char info_log[512];
 	s32 success;
-
-	if(!src) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
 
 	/*
 	 * Create and compile the shader.
@@ -105,27 +19,24 @@ FH_API s8 fh_shd_new_shader(u32 type, char *src, u32 *shd_out)
 	glShaderSource(shd, 1, (const char **)&src, NULL);
 	glCompileShader(shd);
 
+	/*
+	 * Check if something went wrong.
+	 */
 	glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
 	if(!success) {
 		glGetShaderInfoLog(shd, 512, NULL, info_log);
 		ALARM(ALARM_ERR, info_log);
 		ALARM(ALARM_ERR, "Failed to compile vertex shader");
-		goto err_delete_shd;
+
+		glDeleteShader(shd);
+		return -1;
 	}
 
 	*shd_out = shd;
 	return 0;
-
-err_delete_shd:
-	glDeleteShader(shd);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create shader");
-	return -1;
-
 }
 
-FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
+FH_INTERN s8 shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 {
 	char *line = str;
 	struct fh_shader_var *var;
@@ -134,11 +45,6 @@ FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 	char *end;
 	s32 len;
 	char loc_str[512];
-
-	if(!inp || !str) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
 
 	while (*line != '\0') {
 		if (strstr(line, "in ")) {
@@ -181,14 +87,10 @@ FH_API s8 fh_shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 
 	inp->num = num_vars;
 
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to extract shader inputs");
-	return -1;
+	return num_vars;
 }
 
-FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
+FH_INTERN struct fh_shader *shd_create(char *name, const char *v_src,
 		const char *f_src)
 {
 	struct fh_shader *shader;
@@ -198,12 +100,6 @@ FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
 
 	s32 success;
 	char info_log[512];
-
-
-	if(!name || !v_src || !f_src) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
 
 	/*
 	 * Allocate memory for shader.
@@ -216,17 +112,17 @@ FH_API struct fh_shader *fh_shd_create(char *name, const char *v_src,
 	/*
 	 * Extract the input variables from the vertex-shader.
 	 */
-	if(fh_shd_extract_inputs(&shader->inputs, v_src) < 0)
+	if(shd_extract_inputs(&shader->inputs, v_src) < 1)
 		goto err_free_shader;
 
 
 	/*
 	 * Create and compile the vertex- and fragment-shader.
 	 */
-	if(fh_shd_new_shader(GL_VERTEX_SHADER, v_src, &vshader) < 0)
+	if(shd_new_shader(GL_VERTEX_SHADER, v_src, &vshader) < 0)
 		goto err_free_shader;
 
-	if(fh_shd_new_shader(GL_FRAGMENT_SHADER, f_src, &fshader) < 0)
+	if(shd_new_shader(GL_FRAGMENT_SHADER, f_src, &fshader) < 0)
 		goto err_delete_vshader;
 
 
@@ -290,16 +186,11 @@ err_return:
 }
 
 
-FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth)
+FH_INTERN struct fh_shader *shd_load(char *name, char *v_pth, char *f_pth)
 {
 	char *v_buf = NULL;
 	char *f_buf = NULL;
 	struct fh_shader *shader;
-
-	if(!name || !v_pth || !f_pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
 
 	/*
 	 * Read the vertex and fragment shader files.
@@ -318,7 +209,7 @@ FH_API struct fh_shader *fh_shd_load(char *name, char *v_pth, char *f_pth)
 	 * Pass the source code for the shaders to the create function and
 	 * create shader program.
 	 */
-	if(!(shader = fh_shd_create(name, v_buf, f_buf)))
+	if(!(shader = shd_create(name, v_buf, f_buf)))
 		goto err_free_f_buf;
 
 	fh_free(v_buf);
@@ -338,30 +229,168 @@ err_return:
 }
 
 
-FH_API void fh_shd_destroy(struct fh_shader *shader)
+FH_INTERN void shd_destroy(struct fh_shader *shd)
 {
-	if(!shader)
-		return;
+	glDeleteProgram(shd->program);
 
-	glDeleteProgram(shader->program);
-
-	fh_free(shader);
+	fh_free(shd);
 }
 
 
-FH_API struct fh_shader *fh_shd_get(struct fh_window *win, char *name)
+FH_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_shader *shader;
 
-	if(!name) {
+	/* SILENCIO! */
+	if(size) {}
+
+	if(!ptr)
+		return;
+
+	shader = (struct fh_shader *)ptr;
+	shd_destroy(shader);
+}
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_API s8 fh_InitShaderTable(struct fh_context *ctx)
+{
+	struct fh_table *tbl;
+	float vec[3];
+
+	if(!ctx) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_tbl_get(win->shaders, name, NULL, (void **)&shader) != 1) {
-		ALARM(ALARM_ERR, "Shader could not be found in fh_table");
+	vec3_set(vec, 1, 2, 3);
+
+	if(!(tbl = fh_tbl_create(&shd_rmv_fnc))) {
+		ALARM(ALARM_ERR, "Failed to create fh_table");
 		goto err_return;
 	}
+
+	/* Attach the shader table to the context */
+	ctx->shaders = tbl;
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to initialize shader table");
+	return -1;
+}
+
+
+FH_API void fh_CloseShaderTable(struct fh_context *ctx)
+{
+	if(!ctx) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_tbl_destroy(ctx->shaders);
+	ctx->shaders = NULL;
+}
+
+
+FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
+		const char *v_src, const char *f_src)
+{
+	struct fh_shader *shd;
+	u32 size;
+	void **p;
+
+	if(!ctx || !name || !v_src || !f_src) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shd = shd_create(name, v_src, f_src)))
+		goto err_return;
+
+	/* Set additional attributes */
+	shd->context = ctx;
+
+	/* Insert shader into table */
+	size = sizeof(struct fh_shader);
+	p = (void **)&shd;
+	if(fh_ContextAdd(ctx, FH_CONTEXT_SHADERS, name, size, p) < 0)
+		goto err_destroy_shader;
+
+	return shd;
+
+err_destroy_shader:
+	shd_destroy(shd);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new shader");
+	return NULL;
+}
+
+
+FH_API struct fh_shader *fh_LoadShader(struct fh_context *ctx, char *name,
+		char *v_pth, char *f_pth)
+{
+	struct fh_shader *shd;
+	u32 size;
+	void **p;
+
+	if(!ctx || !name || !v_pth || !f_pth) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(!(shd = shd_load(name, v_pth, f_pth)))
+		goto err_return;
+
+	/* Set additional attributes */
+	shd->context = ctx;
+
+	/* Insert shader into table */
+	size = sizeof(struct fh_shader);
+	p = (void **)&shd;
+	if(fh_ContextAdd(ctx, FH_CONTEXT_SHADERS, name, size, p) < 0)
+		goto err_destroy_shader;
+
+	return shd;
+
+err_destroy_shader:
+	shd_destroy(shd);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to load shader");
+	return NULL;
+}
+
+
+FH_API void fh_RemoveShader(struct fh_shader *shd)
+{
+	if(!shd) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_ContextRemove(shd->context, FH_CONTEXT_SHADERS, shd->name);
+}
+
+
+FH_API struct fh_shader *fh_GetShader(struct fh_context *ctx, char *name)
+{
+	struct fh_shader *shader;
+
+	if(!ctx || !name) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	if(fh_tbl_get(ctx->shaders, name, NULL, (void **)&shader) != 1)
+		return NULL;
 
 	return shader;
 
@@ -371,7 +400,7 @@ err_return:
 }
 
 
-FH_API void fh_shd_use(struct fh_shader *shd)
+FH_API void fh_UseShader(struct fh_shader *shd)
 {
 	u8 i;
 
@@ -389,13 +418,13 @@ FH_API void fh_shd_use(struct fh_shader *shd)
 } 
 
 
-FH_API void fh_shd_unuse(void)
+FH_API void fh_UnuseShader(void)
 {
 	glUseProgram(0);
 }
 
 
-FH_API s8 fh_shd_loc(struct fh_shader *shd, char *var)
+FH_API s8 fh_ShaderGetLocation(struct fh_shader *shd, char *var)
 {
 	s8 i;
 
@@ -412,8 +441,9 @@ FH_API s8 fh_shd_loc(struct fh_shader *shd, char *var)
 	return -1;
 }
 
+#if 0
 
-FH_API void fh_shd_show_attrib(struct fh_shader *shd)
+FH_API void fh_shd_show(struct fh_shader *shd)
 {
 	s32 i;
 	struct fh_shader_var *var;
@@ -429,113 +459,4 @@ FH_API void fh_shd_show_attrib(struct fh_shader *shd)
 		printf("[%d]: %s %s\n", var->location, var->type, var->name);
 	}
 }
-
-
-FH_API void fh_shd_rmv_fnc(u32 size, void *ptr)
-{
-	struct fh_shader *shader;
-
-	/* SILENCIO! */
-	if(size) {}
-
-	if(!ptr)
-		return;
-
-	shader = (struct fh_shader *)ptr;
-	fh_shd_destroy(shader);
-}
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				APPLICATION-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-FH_API s8 fh_add_shader(struct fh_window *win, char *name,
-		const char *v_src, const char *f_src)
-{
-	struct fh_shader *shader;
-
-	if(!win || !name || !v_src || !f_src) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	if(!(shader = fh_shd_create(name, v_src, f_src)))
-		goto err_return;
-
-	if(fh_shd_insert(win, shader) < 0)
-		goto err_destroy_shader;
-
-	return 0;
-
-err_destroy_shader:
-	fh_shd_destroy(shader);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create new shader");
-	return -1;
-}
-
-
-FH_API s8 fh_load_shader(struct fh_window *win, char *name,
-		char *v_pth, char *f_pth)
-{
-	struct fh_shader *shader;
-
-	if(!win || !name || !v_pth || !f_pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	if(!(shader = fh_shd_load(name, v_pth, f_pth)))
-		goto err_return;
-
-	if(fh_shd_insert(win, shader) < 0)
-		goto err_destroy_shader;
-
-	return 0;
-
-err_destroy_shader:
-	fh_shd_destroy(shader);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to load shader");
-	return -1;
-}
-
-
-FH_API void fh_remove_shader(struct fh_window *win, char *name)
-{
-	struct fh_shader *shader;
-
-	if(!win || !name) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	if(!(shader = fh_shd_get(win, name))) {
-		ALARM(ALARM_WARN, "Shader not found");
-		return;
-	}
-
-	fh_shd_remove(win, shader);
-}
-
-
-FH_API struct fh_shader *fh_get_shader(struct fh_window *win, char *name)
-{
-	if(!win || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	return fh_shd_get(win, name);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to get shader");
-	return NULL;
-}
-
+#endif

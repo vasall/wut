@@ -5,7 +5,7 @@
 #include "datatype.h"
 #include "table.h"
 #include "import.h"
-#include "window.h"
+#include "context.h"
 
 #define FH_TEXTURE_NAME_LIM		128
 
@@ -23,80 +23,67 @@ struct fh_texture {
 
 	/* The texture handle used by OpenGL */
 	u32 texture;
+
+	/* Reference to the context */
+	struct fh_context *context;
 };
 
 
 /*
- * Create and initialize a texture table for a window.
+ * Create and initialize a texture table for a context.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_tex_init(struct fh_window *win);
+FH_API s8 fh_InitTextureTable(struct fh_context *ctx);
 
 
 /*
  * Close the global texture list.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  */
-FH_API void fh_tex_close(struct fh_window *win);
+FH_API void fh_CloseTextureTable(struct fh_context *ctx);
 
 
 /*
- * Create a new texture.
+ * Create a new texture from raw pixel data.
+ * Especially for the format, see:
+ * https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
  *
- * @name: The name of the texture
- * @w: The width of the texture in pixels
- * @h: The height of the texture in pixels
- * @format: The pixel data fromat
- * @px: The RGBA pixel data
+ * @ctx: Pointer to the context
+ * @name: The name of the new texture
+ * @w: The width of the new texture in pixels
+ * @h: The height of the nex texture in pixels
+ * @format: The format used for the pixel data
+ * @px: The raw pixel data
  *
- * Returns: Either a pointer to the created texture or NULL if an error occurred
+ * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-FH_API struct fh_texture *fh_tex_create(char *name, u16 w, u16 h, 
-		GLenum format, u8 *px);
+FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
+		u16 w, u16 h, GLenum format, u8 *px);
 
 
 /*
- * Load an image and create a new texture using it.
+ * Load a texture from a file.
  *
- * @name: The name of the texture
+ * @ctx: Pointer to the texture
+ * @name: The name of the file
  * @pth: The path to the file
  *
  * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-FH_API struct fh_texture *fh_tex_load(char *name, char *pth);
+FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name,
+		char *pth);
 
 
 /*
- * Destroy a texture.
+ * Remove and destroy a loaded texture.
  *
  * @tex: Pointer to the texture
  */
-FH_API void fh_tex_destroy(struct fh_texture *tex);
-
-
-/*
- * Add a new texture to the texture table of a window.
- *
- * @win: Pointer to the window
- * @tex: Pointer to a texture
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_tex_insert(struct fh_window *win, struct fh_texture *tex);
-
-
-/*
- * Remove a texture from the texture table of a window.
- * This will also destroy the texture.
- *
- * @win: Pointer to the window
- * @tex: Pointer to the texture
- */
-FH_API void fh_tex_remove(struct fh_window *win, struct fh_texture *tex);
+FH_API void fh_RemoveTexture(struct fh_texture *tex);
 
 
 /*
@@ -113,18 +100,19 @@ FH_API void fh_tex_remove(struct fh_window *win, struct fh_texture *tex);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_tex_set(struct fh_texture *t, u16 x, u16 y, u16 w, u16 h, u8 *px);
+FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
+		u8 *px);
 
 
 /*
  * Get a pointer to a texture from the texture table.
  *
- * @win: Pointer to the window
+ * @ctx: Pointer to the context
  * @name: The name of the texture
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API struct fh_texture *fh_tex_get(struct fh_window *win, char *name);
+FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name);
 
 
 /*
@@ -132,79 +120,16 @@ FH_API struct fh_texture *fh_tex_get(struct fh_window *win, char *name);
  *
  * @tex: Pointer to the texture
  */
-FH_API void fh_tex_use(struct fh_texture *tex);
+FH_API void fh_UseTexture(struct fh_texture *tex);
 
 
 /*
  * Unuse the currently active texture.
  */
-FH_API void fh_tex_unuse(void);
+FH_API void fh_UnuseTexture(void);
 
 
-/*
- * The callback function that will be passed to the dbs_table, which will be
- * called in case any entry will be removed from the table.
- */
-FH_API void fh_tex_rmv_fnc(u32 size, void *ptr);
 
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				APPLICATION-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-/*
- * Create a new texture from raw pixel data.
- * Especially for the format, see:
- * https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
- *
- * @win: Pointer to the window
- * @name: The name of the new texture
- * @w: The width of the new texture in pixels
- * @h: The height of the nex texture in pixels
- * @format: The format used for the pixel data
- * @px: The raw pixel data
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_create_texture(struct fh_window *win, char *name, u16 w, u16 h,
-		GLenum format, u8 *px);
-
-
-/*
- * Load a texture from a file.
- *
- * @win: Pointer to the window
- * @name: The name of the file
- * @pth: The path to the file
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_load_texture(struct fh_window *win, char *name, char *pth);
-
-
-/*
- * Remove and destroy a loaded texture.
- *
- * @win: Pointer to the window
- * @name: The name of the texture
- */
-FH_API void fh_remove_texture(struct fh_window *win, char *name);
-
-
-/*
- * Get a pointer to a texture.
- *
- * @win: Pointer to the window
- * @name: The name of the texture
- *
- * Returns: Either a pointer to the texture or NULL if the texture was not found
- * 	    or an error occurred
- */
-FH_API struct fh_texture *fh_get_texture(struct fh_window *win, char *name);
 
 
 #endif /* _FH_TEXTURE_H */
