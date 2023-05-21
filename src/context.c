@@ -93,7 +93,7 @@ FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 	/* 				SHADERS 			      */
 	for(i = 0; i < fh_ps_num; i++) {
 		p = fh_ps_lst[i];
-		if(fh_LoadShader(ctx, p[0], p[1], p[2]) < 0)
+		if(!fh_LoadShader(ctx, p[0], p[1], p[2]))
 			goto err_return;
 	}
 
@@ -124,11 +124,6 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	if(fh_InitCameraTable(ctx) < 0) goto err_close_font;
 	if(fh_InitModelTable(ctx) < 0) goto err_close_cam;
 
-	/*
-	 * Load the predefined resources.
-	 */
-	if(ctx_load_predef(ctx) < 0)
-		goto err_close_mdl;
 
 	/*
 	 * Create the underlying OpenGL-context.
@@ -137,6 +132,12 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 		ALARM(ALARM_ERR, "Failed to create GL context");
 		goto err_return;
 	}
+
+	/*
+	 * Load the predefined resources.
+	 */
+	if(ctx_load_predef(ctx) < 0)
+		goto err_close_mdl;
 
 
 	glClearColor(1, 1, 1, 1.0);
@@ -258,14 +259,43 @@ FH_API void fh_ContextSetSize(struct fh_context *ctx, int2_t size)
 }
 
 
+FH_API void fh_SetViewport(struct fh_context *ctx, rect_t rect)
+{
+	if(!ctx) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	glViewport(rect[0], rect[1], rect[2], rect[3]);
+}
+
+
+FH_API void fh_ResetViewport(struct fh_context *ctx)
+{
+	if(!ctx) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	glViewport(0, 0, ctx->size[0], ctx->size[1]);
+}
+
+
 FH_API void fh_ContextEnableScissor(struct fh_context *ctx, rect_t rect)
 {
+	if(!ctx)
+		return;
+
 	glEnable(GL_SCISSOR_TEST);
+	glScissor(rect[0], rect[1], rect[2], rect[3]);
 
 }
 
 
 FH_API void fh_ContextDisableScissor(struct fh_context *ctx)
 {
+	if(!ctx)
+		return;
+
 	glDisable(GL_SCISSOR_TEST);
 }

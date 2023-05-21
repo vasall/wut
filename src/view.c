@@ -12,8 +12,8 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_view *fh_CreateView(struct fh_context *ctx, vec3_t trans,
-		struct fh_camera *cam)
+FH_API struct fh_view *fh_CreateView(struct fh_context *ctx,
+		struct fh_camera *cam, rect_t rect)
 {
 	struct fh_view *v;
 
@@ -30,7 +30,7 @@ FH_API struct fh_view *fh_CreateView(struct fh_context *ctx, vec3_t trans,
 	/* Set the attributes */
 	v->context = ctx;
 	v->camera = cam;
-	vec3_cpy(v->translation, trans);
+	memcpy(v->shape, rect, RECT_SIZE);
 
 	/* Create a new pipeline */
 	if(!(v->pipe = fh_CreatePipe(v->camera->pos))) {
@@ -71,20 +71,25 @@ FH_API void fh_RenderView(struct fh_view *v)
 	/*
 	 * First translate.
 	 */
-	glTranslate(v->translation[0], v->translation[1], v->translation[2]);
+	fh_SetViewport(v->context, v->shape);
+	glViewport(v->shape[0], v->shape[1], v->shape[2], v->shape[3]);
 
 
 	/*
 	 * Then enable scissors.
 	 */
-	
+	fh_ContextEnableScissor(v->context, v->shape);
 
 
 	/*
 	 * Now we can render all models in order.
 	 */
+	
+
 
 	/*
 	 * Lastly, reset everything.
 	 */
+	fh_ContextDisableScissor(v->context);
+	fh_ResetViewport(v->context);
 }

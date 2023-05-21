@@ -81,8 +81,7 @@ FH_INTERN void tex_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_texture *tex;
 
-	/* SILENCIO */
-	if(size) {}
+	fh_Ignore(size);
 
 	if(!ptr)
 		return;

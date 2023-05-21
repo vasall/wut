@@ -12,7 +12,7 @@
 
 
 
-FH_API void mdl_destroy(struct fh_model *mdl)
+FH_INTERN void mdl_destroy(struct fh_model *mdl)
 {
 	u32 i;
 	struct fh_model_uniform *uniform;
@@ -44,7 +44,7 @@ FH_INTERN void mdl_activate_uniforms(struct fh_model *mdl)
 
 		glBindBuffer(GL_UNIFORM_BUFFER, uniform->bao);
 		glBufferData(GL_UNIFORM_BUFFER, uniform->size, uniform->data, GL_STATIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniform->bao);
+		glBindBufferBase(GL_UNIFORM_BUFFER, uniform->location, uniform->bao);
 	}
 }
 
@@ -53,8 +53,7 @@ FH_INTERN void mdl_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_model *mdl;
 
-	/* SILENCIO! */
-	if(size) {}
+	fh_Ignore(size);
 
 	if(!ptr)
 		return;

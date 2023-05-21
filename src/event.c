@@ -104,7 +104,7 @@ FH_INTERN void fh_evt_hdl_windowevent(struct fh_event evt)
 			/* Otherwise if it's just a normal subwindow */
 			else {
 				/* ...close it */
-				fh_win_close(evt.window);
+				fh_CloseWindow(evt.window);
 			}
 
 			break;

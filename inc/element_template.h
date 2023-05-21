@@ -1,9 +1,7 @@
 #ifndef _FH_ELEMENT_TEMPLATE_H
 #define _FH_ELEMENT_TEMPLATE_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 #include "element.h"
 
 

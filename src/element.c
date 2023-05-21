@@ -10,8 +10,16 @@
 
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
 
-FH_API struct fh_element *fh_ele_create(char *name, enum fh_element_type type)
+FH_API struct fh_element *fh_CreateElement(char *name,
+		enum fh_element_type type)
 {
 	struct fh_element *ele;
 	struct fh_style *style_ref;
@@ -72,18 +80,17 @@ err_return:
 }
 
 
-FH_API void fh_ele_destroy(struct fh_element *ele)
+FH_API void fh_DestroyElement(struct fh_element *ele)
 {
 	if(!ele) {
 		return;
 	}
 
-
 	fh_free(ele);
 }
 
 
-FH_API s8 fh_ele_attach(struct fh_element *parent, struct fh_element *ele)
+FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 {
 	s8 i;
 
@@ -119,7 +126,7 @@ err_return:
 }
 
 
-FH_API void fh_ele_detach(struct fh_element *ele)
+FH_API void fh_DetachElement(struct fh_element *ele)
 {
 	s8 i;
 	struct fh_element *parent;
@@ -151,91 +158,63 @@ FH_API void fh_ele_detach(struct fh_element *ele)
 }
 
 
-FH_INTERN s8 fh_cfnc_remove_elements(struct fh_element *ele, void *data)
+FH_API void fh_ApplyElementsDown(struct fh_element *ele,
+		s8 (*fnc)(struct fh_element *w, void *data), void *data)
 {
-	/* SILENCIO! */
-	if(data) {}
+	s8 i;
 
-	/* First detach the element from the parent */
-	fh_ele_detach(ele);
-
-	/* ...and finally destroy it */
-	fh_ele_destroy(ele);
-
-	return 0;
-}
-
-FH_API void fh_ele_remove(struct fh_element *ele)
-{
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
-		goto err_return;
-	}
-
-	/* Recursivly destroy all elements attached to ele and ele itself */
-	fh_ele_hlf_up(ele, &fh_cfnc_remove_elements, NULL);
-
-	return;
-
-err_return:
-	ALARM(ALARM_WARN, "Failed to remove element");
-}
-
-
-FH_API void fh_ele_hlf_down(struct fh_element *str,
-		s8 (*cfnc)(struct fh_element *e, void *data), void *data)
-{
-	s8 i;
-
-	if(!str) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
 	/* Then apply the callback function to this element */
-	if(cfnc(str, data) == 1)
+	if(fnc(ele, data) == 1)
 		return;
 
 	/* Call this function on all children */
 	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!str->children[i])
+		if(!ele->children[i])
 			continue;
 
-		fh_ele_hlf_down(str->children[i], cfnc, data);
+		fh_ApplyElementsDown(ele->children[i], fnc, data);
 	}
 
 	return;
 }
 
-FH_API void fh_ele_hlf_up(struct fh_element *str,
-		s8 (*cfnc)(struct fh_element *w, void *data), void *data)
+
+FH_API void fh_ApplyElementsUp(struct fh_element *ele,
+		s8 (*fnc)(struct fh_element *w, void *data), void *data)
 {
 	s8 i;
 
-	if(!str) {
+	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
 	/* Call this function on all children */
 	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!str->children[i])
+		if(!ele->children[i])
 			continue;
 
-		fh_ele_hlf_up(str->children[i], cfnc, data);
+		fh_ApplyElementsUp(ele->children[i], fnc, data);
 	}
 
 	/* Then apply the callback function to this element */
-	if(cfnc(str, data) == 1)
-		return;
-
-	return;
+	fnc(ele, data);
 }
 
 
-FH_API s8 fh_ele_update(struct fh_element *ele)
+FH_API void fh_UpdateElement(struct fh_element *ele)
 {
 	SDL_Rect rect;
+
+	if(!ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
 
 	rect.x = 0;
 	rect.y = 0;
@@ -244,12 +223,10 @@ FH_API s8 fh_ele_update(struct fh_element *ele)
 	
 
 	fh_style_process(&ele->style, &rect);
-
-	return 0;		
 }
 
 
-FH_API s8 fh_ele_render(struct fh_element *ele)
+FH_API void fh_RenderElement(struct fh_element *ele)
 {
 	SDL_Rect rect;
 	s32 t;
@@ -257,10 +234,8 @@ FH_API s8 fh_ele_render(struct fh_element *ele)
 
 	if(!ele) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
+		return;
 	}
-
-
 
 	rect.w = ele->style.size.width;
 	rect.h = ele->style.size.height;
@@ -276,10 +251,5 @@ FH_API s8 fh_ele_render(struct fh_element *ele)
 
 	t = rand() % 0xff; 
 	col = fh_col_set(0xff - t, t, t / 2, 0xff);
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to render element");
-	return -1;
 }
+

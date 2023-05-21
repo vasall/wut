@@ -6,114 +6,20 @@
 #include <stdlib.h>
 
 
-FH_API struct fh_document *fh_doc_create(struct fh_window *win)
+FH_INTERN s8 doc_cfnc_remove(struct fh_element *ele, void *data)
 {
-	struct fh_document *doc;
+	fh_Ignore(data);
 
-	/* Allocate memory for the document */
-	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for document");
-		goto err_return;
-	}
+	/* First detach the element */
+	fh_DetachElement(ele);
 
-	/* Set the attributes for the document */
-	doc->window = win;
+	/* Then destroy it */
+	fh_DestroyElement(ele);
 
-	/* Create the body element */	
-	if(!(doc->body = fh_ele_create("body", FH_BODY))) {
-		ALARM(ALARM_ERR, "Failed to create body for document");
-		goto err_free_doc;
-	}
-
-	/* Set the attributes for the body element */
-	doc->body->document = doc;
-	doc->body->body = doc->body;
-	doc->body->parent = NULL;
-	doc->body->layer = 0;
-
-	/* Update the body element */
-	if(fh_doc_update_part(doc->body) < 0) {
-		ALARM(ALARM_ERR, "Failed to update body element");
-		goto err_destroy_body;
-	}
-
-	return doc;
-
-err_destroy_body:
-	fh_ele_destroy(doc->body);
-
-err_free_doc:
-	fh_free(doc);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create new document");
-	return NULL;
+	return 0;
 }
 
-
-
-FH_API void fh_doc_destroy(struct fh_document *doc)
-{
-	if(!doc)
-		return;
-
-	/* If the document contains a body, recursivly remove it */
-	fh_ele_remove(doc->body);	
-
-	fh_free(doc);
-}
-
-
-FH_API struct fh_element *fh_doc_add_element(struct fh_document *doc,
-		struct fh_element *parent, char *name,
-		enum fh_element_type type)
-{
-	struct fh_element *ele;
-
-	if(!doc || !parent || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	/* Create new element */
-	if(!(ele = fh_ele_create(name, type))) {
-		ALARM(ALARM_ERR, "Failed to create new element for document");
-		goto err_return;
-	}
-
-	/* Attach element to parent */
-	if(fh_ele_attach(parent, ele) < 0) {
-		ALARM(ALARM_ERR, "Failed to attach element to parent");
-		goto err_destroy_ele;
-	}
-
-	/* Update the element */
-	if(fh_doc_update_part(ele) < 0) {
-		ALARM(ALARM_ERR, "Failed to update new element");
-		goto err_detach_ele;
-	}
-
-	return ele;
-
-err_detach_ele:
-	fh_ele_detach(ele);
-
-err_destroy_ele:
-	fh_ele_destroy(ele);
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to add element to document");
-	return NULL;
-}
-
-
-struct fh_ele_selector {
-	s8 state;
-	char *name;
-	struct fh_element *element;
-};
-
-FH_INTERN s8 fh_cfnc_find_element(struct fh_element *ele, void *data)
+FH_INTERN s8 doc_cfnc_find(struct fh_element *ele, void *data)
 {
 	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
 
@@ -130,113 +36,31 @@ FH_INTERN s8 fh_cfnc_find_element(struct fh_element *ele, void *data)
 }
 
 
-FH_API struct fh_element *fh_doc_find_element(struct fh_document *doc, char *name)
+FH_INTERN s8 doc_cfnc_update(struct fh_element *ele, void *data)
 {
-	struct fh_ele_selector sel;
+	fh_Ignore(data);
 
-	if(!doc || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	sel.state = 0;
-	sel.name = name;
-	sel.element = NULL;
-	
-	/* Recursivly search for the element in the document */
-	fh_ele_hlf_down(doc->body, &fh_cfnc_find_element, &sel);
-
-	if(sel.state == 1) {
-		return sel.element;
-	}
-
-
-err_return:
-	return NULL;
-}
-
-
-FH_INTERN s8 fh_cfnc_update_elements(struct fh_element *ele, void *data)
-{
-	/* SILENCIO! */
-	if(data) {}
-
-	fh_ele_update(ele);
+	fh_UpdateElement(ele);
 
 	return 0;
 }
 
 
-FH_API s8 fh_doc_update_part(struct fh_element *ele)
+FH_INTERN s8 doc_cfnc_render(struct fh_element *ele, void *data)
 {
-	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
+	fh_Ignore(data);
 
-	fh_ele_hlf_down(ele, &fh_cfnc_update_elements, NULL);
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to partially update elements");
-	return -1;
-}
-
-
-FH_API s8 fh_doc_update(struct fh_document *doc)
-{
-	if(!doc) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	fh_doc_update_part(doc->body);	
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to update document");
-	return -1;
-}
-
-FH_INTERN s8 fh_doc_cfnc_render_elements(struct fh_element *ele, void *data)
-{
-	/* SILENCIO! */
-	if(data) {}
-
-	printf("Render: %s\n", ele->name);
-
-	fh_ele_render(ele);
+	fh_RenderElement(ele);
 
 	return 0;
 }
 
 
-FH_API s8 fh_doc_render(struct fh_document *doc)
-{
-	if(!doc) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-
-		
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to render document");
-	return -1;
-}
-
-
-FH_INTERN s8 fh_cfnc_show_element(struct fh_element  *ele, void *data)
+FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 {
 	u8 i;
 
-	/* SILCENCIO! */
-	if(data) {}
-
+	fh_Ignore(data);
 
 	for(i = 0; i < ele->layer; i++)
 		printf("  ");
@@ -254,16 +78,6 @@ FH_INTERN s8 fh_cfnc_show_element(struct fh_element  *ele, void *data)
 	
 }
 
-FH_API void fh_doc_tree(struct fh_document *doc)
-{
-	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	fh_ele_hlf_down(doc->body, &fh_cfnc_show_element, NULL);
-}
-
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -273,37 +87,125 @@ FH_API void fh_doc_tree(struct fh_document *doc)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_element *fh_add(struct fh_window *win,
+
+FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
+{
+	struct fh_document *doc;
+
+	/* Allocate memory for the document */
+	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
+		ALARM(ALARM_ERR, "Failed to allocate memory for document");
+		goto err_return;
+	}
+
+	/* Set the attributes for the document */
+	doc->window = win;
+
+	/* Create the body element */	
+	if(!(doc->body = fh_CreateElement("body", FH_BODY))) {
+		ALARM(ALARM_ERR, "Failed to create body for document");
+		goto err_free_doc;
+	}
+
+	/* Set the attributes for the body element */
+	doc->body->document = doc;
+	doc->body->body = doc->body;
+	doc->body->parent = NULL;
+	doc->body->layer = 0;
+
+	/* Update the body element */
+	fh_UpdateDocumentBranch(doc, doc->body);
+
+	return doc;
+
+err_free_doc:
+	fh_free(doc);
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create new document");
+	return NULL;
+}
+
+
+FH_API void fh_DestroyDocument(struct fh_document *doc)
+{
+	if(!doc)
+		return;
+
+	/* If the document contains a body, recursivly remove it */
+	fh_RemoveElement(doc, doc->body);	
+
+	fh_free(doc);
+}
+
+
+FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 		struct fh_element *parent, char *name,
 		enum fh_element_type type)
 {
 	struct fh_element *ele;
 
-	if(!win || !parent || !name) {
+	if(!doc || !parent || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	/* Add element to document */
-	if(!(ele = fh_doc_add_element(win->document, parent, name, type)))
+	/* Create new element */
+	if(!(ele = fh_CreateElement(name, type))) {
+		ALARM(ALARM_ERR, "Failed to create new element for document");
 		goto err_return;
-		
+	}
+
+	/* Attach element to parent */
+	if(fh_AttachElement(parent, ele) < 0) {
+		ALARM(ALARM_ERR, "Failed to attach element to parent");
+		goto err_destroy_ele;
+	}
+
+	/* Update the new element */
+	fh_UpdateDocumentBranch(doc, ele);
+
 	return ele;
 
+err_destroy_ele:
+	fh_DestroyElement(ele);
+
 err_return:
-	ALARM(ALARM_ERR, "Failed to add element");
+	ALARM(ALARM_ERR, "Failed to add element to document");
 	return NULL;
 }
 
 
-FH_API struct fh_element *fh_get(struct fh_window *win, char *name)
+FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele)
 {
-	if(!win || !name) {
+	if(!doc || !ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_ApplyElementsUp(ele, &doc_cfnc_remove, NULL);
+}
+
+
+FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
+{
+	struct fh_ele_selector sel;
+
+	if(!doc || !name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	return fh_doc_find_element(win->document, name);
+	sel.state = 0;
+	sel.name = name;
+	sel.element = NULL;
+	
+	/* Recursivly search for the element in the document */
+	fh_ApplyElementsDown(doc->body, &doc_cfnc_find, &sel);
+
+	if(sel.state == 1) {
+		return sel.element;
+	}
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to get element");
@@ -311,3 +213,66 @@ err_return:
 }
 
 
+FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
+		struct fh_element *ele)
+{
+	if(!doc || !ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_ApplyElementsDown(ele, &doc_cfnc_update, NULL);
+}
+
+
+FH_API void fh_UpdateDocument(struct fh_document *doc)
+{
+	if(!doc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_UpdateDocumentBranch(doc, doc->body);
+}
+
+
+FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
+		struct fh_element *ele)
+{
+	if(!doc || !ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_ApplyElementsDown(ele, &doc_cfnc_render, NULL);
+}
+
+
+FH_API void fh_RenderDocument(struct fh_document *doc)
+{
+	if(!doc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_RenderDocumentBranch(doc, doc->body);
+}
+
+
+FH_API void fh_ShowDocumentTree(struct fh_document *doc,
+		struct fh_element *ele)
+{
+	struct fh_element *start;
+
+	if(!doc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	if(ele)
+		start = ele;
+	else
+		start = doc->body;
+
+	fh_ApplyElementsDown(start, &doc_cfnc_show, NULL);
+}

@@ -25,6 +25,8 @@ struct fh_model_uniform {
 	void *data;
 
 	u32 bao;
+
+	s32 location;
 };
 
 

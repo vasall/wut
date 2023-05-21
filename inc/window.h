@@ -94,14 +94,6 @@ FH_API void fh_win_detach(struct fh_window *window);
 
 
 /*
- * Close a window, by first detaching it if necessary and then destroying it.
- *
- * @win: Pointer to the window to close
- */
-FH_API void fh_win_close(struct fh_window *win);
-
-
-/*
  * Get a pointer to the window struct using the windowId.
  *
  * @wd: The window descriptor
@@ -181,8 +173,28 @@ FH_API void fh_win_activate(struct fh_window *w);
  *
  * Returns: Either a pointer to the created window or NULL if an error occurred
  */
-FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
+FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 		s32 width, s32 height);
+
+
+/*
+ * Close a window, by first detaching it if necessary and then destroying it.
+ *
+ * @win: Pointer to the window to close
+ */
+FH_API void fh_CloseWindow(struct fh_window *win);
+
+
+/*
+ * Retrieve a pointer to the window by searching for it with the given
+ * window-descriptor.
+ *
+ * @wd: The window descriptor
+ *
+ * Returns: A pointer to the window or NULL if either an error occurred or the
+ * 	    window could not be found
+ */
+FH_API struct fh_window *fh_GetWindow(s32 wd);
 
 
 /*
@@ -190,15 +202,7 @@ FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
  *
  * @win: Pointer to the window
  */
-FH_API void fh_activate_window(struct fh_window *win);
-
-
-/*
- * Clear the window buffer for OpenGL for a given window.
- *
- * @win: Pointer to the window
- */
-FH_API void fh_clear_window(struct fh_window *win);
+FH_API void fh_ActivateWindow(struct fh_window *win);
 
 
 /*
@@ -206,8 +210,13 @@ FH_API void fh_clear_window(struct fh_window *win);
  *
  * @win: Pointer to the window
  */
-FH_API void fh_redraw_window(struct fh_window *win);
+FH_API void fh_RedrawWindow(struct fh_window *win);
 
+
+/*
+ * Redraw all windows.
+ */
+FH_API void fh_RedrawAllWindows(void);
 
 
 

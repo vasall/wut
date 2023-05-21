@@ -16,93 +16,11 @@ struct fh_document {
 	struct fh_element *body;
 };
 
-
-
-/*
- * Create a new document.
- *
- * @win: Pointer to the window
- *
- * Returns: Either a pointer to a new document or NULL if an error occurred
- */
-FH_API struct fh_document *fh_doc_create(struct fh_window *win);
-
-
-/*
- * Destroy a document and free the allocated memory. This function is save to
- * call, even if doc is NULL.
- *
- * @doc: Pointer to the document
- */
-FH_API void fh_doc_destroy(struct fh_document *doc);
-
-
-/*
- * Add a new element to a document.
- *
- * @doc: Pointer to the document
- * @parent: Pointer to the parent
- * @name: The name of the element
- * @type: The type of the element
- *
- * Returns: Either a pointer to the newly created element or NULL if an error
- * 	    occurred
- */
-FH_API struct fh_element *fh_doc_add_element(struct fh_document *doc,
-		struct fh_element *parent, char *name,
-		enum fh_element_type type);
-
-
-/*
- * Get an element contained in the document, by looking for the given name.
- *
- * @doc: Pointer to the document
- * @name: The name of the element to look for
- *
- * Returns: Either a pointer to the element if found or NULL if an error
- * 	    occurred
- */
-FH_API struct fh_element *fh_doc_find_element(struct fh_document *doc, char *name);
-
-
-/*
- * Update the elements in the document from ele downwards.
- *
- * @ele: Pointer to the start element
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_doc_update_part(struct fh_element *ele);
-
-
-/*
- * Update all element in the document.
- *
- * @doc: Pointer to the document
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_doc_update(struct fh_document *doc);
-
-
-/*
- * Finally draw the document surface onto the window.
- *
- * @doc: Pointer to the document
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_doc_render(struct fh_document *doc);
-
-
-
-/*
- * This function will display the element-tree in the console for the given
- * document.
- *
- * @doc: Pointer to the document
- */
-FH_API void fh_doc_tree(struct fh_document *doc);
+struct fh_ele_selector {
+	s8 state;
+	char *name;
+	struct fh_element *element;
+};
 
 
 /*
@@ -113,32 +31,105 @@ FH_API void fh_doc_tree(struct fh_document *doc);
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
+
 /*
- * Add a new element to the document of window.
+ * Create a new document.
  *
  * @win: Pointer to the window
+ *
+ * Returns: Either a pointer to a new document or NULL if an error occurred
+ */
+FH_API struct fh_document *fh_CreateDocument(struct fh_window *win);
+
+
+/*
+ * Destroy a document and free the allocated memory. This function is save to
+ * call, even if doc is NULL.
+ *
+ * @doc: Pointer to the document
+ */
+FH_API void fh_DestroyDocument(struct fh_document *doc);
+
+
+/*
+ * Add a new element to the document.
+ *
+ * @doc: Pointer to the document
  * @parent: A pointer to the parent element
  * @name: The name of the element
  * @type: The type of the new element
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API struct fh_element *fh_add(struct fh_window *win,
+FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 		struct fh_element *parent, char *name,
 		enum fh_element_type type);
 
 
 /*
- * Get an element from a window by searching for the given name.
+ * Remove an element from the document.
  *
- * @win: The window descriptor
+ * @doc: Pointer to the document
+ * @ele: Pointer to the element
+ */
+FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele);
+
+
+/*
+ * Get an element from a document by searching for the given name.
+ *
+ * @doc: Pointer to the document
  * @name: The name of the element to look for
  *
  * Returns: Either a pointer to the element or NULL if an error occurred
  */
-FH_API struct fh_element *fh_get(struct fh_window *win, char *name);
+FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name);
 
 
+/*
+ * Only update a branch of the element tree starting from <ele>.
+ *
+ * @doc: Pointer to the document
+ * @ele: The starting element of the branch
+ */
+FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
+		struct fh_element *ele);
 
+
+/*
+ * Update the whole document.
+ *
+ * @doc: Pointer to the document
+ */
+FH_API void fh_UpdateDocument(struct fh_document *doc);
+
+
+/*
+ * Only render a branch of the element tree starting from <ele>.
+ *
+ * @doc: Pointer to the document
+ * @ele: Pointer to the element
+ */
+FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
+		struct fh_element *ele);
+
+
+/*
+ * Render the document and all elements in it.
+ *
+ * @doc: Pointer to the document
+ */
+FH_API void fh_RenderDocument(struct fh_document *doc);
+
+
+/*
+ * Display the element tree starting from <ele>. If <ele> is NULL, the whole
+ * tree starting from the body-element will be shown.
+ *
+ * @doc: Pointer to the document
+ * @ele: Pointer to the starting element or NULL
+ */
+FH_API void fh_ShowDocumentTree(struct fh_document *doc,
+		struct fh_element *ele);
 
 #endif /* _FH_DOCUMENT_H */

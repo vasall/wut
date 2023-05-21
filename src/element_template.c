@@ -10,8 +10,7 @@
 
 FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }
@@ -19,8 +18,7 @@ FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele)
 
 FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }
@@ -28,8 +26,7 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele)
 
 FH_INTERN s8 fh_eletemp_load_text(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }
@@ -37,8 +34,7 @@ FH_INTERN s8 fh_eletemp_load_text(struct fh_element *ele)
 
 FH_INTERN s8 fh_eletemp_load_button(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }
@@ -46,8 +42,7 @@ FH_INTERN s8 fh_eletemp_load_button(struct fh_element *ele)
 
 FH_INTERN s8 fh_eletemp_load_input(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }
@@ -55,8 +50,7 @@ FH_INTERN s8 fh_eletemp_load_input(struct fh_element *ele)
 
 FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele)
 {
-	/* SILENCIO! */
-	if(ele) {}
+	fh_Ignore(ele);
 
 	return 0;
 }

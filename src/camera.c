@@ -136,8 +136,7 @@ FH_INTERN void cam_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_camera *cam;
 
-	/* SILENCIO! */
-	if(size) {}
+	fh_Ignore(size);
 
 	if(!ptr)
 		return;
@@ -535,3 +534,11 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 	}
 }
 
+
+FH_API void fh_UpdateCamera(struct fh_camera *cam)
+{
+	if(!cam)
+		return;
+
+	cam_update_view(cam);
+}

@@ -14,7 +14,7 @@ struct fh_view {
 
 	struct fh_camera *camera;
 
-	vec3_t translation;
+	rect_t shape;
 };
 
 
@@ -22,13 +22,13 @@ struct fh_view {
  * Create a new view struct.
  *
  * @ctx: Pointer to the context
- * @trans: A translation vector
  * @cam: The camera to use for the view
+ * @rect: The shape of the view in the window
  *
  * Returns: Either a new view or NULL if an error occurred
  */
-FH_API struct fh_view *fh_CreateView(struct fh_context *ctx, vec3_t translation,
-		struct fh_camera *cam);
+FH_API struct fh_view *fh_CreateView(struct fh_context *ctx,
+		struct fh_camera *cam, rect_t rect);
 
 
 /*

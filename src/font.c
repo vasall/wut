@@ -19,8 +19,7 @@ FH_INTERN void font_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_font *font;
 
-	/* SILENCIO */
-	if(size) {}
+	fh_Ignore(size);
 
 	if(!ptr)
 		return;

@@ -11,7 +11,7 @@
 
 
 
-FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
+FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 {
 	struct fh_window *win;
 	SDL_Window *hdl;
@@ -54,26 +54,26 @@ FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h)
 	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++)
 		win->children[i] = NULL;
 
-	/* Create the document contained in the window */
-	if(!(win->document = fh_doc_create(win))) {
-		ALARM(ALARM_ERR, "Failed to create document for window");
-		goto err_destroy_hdl;
-	}
 
 	/* Create the rendering context used by the window */
 	if(!(win->context = fh_CreateContext(win))) {
 		ALARM(ALARM_ERR, "Failed to create rendering context");
-		goto err_destroy_doc;
+		goto err_destroy_hdl;
+	}
+
+	/* Create the document contained in the window */
+	if(!(win->document = fh_CreateDocument(win))) {
+		ALARM(ALARM_ERR, "Failed to create document for window");
+		goto err_destroy_ctx;
 	}
 
 	return win;
 
-
-err_destroy_doc:
-	fh_doc_destroy(win->document);
+err_destroy_ctx:
+	fh_DestroyContext(win->context);
 
 err_destroy_hdl:
-	SDL_DestroyWindow(hdl);
+	SDL_DestroyWindow(win->handle);
 
 err_free_win:
 	fh_free(win);
@@ -84,7 +84,7 @@ err_return:
 }
 
 
-FH_API void fh_win_destroy(struct fh_window *win)
+FH_INTERN void win_destroy(struct fh_window *win)
 {
 	if(!win) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
@@ -92,7 +92,10 @@ FH_API void fh_win_destroy(struct fh_window *win)
 	}
 
 	/* Close the document */
-	fh_doc_destroy(win->document);
+	fh_DestroyDocument(win->document);
+
+	/* Destroy the context */
+	fh_DestroyContext(win->context);
 
 	/* Destroy the SDL window */
 	SDL_DestroyWindow(win->handle);
@@ -107,25 +110,19 @@ err_return:
 }
 
 
-FH_API s8 fh_win_attach(struct fh_window *parent,
-		struct fh_window *window)
+FH_INTERN s8 win_attach(struct fh_window *par, struct fh_window *win)
 {
-	if(!parent || !window) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	if(parent->children_num + 1 > FH_WIN_CHILDREN_LIM) {
+	if(par->children_num + 1 > FH_WIN_CHILDREN_LIM) {
 		ALARM(ALARM_ERR, "Can not add more children to parent window");
 		goto err_return;
 	}
 
 	/* Add window to parent */
-	parent->children[parent->children_num] = window;
-	parent->children_num++;
+	par->children[par->children_num] = win;
+	par->children_num++;
 
 	/* Set parent attribute of window */
-	window->parent = parent;
+	win->parent = par;
 
 	return 0;
 
@@ -135,65 +132,59 @@ err_return:
 }
 
 
-
-FH_API void fh_win_detach(struct fh_window *window)
+FH_INTERN void win_detach(struct fh_window *win)
 {
 	s8 i;
-	struct fh_window *parent;
+	struct fh_window *par;
 
-	if(!window) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+	if(!win->parent) {
 		return;
 	}
 
-	if(!window->parent) {
-		return;
-	}
-
-	parent = window->parent;
+	par = win->parent;
 
 	/* Go through all children windows to find the one */
 	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
 		/* ...and remove if found */
-		if(parent->children[i]->id == window->id) {
-			parent->children[i] = NULL;
-			parent->children_num--;
+		if(par->children[i]->id == win->id) {
+			par->children[i] = NULL;
+			par->children_num--;
 
-			window->parent = NULL;
+			win->parent = NULL;
 			return;
 		}
 	}
 }
 
 
-FH_INTERN s8 fh_cfnc_close_windows(struct fh_window *w, void *data)
+FH_INTERN s8 win_close_windows(struct fh_window *w, void *data)
 {
 	/* SILENCE COMPILER */
 	if(data) {}
 
 	/* First detach the window... */
-	fh_win_detach(w);
+	win_detach(w);
 
 	/* ...then destroy it */
-	fh_win_destroy(w);
+	win_destroy(w);
 
 	return 0;
 }
 
-FH_API void fh_win_close(struct fh_window *win)
+FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
 {
-	if(!win) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		goto err_return;
-	}
+	fh_Ignore(data);
 
-	/* Recursivly close all windows downwards, starting from win */
-	fh_win_hlf_up(win, &fh_cfnc_close_windows, NULL);
+	/* Clear the window */
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	return;
+	/* Render the document onto the window */
+	fh_RenderDocument(win->document);
 
-err_return:
-	ALARM(ALARM_WARN, "Failed to close window");
+	/* Swap buffer */
+        SDL_GL_SwapWindow(win->handle);
+
+	return 0;
 }
 
 struct fh_win_selector {
@@ -205,7 +196,7 @@ struct fh_win_selector {
 };
 
 
-FH_INTERN s8 fh_cfnc_find_window(struct fh_window *w, void *data)
+FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 {
 	struct fh_win_selector *sel = (struct fh_win_selector *)data;
 
@@ -226,38 +217,11 @@ FH_INTERN s8 fh_cfnc_find_window(struct fh_window *w, void *data)
 
 }
 
-FH_API struct fh_window *fh_win_get(s32 wd)
-{
-	struct fh_win_selector sel;
-	struct fh_window *main;
 
-	sel.state = 0;
-	sel.id = wd;
-	sel.win = NULL;
-
-	/* Recursifly search for the window... */
-	main = fh_core_get_main_window();
-	fh_win_hlf_down(main, &fh_cfnc_find_window, &sel);
-
-	/* ...and if the window was found, return it */
-	if(sel.state == 1) {
-		return sel.win;
-	}
-
-	return NULL;
-}
-
-
-
-FH_API void fh_win_hlf_down(struct fh_window *str,
+FH_INTERN void win_hlf_down(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
 {
 	s8 i;
-
-	if(!str) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
 
 	/* Then apply the callback function to this window struct */
 	if(cfnc(str, data) == 1)
@@ -268,28 +232,24 @@ FH_API void fh_win_hlf_down(struct fh_window *str,
 		if(!str->children[i])
 			continue;
 
-		fh_win_hlf_down(str->children[i], cfnc, data);
+		win_hlf_down(str->children[i], cfnc, data);
 	}
 
 	return;
 }
 
-FH_API void fh_win_hlf_up(struct fh_window *str,
+
+FH_INTERN void win_hlf_up(struct fh_window *str,
 		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
 {
 	s8 i;
-
-	if(!str) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
 
 	/* Call this function on all children */
 	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
 		if(!str->children[i])
 			continue;
 
-		fh_win_hlf_up(str->children[i], cfnc, data);
+		win_hlf_up(str->children[i], cfnc, data);
 	}
 
 	/* Then apply the callback function to this window struct */
@@ -298,54 +258,6 @@ FH_API void fh_win_hlf_up(struct fh_window *str,
 
 	return;
 }
-
-
-FH_API void fh_win_redraw(struct fh_window *win)
-{
-	/* SILENCIO! */
-	if(win) {}
-
-#if 0
-	/* Select context for this window */
-	SDL_GL_MakeCurrent(win->handle, win->context);
-
-	/* Clear the window screen */
-        glClear(GL_COLOR_BUFFER_BIT);
-#endif
-
-
-#if 0
-	/* Render the document onto the window */
-	fh_doc_render(win->document);
-
-	/* Swap buffer */
-        SDL_GL_SwapWindow(win->handle);
-#endif
-}
-
-
-
-FH_INTERN s8 fh_win_cfnc_redraw(struct fh_window *win, void *data)
-{
-	/* SILENCIO! */
-	if(data) {}
-
-	if(win->info & FH_WIN_INFO_VISIBLE) {
-		fh_win_redraw(win);
-	}
-
-	return 0;
-}
-
-FH_API void fh_win_redraw_all(void)
-{
-	struct fh_window *main;
-
-	/* Call the fh_win_redraw() function on all visible windows */
-	main = fh_core_get_main_window();
-	fh_win_hlf_down(main, &fh_win_cfnc_redraw, NULL);	
-}
-
 
 
 /*
@@ -356,7 +268,7 @@ FH_API void fh_win_redraw_all(void)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
+FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 		s32 width, s32 height)
 {
 	struct fh_window *win;
@@ -367,12 +279,12 @@ FH_API struct fh_window *fh_add_window(struct fh_window *parent, char *name,
 	}
 
 	/* Then create a new window */
-	if(!(win = fh_win_create(name, width, height)))
+	if(!(win = win_create(name, width, height)))
 		goto err_return;
 
 	/* If a parent is specified */
 	if(parent != NULL) {
-		fh_win_attach(parent, win);
+		win_attach(parent, win);
 	}
 	/* Otherwise... */
 	else {
@@ -391,35 +303,72 @@ err_return:
 }
 
 
-FH_API void fh_activate_window(struct fh_window *win)
+FH_API void fh_CloseWindow(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		goto err_return;
+	}
+
+	/* Recursivly close all windows downwards, starting from win */
+	win_hlf_up(win, &win_close_windows, NULL);
+
+	return;
+
+err_return:
+	ALARM(ALARM_WARN, "Failed to close window");
+}
+
+
+FH_API struct fh_window *fh_GetWindow(s32 wd)
+{
+	struct fh_win_selector sel;
+	struct fh_window *main;
+
+	sel.state = 0;
+	sel.id = wd;
+	sel.win = NULL;
+
+	/* Recursifly search for the window... */
+	main = fh_core_get_main_window();
+	win_hlf_down(main, &win_find_window, &sel);
+
+	/* ...and if the window was found, return it */
+	if(sel.state == 1) {
+		return sel.win;
+	}
+
+	return NULL;
+}
+
+
+FH_API void fh_ActivateWindow(struct fh_window *win)
 {
 	if(!win) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return;
 	}
 
-	fh_win_activate(win);
+	/* TODO */
 }
 
 
-FH_API void fh_clear_window(struct fh_window *win)
+FH_API void fh_RedrawWindow(struct fh_window *win)
 {
 	if(!win) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return;
 	}
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	win_redraw(win, NULL);
 }
 
 
-FH_API void fh_redraw_window(struct fh_window *win)
+FH_API void fh_RedrawAllWindows(void)
 {
-	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return;
-	}
+	struct fh_window *main;
 
-	SDL_GL_SwapWindow(win->handle);
+	/* Call the fh_win_redraw() function on all visible windows */
+	main = fh_core_get_main_window();
+	win_hlf_down(main, &win_redraw, NULL);
 }
-

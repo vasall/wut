@@ -42,7 +42,7 @@ err_return:
 FH_API void fh_quit(void)
 {
 	/* Close all windows */
-	fh_win_close(fh_core_get_main_window());
+	fh_CloseWindow(fh_core_get_main_window());
 	fh_core_set_main_window(NULL);
 	
 	/* Shutdown SDL */

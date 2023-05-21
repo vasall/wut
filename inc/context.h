@@ -94,6 +94,23 @@ FH_API void fh_ContextSetSize(struct fh_context *ctx, int2_t size);
 
 
 /*
+ * Set the rendering area in the window to the given rectangle.
+ *
+ * @ctx: Pointer to the context
+ * @rect: The rendering area
+ */
+FH_API void fh_SetViewport(struct fh_context *ctx, rect_t rect);
+
+
+/*
+ * Reset the rendering area.
+ *
+ * @ctx: Pointer to the context
+ */
+FH_API void fh_ResetViewport(struct fh_context *ctx);
+
+
+/*
  * Enable the scissor function to only allow rendering in the specified
  * rectangle.
  *

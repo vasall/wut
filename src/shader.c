@@ -6,7 +6,7 @@
 
 
 
-FH_INTERN s8 shd_new_shader(u32 type, char *src, u32 *shd_out)
+FH_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 {
 	u32 shd;
 	char info_log[512];
@@ -16,7 +16,7 @@ FH_INTERN s8 shd_new_shader(u32 type, char *src, u32 *shd_out)
 	 * Create and compile the shader.
 	 */
 	shd = glCreateShader(type);
-	glShaderSource(shd, 1, (const char **)&src, NULL);
+	glShaderSource(shd, 1, &src, NULL);
 	glCompileShader(shd);
 
 	/*
@@ -36,9 +36,9 @@ FH_INTERN s8 shd_new_shader(u32 type, char *src, u32 *shd_out)
 	return 0;
 }
 
-FH_INTERN s8 shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
+FH_INTERN s8 shd_extract_inputs(struct fh_shader_inputs *inp, const char *str)
 {
-	char *line = str;
+	char *line = (char *)str;
 	struct fh_shader_var *var;
 	s32 num_vars = 0;
 	char *start;
@@ -90,6 +90,45 @@ FH_INTERN s8 shd_extract_inputs(struct fh_shader_inputs *inp, char *str)
 	return num_vars;
 }
 
+FH_INTERN s8 shd_extract_uniforms(struct fh_shader_uniforms *u, const char *str)
+{
+	char *runner = (char *)str;
+	char swap[64];
+
+	u32 counter = 0;
+	u32 i = 0;
+
+	struct fh_shader_uniform *uni;
+
+	while((runner = strstr(runner, "binding=")) != NULL) {
+		uni = &u->uniform[counter];
+
+		runner += 8;
+
+		i = 0;
+		while((swap[i++] = *(runner++)) & 0x50);
+		swap[i-1] = 0;
+
+		uni->location = atoi(swap);
+
+		runner = strstr(runner, "uniform ");
+		runner += 8;
+
+		i = 0;
+		while((swap[i++] = *(runner++)) != 32);
+		swap[i-1] = 0;
+
+		strcpy(uni->name, swap);
+
+		counter++;
+	}
+
+	u->num = counter;
+
+	return counter;
+}
+
+
 FH_INTERN struct fh_shader *shd_create(char *name, const char *v_src,
 		const char *f_src)
 {
@@ -112,9 +151,15 @@ FH_INTERN struct fh_shader *shd_create(char *name, const char *v_src,
 	/*
 	 * Extract the input variables from the vertex-shader.
 	 */
-	if(shd_extract_inputs(&shader->inputs, v_src) < 1)
+	if(shd_extract_inputs(&shader->inputs, v_src) < 1) {
+		ALARM(ALARM_ERR, "Failed to extract input");
 		goto err_free_shader;
+	}
 
+	if(shd_extract_uniforms(&shader->uniforms, v_src) < 1) {
+		ALARM(ALARM_ERR, "Failed to extract uniforms");
+		goto err_free_shader;
+	}
 
 	/*
 	 * Create and compile the vertex- and fragment-shader.
@@ -241,8 +286,7 @@ FH_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 {
 	struct fh_shader *shader;
 
-	/* SILENCIO! */
-	if(size) {}
+	fh_Ignore(size);
 
 	if(!ptr)
 		return;
@@ -250,6 +294,7 @@ FH_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 	shader = (struct fh_shader *)ptr;
 	shd_destroy(shader);
 }
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -404,10 +449,12 @@ FH_API void fh_UseShader(struct fh_shader *shd)
 {
 	u8 i;
 
+
 	if(!shd) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
+
 
 	/* First activate the shader */
 	glUseProgram(shd->program);
@@ -424,7 +471,7 @@ FH_API void fh_UnuseShader(void)
 }
 
 
-FH_API s8 fh_ShaderGetLocation(struct fh_shader *shd, char *var)
+FH_API s8 fh_ShaderGetInputLoc(struct fh_shader *shd, char *var)
 {
 	s8 i;
 
@@ -440,6 +487,25 @@ FH_API s8 fh_ShaderGetLocation(struct fh_shader *shd, char *var)
 
 	return -1;
 }
+
+
+FH_API s8 fh_ShaderGetUniformLoc(struct fh_shader *shd, char *uni)
+{
+	u8 i;
+
+	if(!shd || !uni) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return -1;
+	}
+
+	for(i = 0; i < shd->uniforms.num; i++) {
+		if(strcmp(shd->uniforms.uniform[i].name, uni) == 0)
+			return i;
+	}
+
+	return -1;
+}
+
 
 #if 0
 

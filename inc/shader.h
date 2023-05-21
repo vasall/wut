@@ -7,6 +7,7 @@
 
 #define FH_SHADER_LIM		128
 #define FH_SHADER_VAR_LIM	16
+#define FH_SHADER_UNIFORM_LIM	8
 
 
 struct fh_shader_var {
@@ -21,6 +22,20 @@ struct fh_shader_inputs {
 };
 
 
+
+struct fh_shader_uniform {
+	char name[64];
+	s16 location;
+};
+
+
+struct fh_shader_uniforms {
+	u8 num;
+	struct fh_shader_uniform uniform[8];
+};
+
+
+
 struct fh_shader {
 	/* The name of the shader */
 	char name[128];
@@ -30,6 +45,9 @@ struct fh_shader {
 
 	/* The inputs for the shader */
 	struct fh_shader_inputs inputs;
+
+	/* The uniforms for the shader */
+	struct fh_shader_uniforms uniforms;
 
 	/* A reference to the context */
 	struct fh_context *context;
@@ -125,7 +143,19 @@ FH_API void fh_UnuseShader(void);
  *
  * Returns: The location or -1 if an error occurred
  */
-FH_API s8 fh_ShaderGetLocation(struct fh_shader *shd, char *var);
+FH_API s8 fh_ShaderGetInputLoc(struct fh_shader *shd, char *var);
+
+
+/*
+ * Get the location of a uniform buffer in the shader.
+ *
+ * @shd: Pointer to the shader
+ * @uni: The name of the uniform buffer
+ *
+ * Returns: The location or -1 if an error occurred
+ */
+FH_API s8 fh_ShaderGetUniformLoc(struct fh_shader *shd, char *uni);
+
 
 #if 0
 

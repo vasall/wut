@@ -102,7 +102,7 @@ FH_INTERN void mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
 	for(i = 0; i < c->attrib_num; i++) {
 		attr = &c->attribs[i];
 
-		if((slot = fh_ShaderGetLocation(mdl->shader, attr->name)) < 0) {
+		if((slot = fh_ShaderGetInputLoc(mdl->shader, attr->name)) < 0) {
 			ALARM(ALARM_ERR, "Input variable not found");
 			return;
 		}
@@ -146,7 +146,11 @@ FH_INTERN s8 mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 	u32 i;
 	s32 j;
 	struct fh_model_c_unibuf *unibuf;
-	struct fh_model_uniform *uniform;	
+	struct fh_model_uniform *uniform;
+
+	s32 slot;
+
+	printf("For model %s\n", mdl->name);
 
 	/* Bind the vertex-array-object */
 	glBindVertexArray(mdl->vao);
@@ -168,6 +172,18 @@ FH_INTERN s8 mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 		glBindBuffer(GL_UNIFORM_BUFFER, uniform->bao);
 		glBufferData(GL_UNIFORM_BUFFER, uniform->size, NULL,
 				GL_STATIC_DRAW);
+
+		printf("Uniform %d: %s\n", i, uniform->name);
+
+		/* Retrieve the binding location in the shader */
+		if((slot = fh_ShaderGetUniformLoc(mdl->shader, uniform->name)) < 0) {
+			ALARM(ALARM_ERR, "Uniform not found");
+			goto err_free;
+		}
+
+		printf("Location: %d\n", slot);
+
+		uniform->location = slot;
 	}
 
 	mdl->uniform_number = c->unibuf_num;
