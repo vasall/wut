@@ -87,6 +87,19 @@ FH_API void fh_RemoveTexture(struct fh_texture *tex);
 
 
 /*
+ * Resize a texture.
+ *
+ * @tex: Pointer to the texture
+ * @w: The new width
+ * @h: The new height
+ * @px: The new pixel data
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px);
+
+
+/*
  * Update the texture and overwrite with the new pixel data.
  * Note that for this function to work, the texture has to already exist in the
  * texture table.

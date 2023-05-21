@@ -8,8 +8,6 @@
 
 FH_API void fh_style_reset_sheet(struct fh_stylesheet *sheet)
 {
-	u32 t;
-
 	/* 
 	 * DISPLAY
 	 */
@@ -47,8 +45,7 @@ FH_API void fh_style_reset_sheet(struct fh_stylesheet *sheet)
 	 * INFILL
 	 */
 	sheet->infill_mode = FH_INFILL_COLOR;
-	t = rand() % 0xff; 
-	sheet->infill_color =  fh_col_set(0xff - t, t, t / 2, 0xff);
+	sheet->infill_color =  fh_col_set(0xFF, 0x69, 0xB4, 0xff);
 
 	/*
 	 * BORDER
@@ -81,7 +78,7 @@ err_return:
 }
 
 
-FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
+FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 {
 	u32 uref;
 	u32 uval;
@@ -132,6 +129,8 @@ FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
 	out->size.height = fh_flex_comp_lim(&in->vsize, &in->vsize_min,
 			&in->vsize_max, uref);
 
+	printf("Height: %d\n", out->size.height);
+
 	/* horizontal */
 	if(ref) {
 		uref = ref->size.width;
@@ -144,6 +143,8 @@ FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
 	out->size.width = fh_flex_comp_lim(&in->hsize, &in->hsize_min,
 			&in->hsize_max, uref);
 
+	printf("Width: %d\n", out->size.width);
+		
 	/*
 	 * POSITION
 	 */
@@ -166,6 +167,8 @@ FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
 		out->position.y = uval;
 	}
 
+	printf("Y-Position: %d\n", out->position.y);
+
 	/* horizontal */
 	if(ref) {
 		uref = ref->size.width;
@@ -183,6 +186,8 @@ FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
 	else {
 		out->position.x = uval;
 	}
+
+	printf("X-Position: %d\n", out->position.x);
 
 	/*
 	 * PADDING
@@ -211,6 +216,11 @@ FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect)
 
 	out->padding.left = fh_flex_comp(&in->padding_left, uref);
 	out->padding.right = fh_flex_comp(&in->padding_right, uref);
+
+	/*
+	 * COLOR
+	 */
+	out->infill.color = out->sheet.infill_color;
 
 	return 0;
 

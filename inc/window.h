@@ -21,8 +21,7 @@ struct fh_window {
 	char name[FH_WIN_NAME_LIM];
 
 	/* The size of the window in pixels */
-	s16 width;
-	s16 height;
+	struct fh_rect shape;
 
 	/* 
 	 * The state flags of this window (from lowest to highest):
@@ -47,60 +46,6 @@ struct fh_window {
 	/* The rendering context */
 	struct fh_context *context;
 };
-
-
-
-
-/*
- * Allocate the memory and create a new window.
- *
- * @name: The name of the window
- * @w: The initial width of the window
- * @h: The initial height of the window
- *
- * Returns: Either a pointer to the created window struct or NULL if an error
- *          occurred
- */
-FH_API struct fh_window *fh_win_create(char *name, s16 w, s16 h);
-
-
-/*
- * Destroy a window and free the allocated memory.
- *
- * @win: A pointer to the window struct
- */
-FH_API void fh_win_destroy(struct fh_window *win);
-
-
-/*
- * Attach a window to a parent window.
- *
- * @parent: Pointer to the parent window struct
- * @window: Pointer to the window struct to attach
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_win_attach(struct fh_window *parent,
-		struct fh_window *window);
-
-
-/*
- * Remove the link to the parent window struct for this window. This function is
- * save to call, even if the window doesn't have a parent.
- *
- * @window: Pointer to the window struct to detach from the parent
- */
-FH_API void fh_win_detach(struct fh_window *window);
-
-
-/*
- * Get a pointer to the window struct using the windowId.
- *
- * @wd: The window descriptor
- *
- * Returns: Either a pointer to the window struct or NULL if it does not exist
- */
-FH_API struct fh_window *fh_win_get(s32 wd);
 
 
 /*
@@ -195,6 +140,16 @@ FH_API void fh_CloseWindow(struct fh_window *win);
  * 	    window could not be found
  */
 FH_API struct fh_window *fh_GetWindow(s32 wd);
+
+
+/*
+ * Resize the window to the new given size.
+ *
+ * @win: Pointer to the window
+ * @w: The new width
+ * @h: The new height
+ */
+FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h);
 
 
 /*

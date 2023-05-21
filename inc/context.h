@@ -17,8 +17,8 @@ struct fh_context {
 	/* Pointer to the underlying OpenGL-context */
 	void *gl_context;	
 	
-	/* The size of the context in pixels */
-	int2_t size;
+	/* A reference to the size of the window */
+	struct fh_rect *shape_ref;
 
 	/*
 	 * RESOURCE-TABLES
@@ -85,21 +85,12 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 
 
 /*
- * Update the size of the context in pixels.
- *
- * @ctx: Pointer to the context
- * @size: The new size
- */
-FH_API void fh_ContextSetSize(struct fh_context *ctx, int2_t size);
-
-
-/*
  * Set the rendering area in the window to the given rectangle.
  *
  * @ctx: Pointer to the context
  * @rect: The rendering area
  */
-FH_API void fh_SetViewport(struct fh_context *ctx, rect_t rect);
+FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect);
 
 
 /*
@@ -117,7 +108,7 @@ FH_API void fh_ResetViewport(struct fh_context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rectangle in pixels
  */
-FH_API void fh_ContextEnableScissor(struct fh_context *ctx, rect_t rect);
+FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect);
 
 
 /*

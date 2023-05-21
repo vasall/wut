@@ -156,7 +156,7 @@ FH_INTERN struct fh_shader *shd_create(char *name, const char *v_src,
 		goto err_free_shader;
 	}
 
-	if(shd_extract_uniforms(&shader->uniforms, v_src) < 1) {
+	if(shd_extract_uniforms(&shader->uniforms, v_src) < 0) {
 		ALARM(ALARM_ERR, "Failed to extract uniforms");
 		goto err_free_shader;
 	}
@@ -374,6 +374,7 @@ err_destroy_shader:
 	shd_destroy(shd);
 
 err_return:
+	printf("Failed to create shader: %s\n", name);
 	ALARM(ALARM_ERR, "Failed to create new shader");
 	return NULL;
 }
@@ -409,6 +410,7 @@ err_destroy_shader:
 	shd_destroy(shd);
 
 err_return:
+	printf("Failed to load shader: %s (%s, %s)\n", name, v_pth, f_pth);
 	ALARM(ALARM_ERR, "Failed to load shader");
 	return NULL;
 }

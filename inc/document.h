@@ -6,14 +6,27 @@
 #include "import.h"
 #include "window.h"
 #include "element.h"
-
+#include "model.h"
+#include "model_constructor.h"
+#include "flat.h"
 
 struct fh_document {
 	/* A pointer to the window this document belongs to */
 	struct fh_window *window;
 
+	/* A pointer to the context */
+	struct fh_context *context;
+
 	/* The body element, to which all future elements will be attached */
 	struct fh_element *body;
+
+	/* A reference to the window size */
+	struct fh_rect *shape_ref;
+
+	struct fh_flat *flat;
+	struct fh_model *ui;
+
+
 };
 
 struct fh_ele_selector {
@@ -49,6 +62,14 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win);
  * @doc: Pointer to the document
  */
 FH_API void fh_DestroyDocument(struct fh_document *doc);
+
+
+/*
+ * This function will resize the document to fit the given reference shape.
+ *
+ * @doc: Pointer to the document
+ */
+FH_API void fh_ResizeDocument(struct fh_document *doc);
 
 
 /*

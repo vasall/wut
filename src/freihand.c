@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-FH_API s8 fh_init(void)
+FH_API s8 fh_Init(void)
 {
 	/* Reset the core */
 	fh_core_reset();
@@ -39,7 +39,7 @@ err_return:
 }
 
 
-FH_API void fh_quit(void)
+FH_API void fh_Quit(void)
 {
 	/* Close all windows */
 	fh_CloseWindow(fh_core_get_main_window());
@@ -53,7 +53,7 @@ FH_API void fh_quit(void)
 }
 
 
-FH_API s8 fh_update(void)
+FH_API s8 fh_Update(void)
 {
 	/* Check if the quit flag has been triggered */
 	if(fh_core_check_quit())
@@ -64,7 +64,7 @@ FH_API s8 fh_update(void)
 
 
 	/* Redraw all visible windows */
-	fh_win_redraw_all();
+	fh_RedrawAllWindows();
 
 	return 1;
 }

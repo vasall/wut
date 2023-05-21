@@ -114,6 +114,9 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 
 	/* Copy the window reference */
 	ctx->window = win;
+	
+	/* Set the reference to the window shape */
+	ctx->shape_ref = &win->shape;
 
 	/*
 	 * Create and initialize the resource tables.
@@ -248,25 +251,14 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 }
 
 
-FH_API void fh_ContextSetSize(struct fh_context *ctx, int2_t size)
-{
-	if(!ctx) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	memcpy(ctx->size, size, INT2_SIZE);
-}
-
-
-FH_API void fh_SetViewport(struct fh_context *ctx, rect_t rect)
+FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect)
 {
 	if(!ctx) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return;
 	}
 
-	glViewport(rect[0], rect[1], rect[2], rect[3]);
+	glViewport(rect->x, rect->y, rect->w, rect->h);
 }
 
 
@@ -277,17 +269,22 @@ FH_API void fh_ResetViewport(struct fh_context *ctx)
 		return;
 	}
 
-	glViewport(0, 0, ctx->size[0], ctx->size[1]);
+	glViewport(
+			ctx->shape_ref->x, 
+			ctx->shape_ref->y, 
+			ctx->shape_ref->w, 
+			ctx->shape_ref->h
+		);
 }
 
 
-FH_API void fh_ContextEnableScissor(struct fh_context *ctx, rect_t rect)
+FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect)
 {
 	if(!ctx)
 		return;
 
 	glEnable(GL_SCISSOR_TEST);
-	glScissor(rect[0], rect[1], rect[2], rect[3]);
+	glScissor(rect->x, rect->y, rect->w, rect->h);
 
 }
 

@@ -19,7 +19,7 @@ enum fh_element_type {
 	FH_BUTTON,
 	FH_INPUT,
 	FH_IMAGE,
-	FH_OPENGL,
+	FH_CANVAS,
 	FH_CUSTOM
 };
 
@@ -135,6 +135,15 @@ FH_API void fh_UpdateElement(struct fh_element *ele);
  */
 FH_API void fh_RenderElement(struct fh_element *ele);
 
+
+/*
+ * Get the shape of the element in the window.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: The shape of the element
+ */
+FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
 
 
 #endif /* _FH_ELEMENT_H */

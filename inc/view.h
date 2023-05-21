@@ -14,7 +14,7 @@ struct fh_view {
 
 	struct fh_camera *camera;
 
-	rect_t shape;
+	struct fh_rect shape;
 };
 
 
@@ -28,7 +28,7 @@ struct fh_view {
  * Returns: Either a new view or NULL if an error occurred
  */
 FH_API struct fh_view *fh_CreateView(struct fh_context *ctx,
-		struct fh_camera *cam, rect_t rect);
+		struct fh_camera *cam, struct fh_rect *rect);
 
 
 /*

@@ -163,7 +163,8 @@ FH_API void fh_SetModelUniform(struct fh_model *mdl, char *name, void *ptr)
 }
 
 
-FH_API void fh_RenderModel(struct fh_model *mdl)
+FH_API void fh_RenderModel(struct fh_model *mdl, struct fh_shader *shd,
+		struct fh_texture *tex)
 {
 	if(!mdl)
 		return;
@@ -172,13 +173,19 @@ FH_API void fh_RenderModel(struct fh_model *mdl)
 	glBindVertexArray(mdl->vao);
 
 	/* Activate shader */
-	fh_UseShader(mdl->shader);
+	if(shd)
+		fh_UseShader(shd);
+	else
+		fh_UseShader(mdl->shader);
 
 	/* Activate the uniform buffers */
 	mdl_activate_uniforms(mdl);
 
 	/* Activate texture */
-	fh_UseTexture(mdl->texture);
+	if(tex)
+		fh_UseTexture(tex);
+	else
+		fh_UseTexture(mdl->texture);
 
 	/* Finally render the model */
 	glDrawElements(GL_TRIANGLES, mdl->index_number, GL_UNSIGNED_INT, NULL);

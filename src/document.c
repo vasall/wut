@@ -6,6 +6,86 @@
 #include <stdlib.h>
 
 
+FH_INTERN s8 doc_create_flat(struct fh_document *doc)
+{
+	struct fh_context *ctx = doc->context;
+	u16 w = doc->shape_ref->w;
+	u16 h = doc->shape_ref->h;
+
+	if(!(doc->flat = fh_CreateFlat(ctx, "ui", w, h)))
+		goto err_return;
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create flat for document");
+	return -1;
+}
+
+FH_INTERN s8 doc_create_ui(struct fh_document *doc)
+{
+	struct fh_model_c *c;
+
+	unsigned int vtxnum = 4;
+	unsigned int idxnum = 6;
+	struct fh_context *ctx = doc->context;
+
+	float vertices[] = {
+		-1,  -1,   0,
+		-1,   1,   0,
+		 1,   1,   0,
+		 1,  -1,   0
+	};
+
+	/* Texture coordinates (2 floats per vertex) */
+	float texCoords[] = {
+		0.0f, 0.0f,
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f
+	};
+
+	/* Indices (3 ints per triangle) */
+	unsigned int indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	vec3_t ini_pos = {0, 0, 0};
+	vec3_t ini_rot = {0, 0, 0};
+
+	if(!(c = fh_BeginModelConstr("ui", vtxnum, idxnum, indices))) {
+		printf("Failed to begin construction\n");
+		goto err_return;
+	}
+
+	fh_ModelConstrShader(c, fh_GetShader(ctx, "flat"));
+	fh_ModelConstrTexture(c, fh_GetTexture(ctx, "ui"));
+
+	fh_ModelConstrAttrib(c, "v_pos", 3, GL_FLOAT, vertices);
+	fh_ModelConstrAttrib(c, "v_uv", 2, GL_FLOAT, texCoords);
+
+	if(!(doc->ui = fh_EndModelConstr(c, ctx, ini_pos, ini_rot))) {
+		printf("Failed to finalize construction\n");
+		goto err_return;
+	}
+
+	fh_ModelConstrCleanup(c);	
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to create UI model for document");
+	return -1;
+}
+
+
+/*
+ * 
+ *     CALLBACK-FUNCTIONS
+ *
+ */
+
 FH_INTERN s8 doc_cfnc_remove(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
@@ -100,6 +180,10 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 
 	/* Set the attributes for the document */
 	doc->window = win;
+	doc->context = win->context;
+
+	/* Get a reference to the shape/size of the window */
+	doc->shape_ref = &win->shape;
 
 	/* Create the body element */	
 	if(!(doc->body = fh_CreateElement("body", FH_BODY))) {
@@ -113,10 +197,26 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->body->parent = NULL;
 	doc->body->layer = 0;
 
+	/* Create the flat */
+	if(doc_create_flat(doc) < 0)
+		goto err_destroy_body;
+
+	/* Create the UI model */
+	if(doc_create_ui(doc) < 0)
+		goto err_destroy_flat;
+
+
 	/* Update the body element */
-	fh_UpdateDocumentBranch(doc, doc->body);
+	fh_UpdateDocument(doc);
+	fh_RenderDocument(doc);
 
 	return doc;
+
+err_destroy_flat:
+	fh_DestroyFlat(doc->flat);
+
+err_destroy_body:
+	fh_DestroyElement(doc->body);
 
 err_free_doc:
 	fh_free(doc);
@@ -136,6 +236,22 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 	fh_RemoveElement(doc, doc->body);	
 
 	fh_free(doc);
+}
+
+
+FH_API void fh_ResizeDocument(struct fh_document *doc)
+{
+	if(!doc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	/* First resize the flat */
+	fh_ResizeFlat(doc->flat, doc->shape_ref->w, doc->shape_ref->h);
+
+	/* Then resize the elements */
+	fh_UpdateDocument(doc);
+	fh_RenderDocument(doc);
 }
 
 
@@ -164,6 +280,7 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 
 	/* Update the new element */
 	fh_UpdateDocumentBranch(doc, ele);
+	fh_RenderDocumentBranch(doc, ele);
 
 	return ele;
 
@@ -239,12 +356,17 @@ FH_API void fh_UpdateDocument(struct fh_document *doc)
 FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
+	struct fh_rect r;
+
 	if(!doc || !ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
 	fh_ApplyElementsDown(ele, &doc_cfnc_render, NULL);
+
+	r = fh_GetElementShape(ele);
+	fh_UpdateFlat(doc->flat, &r);
 }
 
 

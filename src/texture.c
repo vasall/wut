@@ -30,8 +30,8 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
-
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -218,15 +218,77 @@ FH_API void fh_RemoveTexture(struct fh_texture *tex)
 }
 
 
+FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
+{
+	u32 newTex;
+		
+	if(!tex) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	printf("Resize!!!!!\n");
+
+	/*
+	 * Create the new texture.
+	 */
+	glGenTextures(1, &newTex);
+	glBindTexture(GL_TEXTURE_2D, newTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+			GL_UNSIGNED_BYTE, px);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	/*
+	 * Destroy the old texture.
+	 */
+	glDeleteTextures(1, &tex->texture);
+
+	/*
+	 * Update attributes.
+	 */
+	tex->width = w;
+	tex->height = h;
+	tex->texture = newTex;
+
+	return 0;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to resize texture");
+	return -1;
+}
+
+
 FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px)
 {
+	u32 i;
+
+	printf("BEFORE\n");
+
 	if(!tex || !px) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return -1;
 	}
 
+	printf("Hello world\n");
+
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
+
+#if 0
+	for(i = 0; i < (w * h * 4); i++) {
+
+		if(i % 4 == 0 && i != 0)
+			printf("\n");
+		printf("%02x ", px[i]);
+
+	}
+
+	printf("\n");
+#endif
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);

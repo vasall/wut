@@ -13,7 +13,7 @@
  */
 
 FH_API struct fh_view *fh_CreateView(struct fh_context *ctx,
-		struct fh_camera *cam, rect_t rect)
+		struct fh_camera *cam,  struct fh_rect *rect)
 {
 	struct fh_view *v;
 
@@ -30,7 +30,7 @@ FH_API struct fh_view *fh_CreateView(struct fh_context *ctx,
 	/* Set the attributes */
 	v->context = ctx;
 	v->camera = cam;
-	memcpy(v->shape, rect, RECT_SIZE);
+	fh_rect_cpy(&v->shape, rect);
 
 	/* Create a new pipeline */
 	if(!(v->pipe = fh_CreatePipe(v->camera->pos))) {
@@ -71,14 +71,13 @@ FH_API void fh_RenderView(struct fh_view *v)
 	/*
 	 * First translate.
 	 */
-	fh_SetViewport(v->context, v->shape);
-	glViewport(v->shape[0], v->shape[1], v->shape[2], v->shape[3]);
+	fh_SetViewport(v->context, &v->shape);
 
 
 	/*
 	 * Then enable scissors.
 	 */
-	fh_ContextEnableScissor(v->context, v->shape);
+	fh_ContextEnableScissor(v->context, &v->shape);
 
 
 	/*

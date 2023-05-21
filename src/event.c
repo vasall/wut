@@ -141,7 +141,7 @@ FH_API void fh_evt_process(void)
 	while(SDL_PollEvent(&evt.event)) {	
 
 		/* Get a pointer to the window */
-		evt.window = fh_win_get(evt.event.window.windowID);
+		evt.window = fh_GetWindow(evt.event.window.windowID);
 
 
 		switch(evt.event.type) {

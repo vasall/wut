@@ -139,8 +139,11 @@ FH_API void fh_SetModelUniform(struct fh_model *mdl, char *name, void *ptr);
  * Render a model.
  * 
  * @mdl: Pointer to the model
+ * @[shd]: The shader to be used
+ * @[tex]: The texture to be used
  */
-FH_API void fh_RenderModel(struct fh_model *mdl);
+FH_API void fh_RenderModel(struct fh_model *mdl, struct fh_shader *shd,
+		struct fh_texture *tex);
 
 
 #endif /* _FH_MODEL_H */

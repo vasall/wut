@@ -44,8 +44,7 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
-	win->width = w;
-	win->height = h;
+	fh_rect_set(&win->shape, 0, 0, w, h);
 	win->info = FH_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
 
@@ -178,8 +177,7 @@ FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
 	/* Clear the window */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/* Render the document onto the window */
-	fh_RenderDocument(win->document);
+	fh_RenderModel(win->document->ui, NULL, NULL);
 
 	/* Swap buffer */
         SDL_GL_SwapWindow(win->handle);
@@ -339,6 +337,25 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 	}
 
 	return NULL;
+}
+
+
+FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h)
+{
+	if(!win) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	/*
+	 * Update the shape.
+	 */
+	fh_rect_set(&win->shape, 0, 0, w, h);
+
+	/*
+	 * Update the document.
+	 */
+	fh_ResizeDocument(win->document);
 }
 
 

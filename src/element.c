@@ -209,27 +209,20 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 
 FH_API void fh_UpdateElement(struct fh_element *ele)
 {
-	SDL_Rect rect;
-
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
-	}
+	}	
 
-	rect.x = 0;
-	rect.y = 0;
-	rect.w = ele->document->window->width;
-	rect.h = ele->document->window->height;
-	
+	printf("Update element: %s\n", ele->name);
 
-	fh_style_process(&ele->style, &rect);
+	fh_style_process(&ele->style, ele->document->shape_ref);
 }
 
 
 FH_API void fh_RenderElement(struct fh_element *ele)
 {
-	SDL_Rect rect;
-	s32 t;
+	struct fh_rect rect;
 	struct fh_color col;
 
 	if(!ele) {
@@ -242,14 +235,35 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 	rect.x = ele->style.position.x - (rect.w / 2);
 	rect.y = ele->style.position.y - (rect.h / 2);
 
+#if 1
 	printf("Render %s:  [%d, %d, %d, %d]\n",
 			ele->name,
 			rect.x,
 			rect.y,
 			rect.w,
 			rect.h);
+#endif
 
-	t = rand() % 0xff; 
-	col = fh_col_set(0xff - t, t, t / 2, 0xff);
+	col = ele->style.infill.color;
+
+	fh_FlatRect(ele->document->flat, &rect, col);
 }
 
+
+FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele)
+{
+	struct fh_rect r;
+
+	if(!ele) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		fh_rect_set(&r, 0, 0, 100, 100);
+		return r;
+	}
+
+	r.w = ele->style.size.width;
+	r.h = ele->style.size.height;
+	r.x = ele->style.position.x - (r.w / 2);
+	r.y = ele->style.position.y - (r.h / 2);
+
+	return r;
+}

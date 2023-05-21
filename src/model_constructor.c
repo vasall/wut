@@ -241,6 +241,9 @@ FH_API struct fh_model_c *fh_BeginModelConstr(char *name,
 	}
 	memcpy(c->idx, idx, inum * sizeof(u32));
 
+	/* Reset configuration attributes */
+	c->shader = NULL;
+	c->texture = NULL;
 
 	return c;
 

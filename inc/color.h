@@ -6,13 +6,16 @@
 #include "datatype.h"
 #include "import.h"
 
-
+/*
+ * A pixel is defined by 4 attributes representing the RGBA-values.
+ * Each value can be set in range of 0 t0 255.
+ */
+#define FH_COLOR_SIZE	(4*sizeof(u8))
 struct fh_color {	
-	u8 red;
-	u8 green;
-	u8 blue;
-	u8 alpha;
-
+	u8 r;
+	u8 g;
+	u8 b;
+	u8 a;
 };
 
 
@@ -39,5 +42,15 @@ FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha);
  */
 FH_API u32 fh_color_get(struct fh_color color);
 
+
+/*
+ * Blend two RGBA values.
+ * 
+ * @a: The first color
+ * @b: The second color
+ *
+ * Returns: The blended color
+ */
+FH_API struct fh_color fh_BlendColor(struct fh_color a, struct fh_color b);
 
 #endif /* FH_COLOR_H */

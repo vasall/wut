@@ -1,9 +1,7 @@
 #ifndef _FH_ELEMENT_STYLE_H
 #define _FH_ELEMENT_STYLE_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 #include "flex.h"
 #include "color.h"
 
@@ -45,7 +43,7 @@ struct fh_stylesheet {
 	/*
 	 * DISPLAY
 	 */
-	enum fh_style_display_mode		display_mode;
+	enum fh_style_display_mode	display_mode;
 
 	/*
 	 * SIZE
@@ -144,7 +142,7 @@ struct fh_restyle_padding {
 struct fh_restyle_infill {
 	enum fh_style_infill_mode		mode;
 	struct fh_color				color;
-	
+
 };
 
 struct fh_restyle_border {
@@ -209,7 +207,7 @@ FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_style_process(struct fh_style *style, SDL_Rect *rect);
+FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect);
 
 
 #endif /* _FH_ELEMENT_STYLE_H */

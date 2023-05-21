@@ -22,13 +22,13 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_init(void);
+FH_API s8 fh_Init(void);
 
 
 /*
  * Shutdown the FH-framework and clear the allocated memory.
  */
-FH_API void fh_quit(void);
+FH_API void fh_Quit(void);
 
 
 /*
@@ -37,7 +37,7 @@ FH_API void fh_quit(void);
  * Returns: 1 if everything is normal, and 0 if either a fatal error occurred or
  * 	    the user requested to close the program
  */
-FH_API s8 fh_update(void);
+FH_API s8 fh_Update(void);
 
 
 #endif /* _FH_FREIHAND_H */
