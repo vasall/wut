@@ -13,14 +13,14 @@
 
 
 enum fh_element_type {
-	FH_BODY,
-	FH_BLOCK,
-	FH_TEXT,
-	FH_BUTTON,
-	FH_INPUT,
-	FH_IMAGE,
-	FH_CANVAS,
-	FH_CUSTOM
+	FH_BODY		= 0,
+	FH_BLOCK	= 1,
+	FH_TEXT		= 2,
+	FH_BUTTON	= 3,
+	FH_INPUT	= 4,
+	FH_IMAGE	= 5,
+	FH_CANVAS	= 6,
+	FH_CUSTOM	= 7
 };
 
 
@@ -52,6 +52,9 @@ struct fh_element {
 
 	/* The style structure for this element */
 	struct fh_style style;
+
+	/* The component used by the element */
+	struct fh_component *component;
 };
 
 
@@ -60,13 +63,14 @@ struct fh_element {
  * Allocate and create a new element. Then depending on the given type, load
  * template styles.
  *
+ * @doc: Pointer to the document
  * @name: The name of the element
  * @type: The type of element
  *
  * Returns: Either a pointer to the newly created element or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_element *fh_CreateElement(char *name,
+FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 		enum fh_element_type type);
 
 
@@ -137,6 +141,16 @@ FH_API void fh_RenderElement(struct fh_element *ele);
 
 
 /*
+ * Get the context used for rendering the element.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: Pointer to the context
+ */
+FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
+
+
+/*
  * Get the shape of the element in the window.
  *
  * @ele: Pointer to the element
@@ -145,5 +159,29 @@ FH_API void fh_RenderElement(struct fh_element *ele);
  */
 FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
 
+
+/*
+ * Modify the stylesheet of an element.
+ *
+ * For example: "vposition: 10px;" or "infill-color: #ff00ff00;"
+ * This function can even take multiple changes at once, as long as they are
+ * seperated by a semicolon.
+ *
+ * @ele: Pointer to the element
+ * @str: A string containing the instructions
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str);
+
+
+/*
+ * Get the view from a canvas element, so it can be used for rendering.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: Either a pointer to the view struct or NULL if an error occurred
+ */
+FH_API struct fh_view *fh_GetView(struct fh_element *ele);
 
 #endif /* _FH_ELEMENT_H */

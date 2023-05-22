@@ -344,6 +344,9 @@ FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
 	vec3_cpy(mdl->position, pos);
 	vec3_cpy(mdl->rotation, rot);
 
+	/* Reset view pointer */
+	mdl->view = NULL;
+
 	/* Insert the new model into the context model table */
 	mdl->context = ctx;
 

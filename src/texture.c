@@ -267,14 +267,12 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 {
 	u32 i;
 
-	printf("BEFORE\n");
-
 	if(!tex || !px) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return -1;
 	}
 
-	printf("Hello world\n");
+	printf("Update Texture: %d, %d, %d, %d\n", x, y, w, h);
 
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 

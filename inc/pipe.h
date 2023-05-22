@@ -102,4 +102,12 @@ FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref);
  */
 FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m));
 
+
+/*
+ * Show the content of the pipe in the console.
+ *
+ * @pip: Pointer to the pipe
+ */
+FH_API void fh_PipeShow(struct fh_pipe *pip);
+
 #endif /* _FH_PIPE_H */

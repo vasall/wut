@@ -72,3 +72,12 @@ FH_API u32 fh_flex_comp_lim(struct fh_flex *flex, struct fh_flex *min,
 
 	return value;
 }
+
+
+FH_API void fh_flex_show(struct fh_flex *flex)
+{
+	if(!flex)
+		return;
+
+
+}

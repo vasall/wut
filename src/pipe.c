@@ -259,7 +259,6 @@ FH_API s8 fh_PipeAddModel(struct fh_pipe *pip, struct fh_model *mdl)
 	}
 
 
-
 	ent = &pip->entries[slot];
 
 	ent->flags = FH_PIPE_F_USED;
@@ -353,4 +352,46 @@ FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref)
 
 	pip_calculate(pip);
 	pip_order(pip);
+}
+
+
+FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m))
+{
+	s32 itr;
+	struct fh_pipe_entry *ent;
+
+	if(!pip || !fnc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	itr = pip->start;
+	while(itr != -1) {
+		ent = &pip->entries[itr];
+
+		fh_RenderModel(ent->model, NULL, NULL);
+
+		itr = ent->next;
+	}
+}
+
+
+FH_API void fh_PipeShow(struct fh_pipe *pip)
+{
+	s32 itr;
+	s32 c;
+
+	if(!pip)
+		return;
+
+	printf("Pipe [%d element(s)]:\n", pip->number);
+
+	itr = pip->start;
+	c = 0;
+	while(itr != -1) {
+		printf("%d: %s (%d)", c, pip->entries[itr].model->name, itr);
+		itr = pip->entries[itr].next;
+		c++;
+	}
+
 }

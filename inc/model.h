@@ -6,6 +6,7 @@
 #include "table.h"
 #include "import.h"
 #include "window.h"
+#include "view.h"
 
 #define FH_MODEL_NAME_LIM		128
 #define FH_MODEL_ATTRIB_LIM		12
@@ -58,6 +59,9 @@ struct fh_model {
 
 	/* Pointer to the context this model belongs to */
 	struct fh_context *context;
+
+	/* Pointer to the view, if model is attached */
+	struct fh_view *view;
 
 	vec3_t position;
 	vec3_t rotation;

@@ -10,6 +10,7 @@
 #include "model_constructor.h"
 #include "flat.h"
 
+
 struct fh_document {
 	/* A pointer to the window this document belongs to */
 	struct fh_window *window;
@@ -26,7 +27,8 @@ struct fh_document {
 	struct fh_flat *flat;
 	struct fh_model *ui;
 
-
+	/* A list of all views */
+	struct fh_view_list *views;
 };
 
 struct fh_ele_selector {
@@ -126,17 +128,26 @@ FH_API void fh_UpdateDocument(struct fh_document *doc);
 
 
 /*
- * Only render a branch of the element tree starting from <ele>.
+ * Only render a branch of the element tree onto the UI texture, starting from
+ * <ele>.
  *
  * @doc: Pointer to the document
- * @ele: Pointer to the element
+ * @ele: The starting element of the branch
  */
-FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
+FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		struct fh_element *ele);
 
 
 /*
- * Render the document and all elements in it.
+ * Render the whole element tree onto the UI texture.
+ *
+ * @doc: Pointer to the document
+ */
+FH_API void fh_RenderDocumentUI(struct fh_document *doc);
+
+
+/*
+ * Render the document onto the screen.
  *
  * @doc: Pointer to the document
  */

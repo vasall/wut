@@ -177,7 +177,8 @@ FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
 	/* Clear the window */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	fh_RenderModel(win->document->ui, NULL, NULL);
+	/* Render the Document-UI and views */
+	fh_RenderDocument(win->document);
 
 	/* Swap buffer */
         SDL_GL_SwapWindow(win->handle);

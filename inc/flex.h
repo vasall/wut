@@ -60,4 +60,12 @@ FH_API u32 fh_flex_comp(struct fh_flex *flex, u32 ref);
 FH_API u32 fh_flex_comp_lim(struct fh_flex *flex, struct fh_flex *min,
 		struct fh_flex *max, u32 ref);
 
+
+/*
+ * Display a flex-constriction in the terminal. 
+ *
+ * @flex: Pointer to the flex
+ */
+FH_API void fh_flex_show(struct fh_flex *flex);
+
 #endif /* _FH_FLEXVALUE_H */

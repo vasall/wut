@@ -14,6 +14,16 @@ FH_INTERN void flat_mod(struct fh_flat *f, u16 x, u16 y,
 }
 
 
+FH_INTERN void flat_set(struct fh_flat *f, u16 x, u16 y,
+		struct fh_color col)
+{
+	struct fh_color *px;
+
+	px = &f->pixels[(y*f->width)+x];
+	*px = col;
+
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -168,12 +178,10 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 		return;
 	}
 
-	printf("Swap flat!!!\n");
-
 	i = 0;
 	for(y = 0; y < r->h; y++) {
 		for(x = 0; x < r->w; x++) {
-			swap[i] = f->pixels[(y * f->width)+x];
+			swap[i] = f->pixels[((y + r->y) * f->width)+(x+r->x)];
 			i++;
 		}
 	}
@@ -194,12 +202,33 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
 		return;
 	}
 
-	printf("FlatRect\n");
-	printf("%d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
+	printf("Draw FlatRect: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
 
 	for(x = 0; x < r->w; x++) {
 		for(y = 0; y < r->h; y++) {
 			flat_mod(f, x + r->x, y + r->y, c);
 		}
 	}
+}
+
+
+FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
+		struct fh_color c)
+{
+	s32 x;
+	s32 y;
+
+	if(!f) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	printf("Draw FlatRectSet: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
+
+	for(x = 0; x < r->w; x++) {
+		for(y = 0; y < r->h; y++) {
+			flat_set(f, x + r->x, y + r->y, c);
+		}
+	}
+
 }

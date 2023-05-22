@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-FH_API void fh_style_reset_sheet(struct fh_stylesheet *sheet)
+FH_INTERN void fh_style_reset_sheet(struct fh_stylesheet *sheet)
 {
 	/* 
 	 * DISPLAY
@@ -117,7 +117,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	 * SIZE
 	 */
 	
-	/* vertical */
+	/* height */
 	if(ref) {
 		uref = ref->size.height;
 		uref -= (ref->padding.top + ref->padding.bottom);
@@ -131,7 +131,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 
 	printf("Height: %d\n", out->size.height);
 
-	/* horizontal */
+	/* width */
 	if(ref) {
 		uref = ref->size.width;
 		uref -= (ref->padding.left + ref->padding.right);
@@ -149,7 +149,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	 * POSITION
 	 */
 
-	/* vertical */
+	/* y-position */
 	if(ref) {
 		uref = ref->size.height;
 		uref -= (ref->padding.top + ref->padding.bottom);
@@ -169,7 +169,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 
 	printf("Y-Position: %d\n", out->position.y);
 
-	/* horizontal */
+	/* x-position */
 	if(ref) {
 		uref = ref->size.width;
 		uref -= (ref->padding.left + ref->padding.right);

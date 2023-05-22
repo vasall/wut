@@ -3,6 +3,7 @@
 #include "alarm.h"
 #include "system.h"
 #include "core.h"
+#include "view.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,15 +15,6 @@ FH_INTERN vec3_t FH_CAM_RIGHT =    {1.0, 0.0, 0.0};
 FH_INTERN vec3_t FH_CAM_FORWARD =  {0.0, 1.0, 0.0};
 FH_INTERN vec3_t FH_CAM_UP =       {0.0, 0.0, 1.0};
 
-
-
-
-
-
-FH_INTERN void cam_destroy(struct fh_camera *cam)
-{
-	fh_free(cam);
-}
 
 
 FH_INTERN void cam_update_proj(struct fh_camera *cam)
@@ -132,19 +124,14 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 }
 
 
-FH_INTERN void cam_rmv_fnc(u32 size, void *ptr)
+FH_INTERN void cam_reorder_pipe(struct fh_camera *cam)
 {
-	struct fh_camera *cam;
-
-	fh_Ignore(size);
-
-	if(!ptr)
+	if(!cam->view)
 		return;
 
-	cam = (struct fh_camera *)ptr;
-
-	cam_destroy(cam);
+	fh_UpdateViewPipe(cam->view);
 }
+
 
 
 /*
@@ -155,61 +142,17 @@ FH_INTERN void cam_rmv_fnc(u32 size, void *ptr)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API s8 fh_InitCameraTable(struct fh_context *ctx)
-{
-	struct fh_table *tbl;
-
-	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	if(!(tbl = fh_tbl_create(&cam_rmv_fnc))) {
-		ALARM(ALARM_ERR, "Failed to create camera table");
-		goto err_return;
-	}
-
-	/* Attach the camera table to the context */
-	ctx->cameras = tbl;
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to initialize camera table");
-	return -1;
-}
-
-
-FH_API void fh_CloseCameraTable(struct fh_context *ctx)
-{
-	if(!ctx) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	fh_tbl_destroy(ctx->cameras);
-	ctx->cameras = NULL;
-}
-
-
-FH_API struct fh_camera *fh_CreateCamera(struct fh_context *ctx, char *name,
-		struct fh_camera_info info)
+FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
+		struct fh_view *view)
 {
 	struct fh_camera *cam;
-	u32 size;
-	void **p;
-
-	if(!ctx || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
 
 	if(!(cam = fh_malloc(sizeof(struct fh_camera)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for camera");
 		goto err_return;
 	}
 
-	strcpy(cam->name, name);
+	cam->view = view;
 	cam->mode = FH_CAM_FREE;
 	cam->info = info;
 
@@ -232,19 +175,7 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_context *ctx, char *name,
 	cam_update_proj(cam);
 	cam_update_view(cam);
 
-	/* Set additional attributes */
-	cam->context = ctx;
-
-	/* Insert camera into table */
-	size = sizeof(struct fh_camera);
-	p = (void **)&cam;
-	if(fh_ContextAdd(ctx, FH_CONTEXT_CAMERAS, name, size, p) < 0)
-		goto err_destroy_cam;
-
 	return cam;
-
-err_destroy_cam:
-	cam_destroy(cam);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to create new camera");
@@ -252,36 +183,14 @@ err_return:
 }
 
 
-FH_API void fh_RemoveCamera(struct fh_camera *cam)
+FH_API void fh_DestroyCamera(struct fh_camera *cam)
 {	
 	if(!cam) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	fh_ContextRemove(cam->context, FH_CONTEXT_CAMERAS, cam->name);
-}
-
-
-FH_API struct fh_camera *fh_GetCamera(struct fh_context *ctx, char *name)
-{
-	struct fh_camera *cam;
-
-	if(!ctx || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	if(fh_tbl_get(ctx->cameras, name, NULL, (void **)&cam) != 1) {
-		ALARM(ALARM_ERR, "Camera could not be found in fh_table");
-		goto err_return;
-	}
-
-	return cam;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to get camera from the camera table");
-	return NULL;
+	fh_free(cam);
 }
 
 
@@ -331,6 +240,8 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos)
 	vec3_cpy(cam->pos, pos);
 
 	cam_update_view(cam);
+
+	cam_reorder_pipe(cam);
 }
 
 
@@ -344,6 +255,8 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del)
 	vec3_add(cam->pos, del, cam->pos);
 
 	cam_update_view(cam);
+
+	cam_reorder_pipe(cam);
 }
 
 
@@ -464,6 +377,8 @@ FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f)
 	}
 
 	fh_UpdateCamera(cam);
+
+	cam_reorder_pipe(cam);
 }
 
 
@@ -532,6 +447,33 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 
 		mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
 	}
+}
+
+
+FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam)
+{
+	if(!cam) {
+		struct fh_camera_info info = {0, 0, 0, 0};
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return info;
+	}
+
+	return cam->info;
+}
+
+
+FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info)
+{
+	if(!cam) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	/* Overwrite the info struct */
+	cam->info = info;
+
+	/* And recalculate the projection matrix */
+	cam_update_proj(cam);
 }
 
 

@@ -9,6 +9,7 @@
 #include "font.h"
 #include "camera.h"
 #include "model.h"
+#include "view.h"
 
 struct fh_context {
 	/* Pointer to the window this context belongs to */
@@ -26,8 +27,7 @@ struct fh_context {
 	struct fh_table *shaders;
 	struct fh_table *textures;
 	struct fh_table *fonts;
-	struct fh_table *cameras;
-	struct fh_table *models;	
+	struct fh_table *models;
 };
 
 
@@ -35,7 +35,6 @@ enum fh_context_table {
 	FH_CONTEXT_SHADERS,
 	FH_CONTEXT_TEXTURES,
 	FH_CONTEXT_FONTS,
-	FH_CONTEXT_CAMERAS,
 	FH_CONTEXT_MODELS
 };
 

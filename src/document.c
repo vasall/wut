@@ -12,6 +12,8 @@ FH_INTERN s8 doc_create_flat(struct fh_document *doc)
 	u16 w = doc->shape_ref->w;
 	u16 h = doc->shape_ref->h;
 
+	printf("Create flat with %d, %d\n", w, h);
+		
 	if(!(doc->flat = fh_CreateFlat(ctx, "ui", w, h)))
 		goto err_return;
 
@@ -126,7 +128,7 @@ FH_INTERN s8 doc_cfnc_update(struct fh_element *ele, void *data)
 }
 
 
-FH_INTERN s8 doc_cfnc_render(struct fh_element *ele, void *data)
+FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
@@ -186,13 +188,12 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->shape_ref = &win->shape;
 
 	/* Create the body element */	
-	if(!(doc->body = fh_CreateElement("body", FH_BODY))) {
+	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY))) {
 		ALARM(ALARM_ERR, "Failed to create body for document");
 		goto err_free_doc;
 	}
 
 	/* Set the attributes for the body element */
-	doc->body->document = doc;
 	doc->body->body = doc->body;
 	doc->body->parent = NULL;
 	doc->body->layer = 0;
@@ -205,12 +206,20 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	if(doc_create_ui(doc) < 0)
 		goto err_destroy_flat;
 
+	/* Create the view list */
+	if(!(doc->views = fh_CreateViewList(doc->context)))
+		goto err_destroy_ui;
 
 	/* Update the body element */
 	fh_UpdateDocument(doc);
-	fh_RenderDocument(doc);
+	
+	/* Render the UI for the first time */
+	fh_RenderDocumentUI(doc);
 
 	return doc;
+
+err_destroy_ui:
+	fh_RemoveModel(doc->ui);	
 
 err_destroy_flat:
 	fh_DestroyFlat(doc->flat);
@@ -235,6 +244,9 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 	/* If the document contains a body, recursivly remove it */
 	fh_RemoveElement(doc, doc->body);	
 
+	/* Then destroy all left over views */
+	fh_DestroyViewList(doc->views);
+
 	fh_free(doc);
 }
 
@@ -251,7 +263,7 @@ FH_API void fh_ResizeDocument(struct fh_document *doc)
 
 	/* Then resize the elements */
 	fh_UpdateDocument(doc);
-	fh_RenderDocument(doc);
+	fh_RenderDocumentUI(doc);
 }
 
 
@@ -267,7 +279,7 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 	}
 
 	/* Create new element */
-	if(!(ele = fh_CreateElement(name, type))) {
+	if(!(ele = fh_CreateElement(doc, name, type))) {
 		ALARM(ALARM_ERR, "Failed to create new element for document");
 		goto err_return;
 	}
@@ -280,7 +292,7 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 
 	/* Update the new element */
 	fh_UpdateDocumentBranch(doc, ele);
-	fh_RenderDocumentBranch(doc, ele);
+	fh_RenderDocumentUIBranch(doc, ele);
 
 	return ele;
 
@@ -353,7 +365,7 @@ FH_API void fh_UpdateDocument(struct fh_document *doc)
 }
 
 
-FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
+FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
 	struct fh_rect r;
@@ -363,10 +375,23 @@ FH_API void fh_RenderDocumentBranch(struct fh_document *doc,
 		return;
 	}
 
-	fh_ApplyElementsDown(ele, &doc_cfnc_render, NULL);
+	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL);
 
 	r = fh_GetElementShape(ele);
 	fh_UpdateFlat(doc->flat, &r);
+	
+}
+
+
+FH_API void fh_RenderDocumentUI(struct fh_document *doc)
+{
+	if(!doc) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fh_RenderDocumentUIBranch(doc, doc->body);
+
 }
 
 
@@ -377,7 +402,10 @@ FH_API void fh_RenderDocument(struct fh_document *doc)
 		return;
 	}
 
-	fh_RenderDocumentBranch(doc, doc->body);
+	fh_RenderViewList(doc->views);
+
+	fh_RenderModel(doc->ui, NULL, NULL);
+
 }
 
 

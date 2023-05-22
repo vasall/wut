@@ -1,7 +1,10 @@
 #include "element_template.h"
 
-#include "alarm.h"
-#include "system.h"
+#include "document.h"
+#include "context.h"
+#include "element_component.h"
+#include "view.h"
+#include "camera.h"
 
 #include <stdlib.h>
 
@@ -102,6 +105,62 @@ FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele)
 }
 
 
+FH_INTERN s8 fh_eletemp_load_canvas(struct fh_element *ele)
+{
+	struct fh_style *style = &ele->style;
+	struct fh_stylesheet *sheet = &style->sheet;
+
+	/* 
+	 * DISPLAY
+	 */
+	sheet->display_mode = FH_DISPLAY_BLOCK;	
+
+	/*
+	 * SIZE
+	 */
+	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 2000);
+	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
+	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+
+	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 2000);
+	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
+	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+
+	/*
+	 * POSITION
+	 */
+	sheet->vorientation = FH_ORIENTATION_TOP;
+	sheet->vposition = fh_flex_set(FH_FLEX_ABSOLUTE, 210);
+
+	sheet->horientation = FH_ORIENTATION_LEFT;
+	sheet->hposition = fh_flex_set(FH_FLEX_ABSOLUTE, 230);
+
+	/*
+	 * PADDING 
+	 */
+	sheet->padding_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+
+	/*
+	 * INFILL
+	 */
+	sheet->infill_mode = FH_INFILL_COLOR;
+	sheet->infill_color =  fh_col_set(0xff, 0xff, 0, 0xff);
+
+	/*
+	 * BORDER
+	 */
+	sheet->border_mode = FH_BORDER_NONE;
+
+
+	if(!(ele->component = fh_CreateComponent(ele, FH_COMPONENT_CANVAS)))
+		return -1;
+
+	return 0;
+}
+
 
 FH_API s8 fh_eletemp_load(struct fh_element *ele)
 {
@@ -122,6 +181,7 @@ FH_API s8 fh_eletemp_load(struct fh_element *ele)
 		case FH_BUTTON: fh_eletemp_load_button(ele); break;
 		case FH_INPUT: fh_eletemp_load_input(ele); break;
 		case FH_IMAGE: fh_eletemp_load_image(ele); break;
+		case FH_CANVAS: fh_eletemp_load_canvas(ele); break;
 		default:break;
 	}
 

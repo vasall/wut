@@ -23,8 +23,7 @@ struct fh_camera_info {
 };
 
 struct fh_camera {
-	/* The name of the camera */
-	char name[FH_CAM_NAME_LIM];
+	struct fh_view *view;
 
 	enum fh_cam_mode mode;
 
@@ -52,61 +51,27 @@ struct fh_camera {
 
 	vec3_t target;		/* The point to focus on */
 	f32 distance;		/* The distance from the target point */
-
-	/* Reference to the context */
-	struct fh_context *context;
 };
 
 
 /*
- * Create and initialize a camera table for a context.
+ * Create and initialize a new camera.
  *
- * @ctx: Pointer to the context
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_API s8 fh_InitCameraTable(struct fh_context *ctx);
-
-
-/*
- * Close the camera table and free the allocated memory.
- *
- * @ctx: Pointer to the context
- */
-FH_API void fh_CloseCameraTable(struct fh_context *ctx);
-
-
-/*
- * Create a new camera and add it to the camera table.
- *
- * @ctx: Pointer to the context
- * @name: The name of the camera
  * @info: A buffer containing the essential data for the camera
+ * @[view]: A pointer to the view struct
  *
  * Returns: Either a pointer to the camera or NULL if an error occurred
  */
-FH_API struct fh_camera *fh_CreateCamera(struct fh_context *ctx, char *name,
-		struct fh_camera_info info);
+FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
+		struct fh_view *view);
 
 
 /*
- * Remove and destroy a camera.
+ * Destroy a camera and free the allocated memory.
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_RemoveCamera(struct fh_camera *cam);
-
-
-/*
- * Get a camera from the camera table.
- *
- * @ctx: Pointer to the context
- * @name: The name of the camera
- *
- * Returns: A pointer to the camera or NULL if either an error occurred, or the
- * 	    camera could not be found
- */
-FH_API struct fh_camera *fh_GetCamera(struct fh_context *ctx, char *name);
+FH_API void fh_DestroyCamera(struct fh_camera *cam);
 
 
 /*
@@ -236,6 +201,24 @@ FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f);
 
 FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch);
 
+
+/*
+ * Get the information about the camera.
+ *
+ * @cam: Pointer to the camera
+ *
+ * Returns: The info struct
+ */
+FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam);
+
+
+/*
+ * Set the information of the camera and recalculate the projection matrix.
+ *
+ * @cam: Pointer to the camera
+ * @info: The information struct
+ */
+FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info);
 
 /*
  * Update the camera and recalculate the view matrix.

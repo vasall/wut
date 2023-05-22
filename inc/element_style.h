@@ -39,6 +39,7 @@ enum fh_style_text_opt {
 	FH_TEXT_ITALIC		= (1<<1)
 };
 
+
 struct fh_stylesheet {
 	/*
 	 * DISPLAY
@@ -97,6 +98,40 @@ struct fh_stylesheet {
 	struct fh_color			text_color;
 	u8				text_size;
 	u8				text_options;
+};
+
+
+
+enum fh_style_attrib {
+	FH_STYLE_DISPLAY_MODE,
+
+	FH_STYLE_SIZE_V,
+	FH_STYLE_SIZE_V_MIN,
+	FH_STYLE_SIZE_V_MAX,
+	FH_STYLE_SIZE_H,
+	FH_STYLE_SIZE_H_MIN,
+	FH_STYLE_SIZE_H_MAX,
+	
+	FH_POSITION_V_ORIENT,
+	FH_POSITION_V,
+	FH_POSITION_H_ORIENT,
+	FH_POSITION_H,
+
+	FH_STYLE_PADDING_TOP,
+	FH_STYLE_PADDING_RIGHT,
+	FH_STYLE_PADDING_BOTTOM,
+	FH_STYLE_PADDING_LEFT,
+
+	FH_STYLE_INFILL_MODE,
+	FH_STYLE_INFILL_COLOR,
+
+	FH_STYLE_BORDER_MODE,
+	FH_STYLE_BORDER_WIDTH,
+	FH_STYLE_BORDER_COLOR,
+
+	FH_STYLE_TEXT_COLOR,
+	FH_STYLE_TEXT_SIZE,
+	FH_STYLE_TEXT_OPTIONS
 };
 
 
@@ -179,13 +214,6 @@ struct fh_style {
 	struct fh_restyle_text		text;
 };
 
-
-/*
- * Reset a stylesheet.
- *
- * @sheet: Pointer to the stylesheet
- */
-FH_API void fh_style_reset_sheet(struct fh_stylesheet *sheet);
 
 /*
  * Initialize a style structure.

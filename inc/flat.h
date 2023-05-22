@@ -82,7 +82,18 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r);
  * @r: The rectangle
  * @c: The color
  */
-FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c);
+FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r,
+		struct fh_color c);
 
+
+/*
+ * This will overwrite the pixels in the given rectangle with the color.
+ *
+ * @f: Pointer to the flat
+ * @r: The rectangle
+ * @c: The color
+ */
+FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
+		struct fh_color c);
 
 #endif /* _FH_FLAT_H */
