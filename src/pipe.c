@@ -134,6 +134,7 @@ FH_INTERN void pip_order(struct fh_pipe *pip)
  */
 FH_INTERN void pip_order_single(struct fh_pipe *pip, u8 slot)
 {
+	u32 c;
 	u32 i;
 	struct fh_pipe_entry *ent;
 	struct fh_pipe_entry *run;
@@ -149,8 +150,11 @@ FH_INTERN void pip_order_single(struct fh_pipe *pip, u8 slot)
 		return;
 	}
 
+	printf("Begin\n");
+
+	c = 0;
 	i = pip->start;
-	while(1) {
+	while(1 && (c++ < 1000)) {
 		run = &pip->entries[i];
 
 		if(ent->crit > run->crit) {
@@ -217,8 +221,11 @@ FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
 	}
 
 	/* And clear the flags for the entries */
-	for(i = 0; i < pip->alloc; i++)
+	for(i = 0; i < pip->alloc; i++) {
 		pip->entries[i].flags = 0;
+		pip->entries[i].previous = -1;
+		pip->entries[i].next = -1;
+	}
 
 	return pip;
 

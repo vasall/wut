@@ -18,11 +18,6 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	s8 i;
 	s8 name_len;
 
-	if(!name || w <= 0 || h <= 0) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
 	name_len = strlen(name);
 	if(name_len < 1 || name_len > FH_WIN_NAME_LIM) {
 		ALARM(ALARM_ERR, "Window name is invalid");
@@ -85,27 +80,13 @@ err_return:
 
 FH_INTERN void win_destroy(struct fh_window *win)
 {
-	if(!win) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		goto err_return;
-	}
-
-	/* Close the document */
 	fh_DestroyDocument(win->document);
 
-	/* Destroy the context */
 	fh_DestroyContext(win->context);
 
-	/* Destroy the SDL window */
 	SDL_DestroyWindow(win->handle);
 
-	/* Free the memory used by the window struct */
 	fh_free(win);
-
-	return;
-
-err_return:
-	ALARM(ALARM_WARN, "Failed to destroy window");
 }
 
 
@@ -389,4 +370,26 @@ FH_API void fh_RedrawAllWindows(void)
 	/* Call the fh_win_redraw() function on all visible windows */
 	main = fh_core_get_main_window();
 	win_hlf_down(main, &win_redraw, NULL);
+}
+
+
+FH_API struct fh_context *fh_GetContext(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return NULL;
+	}
+
+	return win->context;
+}
+
+
+FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
+{
+	if(!win) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return NULL;
+	}
+
+	return win->document;
 }

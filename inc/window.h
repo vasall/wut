@@ -174,5 +174,24 @@ FH_API void fh_RedrawWindow(struct fh_window *win);
 FH_API void fh_RedrawAllWindows(void);
 
 
+/*
+ * Get the context of a window.
+ *
+ * @win: Pointer to the window
+ *
+ * Returns: A pointer to the context
+ */
+FH_API struct fh_context *fh_GetContext(struct fh_window *win);
+
+
+/*
+ * Retrieve the document of a window.
+ *
+ * @win: Pointer to the window
+ *
+ * Returns: A pointer to the document of a window
+ */
+FH_API struct fh_document *fh_GetDocument(struct fh_window *win);
+
 
 #endif /* _FH_WINDOW_H */

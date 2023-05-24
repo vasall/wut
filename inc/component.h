@@ -5,7 +5,7 @@
 #include "element.h"
 
 enum fh_component_type {
-	FH_COMPONENT_CANVAS
+	FH_COMPONENT_VIEW
 };
 
 

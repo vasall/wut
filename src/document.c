@@ -150,10 +150,10 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 	printf("%s ", ele->name);
 
 	printf("[");
-	printf("x: %d, ", ele->style.position.x);
-	printf("y: %d, ", ele->style.position.y);
-	printf("w: %d, ", ele->style.size.width);
-	printf("h: %d", ele->style.size.height);
+	printf("x: %d, ", ele->style.outer_position.x);
+	printf("y: %d, ", ele->style.outer_position.y);
+	printf("w: %d, ", ele->style.outer_size.width);
+	printf("h: %d",   ele->style.outer_size.height);
 	printf("]\n");
 
 	return 0;
@@ -188,7 +188,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->shape_ref = &win->shape;
 
 	/* Create the body element */	
-	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY))) {
+	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY, NULL))) {
 		ALARM(ALARM_ERR, "Failed to create body for document");
 		goto err_free_doc;
 	}
@@ -269,7 +269,7 @@ FH_API void fh_ResizeDocument(struct fh_document *doc)
 
 FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 		struct fh_element *parent, char *name,
-		enum fh_element_type type)
+		enum fh_element_type type, void *data)
 {
 	struct fh_element *ele;
 
@@ -279,7 +279,7 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 	}
 
 	/* Create new element */
-	if(!(ele = fh_CreateElement(doc, name, type))) {
+	if(!(ele = fh_CreateElement(doc, name, type, data))) {
 		ALARM(ALARM_ERR, "Failed to create new element for document");
 		goto err_return;
 	}
@@ -377,7 +377,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 
 	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL);
 
-	r = fh_GetElementShape(ele);
+	r = fh_GetElementOuterShape(ele);
 	fh_UpdateFlat(doc->flat, &r);
 	
 }
@@ -403,7 +403,6 @@ FH_API void fh_RenderDocument(struct fh_document *doc)
 	}
 
 	fh_RenderViewList(doc->views);
-
 	fh_RenderModel(doc->ui, NULL, NULL);
 
 }

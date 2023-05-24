@@ -1,4 +1,4 @@
-#include "element_component.h"
+#include "component.h"
 
 #include "document.h"
 #include "view.h"
@@ -11,9 +11,9 @@
  *
  */
 
-FH_INTERN s8 comp_create_canvas(struct fh_component *c)
+FH_INTERN s8 comp_create_view(struct fh_component *c)
 {
-	struct fh_rect rect = fh_GetElementShape(c->element);
+	struct fh_rect rect = fh_GetElementOuterShape(c->element);
 	struct fh_view_list *lst;
 
 	printf("Document: %p\n", c->element->document);
@@ -27,7 +27,7 @@ FH_INTERN s8 comp_create_canvas(struct fh_component *c)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create canvas component");
+	ALARM(ALARM_ERR, "Failed to create view component");
 	return -1;
 }
 
@@ -38,7 +38,7 @@ err_return:
  *
  */
 
-FH_INTERN void comp_destroy_canvas(struct fh_component *c)
+FH_INTERN void comp_destroy_view(struct fh_component *c)
 {
 	fh_DestroyView(c->ref);
 }
@@ -50,9 +50,9 @@ FH_INTERN void comp_destroy_canvas(struct fh_component *c)
  *
  */
 
-FH_INTERN void comp_update_canvas(struct fh_component *c)
+FH_INTERN void comp_update_view(struct fh_component *c)
 {
-	struct fh_rect rect = fh_GetElementShape(c->element);
+	struct fh_rect rect = fh_GetElementOuterShape(c->element);
 
 	fh_ResizeView(c->ref, &rect);
 }
@@ -64,8 +64,10 @@ FH_INTERN void comp_update_canvas(struct fh_component *c)
  *
  */
 
-FH_INTERN void comp_render_canvas(struct fh_component *c)
+FH_INTERN void comp_render_view(struct fh_component *c)
 {
+	return;
+
 	fh_RenderView(c->ref);
 }
 
@@ -98,7 +100,7 @@ FH_API struct fh_component *fh_CreateComponent(struct fh_element *ele,
 	comp->type = type;
 
 	switch(type) {
-		case FH_COMPONENT_CANVAS: r = comp_create_canvas(comp); break;
+		case FH_COMPONENT_VIEW: r = comp_create_view(comp); break;
 		default: ALARM(ALARM_ERR, "Type not found"); break;
 	}
 
@@ -123,7 +125,7 @@ FH_API void fh_DestroyComponent(struct fh_component *comp)
 	}
 
 	switch(comp->type) {
-		case FH_COMPONENT_CANVAS: comp_destroy_canvas(comp); break;	
+		case FH_COMPONENT_VIEW: comp_destroy_view(comp); break;	
 	}
 
 	fh_free(comp);
@@ -140,7 +142,7 @@ FH_API void fh_UpdateComponent(struct fh_component *comp, void *data)
 	fh_Ignore(data);
 
 	switch(comp->type) {
-		case FH_COMPONENT_CANVAS: comp_update_canvas(comp); break;
+		case FH_COMPONENT_VIEW: comp_update_view(comp); break;
 	}
 }
 
@@ -153,6 +155,6 @@ FH_API void fh_RenderComponent(struct fh_component *comp)
 	}
 
 	switch(comp->type) {
-		case FH_COMPONENT_CANVAS: comp_render_canvas(comp); break;
+		case FH_COMPONENT_VIEW: comp_render_view(comp); break;
 	}
 }

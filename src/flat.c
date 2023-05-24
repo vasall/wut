@@ -167,26 +167,48 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 	s16 y;
 	u32 i;
 
+	s32 lim_x;
+	s32 lim_y;
+
+	s32 off_x;
+	s32 off_y;
+
 	if(!f || !r) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	size = r->w * r->h * FH_COLOR_SIZE; 
+	
+	lim_x = (r->x + r->w > f->width) ? f->width - r->x : r->w;
+	lim_y = (r->y + r->h > f->height) ? f->height - r->y : r->h;
+
+	size = lim_x * lim_y * FH_COLOR_SIZE; 
 	if(!(swap = fh_malloc(size))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for swap buffer");
 		return;
 	}
 
 	i = 0;
-	for(y = 0; y < r->h; y++) {
-		for(x = 0; x < r->w; x++) {
-			swap[i] = f->pixels[((y + r->y) * f->width)+(x+r->x)];
+	
+	off_x = r->x + lim_x;
+	off_y = r->y + lim_y;
+
+	
+	printf("Update Flat Texture: x %d, y %d, w %d, h %d\n",
+			r->x,
+			r->y,
+			off_x,
+			off_y);
+
+
+	for(y = r->y; y < off_y; y++) {
+		for(x = r->x; x < off_x; x++) {
+			swap[i] = f->pixels[(y * f->width)+x];
 			i++;
 		}
 	}
 
-	fh_SetTexture(f->texture, r->x, r->y, r->w, r->h, (u8 *)swap);
+	fh_SetTexture(f->texture, r->x, r->y, lim_x, lim_y, (u8 *)swap);
 
 	fh_free(swap);
 }
@@ -204,8 +226,8 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
 
 	printf("Draw FlatRect: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
 
-	for(x = 0; x < r->w; x++) {
-		for(y = 0; y < r->h; y++) {
+	for(x = 0; x < r->w && x < f->width; x++) {
+		for(y = 0; y < r->h && y < f->height; y++) {
 			flat_mod(f, x + r->x, y + r->y, c);
 		}
 	}
@@ -225,8 +247,8 @@ FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
 
 	printf("Draw FlatRectSet: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
 
-	for(x = 0; x < r->w; x++) {
-		for(y = 0; y < r->h; y++) {
+	for(x = 0; x < r->w && x < f->width; x++) {
+		for(y = 0; y < r->h && y < f->height; y++) {
 			flat_set(f, x + r->x, y + r->y, c);
 		}
 	}

@@ -5,7 +5,7 @@
 #include "define.h"
 #include "datatype.h"
 #include "import.h"
-#include "element_style.h"
+#include "style.h"
 
 
 #define FH_ELEMENT_NAME_LIM	126
@@ -19,7 +19,7 @@ enum fh_element_type {
 	FH_BUTTON	= 3,
 	FH_INPUT	= 4,
 	FH_IMAGE	= 5,
-	FH_CANVAS	= 6,
+	FH_VIEW		= 6,
 	FH_CUSTOM	= 7
 };
 
@@ -66,12 +66,13 @@ struct fh_element {
  * @doc: Pointer to the document
  * @name: The name of the element
  * @type: The type of element
- *
+ * @[data]: Optional data
+ *  
  * Returns: Either a pointer to the newly created element or NULL if an error
  * 	    occurred
  */
 FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
-		enum fh_element_type type);
+		enum fh_element_type type, void *data);
 
 
 /*
@@ -151,13 +152,23 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
 
 
 /*
- * Get the shape of the element in the window.
+ * Get the outer shape of the element in the window.
  *
  * @ele: Pointer to the element
  *
  * Returns: The shape of the element
  */
-FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
+FH_API struct fh_rect fh_GetElementOuterShape(struct fh_element *ele);
+
+
+/*
+ * Get the inner shape of the element in the window.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: The shape of the element
+ */
+FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele);
 
 
 /*

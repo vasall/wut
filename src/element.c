@@ -3,7 +3,7 @@
 #include "alarm.h"
 #include "system.h"
 #include "element_template.h"
-#include "element_component.h"
+#include "component.h"
 #include "document.h"
 
 
@@ -20,14 +20,12 @@
  */
 
 FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
-		enum fh_element_type type)
+		enum fh_element_type type, void *data)
 {
 	struct fh_element *ele;
 	struct fh_style *style_ref;
 	s8 name_len;
 	s8 i;
-
-	printf("Name is %s\n", name);
 
 	if(!name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -50,8 +48,6 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	strcpy(ele->name, name);
 	ele->type = type;
 
-	printf("%s has type %d\n", name, type);
-
 	/* ...and reset the rest */
 	ele->layer = 100;
 	ele->document = doc;
@@ -70,7 +66,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 
 	/* Load a template, if there is one for the given type */
 	ele->component = NULL;
-	if(fh_eletemp_load(ele) < 0) {
+	if(fh_eletemp_load(ele, data) < 0) {
 		ALARM(ALARM_ERR, "Failed to load the template for the element");
 		goto err_free_ele;
 	}
@@ -105,20 +101,15 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 {
 	s8 i;
 
-	printf("A\n");
-
 	if(!parent || !ele) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	printf("B\n");
 	if(parent->children_num + 1 > FH_ELEMENT_CHILDREN_LIM) {
 		ALARM(ALARM_ERR, "Can not add more children to parent element");
 		goto err_return;
 	}
-
-	printf("C\n");
 
 	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
 		if(parent->children[i])
@@ -128,8 +119,6 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 		parent->children_num++;
 
 		ele->parent = parent;
-			
-		printf("Set parent document to %p\n", ele->document);
 
 		ele->body = parent->body;
 		ele->layer = parent->layer + 1;
@@ -230,9 +219,7 @@ FH_API void fh_UpdateElement(struct fh_element *ele)
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
-	}	
-
-	printf("Update element: %s\n", ele->name);
+	}
 
 	/* First process the style for this element */
 	fh_style_process(&ele->style, ele->document->shape_ref);
@@ -254,10 +241,10 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 		return;
 	}
 
-	rect.w = ele->style.size.width;
-	rect.h = ele->style.size.height;
-	rect.x = ele->style.position.x - (rect.w / 2);
-	rect.y = ele->style.position.y - (rect.h / 2);
+	rect.w = ele->style.outer_size.width;
+	rect.h = ele->style.outer_size.height;
+	rect.x = ele->style.outer_position.x - (rect.w / 2);
+	rect.y = ele->style.outer_position.y - (rect.h / 2);
 
 #if 1
 	printf("Render %s:  [%d, %d, %d, %d]\n",
@@ -270,7 +257,7 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 
 	col = ele->style.infill.color;
 
-	if(ele->type == FH_CANVAS) {
+	if(ele->type == FH_VIEW) {
 		col = fh_col_set(0, 0, 0, 0);
 		fh_FlatRectSet(ele->document->flat, &rect, col);
 	}
@@ -296,7 +283,7 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 }
 
 
-FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele)
+FH_API struct fh_rect fh_GetElementOuterShape(struct fh_element *ele)
 {
 	struct fh_rect r;
 
@@ -306,10 +293,29 @@ FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele)
 		return r;
 	}
 
-	r.w = ele->style.size.width;
-	r.h = ele->style.size.height;
-	r.x = ele->style.position.x - (r.w / 2);
-	r.y = ele->style.position.y - (r.h / 2);
+	r.w = ele->style.outer_size.width;
+	r.h = ele->style.outer_size.height;
+	r.x = ele->style.outer_position.x - (r.w / 2);
+	r.y = ele->style.outer_position.y - (r.h / 2);
+
+	return r;
+}
+
+
+FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele)
+{
+	struct fh_rect r;
+
+	if(!ele) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		fh_rect_set(&r, 0, 0, 100, 100);
+		return r;
+	}
+
+	r.w = ele->style.inner_size.width;
+	r.h = ele->style.inner_size.height;
+	r.x = ele->style.inner_position.x - (r.w / 2);
+	r.y = ele->style.inner_position.y - (r.h / 2);
 
 	return r;
 }
@@ -340,8 +346,7 @@ FH_API struct fh_view *fh_GetView(struct fh_element *ele)
 		goto err_return;
 	}
 
-	printf("Element has type %d\n", ele->type);
-	if(ele->type != FH_CANVAS || !ele->component) {
+	if(ele->type != FH_VIEW || !ele->component) {
 		ALARM(ALARM_ERR, "Wrong element type");
 		goto err_return;
 	}

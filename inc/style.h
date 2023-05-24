@@ -2,104 +2,9 @@
 #define _FH_ELEMENT_STYLE_H
 
 #include "stdinc.h"
+#include "stylesheet.h"
 #include "flex.h"
 #include "color.h"
-
-
-enum fh_style_display_mode {
-	FH_DISPLAY_INHERIT	= 0,
-	FH_DISPLAY_NONE		= 1,
-	FH_DISPLAY_BLOCK	= 2
-};
-
-enum fh_style_orientation_mode {
-	FH_ORIENTATION_TOP      = 0,
-	FH_ORIENTATION_RIGHT	= 1,
-	FH_ORIENTATION_BOTTOM   = 1,
-	FH_ORIENTATION_LEFT	= 0
-};
-
-
-enum fh_style_infill_mode {
-	FH_INFILL_INHERIT	= 0,
-	FH_INFILL_NONE		= 1,
-	FH_INFILL_COLOR		= 2
-};
-
-
-enum fh_style_border_mode {
-	FH_BORDER_INHERIT	= 0,
-	FH_BORDER_NONE		= 1,
-	FH_BORDER_SET		= 2
-};
-
-
-enum fh_style_text_opt {
-	FH_TEXT_BOLD		= (1<<0),
-	FH_TEXT_ITALIC		= (1<<1)
-};
-
-
-struct fh_stylesheet {
-	/*
-	 * DISPLAY
-	 */
-	enum fh_style_display_mode	display_mode;
-
-	/*
-	 * SIZE
-	 */
-	struct fh_flex			vsize;
-	struct fh_flex			vsize_min;
-	struct fh_flex			vsize_max;
-
-	struct fh_flex			hsize;
-	struct fh_flex			hsize_min;
-	struct fh_flex			hsize_max;
-
-
-	/*
-	 * POSITION 
-	 */
-	enum fh_style_orientation_mode	vorientation;
-	struct fh_flex			vposition;
-
-	enum fh_style_orientation_mode	horientation;
-	struct fh_flex			hposition;
-
-
-	/*
-	 * PADDING
-	 */
-	struct fh_flex			padding_top;
-	struct fh_flex			padding_right;
-	struct fh_flex			padding_bottom;
-	struct fh_flex			padding_left;
-
-
-	/*
-	 * INFILL
-	 */
-	enum fh_style_infill_mode	infill_mode;
-	struct fh_color			infill_color;
-
-
-	/*
-	 * BORDER
-	 */
-	enum fh_style_border_mode	border_mode;
-	struct fh_flex 			border_width;
-	struct fh_color			border_color;
-
-
-	/*
-	 * TEXT
-	 */
-	struct fh_color			text_color;
-	u8				text_size;
-	u8				text_options;
-};
-
 
 
 enum fh_style_attrib {
@@ -201,9 +106,11 @@ struct fh_style {
 
 	struct fh_restyle_display	display;
 
-	struct fh_restyle_size		size;
+	struct fh_restyle_size		outer_size;
+	struct fh_restyle_size		inner_size;
 
-	struct fh_restyle_position	position;
+	struct fh_restyle_position	outer_position;
+	struct fh_restyle_position	inner_position;
 
 	struct fh_restyle_padding	padding;
 

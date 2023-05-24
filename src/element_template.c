@@ -2,7 +2,7 @@
 
 #include "document.h"
 #include "context.h"
-#include "element_component.h"
+#include "component.h"
 #include "view.h"
 #include "camera.h"
 
@@ -11,18 +11,21 @@
 
 
 
-FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele, void *data)
 {
 	fh_Ignore(ele);
+	fh_Ignore(data);
 
 	return 0;
 }
 
 
-FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 {
 	struct fh_style *style = &ele->style;
 	struct fh_stylesheet *sheet = &style->sheet;
+
+	fh_Ignore(data);
 
 	/* 
 	 * DISPLAY
@@ -73,42 +76,48 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele)
 }
 
 
-FH_INTERN s8 fh_eletemp_load_text(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_text(struct fh_element *ele, void *data)
 {
 	fh_Ignore(ele);
+	fh_Ignore(data);
 
 	return 0;
 }
 
 
-FH_INTERN s8 fh_eletemp_load_button(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_button(struct fh_element *ele, void *data)
 {
 	fh_Ignore(ele);
+	fh_Ignore(data);
 
 	return 0;
 }
 
 
-FH_INTERN s8 fh_eletemp_load_input(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_input(struct fh_element *ele, void *data)
 {
 	fh_Ignore(ele);
+	fh_Ignore(data);
 
 	return 0;
 }
 
 
-FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele, void *data)
 {
 	fh_Ignore(ele);
+	fh_Ignore(data);
 
 	return 0;
 }
 
 
-FH_INTERN s8 fh_eletemp_load_canvas(struct fh_element *ele)
+FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 {
 	struct fh_style *style = &ele->style;
 	struct fh_stylesheet *sheet = &style->sheet;
+
+	fh_Ignore(data);
 
 	/* 
 	 * DISPLAY
@@ -118,11 +127,11 @@ FH_INTERN s8 fh_eletemp_load_canvas(struct fh_element *ele)
 	/*
 	 * SIZE
 	 */
-	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 2000);
+	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 8000);
 	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
 	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
-	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 2000);
+	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 8000);
 	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
 	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
@@ -130,10 +139,10 @@ FH_INTERN s8 fh_eletemp_load_canvas(struct fh_element *ele)
 	 * POSITION
 	 */
 	sheet->vorientation = FH_ORIENTATION_TOP;
-	sheet->vposition = fh_flex_set(FH_FLEX_ABSOLUTE, 210);
+	sheet->vposition = fh_flex_set(FH_FLEX_AUTO, 0);
 
 	sheet->horientation = FH_ORIENTATION_LEFT;
-	sheet->hposition = fh_flex_set(FH_FLEX_ABSOLUTE, 230);
+	sheet->hposition = fh_flex_set(FH_FLEX_AUTO, 0);
 
 	/*
 	 * PADDING 
@@ -155,14 +164,14 @@ FH_INTERN s8 fh_eletemp_load_canvas(struct fh_element *ele)
 	sheet->border_mode = FH_BORDER_NONE;
 
 
-	if(!(ele->component = fh_CreateComponent(ele, FH_COMPONENT_CANVAS)))
+	if(!(ele->component = fh_CreateComponent(ele, FH_COMPONENT_VIEW)))
 		return -1;
 
 	return 0;
 }
 
 
-FH_API s8 fh_eletemp_load(struct fh_element *ele)
+FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data)
 {
 	if(!ele) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -175,13 +184,13 @@ FH_API s8 fh_eletemp_load(struct fh_element *ele)
 	 * different element types.
 	 */
 	switch(ele->type) {
-		case FH_BODY: fh_eletemp_load_body(ele); break;
-		case FH_BLOCK: fh_eletemp_load_block(ele); break;
-		case FH_TEXT: fh_eletemp_load_text(ele); break;
-		case FH_BUTTON: fh_eletemp_load_button(ele); break;
-		case FH_INPUT: fh_eletemp_load_input(ele); break;
-		case FH_IMAGE: fh_eletemp_load_image(ele); break;
-		case FH_CANVAS: fh_eletemp_load_canvas(ele); break;
+		case FH_BODY: fh_eletemp_load_body(ele, data); break;
+		case FH_BLOCK: fh_eletemp_load_block(ele, data); break;
+		case FH_TEXT: fh_eletemp_load_text(ele, data); break;
+		case FH_BUTTON: fh_eletemp_load_button(ele, data); break;
+		case FH_INPUT: fh_eletemp_load_input(ele, data); break;
+		case FH_IMAGE: fh_eletemp_load_image(ele, data); break;
+		case FH_VIEW: fh_eletemp_load_view(ele, data); break;
 		default:break;
 	}
 

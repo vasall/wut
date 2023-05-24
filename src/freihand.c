@@ -61,8 +61,6 @@ FH_API s8 fh_Update(void)
 
 	fh_evt_process();
 
-
-
 	/* Redraw all visible windows */
 	fh_RedrawAllWindows();
 

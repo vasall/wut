@@ -276,18 +276,6 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
-#if 0
-	for(i = 0; i < (w * h * 4); i++) {
-
-		if(i % 4 == 0 && i != 0)
-			printf("\n");
-		printf("%02x ", px[i]);
-
-	}
-
-	printf("\n");
-#endif
-
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 

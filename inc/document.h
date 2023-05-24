@@ -81,12 +81,13 @@ FH_API void fh_ResizeDocument(struct fh_document *doc);
  * @parent: A pointer to the parent element
  * @name: The name of the element
  * @type: The type of the new element
+ * @[data]: Optional data for the element
  *
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 		struct fh_element *parent, char *name,
-		enum fh_element_type type);
+		enum fh_element_type type, void *data);
 
 
 /*
