@@ -46,12 +46,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	ref = style->reference;
 	out = style;
 
-
-	if(!in || !out) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		goto err_return;
-	}
-
 	/*
 	 * DISPLAY 
 	 */
@@ -70,14 +64,14 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	 */
 	
 	/* height */
-	uref = ref ? ref->inner_size.height : rect->h;
+	uref = ref ? ref->inner_size.height : (u16)rect->h;
 
 	out->outer_size.height = fh_flex_comp_lim(&in->vsize, &in->vsize_min,
 			&in->vsize_max, uref);
 
 
 	/* width */
-	uref = ref ? ref->inner_size.width : rect->w;
+	uref = ref ? ref->inner_size.width : (u16)rect->w;
 
 	out->outer_size.width = fh_flex_comp_lim(&in->hsize, &in->hsize_min,
 			&in->hsize_max, uref);
@@ -88,13 +82,13 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	 */
 	
 	/* vertical */
-	uref = ref ? ref->inner_size.height : rect->h;
+	uref = ref ? ref->inner_size.height : (u16)rect->h;
 
 	out->padding.top = fh_flex_comp(&in->padding_top, uref);
 	out->padding.bottom = fh_flex_comp(&in->padding_bottom, uref);
 
 	/* horizontal */
-	uref = ref ? ref->inner_size.width : rect->w;
+	uref = ref ? ref->inner_size.width : (u16)rect->w;
 
 	out->padding.left = fh_flex_comp(&in->padding_left, uref);
 	out->padding.right = fh_flex_comp(&in->padding_right, uref);
@@ -118,7 +112,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	 */
 
 	/* Y-position */
-	uref = ref ? ref->inner_size.height : rect->h;
+	uref = ref ? ref->inner_size.height : (u16)rect->h;
 
 	uval = fh_flex_comp(&in->vposition, uref);
 	uval = (in->vorientation == FH_ORIENTATION_BOTTOM) ? uref - uval : uval;
@@ -128,7 +122,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	out->outer_position.y = uval;
 
 	/* X-position */
-	uref = ref ? ref->inner_size.width : rect->w;
+	uref = ref ? ref->inner_size.width : (u16)rect->w;
 
 	uval = fh_flex_comp(&in->hposition, uref);
 	uval = (in->horientation == FH_ORIENTATION_RIGHT) ? uref - uval : uval;

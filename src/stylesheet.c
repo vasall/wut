@@ -17,6 +17,11 @@ FH_API void fh_ResetStylesheet(struct fh_stylesheet *sheet)
 	sheet->display_mode = FH_DISPLAY_BLOCK;	
 
 	/*
+	 * REFERENCE
+	 */
+	sheet->reference_mode = FH_REFERENCE_RELATIVE;
+
+	/*
 	 * SIZE
 	 */
 	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
@@ -55,4 +60,8 @@ FH_API void fh_ResetStylesheet(struct fh_stylesheet *sheet)
 	 */
 	sheet->border_mode = FH_BORDER_NONE;
 
+	/*
+	 * SCROLLBAR
+	 */
+	sheet->scrollbar_mode = FH_SCROLLBAR_VERTICAL;
 }

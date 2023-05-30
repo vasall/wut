@@ -5,13 +5,18 @@
 #include "flex.h"
 #include "color.h"
 
-enum fh_style_display_mode {
+enum fh_display_mode {
 	FH_DISPLAY_INHERIT	= 0,
 	FH_DISPLAY_NONE		= 1,
 	FH_DISPLAY_BLOCK	= 2
 };
 
-enum fh_style_orientation_mode {
+enum fh_reference_mode {
+	FH_REFERENCE_ABSOLUTE	= 0,
+	FH_REFERENCE_RELATIVE	= 1
+};
+
+enum fh_orientation_mode {
 	FH_ORIENTATION_TOP      = 0,
 	FH_ORIENTATION_RIGHT	= 1,
 	FH_ORIENTATION_BOTTOM   = 1,
@@ -19,32 +24,44 @@ enum fh_style_orientation_mode {
 };
 
 
-enum fh_style_infill_mode {
+enum fh_infill_mode {
 	FH_INFILL_INHERIT	= 0,
 	FH_INFILL_NONE		= 1,
 	FH_INFILL_COLOR		= 2
 };
 
 
-enum fh_style_border_mode {
+enum fh_border_mode {
 	FH_BORDER_INHERIT	= 0,
 	FH_BORDER_NONE		= 1,
 	FH_BORDER_SET		= 2
 };
 
 
-enum fh_style_text_opt {
+enum fh_text_opt {
 	FH_TEXT_BOLD		= (1<<0),
 	FH_TEXT_ITALIC		= (1<<1)
 };
 
 
+enum fh_scrollbar_mode {
+	FH_SCROLLBAR_NONE,
+	FH_SCROLLBAR_AUTO,
+	FH_SCROLLBAR_VERTICAL,
+	FH_SCROLLBAR_HORIZONTAL,
+	FH_SCROLLBAR_BOTH
+};
 
 struct fh_stylesheet {
 	/*
 	 * DISPLAY
 	 */
-	enum fh_style_display_mode	display_mode;
+	enum fh_display_mode		display_mode;
+
+	/*
+	 * REFERENCE
+	 */
+	enum fh_reference_mode		reference_mode;
 
 	/*
 	 * SIZE
@@ -57,14 +74,13 @@ struct fh_stylesheet {
 	struct fh_flex			hsize_min;
 	struct fh_flex			hsize_max;
 
-
 	/*
 	 * POSITION 
 	 */
-	enum fh_style_orientation_mode	vorientation;
+	enum fh_orientation_mode	vorientation;
 	struct fh_flex			vposition;
 
-	enum fh_style_orientation_mode	horientation;
+	enum fh_orientation_mode	horientation;
 	struct fh_flex			hposition;
 
 
@@ -80,14 +96,14 @@ struct fh_stylesheet {
 	/*
 	 * INFILL
 	 */
-	enum fh_style_infill_mode	infill_mode;
+	enum fh_infill_mode		infill_mode;
 	struct fh_color			infill_color;
 
 
 	/*
 	 * BORDER
 	 */
-	enum fh_style_border_mode	border_mode;
+	enum fh_border_mode		border_mode;
 	struct fh_flex 			border_width;
 	struct fh_color			border_color;
 
@@ -98,6 +114,12 @@ struct fh_stylesheet {
 	struct fh_color			text_color;
 	u8				text_size;
 	u8				text_options;
+
+	/*
+	 * SCROLL WHEEL
+	 */
+	enum fh_scrollbar_mode		scrollbar_mode;
+
 };
 
 

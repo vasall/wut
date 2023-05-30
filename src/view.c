@@ -15,7 +15,7 @@ FH_INTERN s8 view_get_slot(struct fh_view_list *lst)
 	return -1;
 }
 
-void view_render_models(struct fh_model *m)
+FH_INTERN void view_render_models(struct fh_model *m)
 {
 	fh_RenderModel(m, NULL, NULL);
 }

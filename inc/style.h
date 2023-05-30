@@ -59,34 +59,34 @@ enum fh_style_attribute {
 };
 
 struct fh_restyle_display {	
-	enum fh_style_display_mode		mode;
+	enum fh_display_mode		mode;
 };
 
 struct fh_restyle_size {
-	u32 width;
-	u32 height;
+	u16 width;
+	u16 height;
 };
 
 struct fh_restyle_position {
-	u32 x;
-	u32 y;
+	u16 x;
+	u16 y;
 };
 
 struct fh_restyle_padding {
-	u32 top;
-	u32 right;
-	u32 bottom;
-	u32 left;
+	u16 top;
+	u16 right;
+	u16 bottom;
+	u16 left;
 };
 
 struct fh_restyle_infill {
-	enum fh_style_infill_mode		mode;
+	enum fh_infill_mode		mode;
 	struct fh_color				color;
 
 };
 
 struct fh_restyle_border {
-	enum fh_style_border_mode		mode;
+	enum fh_border_mode		mode;
 	struct fh_flex 				width;
 	struct fh_color				color;
 
@@ -122,6 +122,15 @@ struct fh_style {
 };
 
 
+struct fh_style_pass {
+	/* The size of the window */
+	struct fh_rect window;
+
+	/* The required size to fit the content */
+	struct fh_rect content;
+};
+
+
 /*
  * Initialize a style structure.
  *
@@ -131,6 +140,10 @@ struct fh_style {
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
+
+
+FH_API s8 fh_style_process_size(struct fh_style *style,
+		struct fh_style_pass *pass);
 
 
 /*

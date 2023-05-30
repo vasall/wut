@@ -122,7 +122,7 @@ FH_INTERN s8 doc_cfnc_update(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
-	fh_UpdateElement(ele);
+	fh_UpdateElementStyle(ele);
 
 	return 0;
 }

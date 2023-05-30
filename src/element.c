@@ -10,6 +10,26 @@
 #include <stdlib.h>
 
 
+/*
+ * In case an element gets removed, move the other elements in the children list
+ * to close up the empty slot. The given slot has to be NULL.
+ *
+ * @ele: Pointer to the parent element
+ * @slot: The slot that became empty
+ */
+FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
+{
+	s8 i;
+
+	for(i = slot + 1; i < FH_ELEMENT_CHILDREN_LIM; i++) {
+		if(!ele->children[i])
+			return;
+
+		ele->children[i]->slot = i - 1;
+		ele->children[i-1] = ele->children[i];
+	}
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -51,8 +71,9 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	/* ...and reset the rest */
 	ele->layer = 100;
 	ele->document = doc;
-	ele->body = NULL;	
+	ele->body = NULL;
 	ele->parent = NULL;
+	ele->slot = -1;
 	ele->children_num = 0;
 	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++)
 		ele->children[i] = NULL;
@@ -119,6 +140,7 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 		parent->children_num++;
 
 		ele->parent = parent;
+		ele->slot = i;
 
 		ele->body = parent->body;
 		ele->layer = parent->layer + 1;
@@ -159,6 +181,10 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 			parent->children_num--;
 
 			ele->parent = NULL;
+
+			/* Reorder elements */
+			ele_reorder_children(parent, i);
+
 			return;
 		}
 	}
@@ -214,7 +240,7 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 }
 
 
-FH_API void fh_UpdateElement(struct fh_element *ele)
+FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 {
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");

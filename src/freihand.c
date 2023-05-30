@@ -15,13 +15,13 @@ FH_API s8 fh_Init(void)
 
 	/* Then initialize the SDL-frameworks */
 	if(fh_sdl_init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize the XWIN-SDL module");
+		ALARM(ALARM_ERR, "Failed to initialize SDL");
 		goto err_return;
 	}
 
 	/* Initialize OpenGL */
 	if(fh_gl_init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize the SDL GL module");
+		ALARM(ALARM_ERR, "Failed to initialize OpenGL");
 		goto err_quit_sdl;
 	}
 
@@ -34,7 +34,7 @@ err_return:
 	/* Reset te core */
 	fh_core_reset();
 
-	ALARM(ALARM_ERR, "Failed to initialize FH framework");
+	ALARM(ALARM_ERR, "Failed to initialize the freihand framework");
 	return -1;
 }
 

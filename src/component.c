@@ -11,13 +11,18 @@
  *
  */
 
+FH_INTERN s8 comp_create_text(struct fh_component *c)
+{
+	fh_Ignore(c);
+
+	return 0;
+}
+
+
 FH_INTERN s8 comp_create_view(struct fh_component *c)
 {
 	struct fh_rect rect = fh_GetElementOuterShape(c->element);
 	struct fh_view_list *lst;
-
-	printf("Document: %p\n", c->element->document);
-	printf("Views: %p\n", c->element->document->views);
 
 	lst = c->element->document->views;
 
@@ -38,6 +43,12 @@ err_return:
  *
  */
 
+FH_INTERN void comp_destroy_text(struct fh_component *c)
+{
+	fh_Ignore(c);
+}
+
+
 FH_INTERN void comp_destroy_view(struct fh_component *c)
 {
 	fh_DestroyView(c->ref);
@@ -49,6 +60,12 @@ FH_INTERN void comp_destroy_view(struct fh_component *c)
  * 		UPDATE
  *
  */
+
+FH_INTERN void comp_update_text(struct fh_component *c)
+{
+	fh_Ignore(c);
+
+}
 
 FH_INTERN void comp_update_view(struct fh_component *c)
 {
@@ -64,10 +81,13 @@ FH_INTERN void comp_update_view(struct fh_component *c)
  *
  */
 
+FH_INTERN void comp_render_text(struct fh_component *c)
+{
+	fh_Ignore(c);
+}
+
 FH_INTERN void comp_render_view(struct fh_component *c)
 {
-	return;
-
 	fh_RenderView(c->ref);
 }
 
@@ -100,6 +120,7 @@ FH_API struct fh_component *fh_CreateComponent(struct fh_element *ele,
 	comp->type = type;
 
 	switch(type) {
+		case FH_COMPONENT_TEXT: r = comp_create_text(comp); break;
 		case FH_COMPONENT_VIEW: r = comp_create_view(comp); break;
 		default: ALARM(ALARM_ERR, "Type not found"); break;
 	}
@@ -125,6 +146,7 @@ FH_API void fh_DestroyComponent(struct fh_component *comp)
 	}
 
 	switch(comp->type) {
+		case FH_COMPONENT_TEXT: comp_destroy_text(comp); break;
 		case FH_COMPONENT_VIEW: comp_destroy_view(comp); break;	
 	}
 
@@ -142,6 +164,7 @@ FH_API void fh_UpdateComponent(struct fh_component *comp, void *data)
 	fh_Ignore(data);
 
 	switch(comp->type) {
+		case FH_COMPONENT_TEXT: comp_update_text(comp); break;
 		case FH_COMPONENT_VIEW: comp_update_view(comp); break;
 	}
 }
@@ -155,6 +178,7 @@ FH_API void fh_RenderComponent(struct fh_component *comp)
 	}
 
 	switch(comp->type) {
+		case FH_COMPONENT_TEXT: comp_render_text(comp); break;
 		case FH_COMPONENT_VIEW: comp_render_view(comp); break;
 	}
 }

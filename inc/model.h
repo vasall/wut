@@ -1,6 +1,8 @@
 #ifndef _FH_MODEL_H
 #define _FH_MODEL_H
 
+struct fh_model;
+
 #include "define.h"
 #include "datatype.h"
 #include "table.h"

@@ -194,4 +194,27 @@ FH_API struct fh_context *fh_GetContext(struct fh_window *win);
 FH_API struct fh_document *fh_GetDocument(struct fh_window *win);
 
 
+/*
+ * Apply a function downwards the window tree, starting from <str>.
+ * If the callback function returns 1, the recursion will end.
+ *
+ * @str: Pointer to the starting window
+ * @fnc: The function to apply
+ * @[data]: Data to be passed to every function call
+ */
+FH_API void fh_ApplyWindowsDown(struct fh_window *str,
+		s8 (*fnc)(struct fh_window *w, void *data), void *data);
+
+
+/*
+ * Apply a function upwards the window tree, up to <str>.
+ * If the callback function returns 1, the recursion will end.
+ *
+ * @str: Pointer to the window branch
+ * @fnc: The function to apply
+ * @[data]: Data to be passed to every function call
+ */
+FH_API void fh_ApplyWindowsUp(struct fh_window *str,
+		s8 (*fnc)(struct fh_window *w, void *data), void *data);
+
 #endif /* _FH_WINDOW_H */

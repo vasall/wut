@@ -43,6 +43,9 @@ struct fh_element {
 	/* The parent element, this element is attached to */
 	struct fh_element *parent;
 
+	/* The slot of the element in the parent children list */
+	s8 slot;
+
 	/* The children elements that are attached to this element */
 	u8 children_num;
 	struct fh_element *children[FH_ELEMENT_CHILDREN_LIM];
@@ -52,6 +55,10 @@ struct fh_element {
 
 	/* The style structure for this element */
 	struct fh_style style;
+
+	struct fh_rect shape;
+
+	struct fh_rect content_shape;
 
 	/* The component used by the element */
 	struct fh_component *component;
@@ -130,7 +137,7 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
  *
  * @ele: Pointer to the element
  */
-FH_API void fh_UpdateElement(struct fh_element *ele);
+FH_API void fh_UpdateElementStyle(struct fh_element *ele);
 
 
 /*

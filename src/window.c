@@ -198,48 +198,6 @@ FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 }
 
 
-FH_INTERN void win_hlf_down(struct fh_window *str,
-		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
-{
-	s8 i;
-
-	/* Then apply the callback function to this window struct */
-	if(cfnc(str, data) == 1)
-		return;
-
-	/* Call this function on all children */
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
-		if(!str->children[i])
-			continue;
-
-		win_hlf_down(str->children[i], cfnc, data);
-	}
-
-	return;
-}
-
-
-FH_INTERN void win_hlf_up(struct fh_window *str,
-		s8 (*cfnc)(struct fh_window *w, void *data), void *data)
-{
-	s8 i;
-
-	/* Call this function on all children */
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
-		if(!str->children[i])
-			continue;
-
-		win_hlf_up(str->children[i], cfnc, data);
-	}
-
-	/* Then apply the callback function to this window struct */
-	if(cfnc(str, data) == 1)
-		return;
-
-	return;
-}
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -291,7 +249,7 @@ FH_API void fh_CloseWindow(struct fh_window *win)
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	win_hlf_up(win, &win_close_windows, NULL);
+	fh_ApplyWindowsUp(win, &win_close_windows, NULL);
 
 	return;
 
@@ -311,7 +269,7 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 
 	/* Recursifly search for the window... */
 	main = fh_core_get_main_window();
-	win_hlf_down(main, &win_find_window, &sel);
+	fh_ApplyWindowsDown(main, &win_find_window, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -369,7 +327,7 @@ FH_API void fh_RedrawAllWindows(void)
 
 	/* Call the fh_win_redraw() function on all visible windows */
 	main = fh_core_get_main_window();
-	win_hlf_down(main, &win_redraw, NULL);
+	fh_ApplyWindowsDown(main, &win_redraw, NULL);
 }
 
 
@@ -392,4 +350,46 @@ FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 	}
 
 	return win->document;
+}
+
+
+FH_API void fh_ApplyWindowsDown(struct fh_window *str,
+		s8 (*fnc)(struct fh_window *w, void *data), void *data)
+{
+	s8 i;
+
+	/* Then apply the callback function to this window struct */
+	if(fnc(str, data) == 1)
+		return;
+
+	/* Call this function on all children */
+	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
+		if(!str->children[i])
+			continue;
+
+		fh_ApplyWindowsDown(str->children[i], fnc, data);
+	}
+
+	return;
+}
+
+
+FH_API void fh_ApplyWindowsUp(struct fh_window *str,
+		s8 (*fnc)(struct fh_window *w, void *data), void *data)
+{
+	s8 i;
+
+	/* Call this function on all children */
+	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
+		if(!str->children[i])
+			continue;
+
+		fh_ApplyWindowsUp(str->children[i], fnc, data);
+	}
+
+	/* Then apply the callback function to this window struct */
+	if(fnc(str, data) == 1)
+		return;
+
+	return;
 }
