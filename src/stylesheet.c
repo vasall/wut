@@ -25,12 +25,7 @@ FH_API void fh_ResetStylesheet(struct fh_stylesheet *sheet)
 	 * SIZE
 	 */
 	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
-	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
-
 	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
-	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
 	/*
 	 * SPACING

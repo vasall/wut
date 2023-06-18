@@ -1,6 +1,5 @@
 #include "camera.h"
 
-#include "alarm.h"
 #include "system.h"
 #include "core.h"
 #include "view.h"

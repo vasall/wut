@@ -63,7 +63,7 @@ FH_INTERN void ele_layout_blocks(struct fh_element *ele)
 		w = run->style.bounding_shape.w;
 		h = run->style.bounding_shape.h;
 
-		if(off_x + w > ele->inner_shape.w) {
+		if(off_x + w > (u32)ele->inner_shape.w) {
 			off_y += lim_y;
 
 			if(content_width < off_x)
@@ -311,13 +311,16 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 
 FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 {
+	struct fh_style_pass pass;
+
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
 	/* First process the style for this element */
-	fh_style_process(&ele->style, ele->document->shape_ref);
+	pass.document_shape = ele->document->shape_ref;
+	fh_style_process(&ele->style, &pass);
 
 	/* Then if the element has a widget, update that aswell */
 	if(ele->widget) {

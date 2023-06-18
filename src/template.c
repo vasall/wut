@@ -2,7 +2,7 @@
 
 #include "document.h"
 #include "context.h"
-#include "component.h"
+#include "widget.h"
 #include "view.h"
 #include "camera.h"
 
@@ -40,28 +40,16 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 	/*
 	 * SIZE
 	 */
-	sheet->vsize = fh_flex_set(FH_FLEX_ABSOLUTE, 100);
-	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
-
-	sheet->hsize = fh_flex_set(FH_FLEX_ABSOLUTE, 100);
-	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
 	/*
-	 * ALIGNMENT
+	 * SPACING
 	 */
-	sheet->valignment = FH_ALIGNMENT_TOP;
-	sheet->halignment = FH_ALIGNMENT_LEFT;
-
-	/*
-	 * POSITION
-	 */
-	sheet->vorientation = FH_ORIENTATION_TOP;
-	sheet->vposition = fh_flex_set(FH_FLEX_AUTO, 0);
-
-	sheet->horientation = FH_ORIENTATION_LEFT;
-	sheet->hposition = fh_flex_set(FH_FLEX_AUTO, 0);
+	sheet->spacing_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
 
 	/*
 	 * PADDING 
@@ -75,13 +63,17 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 	 * INFILL
 	 */
 	sheet->infill_mode = FH_INFILL_COLOR;
-	sheet->infill_color =  fh_col_set(0xff, 0xff, 0, 0xff);
+	sheet->infill_color =  fh_col_set(0, 0, 0xFF, 0xff);
 
 	/*
-	 * BORDER
+	 * LAYOUT
 	 */
-	sheet->border_mode = FH_BORDER_NONE;
+	sheet->layout_mode = FH_LAYOUT_BLOCKS;
 
+	/*
+	 * SCROLLBAR
+	 */
+	sheet->scrollbar_mode = FH_SCROLLBAR_VERTICAL;
 
 	return 0;
 }
@@ -136,24 +128,23 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 	sheet->display_mode = FH_DISPLAY_BLOCK;	
 
 	/*
-	 * SIZE
+	 * REFERENCE
 	 */
-	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 8000);
-	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
-
-	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 8000);
-	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
-	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+	sheet->reference_mode = FH_REFERENCE_RELATIVE;
 
 	/*
-	 * POSITION
+	 * SIZE
 	 */
-	sheet->vorientation = FH_ORIENTATION_TOP;
-	sheet->vposition = fh_flex_set(FH_FLEX_AUTO, 0);
+	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
-	sheet->horientation = FH_ORIENTATION_LEFT;
-	sheet->hposition = fh_flex_set(FH_FLEX_AUTO, 0);
+	/*
+	 * SPACING
+	 */
+	sheet->spacing_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
 
 	/*
 	 * PADDING 
@@ -167,16 +158,25 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 	 * INFILL
 	 */
 	sheet->infill_mode = FH_INFILL_COLOR;
-	sheet->infill_color =  fh_col_set(0xff, 0xff, 0, 0xff);
+	sheet->infill_color =  fh_col_set(0, 0, 0xFF, 0xff);
 
 	/*
-	 * BORDER
+	 * LAYOUT
 	 */
-	sheet->border_mode = FH_BORDER_NONE;
+	sheet->layout_mode = FH_LAYOUT_BLOCKS;
+
+	/*
+	 * SCROLLBAR
+	 */
+	sheet->scrollbar_mode = FH_SCROLLBAR_VERTICAL;
 
 
-	if(!(ele->component = fh_CreateComponent(ele, FH_COMPONENT_VIEW)))
+	/*
+	 * Create and initialize the View-Widget.
+	 */
+	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_VIEW, NULL)))
 		return -1;
+
 
 	return 0;
 }

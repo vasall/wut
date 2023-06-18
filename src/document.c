@@ -1,6 +1,5 @@
 #include "document.h"
 
-#include "alarm.h"
 #include "system.h"
 
 #include <stdlib.h>
@@ -160,10 +159,10 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 	printf("%s ", ele->name);
 
 	printf("[");
-	printf("x: %d, ", ele->style.outer_position.x);
-	printf("y: %d, ", ele->style.outer_position.y);
-	printf("w: %d, ", ele->style.outer_size.width);
-	printf("h: %d",   ele->style.outer_size.height);
+	printf("x: %d, ", ele->style.bounding_shape.x);
+	printf("y: %d, ", ele->style.bounding_shape.y);
+	printf("w: %d, ", ele->style.bounding_shape.w);
+	printf("h: %d",   ele->style.bounding_shape.h);
 	printf("]\n");
 
 	return 0;
@@ -400,7 +399,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 
 	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL);
 
-	r = fh_GetElementOuterShape(ele);
+	r = fh_GetElementBoundingShape(ele);
 	fh_UpdateFlat(doc->flat, &r);
 	
 }

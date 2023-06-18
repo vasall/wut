@@ -1,6 +1,5 @@
 #include "flat.h"
 
-#include "alarm.h"
 #include "system.h"
 
 FH_INTERN void flat_mod(struct fh_flat *f, u16 x, u16 y,

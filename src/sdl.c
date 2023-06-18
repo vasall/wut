@@ -1,6 +1,5 @@
 #include "sdl.h"
 
-#include "alarm.h"
 #include "system.h"
 #include "core.h"
 #include "opengl.h"

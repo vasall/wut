@@ -6,7 +6,6 @@
 #include "flex.h"
 #include "color.h"
 
-
 enum fh_style_attrib {
 	FH_STYLE_DISPLAY_MODE,
 
@@ -107,8 +106,7 @@ struct fh_style {
 
 
 struct fh_style_pass {
-	/* The size of the window */
-	struct fh_rect window;
+	struct fh_rect *document_shape;
 };
 
 
@@ -127,11 +125,11 @@ FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
  * write the resutling style to the output.
  *
  * @style: The style struct to process
- * @rect: The size of the window
+ * @pass: A buffer to pass through for calculation
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect);
+FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
 
 
 #endif /* _FH_ELEMENT_STYLE_H */

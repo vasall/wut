@@ -69,12 +69,7 @@ struct fh_stylesheet {
 	 * The size of the element relative to the parent element.
 	 */
 	struct fh_flex			vsize;
-	struct fh_flex			vsize_min;
-	struct fh_flex			vsize_max;
-
 	struct fh_flex			hsize;
-	struct fh_flex			hsize_min;
-	struct fh_flex			hsize_max;
 
 	/*
 	 * ALIGNMENT
