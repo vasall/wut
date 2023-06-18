@@ -17,5 +17,7 @@ struct fh_rect {
 
 FH_API void fh_rect_set(struct fh_rect *r, s32 x, s32 y, s32 w, s32 h);
 FH_API void fh_rect_cpy(struct fh_rect *out, struct fh_rect *in);
+FH_API void fh_rect_add(struct fh_rect *out, struct fh_rect *in1,
+		struct fh_rect *in2);
 
 #endif /* _FH_SHAPE_H */

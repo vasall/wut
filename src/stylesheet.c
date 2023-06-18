@@ -33,13 +33,12 @@ FH_API void fh_ResetStylesheet(struct fh_stylesheet *sheet)
 	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
 	/*
-	 * POSITION
+	 * SPACING
 	 */
-	sheet->vorientation = FH_ORIENTATION_TOP;
-	sheet->vposition = fh_flex_set(FH_FLEX_AUTO, 0);
-
-	sheet->horientation = FH_ORIENTATION_LEFT;
-	sheet->hposition = fh_flex_set(FH_FLEX_AUTO, 0);
+	sheet->spacing_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
 
 	/*
 	 * PADDING 
@@ -56,9 +55,9 @@ FH_API void fh_ResetStylesheet(struct fh_stylesheet *sheet)
 	sheet->infill_color =  fh_col_set(0, 0, 0xFF, 0xff);
 
 	/*
-	 * BORDER
+	 * LAYOUT
 	 */
-	sheet->border_mode = FH_BORDER_NONE;
+	sheet->layout_mode = FH_LAYOUT_BLOCKS;
 
 	/*
 	 * SCROLLBAR

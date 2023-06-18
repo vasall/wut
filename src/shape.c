@@ -17,3 +17,13 @@ FH_API void fh_rect_cpy(struct fh_rect *out, struct fh_rect *in)
 {
 	memcpy(out, in, FH_RECT_SIZE);
 }
+
+
+FH_API void fh_rect_add(struct fh_rect *out, struct fh_rect *in1,
+		struct fh_rect *in2)
+{
+	out->x = in1->x + in2->x;
+	out->y = in1->y + in2->y;
+	out->w = in1->w + in2->w;
+	out->h = in1->h + in2->h;
+}

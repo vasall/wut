@@ -8,6 +8,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h> 
 
+#include "../../alarm/inc/alarm.h"
 #include "../../mate/inc/mate.h"
 
 #endif /* _FH_IMPORT_H */

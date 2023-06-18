@@ -1,4 +1,4 @@
-#include "element_template.h"
+#include "template.h"
 
 #include "document.h"
 #include "context.h"
@@ -33,15 +33,26 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 	sheet->display_mode = FH_DISPLAY_BLOCK;	
 
 	/*
+	 * REFERENCE
+	 */
+	sheet->reference_mode = FH_REFERENCE_RELATIVE;
+
+	/*
 	 * SIZE
 	 */
-	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 9000);
+	sheet->vsize = fh_flex_set(FH_FLEX_ABSOLUTE, 100);
 	sheet->vsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
 	sheet->vsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
 
-	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 9000);
+	sheet->hsize = fh_flex_set(FH_FLEX_ABSOLUTE, 100);
 	sheet->hsize_min = fh_flex_set(FH_FLEX_RELATIVE, 0);
 	sheet->hsize_max = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+
+	/*
+	 * ALIGNMENT
+	 */
+	sheet->valignment = FH_ALIGNMENT_TOP;
+	sheet->halignment = FH_ALIGNMENT_LEFT;
 
 	/*
 	 * POSITION

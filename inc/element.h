@@ -56,12 +56,19 @@ struct fh_element {
 	/* The style structure for this element */
 	struct fh_style style;
 
-	struct fh_rect shape;
+	/* The widget used by the element */
+	struct fh_widget *widget;
 
-	struct fh_rect content_shape;
 
-	/* The component used by the element */
-	struct fh_component *component;
+	struct fh_rect shape;			/* Element */
+	struct fh_rect bounding_shape;		/* Element + Spacing */
+	struct fh_rect inner_shape;		/* Element + Padding */
+
+	u32 content_width;
+	u32 content_height;
+
+	u16 scroll_offset_v;
+	u16 scroll_offset_h;
 };
 
 
@@ -141,6 +148,15 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele);
 
 
 /*
+ * This function will adjust the position of the children elements relative to
+ * the parent element and copy the size defined through the stylesheet.
+ *
+ * @ele: Pointer to the element
+ */
+FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele);
+
+
+/*
  * Render an element onto a canvas using the given renderer.
  *
  * @ele: Pointer to the element
@@ -159,21 +175,33 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
 
 
 /*
- * Get the outer shape of the element in the window.
+ * Get the size and position of the bounding box in the window in pixels.
  *
  * @ele: Pointer to the element
  *
- * Returns: The shape of the element
+ * Returns: The absolute shape of the bounding box
  */
-FH_API struct fh_rect fh_GetElementOuterShape(struct fh_element *ele);
+FH_API struct fh_rect fh_GetElementBoundingShape(struct fh_element *ele);
 
 
 /*
- * Get the inner shape of the element in the window.
+ * Get the size and position of the rectangle containing the element in
+ * pixels.
  *
  * @ele: Pointer to the element
  *
- * Returns: The shape of the element
+ * Returns: The absolute shape of the element box
+ */
+FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
+
+
+/*
+ * Get the size and position of the content rectangle inside the element in
+ * pixels.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: The absolute shape of the content box
  */
 FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele);
 

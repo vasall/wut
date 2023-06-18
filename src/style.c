@@ -1,6 +1,5 @@
 #include "style.h"
 
-#include "alarm.h"
 #include "system.h"
 
 #include <stdlib.h>
@@ -38,6 +37,9 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	u32 uval;
 	u32 diff;
 
+	u32 height;
+	u32 width;
+
 	struct fh_stylesheet *in;
 	struct fh_style *ref;
 	struct fh_style *out;
@@ -47,7 +49,7 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	out = style;
 
 	/*
-	 * DISPLAY 
+	 * DISPLAY
 	 */
 	if(in->display_mode == FH_DISPLAY_INHERIT) {
 		if(!ref) goto err_no_ref;
@@ -57,98 +59,111 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_rect *rect)
 	else {
 		out->display.mode = in->display_mode;
 	}
-
-
-	/*
-	 * OUTER SIZE
-	 */
 	
-	/* height */
-	uref = ref ? ref->inner_size.height : (u16)rect->h;
-
-	out->outer_size.height = fh_flex_comp_lim(&in->vsize, &in->vsize_min,
-			&in->vsize_max, uref);
-
-
-	/* width */
-	uref = ref ? ref->inner_size.width : (u16)rect->w;
-
-	out->outer_size.width = fh_flex_comp_lim(&in->hsize, &in->hsize_min,
-			&in->hsize_max, uref);
-
-
 	/*
-	 * PADDING
+	 * SPACING
 	 */
-	
+
 	/* vertical */
 	uref = ref ? ref->inner_size.height : (u16)rect->h;
 
-	out->padding.top = fh_flex_comp(&in->padding_top, uref);
-	out->padding.bottom = fh_flex_comp(&in->padding_bottom, uref);
+	in->spacing.top = fh_flex_comp(&in->spacing_top, uref);
+	in->spacing.bottom = fh_flex_comp(&in->spacing_bottom, uref);
 
 	/* horizontal */
 	uref = ref ? ref->inner_size.width : (u16)rect->w;
 
-	out->padding.left = fh_flex_comp(&in->padding_left, uref);
-	out->padding.right = fh_flex_comp(&in->padding_right, uref);
-
+	in->spacing.left = fh_flex_comp(&in->spacing_left, uref);
+	in->spacing.right = fh_flex_comp(&in->spacing_right, uref);
 
 	/*
-	 * INNER SIZE
+	 * PADDING
+	 */
+
+	/* vertical */
+	uref = out->size.height;
+
+	in->padding.top = fh_flex_comp(&in->spacing_top, uref);
+	in->spacing.bottom = fh_flex_comp(&in->spacing_bottom, uref);
+
+	/* horizontal */
+	uref = out->size.height;
+
+	in->spacing.left = fh_flex_comp(&in->spacing_left, uref);
+	in->spacing.right = fh_flex_comp(&in->spacing_right, uref);
+
+	/* 
+	 * CALCULATE SIZE
 	 */
 
 	/* height */
-	diff = out->padding.top + out->padding.bottom; 
-	out->inner_size.height = out->outer_size.height - diff;
+	uref = ref ? ref->inner_shape.h : (u16)pass->window->shape.h;
+
+	height = fh_flex_comp_lim(&in->vsize, &in->vsize_min,
+			&in->vsize_max, uref);
+
 
 	/* width */
-	diff = out->padding.left + out->padding.right;
-	out->inner_size.width = out->outer_size.width - diff;
+	uref = ref ? ref->inner_shape.w : (u16)pass->window->shape.w;
+
+	width = fh_flex_comp_lim(&in->hsize, &in->hsize_min,
+			&in->hsize_max, uref);
 
 
 	/*
-	 * OUTER POSITION
+	 * BOUNDING SHAPE
 	 */
 
-	/* Y-position */
-	uref = ref ? ref->inner_size.height : (u16)rect->h;
+	/* size */
+	out->bounding_shape.h = height;
+	out->bounding_shape.w = width;
 
-	uval = fh_flex_comp(&in->vposition, uref);
-	uval = (in->vorientation == FH_ORIENTATION_BOTTOM) ? uref - uval : uval;
+	/* position */
+	out->bounding_shape.y = 0;
+	out->bounding_shape.x = 0;
 
-	uval = ref ? ref->inner_position.y + uval : uval;
-
-	out->outer_position.y = uval;
-
-	/* X-position */
-	uref = ref ? ref->inner_size.width : (u16)rect->w;
-
-	uval = fh_flex_comp(&in->hposition, uref);
-	uval = (in->horientation == FH_ORIENTATION_RIGHT) ? uref - uval : uval;
-
-	uval = ref ? ref->inner_position.x + uval : uval;
-
-	out->outer_position.x = uval;
 
 	/*
-	 * INNER POSITION
+	 * SHAPE
 	 */
 
-	/* Y-position */
-	uval = out->padding.top;
+	/* size */
+	out->shape.h = -(in->spacing_top + in->spacing_bottom);
+	out->shape.w = -(in->spacing_left + in->spacing_right);
 
-	out->inner_position.y = out->outer_position.y + uval;
+	/* position */
+	out->shape.y = in->spacing_top;
+	out->shape.x = in->spacing_left;
 
-	/* X-position */
-	uval = out->padding.left;
-
-	out->inner_position.x = out->outer_position.x + uval;
 
 	/*
-	 * COLOR
+	 * INNER SHAPE
 	 */
-	out->infill.color = out->sheet.infill_color;
+	
+	/* size */
+	uref = in->padding_top + in->padding_bottom;
+	out->inner_shape.h = out->shape.h - uref; 
+
+	uref = in->padding_left + in->padding_right;
+	out->inner_shape.w = out->shape.w - uref;
+
+	/* position */
+	out->inner_shape.y = out->shape.y + in->padding_top;
+	out->inner_shape.x = out->shape.x + in->padding_left;
+
+	/*
+	 * INFILL
+	 */
+
+	out->infill.mode = in->infill_mode;
+	out->infill.color = in->infill_color;
+
+	/*
+	 * LAYOUT
+	 */
+
+	out->layout.mode = in->layout_mode;
+
 
 	return 0;
 

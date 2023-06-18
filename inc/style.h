@@ -54,80 +54,61 @@ enum fh_style_attribute {
 	FH_STYLE_POSITION,
 	FH_STYLE_PADDING,
 	FH_STYLE_INFILL,
-	FH_STYLE_BORDER,
-	FH_STYLE_TEXT
+	FH_STYLE_BORDER
 };
 
 struct fh_restyle_display {	
 	enum fh_display_mode		mode;
 };
 
-struct fh_restyle_size {
+struct fh_restyle_shape {
+	u16 x;
+	u16 y;
 	u16 width;
 	u16 height;
 };
 
-struct fh_restyle_position {
-	u16 x;
-	u16 y;
-};
-
-struct fh_restyle_padding {
-	u16 top;
-	u16 right;
-	u16 bottom;
-	u16 left;
-};
-
 struct fh_restyle_infill {
 	enum fh_infill_mode		mode;
-	struct fh_color				color;
+	struct fh_color			color;
 
 };
 
-struct fh_restyle_border {
-	enum fh_border_mode		mode;
-	struct fh_flex 				width;
-	struct fh_color				color;
-
+struct fh_restyle_layout {
+	enum fh_layout_mode		mode;
 };
-
-struct fh_restyle_text {
-	struct fh_color				color;
-	u8					size;
-	u8					options;
-};
-
 
 struct fh_style {
 	struct fh_style			*reference;
-
 	struct fh_stylesheet		sheet;
 
+	/*
+	 * DISPLAY
+	 */
 	struct fh_restyle_display	display;
 
-	struct fh_restyle_size		outer_size;
-	struct fh_restyle_size		inner_size;
+	/*
+	 * SHAPE
+	 */
+	struct fh_rect			bounding_shape;	
+	struct fh_rect			shape;		/* -Spacing */
+	struct fh_rect			inner_shape;	/* -Spacing, -Padding */
 
-	struct fh_restyle_position	outer_position;
-	struct fh_restyle_position	inner_position;
-
-	struct fh_restyle_padding	padding;
-
+	/*
+	 * INFILL
+	 */
 	struct fh_restyle_infill	infill;
 
-	struct fh_restyle_border	border;
-
-	struct fh_restyle_text		text;
+	/*
+	 * LAYOUT
+	 */
+	struct fh_restyle_layout	layout;
 };
 
 
 struct fh_style_pass {
 	/* The size of the window */
 	struct fh_rect window;
-
-	/* The required size to fit the content */
-	struct fh_rect content;
 };
 
 
@@ -140,11 +121,6 @@ struct fh_style_pass {
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
-
-
-FH_API s8 fh_style_process_size(struct fh_style *style,
-		struct fh_style_pass *pass);
-
 
 /*
  * Take in a stylesheet and a reference, apply the specified configurations and

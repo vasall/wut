@@ -1,9 +1,8 @@
 #include "element.h"
 
-#include "alarm.h"
 #include "system.h"
-#include "element_template.h"
-#include "component.h"
+#include "template.h"
+#include "widget.h"
 #include "document.h"
 
 
@@ -29,6 +28,76 @@ FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
 		ele->children[i-1] = ele->children[i];
 	}
 }
+
+
+FH_INTERN void ele_fit_shape(struct fh_element *ele)
+{
+	struct fh_style *style = &ele->style;
+
+	fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
+	fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
+			&style->inner_shape);
+
+}
+
+
+FH_INTERN void ele_layout_blocks(struct fh_element *ele)
+{
+	u8 i;
+	u32 off_x = 0;
+	u32 off_y = 0;
+	
+	u32 lim_y = 0;
+
+	u8 w;
+	u8 h;
+
+	u32 content_width = 0;
+	u32 content_height = 0;
+
+	struct fh_element *run;
+
+	for(i = 0; i < ele->children_num; i++) {
+		run = ele->children[i];
+
+		w = run->style.bounding_shape.w;
+		h = run->style.bounding_shape.h;
+
+		if(off_x + w > ele->inner_shape.w) {
+			off_y += lim_y;
+
+			if(content_width < off_x)
+				content_width = off_x;
+
+			if(content_height < off_y)
+				content_height = off_y;
+
+			off_x = 0;
+			lim_y = 0;
+		}
+
+		run->bounding_shape.x = off_x;
+		run->bounding_shape.y = off_y;
+
+		run->bounding_shape.w = w;
+		run->bounding_shape.h = h;
+
+		if(h > lim_y) {
+			lim_y = h;
+		}
+
+		/* Adjust the offset */
+		off_x += w;
+
+		/* Fit the shape and inner shape to the bounding shape */
+		ele_fit_shape(ele);
+	}
+
+	ele->content_width = content_width;
+	ele->content_height = content_height;
+}
+
+
 
 
 /*
@@ -86,7 +155,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	}
 
 	/* Load a template, if there is one for the given type */
-	ele->component = NULL;
+	ele->widget = NULL;
 	if(fh_eletemp_load(ele, data) < 0) {
 		ALARM(ALARM_ERR, "Failed to load the template for the element");
 		goto err_free_ele;
@@ -109,9 +178,9 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 		return;
 	}
 
-	/* If the element has a component attached to it, destroy that aswell */
-	if(ele->component) {
-		fh_DestroyComponent(ele->component);
+	/* If the element has a widget attached to it, destroy that aswell */
+	if(ele->widget) {
+		fh_DestroyWidget(ele->widget);
 	}
 
 	fh_free(ele);
@@ -250,9 +319,25 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 	/* First process the style for this element */
 	fh_style_process(&ele->style, ele->document->shape_ref);
 
-	/* Then if the element has a component, update that aswell */
-	if(ele->component) {
-		fh_UpdateComponent(ele->component, NULL);
+	/* Then if the element has a widget, update that aswell */
+	if(ele->widget) {
+		fh_UpdateWidget(ele->widget, NULL);
+	}
+}
+
+
+FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
+{
+	u8 i;	
+
+	if(!ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	switch(ele->style.layout.mode) {
+		case FH_LAYOUT_BLOCKS: ele_layout_blocks(ele); break;
+		default: break;
 	}
 }
 
@@ -267,10 +352,10 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 		return;
 	}
 
-	rect.w = ele->style.outer_size.width;
-	rect.h = ele->style.outer_size.height;
-	rect.x = ele->style.outer_position.x - (rect.w / 2);
-	rect.y = ele->style.outer_position.y - (rect.h / 2);
+	rect.w = ele->style.shape.w;
+	rect.h = ele->style.shape.h;
+	rect.x = ele->style.shape.x - (rect.w / 2);
+	rect.y = ele->style.shape.y - (rect.h / 2);
 
 #if 1
 	printf("Render %s:  [%d, %d, %d, %d]\n",
@@ -292,8 +377,8 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 	}
 
 	/* If the element has a context, render that aswell */
-	if(ele->component) {
-		fh_RenderComponent(ele->component);
+	if(ele->widget) {
+		fh_RenderWidget(ele->widget);
 	}
 }
 
@@ -306,44 +391,6 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 	}
 
 	return ele->document->context;
-}
-
-
-FH_API struct fh_rect fh_GetElementOuterShape(struct fh_element *ele)
-{
-	struct fh_rect r;
-
-	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		fh_rect_set(&r, 0, 0, 100, 100);
-		return r;
-	}
-
-	r.w = ele->style.outer_size.width;
-	r.h = ele->style.outer_size.height;
-	r.x = ele->style.outer_position.x - (r.w / 2);
-	r.y = ele->style.outer_position.y - (r.h / 2);
-
-	return r;
-}
-
-
-FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele)
-{
-	struct fh_rect r;
-
-	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		fh_rect_set(&r, 0, 0, 100, 100);
-		return r;
-	}
-
-	r.w = ele->style.inner_size.width;
-	r.h = ele->style.inner_size.height;
-	r.x = ele->style.inner_position.x - (r.w / 2);
-	r.y = ele->style.inner_position.y - (r.h / 2);
-
-	return r;
 }
 
 
@@ -372,12 +419,12 @@ FH_API struct fh_view *fh_GetView(struct fh_element *ele)
 		goto err_return;
 	}
 
-	if(ele->type != FH_VIEW || !ele->component) {
+	if(ele->type != FH_VIEW || !ele->widget) {
 		ALARM(ALARM_ERR, "Wrong element type");
 		goto err_return;
 	}
 
-	return (struct fh_view *)ele->component->ref;
+	return (struct fh_view *)ele->widget->ref;
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to get view");

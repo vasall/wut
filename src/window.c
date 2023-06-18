@@ -1,6 +1,5 @@
 #include "window.h"
 
-#include "alarm.h"
 #include "system.h"
 #include "predef_resources.h"
 #include "core.h"

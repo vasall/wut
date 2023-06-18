@@ -118,11 +118,21 @@ FH_INTERN s8 doc_cfnc_find(struct fh_element *ele, void *data)
 }
 
 
-FH_INTERN s8 doc_cfnc_update(struct fh_element *ele, void *data)
+FH_INTERN s8 doc_cfnc_update_style(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
 	fh_UpdateElementStyle(ele);
+
+	return 0;
+}
+
+
+FH_INTERN s8 doc_cfnc_update_shape(struct fh_element *ele, void *data)
+{
+	fh_Ignore(data);
+
+	fh_UpdateElementChildrenShape(ele);
 
 	return 0;
 }
@@ -350,7 +360,20 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		return;
 	}
 
-	fh_ApplyElementsDown(ele, &doc_cfnc_update, NULL);
+	/* First update the style */
+	fh_ApplyElementsDown(ele, &doc_cfnc_update_style, NULL);
+
+	/* 
+	 * Then update the shape of the element. Note that this works in a very
+	 * specifiy way. The function to update the shape will apply the new
+	 * layout to the children-elements. Because of that, we have to call the
+	 * function with the parent element. To update the position and shape of
+	 * the wanted element.
+	 */
+	if(!ele->parent)
+		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL);
+	else
+		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL);
 }
 
 

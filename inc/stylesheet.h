@@ -16,11 +16,13 @@ enum fh_reference_mode {
 	FH_REFERENCE_RELATIVE	= 1
 };
 
-enum fh_orientation_mode {
-	FH_ORIENTATION_TOP      = 0,
-	FH_ORIENTATION_RIGHT	= 1,
-	FH_ORIENTATION_BOTTOM   = 1,
-	FH_ORIENTATION_LEFT	= 0
+
+enum fh_alignment_mode {
+	FH_ALIGNMENT_INHERIT	= 0,
+	FH_ALIGNMENT_TOP      	= 1,
+	FH_ALIGNMENT_RIGHT	= 2,
+	FH_ALIGNMENT_BOTTOM  	= 3,
+	FH_ALIGNMENT_LEFT	= 4
 };
 
 
@@ -31,16 +33,11 @@ enum fh_infill_mode {
 };
 
 
-enum fh_border_mode {
-	FH_BORDER_INHERIT	= 0,
-	FH_BORDER_NONE		= 1,
-	FH_BORDER_SET		= 2
-};
-
-
-enum fh_text_opt {
-	FH_TEXT_BOLD		= (1<<0),
-	FH_TEXT_ITALIC		= (1<<1)
+enum fh_layout_mode {
+	FH_LAYOUT_INHERIT,
+	FH_LAYOUT_BLOCKS,
+	FH_LAYOUT_ROWS,
+	FH_LAYOUT_COLUMNS
 };
 
 
@@ -52,9 +49,12 @@ enum fh_scrollbar_mode {
 	FH_SCROLLBAR_BOTH
 };
 
+
 struct fh_stylesheet {
 	/*
 	 * DISPLAY
+	 *
+	 * This attribute will indicate the display mode of the element.
 	 */
 	enum fh_display_mode		display_mode;
 
@@ -65,6 +65,8 @@ struct fh_stylesheet {
 
 	/*
 	 * SIZE
+	 * 
+	 * The size of the element relative to the parent element.
 	 */
 	struct fh_flex			vsize;
 	struct fh_flex			vsize_min;
@@ -75,51 +77,54 @@ struct fh_stylesheet {
 	struct fh_flex			hsize_max;
 
 	/*
-	 * POSITION 
+	 * ALIGNMENT
+	 *
+	 * The orientation used for positioning.
 	 */
-	enum fh_orientation_mode	vorientation;
-	struct fh_flex			vposition;
+	enum fh_alignment_mode		valignment;
+	enum fh_alignment_mode		halignment;	
 
-	enum fh_orientation_mode	horientation;
-	struct fh_flex			hposition;
-
+	/*
+	 * SPACING
+	 *
+	 * The spacing around the element. By setting this, the margin between
+	 * elements can be adjusted.
+	 */
+	struct fh_flex			spacing_top;
+	struct fh_flex			spacing_right;
+	struct fh_flex			spacing_bottom;
+	struct fh_flex			spacing_left;
 
 	/*
 	 * PADDING
+	 *
+	 * The padding inside of the element. Using this, the space used by the
+	 * children element can be set.
 	 */
 	struct fh_flex			padding_top;
 	struct fh_flex			padding_right;
 	struct fh_flex			padding_bottom;
 	struct fh_flex			padding_left;
 
-
 	/*
 	 * INFILL
+	 *
+	 * The color to use for rendering the inner space of the element.
 	 */
 	enum fh_infill_mode		infill_mode;
 	struct fh_color			infill_color;
 
-
 	/*
-	 * BORDER
+	 * LAYOUT
+	 *
+	 * The way in which the children elements will be placed.
 	 */
-	enum fh_border_mode		border_mode;
-	struct fh_flex 			border_width;
-	struct fh_color			border_color;
-
-
-	/*
-	 * TEXT
-	 */
-	struct fh_color			text_color;
-	u8				text_size;
-	u8				text_options;
+	enum fh_layout_mode		layout_mode;
 
 	/*
 	 * SCROLL WHEEL
 	 */
 	enum fh_scrollbar_mode		scrollbar_mode;
-
 };
 
 
