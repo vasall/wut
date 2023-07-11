@@ -6,7 +6,7 @@
 
 
 
-FH_API struct fh_flex fh_flex_set(enum fh_flex_mode mode, u32 value)
+FH_API struct fh_flex fh_flex_set(u8 mode, u32 value)
 {
 	struct  fh_flex flex;
 

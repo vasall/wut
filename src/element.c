@@ -30,13 +30,18 @@ FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
 }
 
 
-FH_INTERN void ele_fit_shape(struct fh_element *ele)
+FH_INTERN void ele_adjust_shape(struct fh_element *ele)
 {
 	struct fh_style *style = &ele->style;
 
 	fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
 	fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
 			&style->inner_shape);
+
+	printf("Finale shapes of %s\n", ele->name);
+	printf("Bounding: "); fh_rect_dump(&ele->bounding_shape); printf("\n");
+	printf("Shape: "); fh_rect_dump(&ele->shape); printf("\n");
+	printf("Inner: "); fh_rect_dump(&ele->inner_shape); printf("\n");
 
 }
 
@@ -57,8 +62,16 @@ FH_INTERN void ele_layout_blocks(struct fh_element *ele)
 
 	struct fh_element *run;
 
+	printf("Use layout: blocks\n");
+
+	printf("[ELEMENT] x=%d, y=%d, w=%d, h=%d\n",
+			ele->bounding_shape.x, ele->bounding_shape.y,
+			ele->bounding_shape.w, ele->bounding_shape.h);
+
 	for(i = 0; i < ele->children_num; i++) {
 		run = ele->children[i];
+
+		printf("%d: %s\n", i, ele->name);
 
 		w = run->style.bounding_shape.w;
 		h = run->style.bounding_shape.h;
@@ -90,7 +103,7 @@ FH_INTERN void ele_layout_blocks(struct fh_element *ele)
 		off_x += w;
 
 		/* Fit the shape and inner shape to the bounding shape */
-		ele_fit_shape(ele);
+		ele_adjust_shape(ele);
 	}
 
 	ele->content_width = content_width;
@@ -318,9 +331,14 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 		return;
 	}
 
+	printf("Process style for %s \n", ele->name);
+
 	/* First process the style for this element */
 	pass.document_shape = ele->document->shape_ref;
 	fh_style_process(&ele->style, &pass);
+
+	/* Then update the size and position according to the style */
+	
 
 	/* Then if the element has a widget, update that aswell */
 	if(ele->widget) {
@@ -355,21 +373,26 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 		return;
 	}
 
-	rect.w = ele->style.shape.w;
-	rect.h = ele->style.shape.h;
-	rect.x = ele->style.shape.x - (rect.w / 2);
-	rect.y = ele->style.shape.y - (rect.h / 2);
+	rect.x = ele->shape.x;
+	rect.y = ele->shape.y;
+	rect.w = ele->shape.w;
+	rect.h = ele->shape.h;
+
+	col = ele->style.infill.color;
 
 #if 1
-	printf("Render %s:  [%d, %d, %d, %d]\n",
+	printf("Render %s:  [%d, %d, %d, %d], [%d, %d, %d, %d]\n",
 			ele->name,
 			rect.x,
 			rect.y,
 			rect.w,
-			rect.h);
+			rect.h,
+			col.r,
+			col.g,
+			col.b,
+			col.a);
 #endif
 
-	col = ele->style.infill.color;
 
 	if(ele->type == FH_VIEW) {
 		col = fh_col_set(0, 0, 0, 0);
@@ -397,17 +420,52 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 }
 
 
+FH_API struct fh_rect fh_GetElementBoundingShape(struct fh_element *ele)
+{
+	if(!ele) {
+		struct fh_rect rect;
+		fh_rect_rst(&rect);
+		return rect;
+	}
+
+	return ele->bounding_shape;
+}
+
+
+FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele)
+{
+	if(!ele) {
+		struct fh_rect rect;
+		fh_rect_rst(&rect);
+		return rect;
+	}
+
+	return ele->shape;
+}
+
+
+FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele)
+{
+	if(!ele) {
+		struct fh_rect rect;
+		fh_rect_rst(&rect);
+		return rect;
+	}
+
+	return ele->inner_shape;
+}
+
+
 FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
 {
-	char buf[128];
-
 	if(!ele || !str) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
+	fh_ModifyStyle(&ele->style, str);
 
-	
+	return 0;
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to set attribute");

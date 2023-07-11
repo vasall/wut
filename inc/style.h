@@ -57,24 +57,24 @@ enum fh_style_attribute {
 };
 
 struct fh_restyle_display {	
-	enum fh_display_mode		mode;
+	u8 				mode;
 };
 
 struct fh_restyle_shape {
-	u16 x;
-	u16 y;
-	u16 width;
-	u16 height;
+	u16 				x;
+	u16 				y;
+	u16 				width;
+	u16 				height;
 };
 
 struct fh_restyle_infill {
-	enum fh_infill_mode		mode;
+	u8				mode;
 	struct fh_color			color;
 
 };
 
 struct fh_restyle_layout {
-	enum fh_layout_mode		mode;
+	u8				mode;
 };
 
 struct fh_style {
@@ -120,6 +120,7 @@ struct fh_style_pass {
  */
 FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
 
+
 /*
  * Take in a stylesheet and a reference, apply the specified configurations and
  * write the resutling style to the output.
@@ -130,6 +131,30 @@ FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Reset the stylesheet.
+ *
+ * @style: Pointer to the style struct
+ */
+FH_API void fh_ResetStyle(struct fh_style *style);
+
+/*
+ * Modify the stylesheet of a style struct.
+ *
+ * @style: Pointer to the style struct
+ * @in: A string containing the requested modifications
+ */
+FH_API void fh_ModifyStyle(struct fh_style *style, char *in);
 
 
 #endif /* _FH_ELEMENT_STYLE_H */

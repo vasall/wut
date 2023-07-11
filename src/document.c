@@ -354,6 +354,8 @@ err_return:
 FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
+	struct fh_style *style = &ele->style;
+
 	if(!doc || !ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
@@ -369,10 +371,20 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * function with the parent element. To update the position and shape of
 	 * the wanted element.
 	 */
-	if(!ele->parent)
+	if(!ele->parent) {
+		printf("Update Branch from this\n");	
+
+		fh_rect_cpy(&ele->bounding_shape, &ele->style.bounding_shape);		
+		fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
+		fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
+			&style->inner_shape);
+
 		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL);
-	else
+	}
+	else {
+		printf("Update Branch from parent\n");
 		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL);
+	}
 }
 
 

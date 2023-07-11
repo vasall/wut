@@ -5,15 +5,16 @@
 #include "datatype.h"
 #include "import.h"
 
-enum fh_flex_mode {
-	FH_FLEX_ABSOLUTE,
-	FH_FLEX_RELATIVE,
-	FH_FLEX_INHERIT,
-	FH_FLEX_AUTO
-};
+
+
+#define FH_FLEX_ABSOLUTE	0
+#define FH_FLEX_RELATIVE	1
+#define FH_FLEX_INHERIT		2
+#define FH_FLEX_AUTO		3
+
 
 struct fh_flex {
-	enum fh_flex_mode 		mode;
+	u8 				mode;
 	u32 				value;
 };
 
@@ -33,7 +34,7 @@ struct fh_flex {
  *
  * Returns: The set flexvalue
  */
-FH_API struct fh_flex fh_flex_set(enum fh_flex_mode mode, u32 value);
+FH_API struct fh_flex fh_flex_set(u8 mode, u32 value);
 
 
 /*

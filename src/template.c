@@ -1,6 +1,7 @@
 #include "template.h"
 
 #include "document.h"
+#include "element.h"
 #include "context.h"
 #include "widget.h"
 #include "view.h"
@@ -13,15 +14,6 @@
 
 FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele, void *data)
 {
-	fh_Ignore(ele);
-	fh_Ignore(data);
-
-	return 0;
-}
-
-
-FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
-{
 	struct fh_style *style = &ele->style;
 	struct fh_stylesheet *sheet = &style->sheet;
 
@@ -30,7 +22,7 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 	/* 
 	 * DISPLAY
 	 */
-	sheet->display_mode = FH_DISPLAY_BLOCK;	
+	sheet->display_mode = FH_DISPLAY_VISIBLE;	
 
 	/*
 	 * REFERENCE
@@ -64,6 +56,65 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 	 */
 	sheet->infill_mode = FH_INFILL_COLOR;
 	sheet->infill_color =  fh_col_set(0, 0, 0xFF, 0xff);
+
+	/*
+	 * LAYOUT
+	 */
+	sheet->layout_mode = FH_LAYOUT_BLOCKS;
+
+	/*
+	 * SCROLLBAR
+	 */
+	sheet->scrollbar_mode = FH_SCROLLBAR_VERTICAL;
+
+	return 0;
+}
+
+
+FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
+{
+	struct fh_style *style = &ele->style;
+	struct fh_stylesheet *sheet = &style->sheet;
+
+	fh_Ignore(data);
+
+	/* 
+	 * DISPLAY
+	 */
+	sheet->display_mode = FH_DISPLAY_VISIBLE;	
+
+	/*
+	 * REFERENCE
+	 */
+	sheet->reference_mode = FH_REFERENCE_RELATIVE;
+
+	/*
+	 * SIZE
+	 */
+	sheet->vsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+	sheet->hsize = fh_flex_set(FH_FLEX_RELATIVE, 10000);
+
+	/*
+	 * SPACING
+	 */
+	sheet->spacing_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->spacing_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+
+	/*
+	 * PADDING 
+	 */
+	sheet->padding_top = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_right = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_bottom = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+	sheet->padding_left = fh_flex_set(FH_FLEX_ABSOLUTE, 0);
+
+	/*
+	 * INFILL
+	 */
+	sheet->infill_mode = FH_INFILL_COLOR;
+	sheet->infill_color =  fh_col_set(0xFF, 0, 0, 0xff);
 
 	/*
 	 * LAYOUT
@@ -125,7 +176,7 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 	/* 
 	 * DISPLAY
 	 */
-	sheet->display_mode = FH_DISPLAY_BLOCK;	
+	sheet->display_mode = FH_DISPLAY_VISIBLE;	
 
 	/*
 	 * REFERENCE
