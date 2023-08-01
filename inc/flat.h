@@ -19,8 +19,8 @@ struct fh_flat {
 	char name[FH_FLAT_NAME_LIM];
 
 	/* The size of the flat */
-	u16 width;
-	u16 height;
+	s16 width;
+	s16 height;
 
 	struct fh_color *pixels;
 
@@ -43,7 +43,7 @@ struct fh_flat {
  * 	    error occurred
  */
 FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name,
-		u16 w, u16 h);
+		s16 w, s16 h);
 
 
 /*
@@ -63,7 +63,7 @@ FH_API void fh_DestroyFlat(struct fh_flat *f);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_ResizeFlat(struct fh_flat *f, u16 w, u16 h);
+FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h);
 
 
 /*

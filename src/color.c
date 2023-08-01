@@ -14,6 +14,18 @@ FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha)
 }
 
 
+FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
+{
+	struct fh_color col;
+	col.r = red;
+	col.g = green;
+	col.b = blue;
+	col.a = alpha;
+	return *((u32 *)(&col));
+
+}
+
+
 FH_API u32 fh_color_get(struct fh_color color)
 {
 	return *((u32 *)&color);
@@ -40,4 +52,36 @@ FH_API struct fh_color fh_BlendColor(struct fh_color px, struct fh_color col)
 	c.a = (u8)((col.a * alphaF) + (px.a * oneMinusAlphaF));
 
 	return c;
+}
+
+
+FH_API struct fh_color fh_col_conv_itos(u32 v)
+{
+	return *(struct fh_color *)&v;
+}
+
+
+FH_API struct fh_color fh_col_invform(struct fh_color in)
+{
+	struct fh_color out;
+
+	out.r = in.a;
+	out.g = in.b;
+	out.b = in.g;
+	out.a = in.r;
+
+	return out;
+}
+
+
+FH_API u32 fh_col_invform_s32(u32 in)
+{
+	u8 b[4];
+
+	b[0] = (u8) (in >>  0);
+	b[1] = (u8) (in >>  8);
+	b[2] = (u8) (in >> 16);
+	b[3] = (u8) (in >> 24);
+
+	return *(u32 *)b;
 }

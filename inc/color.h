@@ -12,10 +12,10 @@
  */
 #define FH_COLOR_SIZE	(4*sizeof(u8))
 struct fh_color {	
-	u8 r;
-	u8 g;
-	u8 b;
 	u8 a;
+	u8 b;
+	u8 g;
+	u8 r;
 };
 
 
@@ -31,6 +31,19 @@ struct fh_color {
  * Returns: A color object
  */
 FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha);
+
+
+/*
+ * Convert the given color channel values to one final color.
+ *
+ * @red: the red channel value
+ * @green: the green channel value
+ * @blue: the blue channel value
+ * @alpha: the alpha channel value
+ *
+ * Returns: The color as an unsigned integer
+ */
+FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -52,5 +65,22 @@ FH_API u32 fh_color_get(struct fh_color color);
  * Returns: The blended color
  */
 FH_API struct fh_color fh_BlendColor(struct fh_color a, struct fh_color b);
+
+
+/*
+ * Convert a color value to a color struct.
+ *
+ * @v: The color value
+ *
+ * Returns: The color struct
+ */
+FH_API struct fh_color fh_col_conv_itos(u32 v);
+
+
+/*
+ * Reverse the order of the bytes.
+ */
+FH_API struct fh_color fh_col_invform(struct fh_color in);
+FH_API u32 fh_col_invform_s32(u32 in);
 
 #endif /* FH_COLOR_H */

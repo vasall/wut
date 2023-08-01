@@ -24,11 +24,18 @@ struct fh_document {
 	/* A reference to the window size */
 	struct fh_rect *shape_ref;
 
+	/* The flat surface used for rendering */
 	struct fh_flat *flat;
+
 	struct fh_model *ui;
 
 	/* A list of all views */
 	struct fh_view_list *views;
+
+#if 0
+	/* A list of all canvas widgets */
+	struct fh_canvas_list *canvases
+#endif
 };
 
 struct fh_ele_selector {

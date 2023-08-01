@@ -13,6 +13,11 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 {
 	struct fh_texture *tex;
 
+	if(!px) {
+		printf("px is invalid\n");
+		return NULL;
+	}
+
 	if(!(tex = fh_malloc(sizeof(struct fh_texture)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for texture");
 		goto err_return;
@@ -24,6 +29,9 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	tex->height = h;
 
 	glGenTextures(1, &tex->texture);
+
+	printf("%d\n", tex->texture);
+
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
@@ -46,6 +54,8 @@ FH_INTERN struct fh_texture *tex_load(char *name, char *pth)
 {
 	struct fh_fs_r_image img;
 	struct fh_texture *tex;
+
+	printf("Load \"%s\" from \"%s\"\n", name, pth);
 
 	/* First load the raw pixel data from a PNG */
 	if((fh_fs_image(pth, &img)) < 0)
@@ -264,8 +274,6 @@ err_return:
 FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px)
 {
-	u32 i;
-
 	if(!tex || !px) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return -1;

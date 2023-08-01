@@ -105,7 +105,7 @@ err_return:
 	return -1;
 }
 
-
+#if 0
 /*
  * This function will map the SDL_PixelFormatEnum to the OpenGL pixel format
  * enum.
@@ -180,6 +180,7 @@ FH_INTERN GLenum fh_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 
     return 0;
 }
+#endif
 
 
 FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
@@ -201,6 +202,8 @@ FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
 
 
 	size = surf->pitch * surf->h;
+
+	printf("Allocate %d bytes\n", size);
 
 	if(!(buf = fh_malloc(size))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for image");

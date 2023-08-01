@@ -10,9 +10,9 @@ FH_INTERN s8 doc_create_flat(struct fh_document *doc)
 	struct fh_context *ctx = doc->context;
 	u16 w = doc->shape_ref->w;
 	u16 h = doc->shape_ref->h;
+	
+	printf("Create flat with w=%d, h=%d\n", w, h);
 
-	printf("Create flat with %d, %d\n", w, h);
-		
 	if(!(doc->flat = fh_CreateFlat(ctx, "ui", w, h)))
 		goto err_return;
 
@@ -372,8 +372,6 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * the wanted element.
 	 */
 	if(!ele->parent) {
-		printf("Update Branch from this\n");	
-
 		fh_rect_cpy(&ele->bounding_shape, &ele->style.bounding_shape);		
 		fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
 		fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
@@ -382,7 +380,6 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL);
 	}
 	else {
-		printf("Update Branch from parent\n");
 		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL);
 	}
 }

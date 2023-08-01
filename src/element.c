@@ -38,6 +38,7 @@ FH_INTERN void ele_adjust_shape(struct fh_element *ele)
 	fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
 			&style->inner_shape);
 
+	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 	printf("Finale shapes of %s\n", ele->name);
 	printf("Bounding: "); fh_rect_dump(&ele->bounding_shape); printf("\n");
 	printf("Shape: "); fh_rect_dump(&ele->shape); printf("\n");
@@ -49,34 +50,49 @@ FH_INTERN void ele_adjust_shape(struct fh_element *ele)
 FH_INTERN void ele_layout_blocks(struct fh_element *ele)
 {
 	u8 i;
-	u32 off_x = 0;
-	u32 off_y = 0;
+	s32 off_x = 0;
+	s32 off_y = 0;
 	
-	u32 lim_y = 0;
+	s32 lim_y = 0;
 
-	u8 w;
-	u8 h;
+	s32 w;
+	s32 h;
 
-	u32 content_width = 0;
-	u32 content_height = 0;
+	s32 content_width = 0;
+	s32 content_height = 0;
 
 	struct fh_element *run;
 
-	printf("Use layout: blocks\n");
-
-	printf("[ELEMENT] x=%d, y=%d, w=%d, h=%d\n",
-			ele->bounding_shape.x, ele->bounding_shape.y,
-			ele->bounding_shape.w, ele->bounding_shape.h);
+	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	printf("Process layout blocks from \"%s\"\n", ele->name);
 
 	for(i = 0; i < ele->children_num; i++) {
 		run = ele->children[i];
 
-		printf("%d: %s\n", i, ele->name);
+		printf("%d: %s\n", i, run->name);
 
 		w = run->style.bounding_shape.w;
 		h = run->style.bounding_shape.h;
 
-		if(off_x + w > (u32)ele->inner_shape.w) {
+		printf("w=%d, h=%d\n", w, h);
+
+		fh_DumpStyle(&run->style);
+
+		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
+			printf("Use absolute mode!!\n");
+			run->bounding_shape.x = 0;
+			run->bounding_shape.y = 0;
+
+			run->bounding_shape.w = w;
+			run->bounding_shape.h = h;
+
+			/* Fit the shape and inner shape to the bounding shape */
+			ele_adjust_shape(run);
+
+			continue;
+		}
+
+		if(off_x + w > ele->inner_shape.w) {
 			off_y += lim_y;
 
 			if(content_width < off_x)
@@ -103,7 +119,7 @@ FH_INTERN void ele_layout_blocks(struct fh_element *ele)
 		off_x += w;
 
 		/* Fit the shape and inner shape to the bounding shape */
-		ele_adjust_shape(ele);
+		ele_adjust_shape(run);
 	}
 
 	ele->content_width = content_width;
@@ -331,8 +347,6 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 		return;
 	}
 
-	printf("Process style for %s \n", ele->name);
-
 	/* First process the style for this element */
 	pass.document_shape = ele->document->shape_ref;
 	fh_style_process(&ele->style, &pass);
@@ -349,8 +363,6 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 
 FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 {
-	u8 i;	
-
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
@@ -381,16 +393,13 @@ FH_API void fh_RenderElement(struct fh_element *ele)
 	col = ele->style.infill.color;
 
 #if 1
-	printf("Render %s:  [%d, %d, %d, %d], [%d, %d, %d, %d]\n",
+	printf("Render \"%s\":  shape=[%d, %d, %d, %d], color=#%08X\n",
 			ele->name,
 			rect.x,
 			rect.y,
 			rect.w,
 			rect.h,
-			col.r,
-			col.g,
-			col.b,
-			col.a);
+			fh_color_get(col));
 #endif
 
 

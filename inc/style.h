@@ -3,7 +3,6 @@
 
 #include "stdinc.h"
 #include "stylesheet.h"
-#include "flex.h"
 #include "color.h"
 
 enum fh_style_attrib {
@@ -60,11 +59,8 @@ struct fh_restyle_display {
 	u8 				mode;
 };
 
-struct fh_restyle_shape {
-	u16 				x;
-	u16 				y;
-	u16 				width;
-	u16 				height;
+struct fh_restyle_reference {
+	u8 				mode;
 };
 
 struct fh_restyle_infill {
@@ -78,13 +74,18 @@ struct fh_restyle_layout {
 };
 
 struct fh_style {
-	struct fh_style			*reference;
+	struct fh_style			*ref;
 	struct fh_stylesheet		sheet;
 
 	/*
 	 * DISPLAY
 	 */
 	struct fh_restyle_display	display;
+
+	/*
+	 * REFERENCE
+	 */
+	struct fh_restyle_reference	reference;
 
 	/*
 	 * SHAPE
@@ -156,5 +157,20 @@ FH_API void fh_ResetStyle(struct fh_style *style);
  */
 FH_API void fh_ModifyStyle(struct fh_style *style, char *in);
 
+
+/*
+ * Display the attached stylesheet in the console.
+ *
+ * @style: Pointer to the style struct
+ */
+FH_API void fh_DumpStylesheet(struct fh_style *style);
+
+
+/*
+ * Display the active style settings in the console.
+ *
+ * @style: Pointer to the style struct
+ */
+FH_API void fh_DumpStyle(struct fh_style *style);
 
 #endif /* _FH_ELEMENT_STYLE_H */

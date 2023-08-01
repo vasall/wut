@@ -2,24 +2,39 @@
 
 #include "system.h"
 
-FH_INTERN void flat_mod(struct fh_flat *f, u16 x, u16 y,
+FH_INTERN void flat_mod(struct fh_flat *f, s32 x, s32 y,
 		struct fh_color col)
 {
-	struct fh_color *px;
+	struct fh_color px;
+	struct fh_color swap;
+	u32 off;
 
-	px = &f->pixels[(y*f->width)+x];
-	*px = fh_BlendColor(*px, col);
+
+	if(y > f->height) {
+		return;
+	}
+
+	off = ((f->height - y) * f->width) + x;
+
+	px = f->pixels[off];
+	swap = fh_BlendColor(px, col);
+	f->pixels[off] = fh_col_invform(swap);
 
 }
 
 
-FH_INTERN void flat_set(struct fh_flat *f, u16 x, u16 y,
+FH_INTERN void flat_set(struct fh_flat *f, s32 x, s32 y,
 		struct fh_color col)
 {
 	struct fh_color *px;
 
-	px = &f->pixels[(y*f->width)+x];
-	*px = col;
+
+	if(y > f->height) {
+		return;
+	}
+
+	px = &f->pixels[((f->height - y) * f->width) + x];
+	*px = fh_col_invform(col);
 
 }
 
@@ -32,7 +47,7 @@ FH_INTERN void flat_set(struct fh_flat *f, u16 x, u16 y,
  */
 
 
-FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, u16 w, u16 h)
+FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, s16 h)
 {
 	u32 i;
 
@@ -68,10 +83,10 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, u16 w, 
 	for(i = 0; i < size; i++) {
 		px = &f->pixels[i];
 
-		px->r = 0;
-		px->g = 0;
-		px->b = 255;
-		px->a = 255;
+		px->r = 0xff;
+		px->g = 0xff;
+		px->b = 0xff;
+		px->a = 0xff;
 
 	}
 
@@ -107,7 +122,7 @@ FH_API void fh_DestroyFlat(struct fh_flat *f)
 }
 
 
-FH_API s8 fh_ResizeFlat(struct fh_flat *f, u16 w, u16 h)
+FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 {
 	void *p;
 	u32 size;
@@ -133,10 +148,10 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, u16 w, u16 h)
 	for(i = 0; i < size; i++) {
 		struct fh_color *px = &f->pixels[i];
 
-		px->r = 0;
-		px->g = 0;
-		px->b = 0;
-		px->a = 0;
+		px->r = 0xff;
+		px->g = 0xff;
+		px->b = 0xff;
+		px->a = 0xff;
 
 	}
 
@@ -192,14 +207,6 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 	off_x = r->x + lim_x;
 	off_y = r->y + lim_y;
 
-	
-	printf("Update Flat Texture: x %d, y %d, w %d, h %d\n",
-			r->x,
-			r->y,
-			off_x,
-			off_y);
-
-
 	for(y = r->y; y < off_y; y++) {
 		for(x = r->x; x < off_x; x++) {
 			swap[i] = f->pixels[(y * f->width)+x];
@@ -223,8 +230,6 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
 		return;
 	}
 
-	printf("Draw FlatRect: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
-
 	for(x = 0; x < r->w && x < f->width; x++) {
 		for(y = 0; y < r->h && y < f->height; y++) {
 			flat_mod(f, x + r->x, y + r->y, c);
@@ -243,8 +248,6 @@ FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
-
-	printf("Draw FlatRectSet: %d, %d, %d, %d\n", r->x, r->y, r->w, r->h);
 
 	for(x = 0; x < r->w && x < f->width; x++) {
 		for(y = 0; y < r->h && y < f->height; y++) {

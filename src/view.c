@@ -212,7 +212,6 @@ FH_API void fh_RenderView(struct fh_view *v)
 
 FH_API void fh_ResizeView(struct fh_view *v, struct fh_rect *rect)
 {
-	f32 ratio;
 	struct fh_camera_info info;
 
 	if(!v || !rect) {
