@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-#define STYLE_DEBUG 1
+#define STYLE_DEBUG 0
 
 
 FH_INTERN char *style_parse(char *in, char *attr, char *val)
@@ -319,9 +319,20 @@ err_return:
 }
 
 
+FH_API s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
+{
+	style->ref = ref;
+
+	return 0;
+}
+
+
 FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 {
 	u32 uref;
+
+	u32 ref_height;
+	u32 ref_width;
 
 	u32 height;
 	u32 width;
@@ -349,18 +360,39 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 	out->reference.mode = style->sheet.reference_mode;
 
+	
+	/*
+	 * CALCULATE REFERENCE SIZE
+	 */
+
+	/* height */
+
+	if(ref) {
+		ref_height = ref->bounding_box.h + ref->content_delta.h;
+	}
+	else {
+		ref_height = (u16)pass->document_shape->h;
+	}
+
+	/* width */
+
+	if(ref) {
+		ref_width = ref->bounding_box.w + ref->content_delta.w;
+	}
+	else {
+		ref_width = (u16)pass->document_shape->w;
+	}
+
+
 	/* 
 	 * CALCULATE SIZE
 	 */
 
 	/* height */
-	uref = ref ? ref->inner_shape.h : (u16)pass->document_shape->h;
-	height = uref * style->sheet.vsize;
-
+	height = ref_height * style->sheet.vsize;
 
 	/* width */
-	uref = ref ? ref->inner_shape.w : (u16)pass->document_shape->w;
-	width = uref * style->sheet.hsize;
+	width = ref_width * style->sheet.hsize;
 
 #if STYLE_DEBUG
 	printf("[SIZE] w=%d, h=%d\n", width, height);
@@ -371,13 +403,13 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	/* vertical */
-	uref = ref ? ref->inner_shape.h : (u16)pass->document_shape->h;
+	uref = ref_height;
 
 	spacing[0] = uref * style->sheet.spacing_top;
 	spacing[2] = uref * style->sheet.spacing_bottom;
 
 	/* horizontal */
-	uref = ref ? ref->inner_shape.w : (u16)pass->document_shape->w;
+	uref = ref_width;
 
 	spacing[3] = uref * style->sheet.spacing_left;
 	spacing[1] = uref * style->sheet.spacing_right;
@@ -392,17 +424,17 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	/* size */
-	out->bounding_shape.h = height + spacing[0] + spacing[2];
-	out->bounding_shape.w = width + spacing[1] + spacing[3];
+	out->bounding_box.h = height + spacing[0] + spacing[2];
+	out->bounding_box.w = width + spacing[1] + spacing[3];
 
 	/* position */
-	out->bounding_shape.y = 0;
-	out->bounding_shape.x = 0;
+	out->bounding_box.y = 0;
+	out->bounding_box.x = 0;
 
 #if STYLE_DEBUG
 	printf("[BOUNDING_SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->bounding_shape.x, out->bounding_shape.y, 
-			out->bounding_shape.w, out->bounding_shape.h);
+			out->bounding_box.x, out->bounding_box.y, 
+			out->bounding_box.w, out->bounding_box.h);
 #endif
 
 	/*
@@ -410,16 +442,16 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	/* size */
-	out->shape.h = -(spacing[0] + spacing[2]);
-	out->shape.w = -(spacing[1] + spacing[3]);
+	out->element_delta.h = -(spacing[0] + spacing[2]);
+	out->element_delta.w = -(spacing[1] + spacing[3]);
 
 	/* position */
-	out->shape.y = spacing[0];
-	out->shape.x = spacing[3];
+	out->element_delta.y = spacing[0];
+	out->element_delta.x = spacing[3];
 
 #if STYLE_DEBUG
 	printf("[SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->shape.x, out->shape.y, out->shape.w, out->shape.h);
+			out->element_delta.x, out->element_delta.y, out->element_delta.w, out->element_delta.h);
 #endif
 
 	/*
@@ -427,13 +459,13 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	/* vertical */
-	uref = out->shape.h;
+	uref = height;
 
 	padding[0] = uref * style->sheet.padding_top;
 	padding[2] = uref * style->sheet.padding_bottom;
 
 	/* horizontal */
-	uref = out->shape.w;
+	uref = width;
 
 	padding[3] = uref * style->sheet.padding_left;
 	padding[1] = uref * style->sheet.padding_right;
@@ -449,19 +481,19 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	
 	/* size */
 	uref = padding[0] + padding[2];
-	out->inner_shape.h = out->shape.h - uref; 
+	out->content_delta.h = out->element_delta.h - uref; 
 
 	uref = padding[1] + padding[3];
-	out->inner_shape.w = out->shape.w - uref;
+	out->content_delta.w = out->element_delta.w - uref;
 
 	/* position */
-	out->inner_shape.y = out->shape.y + padding[0];
-	out->inner_shape.x = out->shape.x + padding[3];
+	out->content_delta.y = out->element_delta.y + padding[0];
+	out->content_delta.x = out->element_delta.x + padding[3];
 
 #if STYLE_DEBUG
 	printf("[INNER_SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->inner_shape.x, out->inner_shape.y, 
-			out->inner_shape.w, out->inner_shape.h);
+			out->content_delta.x, out->content_delta.y, 
+			out->content_delta.w, out->content_delta.h);
 #endif
 
 	/*
@@ -679,17 +711,17 @@ FH_API void fh_DumpStyle(struct fh_style *style)
 
 	printf("%22s:\tmode=%d\n", "reference", style->reference.mode);
 
-	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "bounding_shape",
-			style->bounding_shape.x, style->bounding_shape.y,
-			style->bounding_shape.w, style->bounding_shape.h);
+	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "bounding_box",
+			style->bounding_box.x, style->bounding_box.y,
+			style->bounding_box.w, style->bounding_box.h);
 
-	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "shape",
-			style->shape.x, style->shape.y,
-			style->shape.w, style->shape.h);
+	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "element_delta",
+			style->element_delta.x, style->element_delta.y,
+			style->element_delta.w, style->element_delta.h);
 
-	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "inner_shape",
-			style->inner_shape.x, style->inner_shape.y,
-			style->inner_shape.w, style->inner_shape.h);
+	printf("%22s:\tx=%d, y=%d, w=%d, h=%d\n", "content_delta",
+			style->content_delta.x, style->content_delta.y,
+			style->content_delta.w, style->content_delta.h);
 
 	printf("%22s:\tmode=%d, color=%08X\n", "infill", style->infill.mode,
 			fh_color_get(style->infill.color));

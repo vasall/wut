@@ -362,7 +362,7 @@ FH_API void fh_ApplyWindowsDown(struct fh_window *str,
 		return;
 
 	/* Call this function on all children */
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
+	for(i = FH_WIN_CHILDREN_LIM - 1; i >= 0; i--) {
 		if(!str->children[i])
 			continue;
 
@@ -379,7 +379,7 @@ FH_API void fh_ApplyWindowsUp(struct fh_window *str,
 	s8 i;
 
 	/* Call this function on all children */
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
+	for(i = FH_WIN_CHILDREN_LIM - 1; i >= 0; i--) {
 		if(!str->children[i])
 			continue;
 

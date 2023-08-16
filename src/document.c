@@ -151,19 +151,34 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 {
 	u8 i;
 
+	s32 lim = 16;
+
+	struct fh_rect r;
+
 	fh_Ignore(data);
 
-	for(i = 0; i < ele->layer; i++)
+	for(i = 0; i < ele->layer; i++) {
 		printf("  ");
+		lim -= 2;
+	}
 
 	printf("%s ", ele->name);
+	lim -= strlen(ele->name);
 
-	printf("[");
-	printf("x: %d, ", ele->style.bounding_shape.x);
-	printf("y: %d, ", ele->style.bounding_shape.y);
-	printf("w: %d, ", ele->style.bounding_shape.w);
-	printf("h: %d",   ele->style.bounding_shape.h);
-	printf("]\n");
+	for(i = 0; i < lim; i++)
+		printf(" ");
+
+
+	r = fh_GetBoundingBox(ele);
+	fh_rect_dump(&r);
+	printf("  --  ");
+	r = fh_GetElementBox(ele);
+	fh_rect_dump(&r);
+	printf("  --  ");
+	r = fh_GetContentBox(ele);
+	fh_rect_dump(&r);
+
+	printf("\n");
 
 	return 0;
 	
@@ -354,8 +369,6 @@ err_return:
 FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
-	struct fh_style *style = &ele->style;
-
 	if(!doc || !ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
@@ -372,10 +385,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * the wanted element.
 	 */
 	if(!ele->parent) {
-		fh_rect_cpy(&ele->bounding_shape, &ele->style.bounding_shape);		
-		fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
-		fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
-			&style->inner_shape);
+		fh_ele_calc_render_rect(ele);
 
 		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL);
 	}
@@ -408,7 +418,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 
 	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL);
 
-	r = fh_GetElementBoundingShape(ele);
+	r = fh_GetBoundingBox(ele);
 	fh_UpdateFlat(doc->flat, &r);
 	
 }

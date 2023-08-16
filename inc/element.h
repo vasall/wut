@@ -59,18 +59,100 @@ struct fh_element {
 	/* The widget used by the element */
 	struct fh_widget *widget;
 
+	/* 
+	 * The relative offset of the upper-left corner of the parents bounding
+	 * rectangle to upper-left corner of the reference-area this elements
+	 * bounding box will be located in.
+	 */
+	struct fh_sin2	relative_offset;
 
-	struct fh_rect shape;			/* Element */
-	struct fh_rect bounding_shape;		/* Element + Spacing */
-	struct fh_rect inner_shape;		/* Element + Padding */
+	/*
+	 * The absolute offset from the upper-left corner of the window to the
+	 * upper-left corner of the reference-area this elements bounding box
+	 * will be located in.
+	 */
+	struct fh_sin2	absolute_offset;
 
-	u32 content_width;
-	u32 content_height;
+	/*
+	 * The relative position in this reference-area dictated by the
+	 * requested layout mode.
+	 */
+	struct fh_sin2	layout_offset;
 
-	u16 scroll_offset_v;
-	u16 scroll_offset_h;
+	/*
+	 * This is the input rectangle which will be used when rendering for
+	 * example images. It defines the offset and size for the input resource.
+	 */
+	struct fh_rect	input_rect;
+
+	/*
+	 * This flag indicated if the element is visible or not.
+	 * Will be used during rendering.
+	 */
+	s8 is_visible;
+
+	/*
+	 * And this is the output rectangle. It defines the absolute position
+	 * and size of the element in the window and specifies how the element
+	 * will be drawn on the screen.
+	 */
+	struct fh_rect	output_rect;
+
+
+	/* These properties are used for scrolling */
+	struct fh_sin2 	content_size;
+	struct fh_sin2	content_offset;
 };
 
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele);
+
+
+/*
+ * Calculate the relative offset of this elements bounding box to its parents
+ * bounding box. Or if there is no parent the offset from the upper-left corner
+ * of the window to the bounding box of this element.
+ *
+ * @ele: Pointer to the element
+ */
+FH_CROSS void fh_ele_calc_reloff(struct fh_element *ele);
+
+
+/*
+ * This function will take the relative offset which should have been calculated
+ * before and extends it so that it contains the absolute offset from the
+ * windows upper-left corner to the upper-left corner of the element. This will
+ * also include the scrolling of all above elements.
+ *
+ * @ele: Pointer to the element
+ */
+FH_CROSS void fh_ele_calc_absoff(struct fh_element *ele);
+
+
+/*
+ * Calculate both the input and ouput rectangles used for rendering.
+ *
+ * @ele: Pointer to the element
+ */
+FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele);
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
 
 
 /*
@@ -181,7 +263,7 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
  *
  * Returns: The absolute shape of the bounding box
  */
-FH_API struct fh_rect fh_GetElementBoundingShape(struct fh_element *ele);
+FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele);
 
 
 /*
@@ -192,7 +274,7 @@ FH_API struct fh_rect fh_GetElementBoundingShape(struct fh_element *ele);
  *
  * Returns: The absolute shape of the element box
  */
-FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
+FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele);
 
 
 /*
@@ -203,7 +285,7 @@ FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele);
  *
  * Returns: The absolute shape of the content box
  */
-FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele);
+FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele);
 
 
 /*

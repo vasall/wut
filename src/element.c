@@ -4,7 +4,7 @@
 #include "template.h"
 #include "widget.h"
 #include "document.h"
-
+#include "layout.h"
 
 #include <stdlib.h>
 
@@ -30,103 +30,125 @@ FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
 }
 
 
-FH_INTERN void ele_adjust_shape(struct fh_element *ele)
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele)
 {
-	struct fh_style *style = &ele->style;
+	fh_ele_calc_reloff(ele);
+	fh_ele_calc_absoff(ele);
 
-	fh_rect_add(&ele->shape, &ele->bounding_shape, &style->shape);
-	fh_rect_add(&ele->inner_shape, &ele->bounding_shape,
-			&style->inner_shape);
-
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	printf("Finale shapes of %s\n", ele->name);
-	printf("Bounding: "); fh_rect_dump(&ele->bounding_shape); printf("\n");
-	printf("Shape: "); fh_rect_dump(&ele->shape); printf("\n");
-	printf("Inner: "); fh_rect_dump(&ele->inner_shape); printf("\n");
-
+	fh_ele_calc_render_rect(ele);
 }
 
 
-FH_INTERN void ele_layout_blocks(struct fh_element *ele)
+FH_CROSS void fh_ele_calc_reloff(struct fh_element *ele)
 {
-	u8 i;
-	s32 off_x = 0;
-	s32 off_y = 0;
-	
-	s32 lim_y = 0;
+	struct fh_element *par = ele->parent;
 
-	s32 w;
-	s32 h;
+	/*
+	 * If the element has a parent, calculate the offset from the upper-left
+	 * corner of the parents shape to the upper-left corner of this elements
+	 * shape.
+	 */
+	if(par) {
+		ele->relative_offset.x =
+			par->style.content_delta.x -
+			par->content_offset.x;
+		ele->relative_offset.y =
+			par->style.content_delta.y -
+			par->content_offset.y;
 
-	s32 content_width = 0;
-	s32 content_height = 0;
-
-	struct fh_element *run;
-
-	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-	printf("Process layout blocks from \"%s\"\n", ele->name);
-
-	for(i = 0; i < ele->children_num; i++) {
-		run = ele->children[i];
-
-		printf("%d: %s\n", i, run->name);
-
-		w = run->style.bounding_shape.w;
-		h = run->style.bounding_shape.h;
-
-		printf("w=%d, h=%d\n", w, h);
-
-		fh_DumpStyle(&run->style);
-
-		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
-			printf("Use absolute mode!!\n");
-			run->bounding_shape.x = 0;
-			run->bounding_shape.y = 0;
-
-			run->bounding_shape.w = w;
-			run->bounding_shape.h = h;
-
-			/* Fit the shape and inner shape to the bounding shape */
-			ele_adjust_shape(run);
-
-			continue;
-		}
-
-		if(off_x + w > ele->inner_shape.w) {
-			off_y += lim_y;
-
-			if(content_width < off_x)
-				content_width = off_x;
-
-			if(content_height < off_y)
-				content_height = off_y;
-
-			off_x = 0;
-			lim_y = 0;
-		}
-
-		run->bounding_shape.x = off_x;
-		run->bounding_shape.y = off_y;
-
-		run->bounding_shape.w = w;
-		run->bounding_shape.h = h;
-
-		if(h > lim_y) {
-			lim_y = h;
-		}
-
-		/* Adjust the offset */
-		off_x += w;
-
-		/* Fit the shape and inner shape to the bounding shape */
-		ele_adjust_shape(run);
+		return;
 	}
 
-	ele->content_width = content_width;
-	ele->content_height = content_height;
+	/*
+	 * Otherwise just calculate the offset to the upper-left corner of the
+	 * window.
+	 */
+	ele->relative_offset.x = 0;
+	ele->relative_offset.y = 0;
 }
 
 
+FH_CROSS void fh_ele_calc_absoff(struct fh_element *ele)
+{
+	struct fh_element *par = ele->parent;
+
+	if(par) {
+		ele->absolute_offset.x = ele->relative_offset.x +
+			par->absolute_offset.x;
+		ele->absolute_offset.y = ele->relative_offset.y +
+			par->absolute_offset.y;
+
+		return;
+	}
+
+	ele->absolute_offset.x = ele->relative_offset.x;
+	ele->absolute_offset.y = ele->relative_offset.y;
+}
+
+
+FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
+{
+	struct fh_rect out;
+	struct fh_rect in;
+	struct fh_rect dif;
+	s8 ret;
+
+	/*
+	 * First calculate the absolute position of the reference-area of the 
+	 * bounding box in the window.
+	 */
+	fh_rect_mov(&out, &ele->style.bounding_box, &ele->absolute_offset);
+
+	/*
+	 * Then position the element in the reference-area according to the
+	 * requested layout.
+	 */
+	fh_rect_mov(&out, &out, &ele->layout_offset);
+
+	/*
+	 * Finally convert from the bounding box to the element box.
+	 */
+	fh_rect_add(&out, &out, &ele->style.element_delta);
+
+	fh_rect_cpy(&dif, &out);	/* Will be used later */
+
+	/*
+	 * Check intersecting area with the parent.
+	 */
+	if(ele->parent) {
+		if(!fh_rect_intersect(&dif, &out, &ele->parent->output_rect)) {
+			/* If the element is not inside the parent */
+			ele->is_visible = 0;
+			return;
+		}
+	}
+
+
+	/*
+	 * Now we have to validate the intersecting area with the window.
+	 * This will also check if the element even is inside the window.
+	 */
+	if(!fh_rect_intersect(&dif, &dif, ele->document->shape_ref)) {
+		/* Element is not inside the window */
+		ele->is_visible = 0;
+		return;
+	}
+
+	/*
+	 * Now we can copy the resulting rectangle to the element.
+	 */
+	fh_rect_cpy(&ele->output_rect, &dif);
+	ele->is_visible = 1;
+}
 
 
 /*
@@ -141,7 +163,6 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 		enum fh_element_type type, void *data)
 {
 	struct fh_element *ele;
-	struct fh_style *style_ref;
 	s8 name_len;
 	s8 i;
 
@@ -177,8 +198,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 		ele->children[i] = NULL;
 
 	/* Initialize the style structure */
-	style_ref = (ele->parent) ? &ele->parent->style : NULL;
-	if(fh_style_init(&ele->style, style_ref) < 0) {
+	if(fh_style_init(&ele->style, NULL) < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize style for element");
 		goto err_free_ele;
 	}
@@ -242,6 +262,10 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 
 		ele->body = parent->body;
 		ele->layer = parent->layer + 1;
+
+		/* Link the stylesheet */
+		fh_style_link(&ele->style, &parent->style);
+
 		break;
 	}
 
@@ -304,7 +328,7 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 		return;
 
 	/* Call this function on all children */
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
+	for(i = FH_ELEMENT_CHILDREN_LIM - 1; i >= 0; i--) {
 		if(!ele->children[i])
 			continue;
 
@@ -326,7 +350,7 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 	}
 
 	/* Call this function on all children */
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
+	for(i = FH_ELEMENT_CHILDREN_LIM - 1; i >= 0; i--) {
 		if(!ele->children[i])
 			continue;
 
@@ -369,7 +393,7 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 	}
 
 	switch(ele->style.layout.mode) {
-		case FH_LAYOUT_BLOCKS: ele_layout_blocks(ele); break;
+		case FH_LAYOUT_BLOCKS: fh_layout_blocks(ele); break;
 		default: break;
 	}
 }
@@ -377,38 +401,31 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 
 FH_API void fh_RenderElement(struct fh_element *ele)
 {
-	struct fh_rect rect;
+	struct fh_rect out;
 	struct fh_color col;
-
+		
 	if(!ele) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return;
 	}
 
-	rect.x = ele->shape.x;
-	rect.y = ele->shape.y;
-	rect.w = ele->shape.w;
-	rect.h = ele->shape.h;
+	/*
+	 * Return if the element is not visible.
+	 */
+	if(!ele->is_visible)
+		return;
+
+
+	fh_rect_cpy(&out, &ele->output_rect);
 
 	col = ele->style.infill.color;
 
-#if 1
-	printf("Render \"%s\":  shape=[%d, %d, %d, %d], color=#%08X\n",
-			ele->name,
-			rect.x,
-			rect.y,
-			rect.w,
-			rect.h,
-			fh_color_get(col));
-#endif
-
-
 	if(ele->type == FH_VIEW) {
 		col = fh_col_set(0, 0, 0, 0);
-		fh_FlatRectSet(ele->document->flat, &rect, col);
+		fh_FlatRectSet(ele->document->flat, &out, col);
 	}
 	else {
-		fh_FlatRect(ele->document->flat, &rect, col);
+		fh_FlatRect(ele->document->flat, &out, col);
 	}
 
 	/* If the element has a context, render that aswell */
@@ -429,39 +446,53 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 }
 
 
-FH_API struct fh_rect fh_GetElementBoundingShape(struct fh_element *ele)
+FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele)
 {
+	struct fh_rect r;
+
 	if(!ele) {
-		struct fh_rect rect;
-		fh_rect_rst(&rect);
-		return rect;
+		fh_rect_rst(&r);
+		return r;
 	}
 
-	return ele->bounding_shape;
+	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&r, &r, &ele->layout_offset);
+
+	return r;
 }
 
 
-FH_API struct fh_rect fh_GetElementShape(struct fh_element *ele)
+FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele)
 {
+	struct fh_rect r;
+
 	if(!ele) {
-		struct fh_rect rect;
-		fh_rect_rst(&rect);
-		return rect;
+		fh_rect_rst(&r);
+		return r;
 	}
 
-	return ele->shape;
+	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&r, &r, &ele->layout_offset);
+	fh_rect_add(&r, &r, &ele->style.element_delta);
+
+	return r;
 }
 
 
-FH_API struct fh_rect fh_GetElementInnerShape(struct fh_element *ele)
+FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele)
 {
+	struct fh_rect r;
+
 	if(!ele) {
-		struct fh_rect rect;
-		fh_rect_rst(&rect);
-		return rect;
+		fh_rect_rst(&r);
+		return r;
 	}
 
-	return ele->inner_shape;
+	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&r, &r, &ele->layout_offset);
+	fh_rect_add(&r, &r, &ele->style.content_delta);
+
+	return r;
 }
 
 

@@ -30,8 +30,6 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 
 	glGenTextures(1, &tex->texture);
 
-	printf("%d\n", tex->texture);
-
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
@@ -278,8 +276,6 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return -1;
 	}
-
-	printf("Update Texture: %d, %d, %d, %d\n", x, y, w, h);
 
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 

@@ -31,7 +31,7 @@ FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
 
 FH_INTERN s8 widget_create_view(struct fh_widget *w, void *data)
 {
-	struct fh_rect rect = fh_GetElementShape(w->element);
+	struct fh_rect rect = fh_GetElementBox(w->element);
 	struct fh_view_list *lst;
 
 	fh_Ignore(data);
@@ -97,7 +97,7 @@ FH_INTERN void widget_update_image(struct fh_widget *w, void *data)
 
 FH_INTERN void widget_update_view(struct fh_widget *w, void *data)
 {
-	struct fh_rect rect = fh_GetElementShape(w->element);
+	struct fh_rect rect = fh_GetElementBox(w->element);
 
 	fh_Ignore(data);
 

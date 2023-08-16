@@ -90,9 +90,9 @@ struct fh_style {
 	/*
 	 * SHAPE
 	 */
-	struct fh_rect			bounding_shape;	
-	struct fh_rect			shape;		/* -Spacing */
-	struct fh_rect			inner_shape;	/* -Spacing, -Padding */
+	struct fh_rect			bounding_box;	
+	struct fh_rect			element_delta;	/* -Spacing */
+	struct fh_rect			content_delta;	/* -Spacing, -Padding */
 
 	/*
 	 * INFILL
@@ -120,6 +120,18 @@ struct fh_style_pass {
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
+
+
+/*
+ * Set a new reference.
+ * Note that after linking, the style will have to be processed.
+ *
+ * @style: Pointer to the style struct to link
+ * @ref: Pointer to the style struct to link to
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_style_link(struct fh_style *style, struct fh_style *ref);
 
 
 /*
