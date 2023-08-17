@@ -9,26 +9,6 @@
 #include <stdlib.h>
 
 
-/*
- * In case an element gets removed, move the other elements in the children list
- * to close up the empty slot. The given slot has to be NULL.
- *
- * @ele: Pointer to the parent element
- * @slot: The slot that became empty
- */
-FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
-{
-	s8 i;
-
-	for(i = slot + 1; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!ele->children[i])
-			return;
-
-		ele->children[i]->slot = i - 1;
-		ele->children[i-1] = ele->children[i];
-	}
-}
-
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -175,10 +155,11 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	ele->document = doc;
 	ele->body = NULL;
 	ele->parent = NULL;
+	ele->older_sibling = NULL;
+	ele->younger_sibling = NULL;
 	ele->slot = -1;
 	ele->children_num = 0;
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++)
-		ele->children[i] = NULL;
+	ele->firstborn = NULL;
 
 	/* Initialize the style structure */
 	if(fh_style_init(&ele->style, NULL) < 0) {
@@ -210,6 +191,8 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 		return;
 	}
 
+	printf("Destroy \"%s\"...\n", ele->name);
+
 	/* If the element has a widget attached to it, destroy that aswell */
 	if(ele->widget) {
 		fh_DestroyWidget(ele->widget);
@@ -221,36 +204,34 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 
 FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 {
-	s8 i;
+	struct fh_element *run;
 
 	if(!parent || !ele) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(parent->children_num + 1 > FH_ELEMENT_CHILDREN_LIM) {
-		ALARM(ALARM_ERR, "Can not add more children to parent element");
-		goto err_return;
+	if(!parent->firstborn) {
+		parent->firstborn = ele;
+	}
+	else {	
+		run = parent->firstborn;	
+		while(run->younger_sibling) {
+			run = run->younger_sibling;
+		}
+
+		run->younger_sibling = ele;
+		ele->older_sibling = run;
 	}
 
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(parent->children[i])
-			continue;
+	parent->children_num++;
+		
+	ele->parent = parent;
+	ele->body = parent->body;
+	ele->layer = parent->layer + 1;
 
-		parent->children[i] = ele;
-		parent->children_num++;
-
-		ele->parent = parent;
-		ele->slot = i;
-
-		ele->body = parent->body;
-		ele->layer = parent->layer + 1;
-
-		/* Link the stylesheet */
-		fh_style_link(&ele->style, &parent->style);
-
-		break;
-	}
+	/* Link the stylesheet */
+	fh_style_link(&ele->style, &parent->style);
 
 	return 0;
 
@@ -263,43 +244,41 @@ err_return:
 FH_API void fh_DetachElement(struct fh_element *ele)
 {
 	s8 i;
-	struct fh_element *parent;
+	struct fh_element *par;
 
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	if(!ele->parent) {
+	par = ele->parent;
+
+	if(!par) {
 		return;
 	}
 
 
-	parent = ele->parent;
+	if(!ele->older_sibling)
+		par->firstborn = ele->younger_sibling;
+	else
+		(ele->older_sibling)->younger_sibling = ele->younger_sibling;
 
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!parent->children[i])
-			continue;
+	if(ele->younger_sibling)
+		(ele->younger_sibling)->older_sibling = ele->older_sibling;
 
-		if(strcmp(parent->children[i]->name, ele->name) == 0) {
-			parent->children[i] = NULL;
-			parent->children_num--;
+	par->children_num--;
 
-			ele->parent = NULL;
-
-			/* Reorder elements */
-			ele_reorder_children(parent, i);
-
-			return;
-		}
-	}
+	ele->older_sibling = NULL;
+	ele->younger_sibling = NULL;
+	ele->parent = NULL;
 }
 
 
 FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 		s8 (*fnc)(struct fh_element *w, void *data), void *data)
 {
-	s8 i;
+	struct fh_element *run;
+	struct fh_element *next;
 
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
@@ -310,34 +289,36 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 	if(fnc(ele, data) == 1)
 		return;
 
-	/* Call this function on all children */
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!ele->children[i])
-			continue;
+	run = ele->firstborn;
+	while(run) {
+		next = run->younger_sibling;
 
-		fh_ApplyElementsDown(ele->children[i], fnc, data);
+		fh_ApplyElementsDown(run, fnc, data);
+
+		run = next;
 	}
-
-	return;
 }
 
 
 FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 		s8 (*fnc)(struct fh_element *w, void *data), void *data)
 {
-	s8 i;
+	struct fh_element *run;
+	struct fh_element *next;
 
 	if(!ele) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	/* Call this function on all children */
-	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
-		if(!ele->children[i])
-			continue;
+	
+	run = ele->firstborn;
+	while(run) {	
+		next = run->younger_sibling;
 
-		fh_ApplyElementsUp(ele->children[i], fnc, data);
+		fh_ApplyElementsUp(run, fnc, data);
+
+		run = next;
 	}
 
 	/* Then apply the callback function to this element */
@@ -357,8 +338,6 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 	/* First process the style for this element */
 	pass.document_shape = ele->document->shape_ref;
 	fh_style_process(&ele->style, &pass);
-
-	/* Then update the size and position according to the style */
 	
 
 	/* Then if the element has a widget, update that aswell */

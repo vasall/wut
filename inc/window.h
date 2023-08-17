@@ -38,13 +38,26 @@ struct fh_window {
 	struct fh_window *parent;
 
 	u8 children_num;
-	struct fh_window *children[FH_WIN_CHILDREN_LIM];
+	struct fh_window *firstborn;
+
+	struct fh_window *older_sibling;
+	struct fh_window *younger_sibling;
+
 
 	/* The document contained in this window */
 	struct fh_document *document;
 
 	/* The rendering context */
 	struct fh_context *context;
+};
+
+
+struct fh_win_selector {
+	s8 state;
+
+	s32 id;
+
+	struct fh_window *win;
 };
 
 

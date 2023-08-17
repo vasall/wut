@@ -15,10 +15,10 @@
 
 FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 {
-	u8 i;
+	struct fh_element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
-	
+
 	s32 lim_y = 0;
 
 	s32 w;
@@ -29,11 +29,9 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 
 	struct fh_rect ref_r;
 
-	struct fh_element *run;
 
-	for(i = 0; i < ele->children_num; i++) {
-		run = ele->children[i];
-
+	run = ele->firstborn;
+	while(run) {
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
@@ -44,37 +42,37 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			/* Fit the shape and inner shape to the bounding shape */
 			fh_ele_adjust_shape(run);
+		}
+		else {
 
-			continue;
+			if(off_x + w > ref_r.w) {
+				off_y += lim_y;
+
+				if(content_width < off_x)
+					content_width = off_x;
+
+				if(content_height < off_y)
+					content_height = off_y;
+
+				off_x = 0;
+				lim_y = 0;
+			}
+
+			run->layout_offset.x = off_x;
+			run->layout_offset.y = off_y;
+
+			if(h > lim_y) {
+				lim_y = h;
+			}
+
+			/* Adjust the offset */
+			off_x += w;
+
+			fh_ele_adjust_shape(run);
 		}
 
-		if(off_x + w > ref_r.w) {
-			off_y += lim_y;
-
-			if(content_width < off_x)
-				content_width = off_x;
-
-			if(content_height < off_y)
-				content_height = off_y;
-
-			off_x = 0;
-			lim_y = 0;
-		}
-
-		run->layout_offset.x = off_x;
-		run->layout_offset.y = off_y;
-
-		if(h > lim_y) {
-			lim_y = h;
-		}
-
-		/* Adjust the offset */
-		off_x += w;
-
-		/* Fit the shape and inner shape to the bounding shape */
-		fh_ele_adjust_shape(run);
+		run = run->younger_sibling;
 	}
 
 	ele->content_size.x = content_width;
@@ -84,10 +82,10 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 
 FH_CROSS void fh_layout_rows(struct fh_element *ele)
 {
-	u8 i;
+	struct fh_element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
-	
+
 	s32 lim_y = 0;
 
 	s32 w;
@@ -96,11 +94,9 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct fh_element *run;
 
-	for(i = 0; i < ele->children_num; i++) {
-		run = ele->children[i];
-
+	run = ele->firstborn;
+	while(run) {
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
@@ -108,27 +104,26 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			/* Fit the shape and inner shape to the bounding shape */
 			fh_ele_adjust_shape(run);
+		}
+		else {
+			run->layout_offset.x = off_x;
+			run->layout_offset.y = off_y;
 
-			continue;
+			off_y += h;
+
+
+			content_height += h;
+			if(w > content_width) {
+				content_width = w;
+			}
+
+			fh_ele_adjust_shape(run);
 		}
 
-		run->layout_offset.x = off_x;
-		run->layout_offset.y = off_y;
-
-		off_y += h;
-
-
-		content_height += h;
-		if(w > content_width) {
-			content_width = w;
-		}
-
-		/* Fit the shape and inner shape to the bounding shape */
-		fh_ele_adjust_shape(run);
+		run = run->younger_sibling;
 	}
-	
+
 
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
@@ -137,10 +132,10 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 
 FH_CROSS void fh_layout_columns(struct fh_element *ele)
 {
-	u8 i;
+	struct fh_element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
-	
+
 	s32 lim_y = 0;
 
 	s32 w;
@@ -149,11 +144,8 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct fh_element *run;
-
-	for(i = 0; i < ele->children_num; i++) {
-		run = ele->children[i];
-
+	run = ele->firstborn;
+	while(run) {
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
@@ -161,26 +153,25 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			/* Fit the shape and inner shape to the bounding shape */
 			fh_ele_adjust_shape(run);
+		}
+		else {
+			run->layout_offset.x = off_x;
+			run->layout_offset.y = off_y;
 
-			continue;
+			off_x += w;
+
+			content_width += w;
+			if(h > content_height) {
+				content_height = h;
+			}
+
+			fh_ele_adjust_shape(run);
 		}
 
-		run->layout_offset.x = off_x;
-		run->layout_offset.y = off_y;
-
-		off_x += w;
-
-		content_width += w;
-		if(h > content_height) {
-			content_height = h;
-		}
-
-		/* Fit the shape and inner shape to the bounding shape */
-		fh_ele_adjust_shape(run);
+		run = run->younger_sibling;
 	}
-	
+
 
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;

@@ -14,7 +14,6 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 {
 	struct fh_window *win;
 	SDL_Window *hdl;
-	s8 i;
 	s8 name_len;
 
 	name_len = strlen(name);
@@ -44,8 +43,10 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 
 	win->parent = NULL;
 	win->children_num = 0;
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++)
-		win->children[i] = NULL;
+	win->firstborn = NULL;
+
+	win->older_sibling = NULL;
+	win->younger_sibling = NULL;
 
 
 	/* Create the rendering context used by the window */
@@ -79,6 +80,14 @@ err_return:
 
 FH_INTERN void win_destroy(struct fh_window *win)
 {
+	struct fh_window *mwin;
+
+	mwin = fh_core_get_main_window();
+	if(strcmp(mwin->name, win->name) == 0) {
+		fh_core_set_main_window(NULL);
+	}
+
+
 	fh_DestroyDocument(win->document);
 
 	fh_DestroyContext(win->context);
@@ -91,29 +100,33 @@ FH_INTERN void win_destroy(struct fh_window *win)
 
 FH_INTERN s8 win_attach(struct fh_window *par, struct fh_window *win)
 {
-	if(par->children_num + 1 > FH_WIN_CHILDREN_LIM) {
-		ALARM(ALARM_ERR, "Can not add more children to parent window");
-		goto err_return;
+	struct fh_window *run;
+
+	if(!par->firstborn) {
+		par->firstborn = win;
+	}
+	else {
+		run = par->firstborn;
+		while(run->younger_sibling) {
+			run = run->younger_sibling;
+		}
+		
+		run->younger_sibling = win;
+		win->older_sibling = run;
+
 	}
 
-	/* Add window to parent */
-	par->children[par->children_num] = win;
 	par->children_num++;
 
 	/* Set parent attribute of window */
 	win->parent = par;
 
 	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to attach window");
-	return -1;
 }
 
 
 FH_INTERN void win_detach(struct fh_window *win)
 {
-	s8 i;
 	struct fh_window *par;
 
 	if(!win->parent) {
@@ -122,17 +135,20 @@ FH_INTERN void win_detach(struct fh_window *win)
 
 	par = win->parent;
 
-	/* Go through all children windows to find the one */
-	for(i = 0; i < FH_WIN_CHILDREN_LIM; i++) {
-		/* ...and remove if found */
-		if(par->children[i]->id == win->id) {
-			par->children[i] = NULL;
-			par->children_num--;
-
-			win->parent = NULL;
-			return;
-		}
+	if(!win->older_sibling) {
+		par->firstborn = win->younger_sibling;
 	}
+	else
+		(win->older_sibling)->younger_sibling = win->younger_sibling;
+
+	if(win->younger_sibling)
+		(win->younger_sibling)->older_sibling = win->older_sibling;
+
+
+	win->parent = NULL;
+
+
+	par->children_num--;
 }
 
 
@@ -166,14 +182,6 @@ FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
 	return 0;
 }
 
-struct fh_win_selector {
-	s8 state;
-
-	s32 id;
-
-	struct fh_window *win;
-};
-
 
 FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 {
@@ -183,6 +191,10 @@ FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 	if(sel->state == 1) {
 		return 1;
 	}
+	
+	printf("win_id: %d\n", w->id);
+	printf("sel_id: %d\n", sel->id);
+
 
 	/* If the current window is a match, return it and stop the recursion */
 	if(w->id == sel->id) {
@@ -260,15 +272,17 @@ err_return:
 FH_API struct fh_window *fh_GetWindow(s32 wd)
 {
 	struct fh_win_selector sel;
-	struct fh_window *main;
+	struct fh_window *mwin;
+
+	printf("Search for %d\n", wd);
 
 	sel.state = 0;
 	sel.id = wd;
 	sel.win = NULL;
 
 	/* Recursifly search for the window... */
-	main = fh_core_get_main_window();
-	fh_ApplyWindowsDown(main, &win_find_window, &sel);
+	mwin = fh_core_get_main_window();
+	fh_ApplyWindowsDown(mwin, &win_find_window, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -355,35 +369,50 @@ FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 FH_API void fh_ApplyWindowsDown(struct fh_window *str,
 		s8 (*fnc)(struct fh_window *w, void *data), void *data)
 {
-	s8 i;
+	struct fh_window *run;
+	struct fh_window *next;
+
+	if(!str) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
 
 	/* Then apply the callback function to this window struct */
 	if(fnc(str, data) == 1)
 		return;
 
 	/* Call this function on all children */
-	for(i = FH_WIN_CHILDREN_LIM - 1; i >= 0; i--) {
-		if(!str->children[i])
-			continue;
+	run = str->firstborn;
+	while(run) {
+		next = run->younger_sibling;
 
-		fh_ApplyWindowsDown(str->children[i], fnc, data);
+		fh_ApplyWindowsDown(run, fnc, data);
+
+		run = next;
 	}
-
-	return;
 }
 
 
 FH_API void fh_ApplyWindowsUp(struct fh_window *str,
 		s8 (*fnc)(struct fh_window *w, void *data), void *data)
 {
-	s8 i;
+	struct fh_window *run;
+	struct fh_window *next;
+
+
+	if(!str) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
 
 	/* Call this function on all children */
-	for(i = FH_WIN_CHILDREN_LIM - 1; i >= 0; i--) {
-		if(!str->children[i])
-			continue;
+	run = str->firstborn;
+	while(run) {
+		next = run->younger_sibling;
 
-		fh_ApplyWindowsUp(str->children[i], fnc, data);
+		fh_ApplyWindowsUp(run, fnc, data);
+
+		run = next;
 	}
 
 	/* Then apply the callback function to this window struct */

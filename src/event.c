@@ -134,13 +134,11 @@ err_return:
 FH_API void fh_evt_process(void)
 {
 	struct fh_event evt;
+	s32 wd = 0;
 
 	fh_zeros(&evt, sizeof(struct fh_event));
 
 	while(SDL_PollEvent(&evt.event)) {	
-
-		/* Get a pointer to the window */
-		evt.window = fh_GetWindow(evt.event.window.windowID);
 
 
 		switch(evt.event.type) {
@@ -149,6 +147,10 @@ FH_API void fh_evt_process(void)
 				break;
 
 			case SDL_WINDOWEVENT:
+				/* Get a pointer to the window */	
+				evt.window =
+					fh_GetWindow(evt.event.window.windowID);
+
 				fh_evt_hdl_windowevent(evt);
 				break;
 		}

@@ -43,12 +43,16 @@ struct fh_element {
 	/* The parent element, this element is attached to */
 	struct fh_element *parent;
 
+	/* A pointer to the next child in the elements children list */
+	struct fh_element *older_sibling;
+	struct fh_element *younger_sibling;
+
 	/* The slot of the element in the parent children list */
 	s8 slot;
 
-	/* The children elements that are attached to this element */
+	/* The children that are attached to this element */
 	u8 children_num;
-	struct fh_element *children[FH_ELEMENT_CHILDREN_LIM];
+	struct fh_element *firstborn;
 
 	/* The type of element */
 	enum fh_element_type type;
