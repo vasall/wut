@@ -41,16 +41,19 @@ FH_INTERN void ele_reorder_children(struct fh_element *ele, s8 slot)
 
 FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele)
 {
-	fh_ele_calc_reloff(ele);
-	fh_ele_calc_absoff(ele);
+	fh_ele_calc_off(ele);
 
 	fh_ele_calc_render_rect(ele);
 }
 
 
-FH_CROSS void fh_ele_calc_reloff(struct fh_element *ele)
+FH_CROSS void fh_ele_calc_off(struct fh_element *ele)
 {
 	struct fh_element *par = ele->parent;
+
+
+	ele->relative_offset.x = 0;
+	ele->relative_offset.y = 0;
 
 	/*
 	 * If the element has a parent, calculate the offset from the upper-left
@@ -60,38 +63,24 @@ FH_CROSS void fh_ele_calc_reloff(struct fh_element *ele)
 	if(par) {
 		ele->relative_offset.x =
 			par->style.content_delta.x -
-			par->content_offset.x;
+			par->content_offset.x +
+			ele->layout_offset.x;
 		ele->relative_offset.y =
 			par->style.content_delta.y -
-			par->content_offset.y;
-
-		return;
+			par->content_offset.y +
+			ele->layout_offset.y;
 	}
 
-	/*
-	 * Otherwise just calculate the offset to the upper-left corner of the
-	 * window.
-	 */
-	ele->relative_offset.x = 0;
-	ele->relative_offset.y = 0;
-}
-
-
-FH_CROSS void fh_ele_calc_absoff(struct fh_element *ele)
-{
-	struct fh_element *par = ele->parent;
-
-	if(par) {
-		ele->absolute_offset.x = ele->relative_offset.x +
-			par->absolute_offset.x;
-		ele->absolute_offset.y = ele->relative_offset.y +
-			par->absolute_offset.y;
-
-		return;
-	}
 
 	ele->absolute_offset.x = ele->relative_offset.x;
 	ele->absolute_offset.y = ele->relative_offset.y;
+
+	if(par) {
+		ele->absolute_offset.x += 
+			par->absolute_offset.x;
+		ele->absolute_offset.y +=
+			par->absolute_offset.y;
+	}
 }
 
 
@@ -107,12 +96,6 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 	 * bounding box in the window.
 	 */
 	fh_rect_mov(&out, &ele->style.bounding_box, &ele->absolute_offset);
-
-	/*
-	 * Then position the element in the reference-area according to the
-	 * requested layout.
-	 */
-	fh_rect_mov(&out, &out, &ele->layout_offset);
 
 	/*
 	 * Finally convert from the bounding box to the element box.
@@ -328,7 +311,7 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 		return;
 
 	/* Call this function on all children */
-	for(i = FH_ELEMENT_CHILDREN_LIM - 1; i >= 0; i--) {
+	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
 		if(!ele->children[i])
 			continue;
 
@@ -350,7 +333,7 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 	}
 
 	/* Call this function on all children */
-	for(i = FH_ELEMENT_CHILDREN_LIM - 1; i >= 0; i--) {
+	for(i = 0; i < FH_ELEMENT_CHILDREN_LIM; i++) {
 		if(!ele->children[i])
 			continue;
 
@@ -393,7 +376,9 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 	}
 
 	switch(ele->style.layout.mode) {
-		case FH_LAYOUT_BLOCKS: fh_layout_blocks(ele); break;
+		case FH_LAYOUT_BLOCKS:	fh_layout_blocks(ele);	break;
+		case FH_LAYOUT_ROWS: 	fh_layout_rows(ele); 	break;
+		case FH_LAYOUT_COLUMNS: fh_layout_columns(ele); break;
 		default: break;
 	}
 }
@@ -456,7 +441,6 @@ FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele)
 	}
 
 	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
-	fh_rect_mov(&r, &r, &ele->layout_offset);
 
 	return r;
 }
@@ -472,7 +456,6 @@ FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele)
 	}
 
 	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
-	fh_rect_mov(&r, &r, &ele->layout_offset);
 	fh_rect_add(&r, &r, &ele->style.element_delta);
 
 	return r;
@@ -489,7 +472,6 @@ FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele)
 	}
 
 	fh_rect_mov(&r, &ele->style.bounding_box, &ele->absolute_offset);
-	fh_rect_mov(&r, &r, &ele->layout_offset);
 	fh_rect_add(&r, &r, &ele->style.content_delta);
 
 	return r;

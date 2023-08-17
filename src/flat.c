@@ -14,7 +14,7 @@ FH_INTERN void flat_mod(struct fh_flat *f, s32 x, s32 y,
 		return;
 	}
 
-	off = ((f->height - y) * f->width) + x;
+	off = ((f->height - 1 - y) * f->width) + x;
 
 	px = f->pixels[off];
 	swap = fh_BlendColor(px, col);
@@ -27,13 +27,15 @@ FH_INTERN void flat_set(struct fh_flat *f, s32 x, s32 y,
 		struct fh_color col)
 {
 	struct fh_color *px;
-
+	u32 off;
 
 	if(y > f->height) {
 		return;
 	}
 
-	px = &f->pixels[((f->height - y) * f->width) + x];
+	off = ((f->height - 1 - y) * f->width) + x;
+
+	px = &f->pixels[off];
 	*px = fh_col_invform(col);
 
 }

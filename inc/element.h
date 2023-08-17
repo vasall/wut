@@ -121,21 +121,13 @@ FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele);
  * Calculate the relative offset of this elements bounding box to its parents
  * bounding box. Or if there is no parent the offset from the upper-left corner
  * of the window to the bounding box of this element.
+ * Then extend it so that it contains the absolute offset from the windows
+ * upper-left corner to the upper-left corner of the element. This will
+ * also include the scrolling of all above elements plus layouting.
  *
  * @ele: Pointer to the element
  */
-FH_CROSS void fh_ele_calc_reloff(struct fh_element *ele);
-
-
-/*
- * This function will take the relative offset which should have been calculated
- * before and extends it so that it contains the absolute offset from the
- * windows upper-left corner to the upper-left corner of the element. This will
- * also include the scrolling of all above elements.
- *
- * @ele: Pointer to the element
- */
-FH_CROSS void fh_ele_calc_absoff(struct fh_element *ele);
+FH_CROSS void fh_ele_calc_off(struct fh_element *ele);
 
 
 /*

@@ -141,7 +141,7 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 		goto err_delete_context;
 
 
-	glClearColor(1, 1, 1, 1.0);
+	glClearColor(1, 0, 0, 1);
 	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
