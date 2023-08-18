@@ -277,6 +277,8 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		return -1;
 	}
 
+	printf("Update Texture: %d, %d, %d, %d\n", x, y, w, h);
+
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,

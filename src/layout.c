@@ -86,8 +86,6 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 	s32 off_x = 0;
 	s32 off_y = 0;
 
-	s32 lim_y = 0;
-
 	s32 w;
 	s32 h;
 
@@ -135,8 +133,6 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 	struct fh_element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
-
-	s32 lim_y = 0;
 
 	s32 w;
 	s32 h;

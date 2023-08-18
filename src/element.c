@@ -67,9 +67,7 @@ FH_CROSS void fh_ele_calc_off(struct fh_element *ele)
 FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 {
 	struct fh_rect out;
-	struct fh_rect in;
 	struct fh_rect dif;
-	s8 ret;
 
 	/*
 	 * First calculate the absolute position of the reference-area of the 
@@ -127,7 +125,6 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 {
 	struct fh_element *ele;
 	s8 name_len;
-	s8 i;
 
 	if(!name) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -191,8 +188,6 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 		return;
 	}
 
-	printf("Destroy \"%s\"...\n", ele->name);
-
 	/* If the element has a widget attached to it, destroy that aswell */
 	if(ele->widget) {
 		fh_DestroyWidget(ele->widget);
@@ -243,7 +238,6 @@ err_return:
 
 FH_API void fh_DetachElement(struct fh_element *ele)
 {
-	s8 i;
 	struct fh_element *par;
 
 	if(!ele) {

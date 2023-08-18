@@ -28,6 +28,9 @@ FH_INTERN void mdl_destroy(struct fh_model *mdl)
 	glDeleteBuffers(1, &mdl->bao);
 	glDeleteVertexArrays(1, &mdl->vao);
 
+	fh_free(mdl->vertex_buffer);
+	fh_free(mdl->index_buffer);
+
 	fh_free(mdl);
 
 }

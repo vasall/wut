@@ -72,8 +72,11 @@ FH_API void fh_tbl_destroy(struct fh_table *tbl)
 	if(!tbl)
 		return;
 
+	printf("Destroy table\n");
+
 	if(tbl->number < 1) {
 		fh_free(tbl);
+		printf("empty\n");
 		return;
 	}
 
@@ -126,6 +129,7 @@ FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr)
 	
 	if(tbl->rows[row] == NULL) {
 		tbl->rows[row] = ent;
+		tbl->number++;
 		return 0;
 	}
 	

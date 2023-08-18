@@ -191,10 +191,6 @@ FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 	if(sel->state == 1) {
 		return 1;
 	}
-	
-	printf("win_id: %d\n", w->id);
-	printf("sel_id: %d\n", sel->id);
-
 
 	/* If the current window is a match, return it and stop the recursion */
 	if(w->id == sel->id) {
@@ -273,8 +269,6 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 {
 	struct fh_win_selector sel;
 	struct fh_window *mwin;
-
-	printf("Search for %d\n", wd);
 
 	sel.state = 0;
 	sel.id = wd;

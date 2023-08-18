@@ -191,6 +191,8 @@ FH_API void fh_DestroyContext(struct fh_context *ctx)
 	fh_CloseFontTable(ctx);
 	fh_CloseTextureTable(ctx);
 	fh_CloseShaderTable(ctx);
+
+	fh_free(ctx);
 }
 
 

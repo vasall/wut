@@ -23,6 +23,13 @@ err_return:
 	return -1;
 }
 
+
+FH_INTERN void doc_destroy_flat(struct fh_document *doc)
+{
+	fh_DestroyFlat(doc->flat);
+}
+
+
 FH_INTERN s8 doc_create_ui(struct fh_document *doc)
 {
 	struct fh_model_c *c;
@@ -264,6 +271,10 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 {
 	if(!doc)
 		return;
+
+	/* Destroy the UI flat */
+	doc_destroy_flat(doc);
+	
 
 	/* If the document contains a body, recursivly remove it */
 	fh_RemoveElement(doc, doc->body);	

@@ -134,7 +134,6 @@ err_return:
 FH_API void fh_evt_process(void)
 {
 	struct fh_event evt;
-	s32 wd = 0;
 
 	fh_zeros(&evt, sizeof(struct fh_event));
 

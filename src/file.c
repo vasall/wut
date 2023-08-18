@@ -202,9 +202,6 @@ FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
 
 
 	size = surf->pitch * surf->h;
-
-	printf("Allocate %d bytes\n", size);
-
 	if(!(buf = fh_malloc(size))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for image");
 		goto err_free_surface;
