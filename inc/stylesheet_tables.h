@@ -129,8 +129,7 @@ static struct fh_stylesheet_kve fh_c_stylesheet_kv_row7[] = {
 	{"FH_SCROLLBAR_AUTO", 		FH_SCROLLBAR_AUTO},
 	{"FH_SCROLLBAR_NONE", 		FH_SCROLLBAR_NONE},
 	{"FH_SCROLLBAR_VERTICAL", 	FH_SCROLLBAR_VERTICAL},
-	{"FH_SCROLLBAR_HORIZONTAL", 	FH_SCROLLBAR_HORIZONTAL},
-	{"FH_SCROLLBAR_BOTH", 		FH_SCROLLBAR_BOTH}
+	{"FH_SCROLLBAR_HORIZONTAL", 	FH_SCROLLBAR_HORIZONTAL}
 };
 static struct fh_stylesheet_kv fh_c_stylesheet_kv[] = {
 	{fh_c_stylesheet_kv_row0, 2},
@@ -140,7 +139,7 @@ static struct fh_stylesheet_kv fh_c_stylesheet_kv[] = {
 	{fh_c_stylesheet_kv_row4, 3},
 	{fh_c_stylesheet_kv_row5, 3},
 	{fh_c_stylesheet_kv_row6, 4},
-	{fh_c_stylesheet_kv_row7, 5}
+	{fh_c_stylesheet_kv_row7, 4}
 };
 
 

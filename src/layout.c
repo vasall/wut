@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+#define FH_LAYOUT_DEBUG		0
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -27,33 +29,33 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct fh_rect ref_r;
+	struct fh_rect inner_rect;
+
+	fh_rect_add(&inner_rect, &ele->style.bounding_box,
+		&ele->style.content_delta);
 
 
+	/* Go through all children */
 	run = ele->firstborn;
 	while(run) {
+		/* Get the size of the current child */
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
-		fh_rect_add(&ref_r, &ele->style.bounding_box,
-				&ele->style.content_delta);
 
+		/* If the position is absolute, do nothing */
 		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
 			fh_ele_adjust_shape(run);
 		}
+		/* Otherwise... */
 		else {
-
-			if(off_x + w > ref_r.w) {
-				off_y += lim_y;
-
-				if(content_width < off_x)
-					content_width = off_x;
-
-				if(content_height < off_y)
-					content_height = off_y;
+			if(off_x + w > inner_rect.w) {
+				if(off_x != 0) {
+					off_y += lim_y;
+				}
 
 				off_x = 0;
 				lim_y = 0;
@@ -69,14 +71,31 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 			/* Adjust the offset */
 			off_x += w;
 
+			if(content_width < off_x)
+				content_width = off_x;
+
+			if(content_height < off_y)
+				content_height = off_y;
+
 			fh_ele_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
 	}
 
+	content_height += lim_y;
+
+#if FH_LAYOUT_DEBUG
+	printf("BLOCKS for \"%s\": w=%d, h=%d\n",
+			ele->name,
+			content_width,
+			content_height);
+#endif
+
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
+
+	fh_ele_hdl_scrollbar(ele);
 }
 
 
@@ -122,9 +141,17 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 		run = run->younger_sibling;
 	}
 
+#if FH_LAYOUT_DEBUG
+	printf("ROWS for \"%s\": w=%d, h=%d\n",
+			ele->name,
+			content_width,
+			content_height);
+#endif
 
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
+
+	fh_ele_hdl_scrollbar(ele);
 }
 
 
@@ -168,7 +195,15 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 		run = run->younger_sibling;
 	}
 
+#if FH_LAYOUT_DEBUG
+	printf("COLUMNS for \"%s\": w=%d, h=%d\n",
+			ele->name,
+			content_width,
+			content_height);
+#endif
 
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
+
+	fh_ele_hdl_scrollbar(ele);
 }

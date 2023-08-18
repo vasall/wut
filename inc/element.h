@@ -106,7 +106,16 @@ struct fh_element {
 	/* These properties are used for scrolling */
 	struct fh_sin2 	content_size;
 	struct fh_sin2	content_offset;
+
+	/* This flag indicates which scrollbars to render */
+	s32 scrollbar_flags;
 };
+
+/*
+ * The default callback function for all higher-level-function in relation with
+ * elements.
+ */
+typedef s8 (*fh_ele_cfnc)(struct fh_element *, void *);
 
 
 /*
@@ -141,6 +150,13 @@ FH_CROSS void fh_ele_calc_off(struct fh_element *ele);
  */
 FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele);
 
+
+/*
+ * This function will set the scrollbar flag.
+ *
+ * @ele: Pointer to the element
+ */
+FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -200,10 +216,11 @@ FH_API void fh_DetachElement(struct fh_element *ele);
  *
  * @ele: The starting element
  * @fnc: The function to apply to all elements
+ * @post: The post function to call after the children have been handled
  * @data: A datapointer to be passed to every function pass
  */
 FH_API void fh_ApplyElementsDown(struct fh_element *ele,
-		s8 (*fnc)(struct fh_element *w, void *data), void *data);
+		fh_ele_cfnc fnc, fh_ele_cfnc post, void *data);
 
 
 /*
@@ -214,7 +231,7 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
  * @data: A datapointer to tbe passed to every function pass
  */
 FH_API void fh_ApplyElementsUp(struct fh_element *ele,
-		s8 (*fnc)(struct fh_element *w, void *data), void *data);
+		fh_ele_cfnc fnc, void *data);
 
 
 /*

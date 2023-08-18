@@ -509,6 +509,25 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	out->layout.mode = style->sheet.layout_mode;
 
+	/*
+	 * SCROLLBAR
+	 */
+	out->scrollbar.flags = 0;
+
+	switch(style->sheet.scrollbar_mode) {
+		case FH_SCROLLBAR_AUTO:
+			out->scrollbar.flags |= FH_RESTYLE_SCROLL_V;
+			out->scrollbar.flags |= FH_RESTYLE_SCROLL_H;
+			break;
+		case FH_SCROLLBAR_NONE:
+			break;
+		case FH_SCROLLBAR_VERTICAL:
+			out->scrollbar.flags |= FH_RESTYLE_SCROLL_V;
+			break;
+		case FH_SCROLLBAR_HORIZONTAL:
+			out->scrollbar.flags |= FH_RESTYLE_SCROLL_H;
+			break;
+	}
 
 	return 0;
 }

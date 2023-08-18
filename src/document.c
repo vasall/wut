@@ -365,7 +365,7 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	sel.element = NULL;
 	
 	/* Recursivly search for the element in the document */
-	fh_ApplyElementsDown(doc->body, &doc_cfnc_find, &sel);
+	fh_ApplyElementsDown(doc->body, &doc_cfnc_find, NULL, &sel);
 
 	if(sel.state == 1) {
 		return sel.element;
@@ -386,7 +386,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	}
 
 	/* First update the style */
-	fh_ApplyElementsDown(ele, &doc_cfnc_update_style, NULL);
+	fh_ApplyElementsDown(ele, &doc_cfnc_update_style, NULL, NULL);
 
 	/* 
 	 * Then update the shape of the element. Note that this works in a very
@@ -398,10 +398,11 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	if(!ele->parent) {
 		fh_ele_calc_render_rect(ele);
 
-		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL);
+		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL, NULL);
 	}
 	else {
-		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL);
+		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL,
+				NULL);
 	}
 }
 
@@ -427,7 +428,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		return;
 	}
 
-	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL);
+	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL, NULL);
 
 	r = fh_GetBoundingBox(ele);
 	fh_UpdateFlat(doc->flat, &r);
@@ -475,5 +476,5 @@ FH_API void fh_ShowDocumentTree(struct fh_document *doc,
 	else
 		start = doc->body;
 
-	fh_ApplyElementsDown(start, &doc_cfnc_show, NULL);
+	fh_ApplyElementsDown(start, &doc_cfnc_show, NULL, NULL);
 }

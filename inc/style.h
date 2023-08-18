@@ -73,6 +73,15 @@ struct fh_restyle_layout {
 	u8				mode;
 };
 
+
+#define FH_RESTYLE_SCROLL_V	(1<<1)
+#define FH_RESTYLE_SCROLL_H	(1<<2)
+
+struct fh_restyle_scrollbar {
+	u8				flags;
+};
+
+
 struct fh_style {
 	struct fh_style			*ref;
 	struct fh_stylesheet		sheet;
@@ -103,6 +112,11 @@ struct fh_style {
 	 * LAYOUT
 	 */
 	struct fh_restyle_layout	layout;
+
+	/*
+	 * SCROLLBAR
+	 */
+	struct fh_restyle_scrollbar	scrollbar;
 };
 
 

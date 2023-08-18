@@ -112,6 +112,28 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 }
 
 
+FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele)
+{
+	u8 flag = 0;
+	struct fh_rect inner_rect;
+
+	inner_rect = fh_GetContentBox(ele); 
+
+	if(inner_rect.h < ele->content_size.y)
+		flag |= FH_RESTYLE_SCROLL_V;
+
+	if(inner_rect.w < ele->content_size.x)
+		flag |= FH_RESTYLE_SCROLL_H;
+
+	
+	ele->scrollbar_flags = flag & ele->style.scrollbar.flags;
+
+
+
+
+}
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -269,7 +291,7 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 
 
 FH_API void fh_ApplyElementsDown(struct fh_element *ele,
-		s8 (*fnc)(struct fh_element *w, void *data), void *data)
+		fh_ele_cfnc fnc, fh_ele_cfnc post, void *data)
 {
 	struct fh_element *run;
 	struct fh_element *next;
@@ -287,15 +309,18 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 	while(run) {
 		next = run->younger_sibling;
 
-		fh_ApplyElementsDown(run, fnc, data);
+		fh_ApplyElementsDown(run, fnc, post, data);
 
 		run = next;
 	}
+
+	if(post)
+		post(ele, data);
 }
 
 
 FH_API void fh_ApplyElementsUp(struct fh_element *ele,
-		s8 (*fnc)(struct fh_element *w, void *data), void *data)
+		fh_ele_cfnc fnc, void *data)
 {
 	struct fh_element *run;
 	struct fh_element *next;
