@@ -20,56 +20,17 @@ struct fh_event {
 	SDL_Event event;
 
 	struct fh_window *window;
+	struct fh_element *element;
 
 	u8 data[128];
+
+	u8 flags;
 };
 
 
 /* Typedefine the standard callback function for events */
 typedef void (*fh_event_fnc_t)(struct fh_event evt, void *data);
 
-
-
-struct fh_event_pipe {
-	s16 num;
-	s16 off;
-	struct fh_event evts[FH_EVT_PIPE_LIM];
-};
-
-
-/*
- * Directly append a predefined event to the end of the event pipe.
- *
- * @evt: The event to append
- *
- * Returns: Either the new length of the pipe or -1 if an error occurred
- */
-FH_API s8 fh_evt_pipe_append(struct fh_event evt);
-
-
-/*
- * Create and append a new event to the event pipe.
- *
- * @type: The type of the new event
- * @win: A pointer to the related window
- * @data: A pointer to a data buffer to copy in the event struct
- * @len: The length of the data buffer in bytes
- *
- * Returns: Either the new length of the pipe or -1 if an error occurred
- */
-FH_API s8 fh_evt_pipe_push(u8 type, struct fh_window *win,
-		void *data, u8 len);
-
-
-/*
- * Pull the oldest entry from the pipe and write it to the given pointer.
- *
- * @evt: A pointer to write the pulled event to
- *
- * Returns: Either 1 if an event has been pulled, 0 if the pipe is empty and -1
- *          if an error occurred
- */
-FH_API s8 fh_evt_pipe_pull(struct fh_event *evt);
 
 
 /*
@@ -128,16 +89,6 @@ FH_API void fh_evt_process(void);
  *
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
-
-/*
- * Pull the oldest event from the event pipe.
- *
- * @event: A pointer to write the pulled event to, if there is any
- *
- * Returns: 1 if an event has been returned, 0 if there are no more events and
- * 	    -1 if an error occurred
- */
-FH_API s8 fh_pull_event(struct fh_event *event);
 
 
 

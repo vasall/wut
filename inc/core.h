@@ -16,9 +16,6 @@ struct fh_core_container {
 	/* The main window and by that all windows attached to it */
 	struct fh_window *main_window;
 
-	/* The event pipe containing all unhandled events */
-	struct fh_event_pipe event_pipe;
-
 	/* 
 	 * If this var is set to 1, fh_update() will return 0, promting the
 	 * programm to exit.
@@ -96,5 +93,14 @@ FH_API void fh_core_set_active_window(struct fh_window *win);
  */
 FH_API struct fh_window *fh_core_get_active_window(void);
 
+
+/*
+ * Check if the given window is the active window.
+ *
+ * @win: Pointer to the window
+ *
+ * Returns: 1 if the given window is the active one and 0 if not
+ */
+FH_API s8 fh_core_is_active_window(struct fh_window *win);
 
 #endif /* _FH_CORE_H */

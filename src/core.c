@@ -58,6 +58,11 @@ FH_API struct fh_window *fh_core_get_main_window(void)
 
 FH_API void fh_core_set_active_window(struct fh_window *win)
 {
+	if(win)
+		printf("%s is not the active window\n", win->name);
+	else
+		printf("no more active window\n");
+
 	g_fh_core.active_window = win;
 }
 
@@ -65,4 +70,16 @@ FH_API void fh_core_set_active_window(struct fh_window *win)
 FH_API struct fh_window *fh_core_get_active_window(void)
 {
 	return g_fh_core.active_window;
+}
+
+
+FH_API s8 fh_core_is_active_window(struct fh_window *win)
+{
+	if(g_fh_core.active_window == NULL)
+		return 0;
+
+	if(strcmp(win->name, g_fh_core.active_window->name) == 0)
+		return 1;
+
+	return 0;
 }

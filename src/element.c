@@ -127,10 +127,80 @@ FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele)
 
 	
 	ele->scrollbar_flags = flag & ele->style.scrollbar.flags;
+}
 
 
+FH_API void fh_ele_render(struct fh_element *ele)
+{
+	struct fh_rect out;
+	struct fh_color col;
+		
+	if(!ele) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		return;
+	}
+
+	/*
+	 * Return if the element is not visible.
+	 */
+	if(!ele->is_visible)
+		return;
 
 
+	fh_rect_cpy(&out, &ele->output_rect);
+
+	col = ele->style.infill.color;
+
+	if(ele->type == FH_VIEW) {
+		col = fh_col_set(0, 0, 0, 0);
+		fh_FlatRectSet(ele->document->flat, &out, col);
+	}
+	else {
+		fh_FlatRect(ele->document->flat, &out, col);
+	}
+
+	/* If the element has a context, render that aswell */
+	if(ele->widget) {
+		fh_RenderWidget(ele->widget);
+	}
+}
+
+
+FH_CROSS void fh_ele_ren_scrollbar(struct fh_element *ele)
+{
+	s32 size;
+	s32 width = 5;
+	
+	f32 prop;
+
+	struct fh_color col;
+	struct fh_rect	elebox;
+	struct fh_sin2	ele_rect;
+	struct fh_rect out;
+
+	elebox = fh_GetElementBox(ele);
+
+	/* vertical */
+	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
+		prop = (f32)elebox.h / (f32)ele->content_size.y;
+		size = prop * elebox.h;
+
+		out.x = (elebox.x + elebox.w) - (width + 5);
+		out.y = elebox.y;
+		out.w = width;
+		out.h = size;
+
+		printf("Render scrollbar at: ");
+		fh_rect_dump(&out);
+		printf("\n");
+
+		col = fh_col_set(255, 0, 255, 255);
+		fh_FlatRectSet(ele->document->flat, &out, col);
+	}
+		
+
+
+	/* horizontal */
 }
 
 
@@ -341,7 +411,31 @@ FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 	}
 
 	/* Then apply the callback function to this element */
-	fnc(ele, data);
+	if(fnc(ele, data) == 1)
+		return;
+}
+
+
+FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
+		void *data)
+{
+	struct fh_element *run;
+	struct fh_element *next;
+
+	if(!ele) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	run = ele;
+	while(run) {
+		next = run->parent;
+
+		if(fnc(ele, data) == 1)
+			return;
+
+		run = next;
+	}
 }
 
 
@@ -378,42 +472,6 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 		case FH_LAYOUT_ROWS: 	fh_layout_rows(ele); 	break;
 		case FH_LAYOUT_COLUMNS: fh_layout_columns(ele); break;
 		default: break;
-	}
-}
-
-
-FH_API void fh_RenderElement(struct fh_element *ele)
-{
-	struct fh_rect out;
-	struct fh_color col;
-		
-	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return;
-	}
-
-	/*
-	 * Return if the element is not visible.
-	 */
-	if(!ele->is_visible)
-		return;
-
-
-	fh_rect_cpy(&out, &ele->output_rect);
-
-	col = ele->style.infill.color;
-
-	if(ele->type == FH_VIEW) {
-		col = fh_col_set(0, 0, 0, 0);
-		fh_FlatRectSet(ele->document->flat, &out, col);
-	}
-	else {
-		fh_FlatRect(ele->document->flat, &out, col);
-	}
-
-	/* If the element has a context, render that aswell */
-	if(ele->widget) {
-		fh_RenderWidget(ele->widget);
 	}
 }
 

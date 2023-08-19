@@ -42,6 +42,7 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	win->handle = hdl; 
 
 	win->parent = NULL;
+	win->level = 0;
 	win->children_num = 0;
 	win->firstborn = NULL;
 
@@ -120,7 +121,8 @@ FH_INTERN s8 win_attach(struct fh_window *par, struct fh_window *win)
 
 	/* Set parent attribute of window */
 	win->parent = par;
-
+	win->level = par->level + 1;
+		
 	return 0;
 }
 
@@ -152,23 +154,29 @@ FH_INTERN void win_detach(struct fh_window *win)
 }
 
 
-FH_INTERN s8 win_close_windows(struct fh_window *w, void *data)
+FH_INTERN s8 win_cfnc_close(struct fh_window *w, void *data)
 {
-	/* SILENCE COMPILER */
-	if(data) {}
+	fh_Ignore(data);
 
 	/* First detach the window... */
 	win_detach(w);
 
-	/* ...then destroy it */
+	/* Then check if this window is the active one */
+	if(fh_core_is_active_window(w))
+		fh_core_set_active_window(NULL);
+
+	/* ...finally destroy it */
 	win_destroy(w);
 
 	return 0;
 }
 
-FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
+FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 {
 	fh_Ignore(data);
+
+	/* Select the current context */
+	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);	
 
 	/* Clear the window */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -183,7 +191,7 @@ FH_INTERN s8 win_redraw(struct fh_window *win, void *data)
 }
 
 
-FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
+FH_INTERN s8 win_cfnc_find(struct fh_window *w, void *data)
 {
 	struct fh_win_selector *sel = (struct fh_win_selector *)data;
 
@@ -201,8 +209,25 @@ FH_INTERN s8 win_find_window(struct fh_window *w, void *data)
 	}
 
 	return 0;
-
 }
+
+
+FH_INTERN s8 win_cfnc_show(struct fh_window *w, void *data)
+{
+	s32 i;
+
+	fh_Ignore(data);
+
+	for(i = 0; i < w->level; i++)
+		printf("  ");
+
+	printf("%s", w->name);
+
+	printf("\n");
+
+	return 0;
+}
+
 
 
 /*
@@ -256,7 +281,7 @@ FH_API void fh_CloseWindow(struct fh_window *win)
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	fh_ApplyWindowsUp(win, &win_close_windows, NULL);
+	fh_ApplyWindowsUp(win, &win_cfnc_close, NULL);
 
 	return;
 
@@ -276,7 +301,7 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 
 	/* Recursifly search for the window... */
 	mwin = fh_core_get_main_window();
-	fh_ApplyWindowsDown(mwin, &win_find_window, &sel);
+	fh_ApplyWindowsDown(mwin, &win_cfnc_find, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -324,7 +349,7 @@ FH_API void fh_RedrawWindow(struct fh_window *win)
 		return;
 	}
 
-	win_redraw(win, NULL);
+	win_cfnc_redraw(win, NULL);
 }
 
 
@@ -334,7 +359,7 @@ FH_API void fh_RedrawAllWindows(void)
 
 	/* Call the fh_win_redraw() function on all visible windows */
 	main = fh_core_get_main_window();
-	fh_ApplyWindowsDown(main, &win_redraw, NULL);
+	fh_ApplyWindowsDown(main, &win_cfnc_redraw, NULL);
 }
 
 
@@ -360,8 +385,7 @@ FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 }
 
 
-FH_API void fh_ApplyWindowsDown(struct fh_window *str,
-		s8 (*fnc)(struct fh_window *w, void *data), void *data)
+FH_API void fh_ApplyWindowsDown(struct fh_window *str, fh_win_cfnc fnc, void *data)
 {
 	struct fh_window *run;
 	struct fh_window *next;
@@ -387,8 +411,7 @@ FH_API void fh_ApplyWindowsDown(struct fh_window *str,
 }
 
 
-FH_API void fh_ApplyWindowsUp(struct fh_window *str,
-		s8 (*fnc)(struct fh_window *w, void *data), void *data)
+FH_API void fh_ApplyWindowsUp(struct fh_window *str, fh_win_cfnc fnc, void *data)
 {
 	struct fh_window *run;
 	struct fh_window *next;
@@ -412,6 +435,12 @@ FH_API void fh_ApplyWindowsUp(struct fh_window *str,
 	/* Then apply the callback function to this window struct */
 	if(fnc(str, data) == 1)
 		return;
+}
 
-	return;
+
+FH_API void fh_DumpWindowTree(void)
+{
+	struct fh_window *mwin = fh_core_get_main_window();
+
+	fh_ApplyWindowsDown(mwin, &win_cfnc_show, NULL);
 }

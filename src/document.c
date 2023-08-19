@@ -123,6 +123,29 @@ FH_INTERN s8 doc_cfnc_find(struct fh_element *ele, void *data)
 	return 0;
 }
 
+FH_INTERN s8 doc_cfnc_findpos(struct fh_element *ele, void *data)
+{
+	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
+	struct fh_rect rect;
+
+
+	if(sel->state == 1)
+		return 1;
+
+	rect = fh_GetElementBox(ele);
+
+	if(sel->pos->x < rect.x || sel->pos->x > (rect.x + rect.w))
+		return 0;
+
+	if(sel->pos->y < rect.y || sel->pos->y > (rect.y + rect.h))
+		return 0;
+
+	sel->element = ele;
+	sel->state = 1;
+
+	return 1;
+}
+
 
 FH_INTERN s8 doc_cfnc_update_style(struct fh_element *ele, void *data)
 {
@@ -148,7 +171,17 @@ FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
-	fh_RenderElement(ele);
+	fh_ele_render(ele);
+
+	return 0;
+}
+
+
+FH_INTERN s8 doc_cfnc_render_ui_post(struct fh_element *ele, void *data)
+{
+	fh_Ignore(data);
+
+	fh_ele_ren_scrollbar(ele);
 
 	return 0;
 }
@@ -228,6 +261,9 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->body->body = doc->body;
 	doc->body->parent = NULL;
 	doc->body->layer = 0;
+
+	doc->selected	= NULL;
+	doc->hovered	= NULL;
 
 	/* Create the flat */
 	if(doc_create_flat(doc) < 0)
@@ -377,6 +413,34 @@ err_return:
 }
 
 
+FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
+		struct fh_sin2 *pos)
+{
+	struct fh_ele_selector sel;
+
+	if(!doc) {
+		ALARM(ALARM_ERR, "Input parameters invalid");
+		goto err_return;
+	}
+
+	sel.state = 0;
+	sel.pos = pos;
+	sel.element = NULL;
+
+	fh_ApplyElementsUp(doc->body, &doc_cfnc_findpos, &sel);
+
+	if(sel.state == 1) {
+		return sel.element;
+	}
+
+	return NULL;
+
+err_return:
+	ALARM(ALARM_ERR, "Failed to get hovered element");
+	return NULL;
+}
+
+
 FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
@@ -428,7 +492,10 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		return;
 	}
 
-	fh_ApplyElementsDown(ele, &doc_cfnc_render_ui, NULL, NULL);
+	fh_ApplyElementsDown(ele, 
+			&doc_cfnc_render_ui, 
+			&doc_cfnc_render_ui_post,
+			NULL);
 
 	r = fh_GetBoundingBox(ele);
 	fh_UpdateFlat(doc->flat, &r);

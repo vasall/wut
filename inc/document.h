@@ -13,24 +13,29 @@
 
 struct fh_document {
 	/* A pointer to the window this document belongs to */
-	struct fh_window *window;
+	struct fh_window 	*window;
 
 	/* A pointer to the context */
-	struct fh_context *context;
+	struct fh_context 	*context;
 
 	/* The body element, to which all future elements will be attached */
-	struct fh_element *body;
+	struct fh_element 	*body;
+
+
+	struct fh_element	*selected;
+	struct fh_element	*hovered;
+	
 
 	/* A reference to the window size */
-	struct fh_rect *shape_ref;
+	struct fh_rect 		*shape_ref;
 
 	/* The flat surface used for rendering */
-	struct fh_flat *flat;
+	struct fh_flat 		*flat;
 
-	struct fh_model *ui;
+	struct fh_model 	*ui;
 
 	/* A list of all views */
-	struct fh_view_list *views;
+	struct fh_view_list 	*views;
 
 #if 0
 	/* A list of all canvas widgets */
@@ -41,6 +46,7 @@ struct fh_document {
 struct fh_ele_selector {
 	s8 state;
 	char *name;
+	struct fh_sin2 *pos;
 	struct fh_element *element;
 };
 
@@ -112,9 +118,23 @@ FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele);
  * @doc: Pointer to the document
  * @name: The name of the element to look for
  *
- * Returns: Either a pointer to the element or NULL if an error occurred
+ * Returns: Either a pointer to the element or NULL if an error occurred or no
+ * 	    element could be found
  */
 FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name);
+
+
+/*
+ * Get the most relevant element at the given position.
+ *
+ * @doc: Pointer to the document
+ * @pos: The position to look at
+ *
+ * Returns: Either a pointer to the most relevant element or NULL if an error
+ * 	    occurred or no element could be found
+ */
+FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
+		struct fh_sin2 *pos);
 
 
 /*

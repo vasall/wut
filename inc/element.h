@@ -158,6 +158,24 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele);
  */
 FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele);
 
+
+/*
+ * Render an element onto a flat struct using the given renderer.
+ *
+ * @ele: Pointer to the element
+ */
+FH_API void fh_ele_render(struct fh_element *ele);
+
+
+/*
+ * Render the scrollbar of the element. This feature is configure through the
+ * scrollbar-setting in the stylesheet.
+ *
+ * @ele: Pointer to the element
+ */
+FH_CROSS void fh_ele_ren_scrollbar(struct fh_element *ele);
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -210,7 +228,7 @@ FH_API void fh_DetachElement(struct fh_element *ele);
 
 
 /*
- * Apply a function recursivly downwards starting from <ele>.
+ * Apply a function recursivly downwards starting from the given element.
  *
  * Note that if the callback function returns 1, the recursion will stop.
  *
@@ -224,7 +242,7 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
 
 
 /*
- * Apply a function recursivly upwards starting from <ele>.
+ * Apply a function recursivly upwards for all children below the given element.
  *
  * @ele: The starting element
  * @fnc: The function to apply to all elements
@@ -232,6 +250,18 @@ FH_API void fh_ApplyElementsDown(struct fh_element *ele,
  */
 FH_API void fh_ApplyElementsUp(struct fh_element *ele,
 		fh_ele_cfnc fnc, void *data);
+
+
+/*
+ * Recursivly apply the given function to all elements upwards starting from the
+ * given one.
+ *
+ * @ele: Pointer to the starting element
+ * @fnc: The function to apply to the elements
+ * @void: A datapointer to be passed to every function pass
+ */
+FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
+		void *data);
 
 
 /*
@@ -249,14 +279,6 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele);
  * @ele: Pointer to the element
  */
 FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele);
-
-
-/*
- * Render an element onto a canvas using the given renderer.
- *
- * @ele: Pointer to the element
- */
-FH_API void fh_RenderElement(struct fh_element *ele);
 
 
 /*

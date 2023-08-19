@@ -36,6 +36,7 @@ struct fh_window {
 
 	/* References to both the parent and children windows */
 	struct fh_window *parent;
+	s32 level;
 
 	u8 children_num;
 	struct fh_window *firstborn;
@@ -50,6 +51,10 @@ struct fh_window {
 	/* The rendering context */
 	struct fh_context *context;
 };
+
+
+/* The default callback function higher-level-functions for windows */
+typedef s8 (*fh_win_cfnc)(struct fh_window *, void *);
 
 
 struct fh_win_selector {
@@ -71,8 +76,7 @@ struct fh_win_selector {
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-FH_API void fh_win_hlf_down(struct fh_window *str,
-		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
+FH_API void fh_win_hlf_down(struct fh_window *str, fh_win_cfnc fnc, void *data);
 
 
 /*
@@ -86,8 +90,7 @@ FH_API void fh_win_hlf_down(struct fh_window *str,
  * @cfnc: The callback-function to execute to all window structs
  * @data: A data pointer which will be passed to every function call
  */
-FH_API void fh_win_hlf_up(struct fh_window *str,
-		s8 (*cfnc)(struct fh_window *w, void *data), void *data);
+FH_API void fh_win_hlf_up(struct fh_window *str, fh_win_cfnc fnc, void *data);
 
 
 /*
@@ -229,5 +232,12 @@ FH_API void fh_ApplyWindowsDown(struct fh_window *str,
  */
 FH_API void fh_ApplyWindowsUp(struct fh_window *str,
 		s8 (*fnc)(struct fh_window *w, void *data), void *data);
+
+
+/*
+ * Show all windows in the console.
+ */
+FH_API void fh_DumpWindowTree(void);
+
 
 #endif /* _FH_WINDOW_H */
