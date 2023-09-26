@@ -1,290 +1,11 @@
 #include "style.h"
 
 #include "system.h"
-#include "stylesheet_tables.h"
-
-#include <stdlib.h>
+#include "parser.h"
+#include "style_utils.h"
 
 
 #define STYLE_DEBUG 0
-
-
-FH_INTERN char *style_parse(char *in, char *attr, char *val)
-{
-	char *runner;
-	char c;
-
-	char *ptr;
-
-	if(!in)
-		return NULL;
-
-	runner = in;
-	ptr = attr;
-
-	while((c = *(runner++)) != ':') {
-		/* ERROR */
-		if(c == 0)
-			return NULL;
-	
-		/* SKIP */
-		if(c == ' ' || c == '\n')
-			continue;
-			
-		*(ptr++) = c;
-	}
-	*(ptr) = 0;
-
-	ptr = val;
-
-	while((c = *(runner++)) != ';') {
-		/* ERROR */
-		if(c == 0) {
-			return NULL;
-		}
-
-		/* SKIP */
-		if(c == ' ' || c == '\n')
-			continue;
-
-		*(ptr++) = c; 
-	}
-	*(ptr) = 0;
-
-	return runner;	
-}
-
-
-FH_INTERN u8 style_hash(char *in)
-{
-	u64 hash = 5381;
-	s32 c;
-
-	while ((c = *in++))
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-	return hash % 0xff;	
-}
-
-
-FH_INTERN s8 style_find(char *attrib, u8 *off, u8 *size, u8 *input, u8 *cat)
-{
-	u8 hash = style_hash(attrib);
-	u16 row = hash % 8;
-	u8 i;
-
-	for(i = 0; i < fh_c_stylesheet_hm[row].number; i++) {
-		if(fh_c_stylesheet_hm[row].entries[i].hash == hash) {
-			*off = fh_c_stylesheet_hm[row].entries[i].offset;
-			*size = fh_c_stylesheet_hm[row].entries[i].size;
-			*input = fh_c_stylesheet_hm[row].entries[i].input;
-			*cat = fh_c_stylesheet_hm[row].entries[i].category;
-			return 0;
-		}
-	}
-
-	return -1;
-}
-
-
-FH_INTERN s8 style_parse_dec(char *in, u8 cat, u8 *out)
-{
-	s32 i;
-	char c;
-	s32 len = 0;
-	char *start = NULL;
-	u8 off;
-	s32 del;
-
-	*out = 0;
-
-	fh_Ignore(cat);
-
-	/* Find the beginning of the integer */
-	while((c = *in)) {
-		if(c >= 0x30 && c <= 0x39) {
-			start = in;
-			break;
-		}
-		in++;
-	}
-	if(!start) return -1;
-
-	while((c = *(in++))) {
-		if(!(c >= 0x30 && c <= 0x39)) {
-			break;
-		}
-		len++;
-	}
-
-	off = 1;
-	for(i = 1; i <= len; i++) {
-		del = (start[len-i]-0x30)*off;
-
-		*out += del;
-		off *= 10;
-	}
-
-	return 0;
-}
-
-
-FH_INTERN s8 style_parse_pct(char *in, u8 cat, u8 *out)
-{
-	s32 i;
-	char c;
-	s32 len = 0;
-	char *start = NULL;
-	f32 off;
-	f32 del;
-	f32 *out_ptr = (f32 *)out;
-
-	fh_Ignore(cat);
-
-	*out_ptr = 0;
-
-	/* Find the beginning of the float */
-	while((c = *in)) {
-		if(c >= 0x30 && c <= 0x39) {
-			start = in;
-			break;
-		}
-		in++;
-	}
-	if(!start) return -1;
-
-	while((c = *(in++))) {
-		if(!(c >= 0x30 && c <= 0x39)) {
-			break;
-		}
-		len++;
-	}
-
-	/* Process the font */
-	off = 1;
-	for(i = 1; i <= len; i++) {
-		del = (start[len-i]-0x30)*off;
-
-		*out_ptr += del;
-		off *= 10;
-	}
-
-	if(c != '.') {
-		*out_ptr /= 100.0;
-		return 0;
-	}
-
-	len = 0;
-	start = in;
-
-	while((c = *(in++))) {
-		if(!(c >= 0x30 && c <= 0x39)) {
-			break;
-		}
-		len++;
-	}
-
-	/* Process the exponent */
-	off = 10;
-	for(i = 0; i < len; i++) {
-		del = ((f32)(start[i]-0x30))/off;
-
-		*out_ptr += del;
-		off *= 10;
-	}
-
-	*out_ptr /= 100.0;
-
-	return 0;
-	
-}
-
-
-FH_INTERN s8 style_check_hex(char c)
-{
-	/* NUMBERS */
-	if(c >= 0x30 && c <= 0x39)
-		return 1;
-
-	/* BIG CHARACTERS */
-	if(c >= 0x41 && c <= 0x46)
-		return 1;
-
-	/* SMALL CHARACTERS */
-	if(c >= 0x61 && c <= 0x66)
-		return 1;
-
-	return 0;
-}
-
-FH_INTERN u8 style_hex_to_int(char c)
-{
-	/* SMALL CHARACTERS */
-	if(c >= 0x61)
-		return (c - 0x61)+10;
-
-	/* BIG CHARACTERS */
-	if(c >= 0x41)
-		return (c - 0x41)+10;
-
-	/* NUMBERS */
-	return c - 0x30;
-	
-}
-
-FH_INTERN s8 style_parse_hex(char *in, u8 cat, u8 *out)
-{
-	s32 i;
-	char c;
-	char *start = NULL;
-	s32 off = 3;
-
-	fh_Ignore(cat);
-
-	*((u32 *)out) = 0x000000FF;
-
-	/* Find the beginning of the hex */
-	while((c = *in)) {
-		if(style_check_hex(c)) {
-			start = in;
-			break;
-		}
-		in++;
-	}
-	if(!start) return -1;
-
-	for(i = 0; i < 7; i += 2) {
-		if(!style_check_hex(start[i]))
-			return 0;
-
-		if(!style_check_hex(start[i+1]))
-			return -1;
-
-		out[off] = style_hex_to_int(start[i]) * 16;
-		out[off] += style_hex_to_int(start[i+1]);
-
-		off -= 1;
-	}
-
-	return 0;
-	
-}
-
-
-FH_INTERN s8 style_parse_opt(char *in, u8 cat, u8 *out)
-{
-	s8 i;
-
-	for(i = 0; i < fh_c_stylesheet_kv[cat].number;  i++) {
-		if(!strcmp(fh_c_stylesheet_kv[cat].entries[i].string, in)) {
-			*out = fh_c_stylesheet_kv[cat].entries[i].value;
-			return 0;
-		}
-	}
-	
-
-	return -1;
-}
 
 
 /*
@@ -295,7 +16,7 @@ FH_INTERN s8 style_parse_opt(char *in, u8 cat, u8 *out)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
+FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 {
 	if(!style) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -319,7 +40,7 @@ err_return:
 }
 
 
-FH_API s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
+FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
 {
 	style->ref = ref;
 
@@ -327,7 +48,7 @@ FH_API s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
 }
 
 
-FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
+FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 {
 	u32 uref;
 
@@ -346,18 +67,16 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	ref = style->ref;
 	out = style;
 
-#if STYLE_DEBUG
-	(ref) ? printf("Ref given\n") : printf("No ref\n");
-#endif
-
 	/*
 	 * DISPLAY
 	 */
+	
 	out->display.mode = style->sheet.display_mode;
 
 	/*
 	 * REFERENCE
 	 */
+
 	out->reference.mode = style->sheet.reference_mode;
 
 	
@@ -367,21 +86,17 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	/* height */
 
-	if(ref) {
+	if(ref)
 		ref_height = ref->bounding_box.h + ref->content_delta.h;
-	}
-	else {
+	else
 		ref_height = (u16)pass->document_shape->h;
-	}
 
 	/* width */
 
-	if(ref) {
+	if(ref)
 		ref_width = ref->bounding_box.w + ref->content_delta.w;
-	}
-	else {
+	else
 		ref_width = (u16)pass->document_shape->w;
-	}
 
 
 	/* 
@@ -393,10 +108,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	/* width */
 	width = ref_width * style->sheet.hsize;
-
-#if STYLE_DEBUG
-	printf("[SIZE] w=%d, h=%d\n", width, height);
-#endif
 
 	/*
 	 * SPACING
@@ -414,11 +125,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	spacing[3] = uref * style->sheet.spacing_left;
 	spacing[1] = uref * style->sheet.spacing_right;
 
-#if STYLE_DEBUG
-	printf("[SPACING] top=%d, right=%d, bottom=%d, left=%d\n",
-			spacing[0], spacing[1], spacing[2], spacing[3]);
-#endif
-
 	/*
 	 * BOUNDING SHAPE
 	 */
@@ -431,12 +137,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->bounding_box.y = 0;
 	out->bounding_box.x = 0;
 
-#if STYLE_DEBUG
-	printf("[BOUNDING_SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->bounding_box.x, out->bounding_box.y, 
-			out->bounding_box.w, out->bounding_box.h);
-#endif
-
 	/*
 	 * SHAPE
 	 */
@@ -448,11 +148,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	/* position */
 	out->element_delta.y = spacing[0];
 	out->element_delta.x = spacing[3];
-
-#if STYLE_DEBUG
-	printf("[SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->element_delta.x, out->element_delta.y, out->element_delta.w, out->element_delta.h);
-#endif
 
 	/*
 	 * PADDING
@@ -470,11 +165,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	padding[3] = uref * style->sheet.padding_left;
 	padding[1] = uref * style->sheet.padding_right;
 
-#if STYLE_DEBUG
-	printf("[PADDING] top=%d, right=%d, bottom=%d, left=%d\n",
-			padding[0], padding[1], padding[2], padding[3]);
-#endif
-
 	/*
 	 * INNER SHAPE
 	 */
@@ -489,12 +179,6 @@ FH_API s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	/* position */
 	out->content_delta.y = out->element_delta.y + padding[0];
 	out->content_delta.x = out->element_delta.x + padding[3];
-
-#if STYLE_DEBUG
-	printf("[INNER_SHAPE] x=%d, y=%d, w=%d, h=%d\n",
-			out->content_delta.x, out->content_delta.y, 
-			out->content_delta.w, out->content_delta.h);
-#endif
 
 	/*
 	 * INFILL
@@ -604,12 +288,12 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	char attr[32];
 	char value[32];
 
-	u8 off;
-	u8 size;
-	u8 inp;
-	u8 ctg;
-
 	u8 out[4];
+
+	s8 r;
+
+	s8 idx;
+	struct fh_stylesheet_attribute ent;
 
 	if(!style || !in) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -621,13 +305,20 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	/*
 	 * Go through all stylesheet inputs.
 	 */
-	while((swap = style_parse(swap, attr, value))) {
+	while((swap = fh_parser_attribute(swap, attr, value))) {	
 		/*
-		 * Validate that the requested attribute exists.
-		 *
+		 * Get the index of the stylesheet attribute.
 		 */
-		if(style_find(attr, &off, &size, &inp, &ctg) < 0) {
+		if((idx = fh_style_utl_find(attr)) < 0) {
 			printf("Attribute \"%s\" not found\n", attr);
+			continue;
+		}
+
+		/*
+		 * Get the according entry from the stylesheet table.
+		 */
+		if(fh_style_utl_get(&ent, idx) < 0) {
+			printf("No entry in table for \"%s\"\n", attr);
 			continue;
 		}
 
@@ -635,35 +326,32 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 		 * Parse the given value to the contraints of the requested
 		 * attribute.
 		 */
-		switch(inp) {
+		r = 0;
+		switch(ent.input) {
 			case FH_STYLE_INPUT_DEC: 
-				if(style_parse_dec(value, ctg, out) < 0) {
-					ALARM(ALARM_ERR, "value not dec");
-					break;
-				}
+				r = fh_parser_decimal(value, ent.category, out);
 				break;
 			case FH_STYLE_INPUT_PCT: 
-				if(style_parse_pct(value, ctg, out) < 0) {
-					ALARM(ALARM_ERR, "value not flt");
-					break;
-				}
+				r = fh_parser_percent(value, ent.category, out);
 				break;
 			case FH_STYLE_INPUT_HEX:
-				if(style_parse_hex(value, ctg, out) < 0) {
-					ALARM(ALARM_ERR, "value not hex");
-					break;
-				}
+				r = fh_parser_hexcode(value, ent.category, out);
 				break;
 			case FH_STYLE_INPUT_OPT:
-				if(style_parse_opt(value, ctg, out) < 0) {
-					ALARM(ALARM_ERR, "value not opt");
-					break;
-				}
+				r = fh_parser_keyword(value, ent.category, out);
 				break;
 		}
 
+		/*
+		 * Check if the input value has been valid.
+		 */
+		if(r < 0) {
+			printf("Input type is invalid\n");
+			continue;
+		}
+
 		/* Finally write the new data to the stylesheet */
-		memcpy(((u8 *)&style->sheet) + off, out, size);
+		memcpy(((u8 *)&style->sheet) + ent.offset, out, ent.size);
 	}
 }
 

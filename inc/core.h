@@ -55,12 +55,6 @@ FH_API s8 fh_core_check_quit(void);
 
 
 /*
- * As the name suggests, this function will clear the event pipe.
- */
-FH_API void fh_core_clear_event_pipe(void);
-
-
-/*
  * Set the main window.
  *
  * @win: Pointer to the main window

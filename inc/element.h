@@ -6,10 +6,16 @@
 #include "datatype.h"
 #include "import.h"
 #include "style.h"
+#include "event_listener.h"
 
 
 #define FH_ELEMENT_NAME_LIM	126
 #define FH_ELEMENT_CHILDREN_LIM	126
+
+#define FH_ELEMENT_F_VISIBLE	(1<<0)
+#define FH_ELEMENT_F_HOVERED	(1<<1)
+#define FH_ELEMENT_F_SELECTED	(1<<2)
+
 
 
 enum fh_element_type {
@@ -90,10 +96,9 @@ struct fh_element {
 	struct fh_rect	input_rect;
 
 	/*
-	 * This flag indicated if the element is visible or not.
-	 * Will be used during rendering.
+	 * General info flags for this element.
 	 */
-	s8 is_visible;
+	u8 info_flags;
 
 	/*
 	 * And this is the output rectangle. It defines the absolute position
@@ -109,6 +114,9 @@ struct fh_element {
 
 	/* This flag indicates which scrollbars to render */
 	s32 scrollbar_flags;
+
+
+	struct fh_event_handler *event_handler;
 };
 
 /*
@@ -127,7 +135,7 @@ typedef s8 (*fh_ele_cfnc)(struct fh_element *, void *);
  */
 
 
-FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele);
+FH_XMOD void fh_element_adjust_shape(struct fh_element *ele);
 
 
 /*
@@ -140,7 +148,7 @@ FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_CROSS void fh_ele_calc_off(struct fh_element *ele);
+FH_XMOD void fh_element_calc_off(struct fh_element *ele);
 
 
 /*
@@ -148,7 +156,7 @@ FH_CROSS void fh_ele_calc_off(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele);
+FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele);
 
 
 /*
@@ -156,7 +164,7 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele);
+FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele);
 
 
 /*
@@ -164,7 +172,7 @@ FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_API void fh_ele_render(struct fh_element *ele);
+FH_API void fh_element_render(struct fh_element *ele);
 
 
 /*
@@ -173,7 +181,42 @@ FH_API void fh_ele_render(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_CROSS void fh_ele_ren_scrollbar(struct fh_element *ele);
+FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele);
+
+
+/*
+ * Check if the two element pointers point to the same element.
+ *
+ * @in1: First element pointer
+ * @in2: Second element pointer
+ *
+ * Returns: 1 if they are equal, 0 if not
+ */
+FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2);
+
+
+/*
+ * Recursivly apply the given functions to all elements in the element tree.
+ *
+ * @ele: The starting element/The current element
+ * @prefnc: The pre-function
+ * @postfnc: The post-function
+ * @data: A pointer which will be passed to every function call
+ *
+ * Returns: 1 to stop the recursion, 0 to continue
+ */
+FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
+		fh_ele_cfnc postfnc, void *data);
+
+
+/*
+ * Modify an info flag of an element.
+ *
+ * @ele: Pointer to the element
+ * @flag: The flag to modify
+ * @val: The new value of the flag
+ */
+FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val);
 
 
 /*
@@ -225,31 +268,6 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele);
  * if the element doesn't have a parent.
  */
 FH_API void fh_DetachElement(struct fh_element *ele);
-
-
-/*
- * Apply a function recursivly downwards starting from the given element.
- *
- * Note that if the callback function returns 1, the recursion will stop.
- *
- * @ele: The starting element
- * @fnc: The function to apply to all elements
- * @post: The post function to call after the children have been handled
- * @data: A datapointer to be passed to every function pass
- */
-FH_API void fh_ApplyElementsDown(struct fh_element *ele,
-		fh_ele_cfnc fnc, fh_ele_cfnc post, void *data);
-
-
-/*
- * Apply a function recursivly upwards for all children below the given element.
- *
- * @ele: The starting element
- * @fnc: The function to apply to all elements
- * @data: A datapointer to tbe passed to every function pass
- */
-FH_API void fh_ApplyElementsUp(struct fh_element *ele,
-		fh_ele_cfnc fnc, void *data);
 
 
 /*

@@ -18,7 +18,7 @@
  *
  * @ele: Pointer to the parent element
  */
-FH_CROSS void fh_layout_blocks(struct fh_element *ele);
+FH_XMOD void fh_layout_blocks(struct fh_element *ele);
 
 
 /*
@@ -27,7 +27,7 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele);
  *
  * @ele: Pointer to the parent element
  */
-FH_CROSS void fh_layout_rows(struct fh_element *ele);
+FH_XMOD void fh_layout_rows(struct fh_element *ele);
 
 
 /*
@@ -36,7 +36,7 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele);
  *
  * @ele: Pointer to the parent element
  */
-FH_CROSS void fh_layout_columns(struct fh_element *ele);
+FH_XMOD void fh_layout_columns(struct fh_element *ele);
 
 
 #endif /* _FH_LAYOUT_H */

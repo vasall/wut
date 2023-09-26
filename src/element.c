@@ -19,15 +19,15 @@
  */
 
 
-FH_CROSS void fh_ele_adjust_shape(struct fh_element *ele)
+FH_XMOD void fh_element_adjust_shape(struct fh_element *ele)
 {
-	fh_ele_calc_off(ele);
+	fh_element_calc_off(ele);
 
-	fh_ele_calc_render_rect(ele);
+	fh_element_calc_render_rect(ele);
 }
 
 
-FH_CROSS void fh_ele_calc_off(struct fh_element *ele)
+FH_XMOD void fh_element_calc_off(struct fh_element *ele)
 {
 	struct fh_element *par = ele->parent;
 
@@ -64,7 +64,7 @@ FH_CROSS void fh_ele_calc_off(struct fh_element *ele)
 }
 
 
-FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
+FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele)
 {
 	struct fh_rect out;
 	struct fh_rect dif;
@@ -88,7 +88,7 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 	if(ele->parent) {
 		if(!fh_rect_intersect(&dif, &out, &ele->parent->output_rect)) {
 			/* If the element is not inside the parent */
-			ele->is_visible = 0;
+			ele->info_flags &= ~FH_ELEMENT_F_VISIBLE;
 			return;
 		}
 	}
@@ -100,7 +100,7 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 	 */
 	if(!fh_rect_intersect(&dif, &dif, ele->document->shape_ref)) {
 		/* Element is not inside the window */
-		ele->is_visible = 0;
+		ele->info_flags &= ~FH_ELEMENT_F_VISIBLE;
 		return;
 	}
 
@@ -108,11 +108,11 @@ FH_CROSS void fh_ele_calc_render_rect(struct fh_element *ele)
 	 * Now we can copy the resulting rectangle to the element.
 	 */
 	fh_rect_cpy(&ele->output_rect, &dif);
-	ele->is_visible = 1;
+	ele->info_flags |= FH_ELEMENT_F_VISIBLE;
 }
 
 
-FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele)
+FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 {
 	u8 flag = 0;
 	struct fh_rect inner_rect;
@@ -130,7 +130,7 @@ FH_CROSS void fh_ele_hdl_scrollbar(struct fh_element *ele)
 }
 
 
-FH_API void fh_ele_render(struct fh_element *ele)
+FH_API void fh_element_render(struct fh_element *ele)
 {
 	struct fh_rect out;
 	struct fh_color col;
@@ -143,7 +143,7 @@ FH_API void fh_ele_render(struct fh_element *ele)
 	/*
 	 * Return if the element is not visible.
 	 */
-	if(!ele->is_visible)
+	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
 
@@ -166,7 +166,7 @@ FH_API void fh_ele_render(struct fh_element *ele)
 }
 
 
-FH_CROSS void fh_ele_ren_scrollbar(struct fh_element *ele)
+FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
 {
 	s32 size;
 	s32 width = 5;
@@ -201,6 +201,61 @@ FH_CROSS void fh_ele_ren_scrollbar(struct fh_element *ele)
 
 
 	/* horizontal */
+}
+
+
+FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2)
+{
+	if(in1 == in2)
+		return 1;
+
+	return 0;
+}
+
+
+
+FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
+		fh_ele_cfnc postfnc, void *data)
+{
+	struct fh_element *run;
+	struct fh_element *next;
+
+	if(!ele)
+		return 0;
+
+	if(prefnc) {
+		if(prefnc(ele, data))
+			return 1;
+	}
+
+
+	run = ele->firstborn;
+	while(run) {
+		next = run->younger_sibling;
+
+		if(fh_element_hlf(run, prefnc, postfnc, data))
+			return 1;
+
+		run = next;
+	}
+
+	if(postfnc) {
+		return postfnc(ele, data);
+	}
+
+	return 0;
+}
+
+
+FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val)
+{
+	if(!ele)
+		return;
+
+	if(val)
+		ele->info_flags &= ~flag;
+	else 
+		ele->info_flags |= flag;
 }
 
 
@@ -250,20 +305,27 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	ele->children_num = 0;
 	ele->firstborn = NULL;
 
+	/* Create the event handler */
+	if(!(ele->event_handler = fh_handler_create()))
+		goto err_free_ele;
+
 	/* Initialize the style structure */
 	if(fh_style_init(&ele->style, NULL) < 0) {
 		ALARM(ALARM_ERR, "Failed to initialize style for element");
-		goto err_free_ele;
+		goto err_destroy_handler;
 	}
 
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
 	if(fh_eletemp_load(ele, data) < 0) {
 		ALARM(ALARM_ERR, "Failed to load the template for the element");
-		goto err_free_ele;
+		goto err_destroy_handler;
 	}
 
 	return ele;
+
+err_destroy_handler:
+	fh_handler_destroy(ele->event_handler);
 
 err_free_ele:
 	fh_free(ele);
@@ -279,6 +341,8 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 	if(!ele) {
 		return;
 	}
+
+	fh_handler_destroy(ele->event_handler);
 
 	/* If the element has a widget attached to it, destroy that aswell */
 	if(ele->widget) {
@@ -357,62 +421,6 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 	ele->older_sibling = NULL;
 	ele->younger_sibling = NULL;
 	ele->parent = NULL;
-}
-
-
-FH_API void fh_ApplyElementsDown(struct fh_element *ele,
-		fh_ele_cfnc fnc, fh_ele_cfnc post, void *data)
-{
-	struct fh_element *run;
-	struct fh_element *next;
-
-	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	/* Then apply the callback function to this element */
-	if(fnc(ele, data) == 1)
-		return;
-
-	run = ele->firstborn;
-	while(run) {
-		next = run->younger_sibling;
-
-		fh_ApplyElementsDown(run, fnc, post, data);
-
-		run = next;
-	}
-
-	if(post)
-		post(ele, data);
-}
-
-
-FH_API void fh_ApplyElementsUp(struct fh_element *ele,
-		fh_ele_cfnc fnc, void *data)
-{
-	struct fh_element *run;
-	struct fh_element *next;
-
-	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
-		return;
-	}
-
-	
-	run = ele->firstborn;
-	while(run) {	
-		next = run->younger_sibling;
-
-		fh_ApplyElementsUp(run, fnc, data);
-
-		run = next;
-	}
-
-	/* Then apply the callback function to this element */
-	if(fnc(ele, data) == 1)
-		return;
 }
 
 

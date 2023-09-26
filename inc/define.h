@@ -4,6 +4,6 @@
 
 #define FH_API 			extern
 #define FH_INTERN		static
-#define FH_CROSS		extern
+#define FH_XMOD			extern
 
 #endif /* _FH_DEFINE_H */

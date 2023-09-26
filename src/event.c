@@ -7,148 +7,234 @@
 #include "document.h"
 
 
-FH_INTERN s8 evt_hdl_window(struct fh_event *evt)
+
+FH_INTERN s8 evt_is_mouse(u32 type)
 {
-	switch(evt->event.window.event) {
-		case SDL_WINDOWEVENT_CLOSE:
-			/* User requests to close window */
-
-			/* If this window is the main window */
-			if(evt->window->info & FH_WIN_INFO_MAIN) {
-				/* ...quit program */
-				fh_core_quit();
-			}
-			/* Otherwise if it's just a normal subwindow */
-			else {
-				/* ...close it */
-				fh_CloseWindow(evt->window);
-			}
-
-			return 1;
-
-		case SDL_WINDOWEVENT_ENTER:
-			/* Cursor enters window */
-
-			fh_core_set_active_window(evt->window);
-
-			return 1;
-
-		case SDL_WINDOWEVENT_LEAVE:
-			/* Cursor leaves window */
-
-			if(fh_core_is_active_window(evt->window))
-				fh_core_set_active_window(NULL);
-			
-			return 1;
-
-
-
-		case SDL_WINDOWEVENT_SHOWN: break;
-		case SDL_WINDOWEVENT_HIDDEN: break;
-		case SDL_WINDOWEVENT_EXPOSED: break;
-		case SDL_WINDOWEVENT_MOVED: break;
-		case SDL_WINDOWEVENT_RESIZED: break;
-		case SDL_WINDOWEVENT_SIZE_CHANGED: break;
-		case SDL_WINDOWEVENT_MINIMIZED: break;
-		case SDL_WINDOWEVENT_MAXIMIZED: break;
-		case SDL_WINDOWEVENT_RESTORED: break;
-		case SDL_WINDOWEVENT_FOCUS_GAINED: break;
-		case SDL_WINDOWEVENT_FOCUS_LOST: break;
-	}
-
+	if(type == SDL_MOUSEMOTION) 	return 1;
+	if(type == SDL_MOUSEBUTTONDOWN)	return 1;
+	if(type == SDL_MOUSEBUTTONUP)	return 1;
+	if(type == SDL_MOUSEWHEEL) 	return 1;
 	return 0;
 }
 
 
-FH_INTERN s8 evt_hdl_mousemotion(struct fh_event *evt)
+FH_INTERN void evt_get_position(u32 t, SDL_Event *raw, struct fh_sin2 *p)
 {
-	struct fh_sin2 pos;
+	switch(t) {
+		case SDL_MOUSEMOTION:
+			p->x = raw->motion.x;
+			p->y = raw->motion.y;
+			return;
+
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			p->x = raw->button.x;
+			p->y = raw->button.y;
+			return;
+
+		case SDL_MOUSEWHEEL:
+			p->x = raw->wheel.x;
+			p->y = raw->wheel.y;
+			return;
+
+		default:
+			p->x = 0;
+			p->y = 0;
+	}
+}
+
+
+FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
+{
+	u32 type = raw->type;
+	struct fh_window *win;
 	struct fh_element *ele;
+	struct fh_sin2 pos;
 
-	pos.x = evt->event.motion.x;
-	pos.y = evt->event.motion.y;
+	/*
+	 * First get the window.
+	 *
+	 * By default the active window should be used. But in certain cases
+	 * like if the user closes the program, the main window will be
+	 * selected.
+	 */
+	if(type == SDL_QUIT) {
+		win = fh_core_get_main_window();
+	}
+	else {
+		win = fh_GetWindow(raw->window.windowID);
+	}
 
-	ele = fh_GetHoveredElement(evt->window->document, &pos);
+	/*
+	 * Second get the element.
+	 *
+	 * Depending on the event type, a different element will be selected. In
+	 * case of a mouse input, the element the mouse is hovering over will be
+	 * selected. In case of a keyboard input, the selected element will the
+	 * used.
+	 */
+	if(evt_is_mouse(type)) {
+		evt_get_position(type, raw, &pos);
+		ele = fh_GetHoveredElement(win->document, &pos); 
+	}
+	else if(win) {
+		ele = win->selected;
+	}
+	else {
+		ele = NULL;
+	}
+	
 
+	/*
+	 * Attach the info to the context.
+	 */
+	ctx->window = win;
+	ctx->element = ele;
+}
+
+
+FH_INTERN void evt_translate_type(struct fh_event *evt)
+{
+	switch(evt->raw.type) {
+		case SDL_WINDOWEVENT_CLOSE:
+			evt->type = FH_EVT_WINDOWCLOSE;
+			return;
+
+		case SDL_WINDOWEVENT_ENTER:
+			evt->type = FH_EVT_WINDOWENTER;
+			return;
+
+		case SDL_WINDOWEVENT_LEAVE:
+			evt->type = FH_EVT_WINDOWLEAVE;
+			return;
+
+		case SDL_WINDOWEVENT_SHOWN:
+			evt->type = FH_EVT_WINDOWSHOWN;
+			return;
+
+		case SDL_WINDOWEVENT_HIDDEN:
+			evt->type = FH_EVT_WINDOWHIDDEN;
+			return;
+
+		case SDL_WINDOWEVENT_RESIZED:
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+			evt->type = FH_EVT_WINDOWRESIZED;
+			return;
+
+		case SDL_MOUSEMOTION:
+			evt->type = FH_EVT_MOUSEMOTION;
+			return;
+
+		case SDL_MOUSEBUTTONDOWN:
+			evt->type = FH_EVT_MOUSEBUTTONDOWN;
+			return;
+
+		case SDL_MOUSEBUTTONUP:
+			evt->type = FH_EVT_MOUSEBUTTONUP;
+			return;
+
+		case SDL_MOUSEWHEEL:
+			evt->type = FH_EVT_MOUSEWHEEL;
+			return;
+
+		case SDL_KEYDOWN:
+			evt->type = FH_EVT_KEYDOWN;
+			return;
+
+		case SDL_KEYUP:
+			evt->type = FH_EVT_KEYUP;
+			return;
+
+		default:
+			printf("Event type unknown\n");
+			return;
+	}
+}
+
+
+FH_INTERN struct fh_event_handler *evt_find_handler(struct fh_event *evt)
+{
+	if(evt->context.element) return evt->context.element->event_handler;
+	if(evt->context.window) return evt->context.window->event_handler;
+	return NULL;
+}
+
+
+FH_INTERN s8 evt_raise_context(struct fh_event *evt)
+{
+	if(!evt->context.element->parent)
+		return 0;
+
+	evt->context.element = evt->context.element->parent;
 	return 1;
 }
 
 
-FH_INTERN s8 evt_cfnc_scroll(struct fh_element *w, void *data)
+FH_INTERN s8 evt_rundow(struct fh_event_handler *hdl, struct fh_event *evt)
 {
-	struct fh_sin2 *del = (struct fh_sin2 *)data;
 	s8 ret = 0;
 
-	if(w->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
-		w->content_offset += del.x;
+	/*
+	 * Check if one of the custom event handler uses the event.
+	 */
+	if(fh_handler_rundow(hdl, evt))
 		ret = 1;
-	}
 
-	if(w->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
-		w->content_offset += del.x;
+	/*
+	 * If the user activated the PREVENT_DEFAULT flag, the code will skip
+	 * the next part.
+	 */
+	if(evt->flags & FH_EVT_F_PDEF)
+		return ret;
+
+	/*
+	 *  Apply the default handler onto the given event.
+	 */
+	if(fh_evtdef_rundown(evt))
 		ret = 1;
-	}
 
 	return ret;
 }
 
 
-FH_INTERN s8 evt_hdl_mousewheel(struct fh_event *evt)
-{
-	struct fh_sin2 del;
-
-	struct fh_sin2 pos;
-	struct fh_element *ele;
-
-	pos.x = evt->event.motion.x;
-	pos.y = evt->event.motion.y;
-
-	ele = fh_GetHoveredElement(evt->window->document, &pos);
-
-	del.x = evt->event.wheel.x;
-	del.y = evt->event.wheel.y;
-
-	fh_ApplyElementsRise()
-}
-
-
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- *				APPLICATION-INTERFACE
+ *				CROSS-MODULE-INTERFACE
  *
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
 
-FH_API void fh_evt_process(void)
+FH_XMOD void fh_event_update(void)
 {
 	struct fh_event evt;
-	s8 r;
 
 	fh_zeros(&evt, sizeof(struct fh_event));
 
-	while(SDL_PollEvent(&evt.event)) {	
-		if(evt.event.type != SDL_QUIT)
-			evt.window = fh_GetWindow(evt.event.window.windowID);
-		else
-			evt.window = NULL;
-
-		switch(evt.event.type) {
-			case SDL_QUIT:
-				fh_core_quit();
-				r = 1;
-				break;
-
-			case SDL_WINDOWEVENT: evt_hdl_window(&evt); break;
-			
-			case SDL_MOUSEMOTION: evt_hdl_mousemotion(&evt); break;
-			case SDL_MOUSEWHEEL: evt_hdl_mousewheel(&evt); break;
-
-			case SDL_KEYDOWN:
-				break;
+	while(SDL_PollEvent(&evt.raw)) {
+		if(evt.raw.type == SDL_QUIT) {
+			fh_core_quit();
+			return;
 		}
+			
+		/* 
+		 * First collect the relative context for this event like the
+		 * related window and element.
+		 */
+		evt_collect_info(&evt.raw, &evt.context);
+
+		/*
+		 * Second translate the SDL-event-type to a FH-event-type.
+		 */
+		evt_translate_type(&evt);
+
+		/*
+		 * Then trigger the enhanced event internally so it can be
+		 * handled.
+		 */
+		fh_event_trigger(&evt);
 
 	}
 
@@ -156,6 +242,48 @@ FH_API void fh_evt_process(void)
 }
 
 
+FH_XMOD void fh_event_trigger(struct fh_event *evt)
+{
+	struct fh_event_handler *hdl;
+
+	/*
+	 * First get the initial handler.
+	 */
+	if(!(hdl = evt_find_handler(evt)))
+		return;
+
+	/*
+	 * Then try handling the event.
+	 */
+	while(!evt_rundow(hdl, evt)) {
+		/*
+		 * If no element responds, raise to the next level.
+		 */
+		if(!evt_raise_context(evt))
+			return;
+
+		/*
+		 * Then get the current handler again.
+		 */
+		if(!(hdl = evt_find_handler(evt)))
+			return;
+	}
+}
+
+
+FH_XMOD void fh_event_trigger_raw(enum fh_event_type type,
+		struct fh_window *win, struct fh_element *ele)
+{
+	struct fh_event evt;
+
+	evt.type = type;
+	evt.context.window = win;
+	evt.context.element = ele;
+	evt.flags = 0;
+
+	fh_event_trigger(&evt);
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -164,3 +292,13 @@ FH_API void fh_evt_process(void)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
+
+FH_API void fh_PreventDefault(struct fh_event *evt)
+{
+	if(!evt) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	evt->flags |= FH_EVT_F_PDEF; 	
+}

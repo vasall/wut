@@ -1,14 +1,21 @@
 #ifndef _FH_WINDOW_H
 #define _FH_WINDOW_H
 
+struct fh_window;
+
 #include "stdinc.h"
 #include "context.h"
+#include "event.h"
+#include "event_listener.h"
 
 
 #define FH_WIN_NAME_LIM  	126
 #define FH_WIN_CHILDREN_LIM     6
 
 
+/*
+ * INFO-FLAGS
+ */
 #define FH_WIN_INFO_MAIN	(1<<0)
 #define FH_WIN_INFO_VISIBLE	(1<<1)
 
@@ -50,6 +57,12 @@ struct fh_window {
 
 	/* The rendering context */
 	struct fh_context *context;
+
+
+	struct fh_element *hovered;
+	struct fh_element *selected;
+
+	struct fh_event_handler *event_handler;
 };
 
 
@@ -67,30 +80,27 @@ struct fh_win_selector {
 
 
 /*
- * This function is a higher-level-function which will apply the cfnc-function to
- * all window structs starting from the str window downwards.
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- * Note that if the callback function returns 1, the recursion will stop.
+ *				CROSS-MODULE-INTERFACE
  *
- * @str: The active window struct, also the one at the top
- * @cfnc: The callback-function to execute to all window structs
- * @data: A data pointer which will be passed to every function call
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
-FH_API void fh_win_hlf_down(struct fh_window *str, fh_win_cfnc fnc, void *data);
 
 
 /*
  * This function is a higher-level-function which will apply the cfnc-function to
- * all window structs from the lowest child window struct below start, up to the
- * the str window struct itself.
+ * all window structs starting from the str window downwards.
  *
- * Note that if the callback function returns 1, the recursion will stop.
+ * Note that if the pre-function returns 1, the recursion will stop.
  *
  * @str: The active window struct, also the one at the top
- * @cfnc: The callback-function to execute to all window structs
+ * @pre_fnc: The pre-function
+ * @post_fnc: The post-function
  * @data: A data pointer which will be passed to every function call
  */
-FH_API void fh_win_hlf_up(struct fh_window *str, fh_win_cfnc fnc, void *data);
+FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
+		fh_win_cfnc post_fnc, void *data);
 
 
 /*
@@ -98,21 +108,37 @@ FH_API void fh_win_hlf_up(struct fh_window *str, fh_win_cfnc fnc, void *data);
  *
  * @win: Pointer to the window to redraw.
  */
-FH_API void fh_win_redraw(struct fh_window *win);
+FH_XMOD void fh_window_redraw(struct fh_window *win);
 
 
 /*
  * This function will call the fh_win_redraw() function on all visible windows.
  */
-FH_API void fh_win_redraw_all(void);
+FH_XMOD void fh_window_redraw_all(void);
 
 
 /*
- * Activate a window to enable rendering.
+ * Set a new element in the window as selected.
  *
- * @w: A pointer to the window
+ * @win: Pointer to the window
+ * @ele: Pointer to the element
+ *
+ * Returns: 1 if the element has been selected, 0 if nothing has been done
  */
-FH_API void fh_win_activate(struct fh_window *w);
+FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele);
+
+
+
+/*
+ * Set an element in the window as selected.
+ *
+ * @win: Pointer to the window
+ * @ele: Pointer to the element
+ *
+ * Returns: 1 if the element has been selected, 0 if nothing has been done
+ */
+FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele);
+
 
 
 /*
@@ -177,20 +203,6 @@ FH_API void fh_ActivateWindow(struct fh_window *win);
 
 
 /*
- * Update the pixels depending on the given inputs and changes.
- *
- * @win: Pointer to the window
- */
-FH_API void fh_RedrawWindow(struct fh_window *win);
-
-
-/*
- * Redraw all windows.
- */
-FH_API void fh_RedrawAllWindows(void);
-
-
-/*
  * Get the context of a window.
  *
  * @win: Pointer to the window
@@ -208,30 +220,6 @@ FH_API struct fh_context *fh_GetContext(struct fh_window *win);
  * Returns: A pointer to the document of a window
  */
 FH_API struct fh_document *fh_GetDocument(struct fh_window *win);
-
-
-/*
- * Apply a function downwards the window tree, starting from <str>.
- * If the callback function returns 1, the recursion will end.
- *
- * @str: Pointer to the starting window
- * @fnc: The function to apply
- * @[data]: Data to be passed to every function call
- */
-FH_API void fh_ApplyWindowsDown(struct fh_window *str,
-		s8 (*fnc)(struct fh_window *w, void *data), void *data);
-
-
-/*
- * Apply a function upwards the window tree, up to <str>.
- * If the callback function returns 1, the recursion will end.
- *
- * @str: Pointer to the window branch
- * @fnc: The function to apply
- * @[data]: Data to be passed to every function call
- */
-FH_API void fh_ApplyWindowsUp(struct fh_window *str,
-		s8 (*fnc)(struct fh_window *w, void *data), void *data);
 
 
 /*

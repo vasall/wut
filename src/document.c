@@ -128,11 +128,10 @@ FH_INTERN s8 doc_cfnc_findpos(struct fh_element *ele, void *data)
 	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
 	struct fh_rect rect;
 
+	rect = fh_GetElementBox(ele);
 
 	if(sel->state == 1)
 		return 1;
-
-	rect = fh_GetElementBox(ele);
 
 	if(sel->pos->x < rect.x || sel->pos->x > (rect.x + rect.w))
 		return 0;
@@ -171,7 +170,7 @@ FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
-	fh_ele_render(ele);
+	fh_element_render(ele);
 
 	return 0;
 }
@@ -181,7 +180,7 @@ FH_INTERN s8 doc_cfnc_render_ui_post(struct fh_element *ele, void *data)
 {
 	fh_Ignore(data);
 
-	fh_ele_ren_scrollbar(ele);
+	fh_element_ren_scrollbar(ele);
 
 	return 0;
 }
@@ -383,7 +382,7 @@ FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele)
 		return;
 	}
 
-	fh_ApplyElementsUp(ele, &doc_cfnc_remove, NULL);
+	fh_element_hlf(ele, &doc_cfnc_remove, NULL, NULL);
 }
 
 
@@ -401,7 +400,7 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	sel.element = NULL;
 	
 	/* Recursivly search for the element in the document */
-	fh_ApplyElementsDown(doc->body, &doc_cfnc_find, NULL, &sel);
+	fh_element_hlf(doc->body, NULL, &doc_cfnc_find, &sel);
 
 	if(sel.state == 1) {
 		return sel.element;
@@ -427,7 +426,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	sel.pos = pos;
 	sel.element = NULL;
 
-	fh_ApplyElementsUp(doc->body, &doc_cfnc_findpos, &sel);
+	fh_element_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
 
 	if(sel.state == 1) {
 		return sel.element;
@@ -450,7 +449,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	}
 
 	/* First update the style */
-	fh_ApplyElementsDown(ele, &doc_cfnc_update_style, NULL, NULL);
+	fh_element_hlf(ele, &doc_cfnc_update_style, NULL, NULL);
 
 	/* 
 	 * Then update the shape of the element. Note that this works in a very
@@ -460,13 +459,12 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * the wanted element.
 	 */
 	if(!ele->parent) {
-		fh_ele_calc_render_rect(ele);
+		fh_element_calc_render_rect(ele);
 
-		fh_ApplyElementsDown(ele, &doc_cfnc_update_shape, NULL, NULL);
+		fh_element_hlf(ele, &doc_cfnc_update_shape, NULL, NULL);
 	}
 	else {
-		fh_ApplyElementsDown(ele->parent, &doc_cfnc_update_shape, NULL,
-				NULL);
+		fh_element_hlf(ele->parent, &doc_cfnc_update_shape, NULL, NULL);
 	}
 }
 
@@ -492,9 +490,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		return;
 	}
 
-	fh_ApplyElementsDown(ele, 
-			&doc_cfnc_render_ui, 
-			&doc_cfnc_render_ui_post,
+	fh_element_hlf(ele, &doc_cfnc_render_ui, &doc_cfnc_render_ui_post,
 			NULL);
 
 	r = fh_GetBoundingBox(ele);
@@ -543,5 +539,5 @@ FH_API void fh_ShowDocumentTree(struct fh_document *doc,
 	else
 		start = doc->body;
 
-	fh_ApplyElementsDown(start, &doc_cfnc_show, NULL, NULL);
+	fh_element_hlf(start, &doc_cfnc_show, NULL, NULL);
 }

@@ -58,10 +58,10 @@ FH_API s8 fh_Update(void)
 	if(fh_core_check_quit())
 		return 0;
 
-	fh_evt_process();
+	fh_event_update();
 
 	/* Redraw all visible windows */
-	fh_RedrawAllWindows();
+	fh_window_redraw_all();
 
 	return 1;
 }

@@ -82,8 +82,8 @@ struct fh_stylesheet {
 	/* 	RADIUS					    		      */
 	u8	radius_top_left;	/* 0x25     5   50 	DECIMAL	      */
 	u8	radius_top_right;	/* 0xa6     6   51 	DECIMAL	      */
-	u8	radius_bottom_left;	/* 0x5f     7   52 	DECIMAL	      */
-	u8	radius_bottom_right;	/* 0x1e     6   53 	DECIMAL	      */
+	u8	radius_bottom_right;	/* 0x5f     7   52 	DECIMAL	      */
+	u8	radius_bottom_left;	/* 0x1e     6   53 	DECIMAL	      */
 
 	/* 	INFILL 					    		      */
 	u8	infill_mode;		/* 0x54     4   54 	OPT-STRING-5  */
@@ -98,5 +98,12 @@ struct fh_stylesheet {
 	u32	scrollbar_thumb_color;	/* 0x2e	    6   65	HEX-CODE      */
 } __attribute__((__packed__));
 
+
+struct fh_stylesheet_attribute {
+	u16 	offset;
+	u8 	size;
+	u8 	input;
+	u8 	category;
+};
 
 #endif /* _FH_STYLESHEET_H */

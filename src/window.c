@@ -49,6 +49,8 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	win->older_sibling = NULL;
 	win->younger_sibling = NULL;
 
+	win->hovered = NULL;
+	win->selected = NULL;
 
 	/* Create the rendering context used by the window */
 	if(!(win->context = fh_CreateContext(win))) {
@@ -62,7 +64,14 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 		goto err_destroy_ctx;
 	}
 
+	/* Create the event handler */
+	if(!(win->event_handler = fh_handler_create()))
+		goto err_destroy_document;
+
 	return win;
+
+err_destroy_document:
+	fh_DestroyDocument(win->document);
 
 err_destroy_ctx:
 	fh_DestroyContext(win->context);
@@ -88,6 +97,7 @@ FH_INTERN void win_destroy(struct fh_window *win)
 		fh_core_set_main_window(NULL);
 	}
 
+	fh_handler_destroy(win->event_handler);
 
 	fh_DestroyDocument(win->document);
 
@@ -229,6 +239,134 @@ FH_INTERN s8 win_cfnc_show(struct fh_window *w, void *data)
 }
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
+		fh_win_cfnc post_fnc, void *data)
+{
+	struct fh_window *run;
+	struct fh_window *next;
+
+	if(!str)
+		return;
+
+	if(pre_fnc) {
+		if(pre_fnc(str, data)) {
+			return;
+		}
+	}
+
+	/* Call this function on all children */
+	run = str->firstborn;
+	while(run) {
+		next = run->younger_sibling;
+
+		fh_window_hlf(run, pre_fnc, post_fnc, data);
+
+		run = next;
+	}
+
+	if(post_fnc) {
+		post_fnc(str, data);
+	}
+}
+
+
+FH_XMOD void fh_window_redraw(struct fh_window *win)
+{
+	win_cfnc_redraw(win, NULL);
+}
+
+
+FH_XMOD void fh_window_redraw_all(void)
+{
+	fh_window_hlf(fh_core_get_main_window(), &win_cfnc_redraw, NULL, NULL);
+}
+
+
+FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele)
+{
+	struct fh_element *old_hovered;
+
+	/*
+	 * Check if the hovered element has changed.
+	 */
+	if(!(fh_element_compare(win->hovered, ele))) {
+		old_hovered = win->hovered;
+
+		/* If that is the case, first modify the element flags */
+		fh_element_mod_info(win->hovered, FH_ELEMENT_F_HOVERED, 0);
+		fh_element_mod_info(ele, FH_ELEMENT_F_HOVERED, 1);
+
+		/* Then link the new element */
+		win->hovered = ele;
+
+		/* Lastly trigger the events */
+		if(old_hovered) {
+			fh_event_trigger_raw(
+					FH_EVT_ELEMENTLEAVE,
+					win,
+					old_hovered
+					);
+		}
+
+		fh_event_trigger_raw(
+				FH_EVT_ELEMENTENTER,
+				win,
+				ele
+				);
+
+		return 1;
+	}
+
+	return 0;
+}
+
+
+FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele)
+{
+	struct fh_element *old_selected;
+
+	/*
+	 * Check if the selected element has changed.
+	 */
+	if(!(fh_element_compare(win->selected, ele))) {
+		old_selected = win->selected;
+
+		/* If that is the case, first modify the element flags */
+		fh_element_mod_info(win->selected, FH_ELEMENT_F_SELECTED, 0);
+		fh_element_mod_info(ele, FH_ELEMENT_F_SELECTED, 1);
+
+		/* Then link the new element */
+		win->selected = ele;
+
+		/* Lastly trigger the events */
+		if(old_selected) {
+			fh_event_trigger_raw(
+					FH_EVT_ELEMENTUNSELECT,
+					win,
+					old_selected
+					);
+		}
+
+		fh_event_trigger_raw(
+				FH_EVT_ELEMENTSELECT,
+				win,
+				ele
+				);
+
+		return 1;
+	}
+
+	return 0;
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -281,7 +419,7 @@ FH_API void fh_CloseWindow(struct fh_window *win)
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	fh_ApplyWindowsUp(win, &win_cfnc_close, NULL);
+	fh_window_hlf(win, NULL, &win_cfnc_close, NULL);
 
 	return;
 
@@ -301,7 +439,7 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 
 	/* Recursifly search for the window... */
 	mwin = fh_core_get_main_window();
-	fh_ApplyWindowsDown(mwin, &win_cfnc_find, &sel);
+	fh_window_hlf(mwin, &win_cfnc_find, NULL, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -342,27 +480,6 @@ FH_API void fh_ActivateWindow(struct fh_window *win)
 }
 
 
-FH_API void fh_RedrawWindow(struct fh_window *win)
-{
-	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return;
-	}
-
-	win_cfnc_redraw(win, NULL);
-}
-
-
-FH_API void fh_RedrawAllWindows(void)
-{
-	struct fh_window *main;
-
-	/* Call the fh_win_redraw() function on all visible windows */
-	main = fh_core_get_main_window();
-	fh_ApplyWindowsDown(main, &win_cfnc_redraw, NULL);
-}
-
-
 FH_API struct fh_context *fh_GetContext(struct fh_window *win)
 {
 	if(!win) {
@@ -385,62 +502,10 @@ FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 }
 
 
-FH_API void fh_ApplyWindowsDown(struct fh_window *str, fh_win_cfnc fnc, void *data)
-{
-	struct fh_window *run;
-	struct fh_window *next;
-
-	if(!str) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return;
-	}
-
-	/* Then apply the callback function to this window struct */
-	if(fnc(str, data) == 1)
-		return;
-
-	/* Call this function on all children */
-	run = str->firstborn;
-	while(run) {
-		next = run->younger_sibling;
-
-		fh_ApplyWindowsDown(run, fnc, data);
-
-		run = next;
-	}
-}
-
-
-FH_API void fh_ApplyWindowsUp(struct fh_window *str, fh_win_cfnc fnc, void *data)
-{
-	struct fh_window *run;
-	struct fh_window *next;
-
-
-	if(!str) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return;
-	}
-
-	/* Call this function on all children */
-	run = str->firstborn;
-	while(run) {
-		next = run->younger_sibling;
-
-		fh_ApplyWindowsUp(run, fnc, data);
-
-		run = next;
-	}
-
-	/* Then apply the callback function to this window struct */
-	if(fnc(str, data) == 1)
-		return;
-}
-
 
 FH_API void fh_DumpWindowTree(void)
 {
 	struct fh_window *mwin = fh_core_get_main_window();
 
-	fh_ApplyWindowsDown(mwin, &win_cfnc_show, NULL);
+	fh_window_hlf(mwin, &win_cfnc_show, NULL, NULL);
 }

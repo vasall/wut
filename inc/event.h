@@ -1,11 +1,20 @@
 #ifndef _FH_EVENT_H
 #define _FH_EVENT_H
 
+
 #include "define.h"
 #include "datatype.h"
 #include "import.h"
-#include "window.h"
 
+
+struct fh_event;
+
+/* The default event callback functions */
+typedef s8 (*fh_evt_cfnc)(struct fh_event *, void *);
+
+#include "window.h"
+#include "event_types.h"
+#include "event_listener.h"
 
 #define FH_EVT_PIPE_LIM	64
 
@@ -14,72 +23,69 @@
 #define FH_EVT_QUIT		1
 
 
+/*
+ * EVENT-FLAGS
+ */
+#define FH_EVT_F_PDEF		(1<<0)	/* Prevent-Default */
+
+
+
+
+struct fh_event_data {
+	u8			buffer[128];
+};
+
+struct fh_event_context {
+	struct fh_window 	*window;
+	struct fh_element 	*element;
+};
+
 struct fh_event {
-	u8 type;
+	enum fh_event_type 	type;
 
-	SDL_Event event;
+	SDL_Event 		raw;
 
-	struct fh_window *window;
-	struct fh_element *element;
+	struct fh_event_context	context;
 
-	u8 data[128];
+	struct fh_event_data	data;
 
-	u8 flags;
+	u8 			flags;
 };
 
 
-/* Typedefine the standard callback function for events */
-typedef void (*fh_event_fnc_t)(struct fh_event evt, void *data);
+
 
 
 
 /*
- * Bind a callback function to a window event.
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- * @win: Pointer to the window
- * @type: The type of event to bind the callback function to
- * @fnc: The callback function to call
+ *				CROSS-MODULE-INTERFACE
  *
- * Returns: Either an ID to identify the callback function in the list or -1 if
- *          an error occurred
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
-FH_API s16 fh_evt_win_bind(struct fh_window *win, u32 type,
-		fh_event_fnc_t fnc);
-
 
 /*
- * Unbind a specific window event callback.
- *
- * @win: Pointer to the window
- * @eid: The id of the event callback to remove
+ * Process all event in the SDL event queue and handle them.
  */
-FH_API void fh_evt_win_unbind(struct fh_window *win, s16 eid);
+FH_XMOD void fh_event_update(void);
 
 
 /*
- * Unbind all window event callbacks from the given type.
+ * Trigger a new event so it can be handled.
+ */
+FH_XMOD void fh_event_trigger(struct fh_event *evt);
+
+
+/*
+ * Trigger a custom event without the underlying SDL-event.
  *
- * @win: Pointer to the window
  * @type: The type of the event
+ * @win: Pointer to the window context
+ * @ele: Pointer to the element context
  */
-FH_API void fh_evt_win_unbind_type(struct fh_window *win, u32 type);
-
-
-/*
- * Unbind all window event callbacks.
- *
- * @win: Pointer to the window
- */
-FH_API void fh_evt_win_unbind_all(struct fh_window *win);
-
-
-
-/*
- * Process all incoming SDL events and distribute them to the according places.
- * If an event can't be handeld internally, it will be appended to the event
- * pipe, so it can be handeld manually.
- */
-FH_API void fh_evt_process(void);
+FH_XMOD void fh_event_trigger_raw(enum fh_event_type type,
+		struct fh_window *win, struct fh_element *ele);
 
 
 /*
@@ -90,6 +96,13 @@ FH_API void fh_evt_process(void);
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
+/*
+ * Prevent the default event handling for this event. This function should be
+ * called in a handler callback function, if needed.
+ *
+ * @evt: Pointer to the event
+ */
+FH_API void fh_PreventDefault(struct fh_event *evt);
 
 
 #endif /* _FH_EVENT_H */

@@ -15,7 +15,7 @@
  */
 
 
-FH_CROSS void fh_layout_blocks(struct fh_element *ele)
+FH_XMOD void fh_layout_blocks(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -48,7 +48,7 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 		/* Otherwise... */
 		else {
@@ -77,7 +77,7 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 			if(content_height < off_y)
 				content_height = off_y;
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
@@ -95,11 +95,11 @@ FH_CROSS void fh_layout_blocks(struct fh_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	fh_ele_hdl_scrollbar(ele);
+	fh_element_hdl_scrollbar(ele);
 }
 
 
-FH_CROSS void fh_layout_rows(struct fh_element *ele)
+FH_XMOD void fh_layout_rows(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -121,7 +121,7 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 		else {
 			run->layout_offset.x = off_x;
@@ -135,7 +135,7 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 				content_width = w;
 			}
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
@@ -151,11 +151,11 @@ FH_CROSS void fh_layout_rows(struct fh_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	fh_ele_hdl_scrollbar(ele);
+	fh_element_hdl_scrollbar(ele);
 }
 
 
-FH_CROSS void fh_layout_columns(struct fh_element *ele)
+FH_XMOD void fh_layout_columns(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -176,7 +176,7 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 		else {
 			run->layout_offset.x = off_x;
@@ -189,7 +189,7 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 				content_height = h;
 			}
 
-			fh_ele_adjust_shape(run);
+			fh_element_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
@@ -205,5 +205,5 @@ FH_CROSS void fh_layout_columns(struct fh_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	fh_ele_hdl_scrollbar(ele);
+	fh_element_hdl_scrollbar(ele);
 }
