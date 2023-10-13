@@ -293,7 +293,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	s8 r;
 
 	s8 idx;
-	struct fh_stylesheet_attribute ent;
+	const struct fh_stylesheet_attribute *ent;
 
 	if(!style || !in) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
@@ -317,7 +317,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 		/*
 		 * Get the according entry from the stylesheet table.
 		 */
-		if(fh_style_utl_get(&ent, idx) < 0) {
+		if(!(ent = fh_style_utl_get(idx))) {
 			printf("No entry in table for \"%s\"\n", attr);
 			continue;
 		}
@@ -326,32 +326,13 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 		 * Parse the given value to the contraints of the requested
 		 * attribute.
 		 */
-		r = 0;
-		switch(ent.input) {
-			case FH_STYLE_INPUT_DEC: 
-				r = fh_parser_decimal(value, ent.category, out);
-				break;
-			case FH_STYLE_INPUT_PCT: 
-				r = fh_parser_percent(value, ent.category, out);
-				break;
-			case FH_STYLE_INPUT_HEX:
-				r = fh_parser_hexcode(value, ent.category, out);
-				break;
-			case FH_STYLE_INPUT_OPT:
-				r = fh_parser_keyword(value, ent.category, out);
-				break;
-		}
-
-		/*
-		 * Check if the input value has been valid.
-		 */
-		if(r < 0) {
-			printf("Input type is invalid\n");
+		if(fh_parser_value(value, ent->input, ent->category, out) < 0) {
+			printf("Input type is invalid");
 			continue;
 		}
 
 		/* Finally write the new data to the stylesheet */
-		memcpy(((u8 *)&style->sheet) + ent.offset, out, ent.size);
+		memcpy(((u8 *)&style->sheet) + ent->offset, out, ent->size);
 	}
 }
 

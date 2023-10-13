@@ -5,6 +5,7 @@ struct fh_window;
 
 #include "stdinc.h"
 #include "context.h"
+#include "identity.h"
 #include "event.h"
 #include "event_listener.h"
 
@@ -21,6 +22,8 @@ struct fh_window;
 
 
 struct fh_window {
+	u8 identifier;
+
 	/* The unique identifier for this window */
 	u16 id;
 

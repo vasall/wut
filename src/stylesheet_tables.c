@@ -6,34 +6,34 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
-	{ 0, 1, FH_STYLE_INPUT_OPT, 0},	/*  0 display_mode 		*/
-	{ 1, 1, FH_STYLE_INPUT_OPT, 1},	/*  1 reference_mode 		*/
-	{ 2, 4, FH_STYLE_INPUT_PCT, 0},	/*  2 vsize 			*/
-	{ 6, 4, FH_STYLE_INPUT_PCT, 0},	/*  3 hsize 			*/
-	{10, 1, FH_STYLE_INPUT_OPT, 2},	/*  4 valignment 		*/
-	{11, 1, FH_STYLE_INPUT_OPT, 3},	/*  5 halignment 		*/
-	{12, 4, FH_STYLE_INPUT_PCT, 0},	/*  6 spacing_top 		*/
-	{16, 4, FH_STYLE_INPUT_PCT, 0},	/*  7 spacing_right 		*/
-	{20, 4, FH_STYLE_INPUT_PCT, 0},	/*  8 spacing_bottom 		*/
-	{24, 4, FH_STYLE_INPUT_PCT, 0},	/*  9 spacing_left 		*/
-	{28, 4, FH_STYLE_INPUT_PCT, 0},	/* 10 padding_top 		*/
-	{32, 4, FH_STYLE_INPUT_PCT, 0},	/* 11 padding_right 		*/
-	{36, 4, FH_STYLE_INPUT_PCT, 0},	/* 12 padding_bottom 		*/
-	{40, 4, FH_STYLE_INPUT_PCT, 0},	/* 13 padding_left 		*/
-	{44, 1, FH_STYLE_INPUT_OPT, 4},	/* 14 border_mode 		*/
-	{45, 1, FH_STYLE_INPUT_DEC, 0},	/* 15 border_width 		*/
-	{46, 4, FH_STYLE_INPUT_HEX, 0},	/* 16 border_color 		*/
-	{50, 1, FH_STYLE_INPUT_DEC, 0},	/* 17 radius_top_left 		*/
-	{51, 1, FH_STYLE_INPUT_DEC, 0},	/* 18 radius_top_right 		*/
-	{52, 1, FH_STYLE_INPUT_DEC, 0},	/* 19 radius_bottom_right 	*/
-	{53, 1, FH_STYLE_INPUT_DEC, 0},	/* 20 radius_bottom_left 	*/
-	{54, 1, FH_STYLE_INPUT_OPT, 5},	/* 21 infill_mode 		*/
-	{55, 4, FH_STYLE_INPUT_HEX, 0},	/* 22 infill_color 		*/
-	{59, 1, FH_STYLE_INPUT_OPT, 6},	/* 23 layout_mode 		*/
-	{60, 1, FH_STYLE_INPUT_OPT, 7},	/* 24 scrollbar_mode 		*/
-	{61, 4, FH_STYLE_INPUT_HEX, 0},	/* 25 scrollbar_track_color 	*/
-	{65, 4, FH_STYLE_INPUT_HEX, 0}	/* 26 scrollbar_thumb_color 	*/
+const struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
+	{ 0, 1, FH_STYLE_INPUT_KEYWORD, 0},	/*  0 display_mode 	    */
+	{ 1, 1, FH_STYLE_INPUT_KEYWORD, 1},	/*  1 reference_mode 	    */
+	{ 2, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  2 vsize 		    */
+	{ 6, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  3 hsize 		    */
+	{10, 1, FH_STYLE_INPUT_KEYWORD, 2},	/*  4 valignment 	    */
+	{11, 1, FH_STYLE_INPUT_KEYWORD, 3},	/*  5 halignment 	    */
+	{12, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  6 spacing_top 	    */
+	{16, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  7 spacing_right 	    */
+	{20, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  8 spacing_bottom 	    */
+	{24, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  9 spacing_left 	    */
+	{28, 4, FH_STYLE_INPUT_PERCENT, 0},	/* 10 padding_top 	    */
+	{32, 4, FH_STYLE_INPUT_PERCENT, 0},	/* 11 padding_right 	    */
+	{36, 4, FH_STYLE_INPUT_PERCENT, 0},	/* 12 padding_bottom 	    */
+	{40, 4, FH_STYLE_INPUT_PERCENT, 0},	/* 13 padding_left 	    */
+	{44, 1, FH_STYLE_INPUT_KEYWORD, 4},	/* 14 border_mode 	    */
+	{45, 1, FH_STYLE_INPUT_DECIMAL, 0},	/* 15 border_width 	    */
+	{46, 4, FH_STYLE_INPUT_HEXCODE, 0},	/* 16 border_color 	    */
+	{50, 1, FH_STYLE_INPUT_DECIMAL, 0},	/* 17 radius_top_left 	    */
+	{51, 1, FH_STYLE_INPUT_DECIMAL, 0},	/* 18 radius_top_right 	    */
+	{52, 1, FH_STYLE_INPUT_DECIMAL, 0},	/* 19 radius_bottom_right   */
+	{53, 1, FH_STYLE_INPUT_DECIMAL, 0},	/* 20 radius_bottom_left    */
+	{54, 1, FH_STYLE_INPUT_KEYWORD, 5},	/* 21 infill_mode 	    */
+	{55, 4, FH_STYLE_INPUT_HEXCODE, 0},	/* 22 infill_color 	    */
+	{59, 1, FH_STYLE_INPUT_KEYWORD, 6},	/* 23 layout_mode 	    */
+	{60, 1, FH_STYLE_INPUT_KEYWORD, 7},	/* 24 scrollbar_mode 	    */
+	{61, 4, FH_STYLE_INPUT_HEXCODE, 0},	/* 25 scrollbar_track_color */
+	{65, 4, FH_STYLE_INPUT_HEXCODE, 0}	/* 26 scrollbar_thumb_color */
 };
 
 
@@ -87,7 +87,7 @@ struct fh_stylesheet_hme fh_c_stylesheet_hm_row7[] = {
 	{0x3f, 23}	/* layout_mode */
 };
 
-struct fh_stylesheet_hm fh_c_stylesheet_hm[FH_STYLESHEET_HASH_ROWS] = {
+const struct fh_stylesheet_hm fh_c_stylesheet_hm[FH_STYLESHEET_HASH_ROWS] = {
 	{fh_c_stylesheet_hm_row0, 3},
 	{fh_c_stylesheet_hm_row1, 3},
 	{fh_c_stylesheet_hm_row2, 1},
@@ -145,7 +145,7 @@ struct fh_stylesheet_kve fh_c_stylesheet_kv_row7[] = {
 };
 
 
-struct fh_stylesheet_kv fh_c_stylesheet_kv[FH_STYLESHEET_OPT_ROWS] = {
+const struct fh_stylesheet_kv fh_c_stylesheet_kv[FH_STYLESHEET_OPT_ROWS] = {
 	{fh_c_stylesheet_kv_row0, 2},
 	{fh_c_stylesheet_kv_row1, 2},
 	{fh_c_stylesheet_kv_row2, 3},

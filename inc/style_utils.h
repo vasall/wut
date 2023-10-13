@@ -3,11 +3,11 @@
 
 #include "stdinc.h"
 #include "stylesheet.h"
-
+#include "style.h"
 
 struct fh_style_mod {
 	u8 *buf;
-	u32 len;
+	s16 len;
 };
 
 
@@ -32,12 +32,13 @@ FH_XMOD s8 fh_style_utl_find(char *attrib_name);
 /*
  * Get an attribute via the attribute index.
  *
- * @attr: A pointer to write the attribute to
  * @index: The index of the attribute
  *
- * Returns: 0 on success or -1 if an error occurred
+ * Returns: Either a pointer to the entry in the attribute table or NULL if an
+ * 	    error occurred
  */
-FH_XMOD s8 fh_style_utl_get(struct fh_stylesheet_attribute *attr, s8 index);
+FH_XMOD const struct fh_stylesheet_attribute *fh_style_utl_get(s8 index);
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -49,16 +50,33 @@ FH_XMOD s8 fh_style_utl_get(struct fh_stylesheet_attribute *attr, s8 index);
 
 /*
  * Compress style modifications into a simple change buffer. This buffer can
- * then be easily applied to any stylesheet.
+ * then be easily applied to any stylesheet. Note that after usage the returned
+ * buffer needs to be cleared manually.
  *
  * @str: The modifications in string format
- * @out: A pointer to attach the change buffer to
+ *
+ * Returns: A style-modification-struct or NULL if an error occurred
+ */
+FH_API struct fh_style_mod *fh_CompressStyleMod(char *str);
+
+
+/*
+ * Free a given style-modification-struct and free up the allocated memory.
+ *
+ * @mod: Pointer to the mod to free
+ */
+FH_API void fh_FreeStyleMod(struct fh_style_mod *mod);
+
+
+/*
+ * Apply a style-modification onto a style struct.
+ *
+ * @style: Pointer to the style struct to modify
+ * @mod: Pointer to the modifications to apply
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_CompressStyleMod(char *str, char **out);
-
-
+FH_API s8 fh_ApplyStyleMod(struct fh_style *style, struct fh_style_mod *mod);
 
 
 #endif /* _FH_STYLE_UTILS_H */

@@ -290,6 +290,9 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 		goto err_return;
 	}
 
+	/* Set the identifier */
+	ele->identifier = FH_IDT_ELEMENT;
+
 	/* Set the basic attributes for the element */
 	strcpy(ele->name, name);
 	ele->type = type;

@@ -91,6 +91,15 @@ FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
 
 
 /*
+ * Get the handler of a given object(element/window).
+ *
+ * @ptr: Pointer to the object
+ *
+ * Returns: Either a pointer to the handler or NULL if an error occurred
+ */
+FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr);
+
+/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE

@@ -11,7 +11,7 @@
 
 #define FH_STYLESHEET_ATTRIB_LIM	27
 
-FH_XMOD struct fh_stylesheet_attribute fh_stylesheet_attributes[27];
+FH_XMOD const struct fh_stylesheet_attribute fh_stylesheet_attributes[27];
 
 
 /*
@@ -31,7 +31,7 @@ struct fh_stylesheet_hm {
 
 #define FH_STYLESHEET_HASH_ROWS		8
 
-FH_XMOD struct fh_stylesheet_hm fh_c_stylesheet_hm[FH_STYLESHEET_HASH_ROWS];
+FH_XMOD const struct fh_stylesheet_hm fh_c_stylesheet_hm[8];
 
 
 /*
@@ -50,6 +50,6 @@ struct fh_stylesheet_kv {
 
 #define FH_STYLESHEET_OPT_ROWS	8
 
-FH_XMOD struct fh_stylesheet_kv fh_c_stylesheet_kv[FH_STYLESHEET_OPT_ROWS];
+FH_XMOD const struct fh_stylesheet_kv fh_c_stylesheet_kv[8];
 
 #endif /* _FH_STYLESHEET_TABLES_H */

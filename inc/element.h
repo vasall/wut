@@ -5,6 +5,7 @@
 #include "define.h"
 #include "datatype.h"
 #include "import.h"
+#include "identity.h"
 #include "style.h"
 #include "event_listener.h"
 
@@ -31,6 +32,8 @@ enum fh_element_type {
 
 
 struct fh_element {
+	u8 identifier;
+
 	/* The name of the element */
 	char name[FH_ELEMENT_NAME_LIM];
 

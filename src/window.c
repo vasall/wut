@@ -34,6 +34,9 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 		goto err_free_win;
 	}
 
+	/* Set the identifier byte */
+	win->identifier = FH_IDT_WINDOW;
+		
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);

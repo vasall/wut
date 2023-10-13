@@ -1,0 +1,8 @@
+#ifndef _FH_OBJECT_IDENTITY_H
+#define _FH_OBJECT_IDENTITY_H
+
+#define FH_IDT_WINDOW		0x01
+#define FH_IDT_ELEMENT		0x02
+
+
+#endif /* _FH_OBJECT_IDENTITY_H */

@@ -36,10 +36,10 @@
 #define FH_SCROLLBAR_VERTICAL	2
 #define FH_SCROLLBAR_HORIZONTAL	3
 
-#define FH_STYLE_INPUT_DEC	0
-#define FH_STYLE_INPUT_PCT	1
-#define FH_STYLE_INPUT_HEX	2
-#define FH_STYLE_INPUT_OPT	3
+#define FH_STYLE_INPUT_DECIMAL	0
+#define FH_STYLE_INPUT_PERCENT	1
+#define FH_STYLE_INPUT_HEXCODE	2
+#define FH_STYLE_INPUT_KEYWORD	3
 
 
 struct fh_stylesheet {
@@ -49,18 +49,18 @@ struct fh_stylesheet {
  */
 
 	/* 	DISPLAY 			            		      */
-	u8	display_mode;		/* 0x89     1 	 0    	OPT-STRING-0  */
+	u8	display_mode;		/* 0x89     1 	 0    	KEYWORD-0     */
 
 	/* 	REFERENCE				    		      */
-	u8	reference_mode;		/* 0x77     7    1    	OPT-STRING-1  */
+	u8	reference_mode;		/* 0x77     7    1    	KEYWORD-1     */
 
 	/* 	SIZE					    		      */
 	f32	vsize;			/* 0xf8     0    2 	PERCENT       */
 	f32	hsize;			/* 0x95     5    6 	PERCENT       */
 
 	/* 	ALIGNMENT				    		      */
-	u8	valignment;		/* 0x8f     7   10 	OPT-STRING-2  */
-	u8	halignment;		/* 0xbf     7   11 	OPT-STRING-3  */
+	u8	valignment;		/* 0x8f     7   10 	KEYWORD-2     */
+	u8	halignment;		/* 0xbf     7   11 	KEYWORD-3     */
 
 	/* 	SPACING 				    		      */
 	f32	spacing_top;		/* 0xfb     3   12 	PERCENT       */
@@ -75,7 +75,7 @@ struct fh_stylesheet {
 	f32	padding_left;		/* 0x9e     6   40 	PERCENT       */
 
 	/* 	BORDER					    		      */
-	u8	border_mode;		/* 0xd8     0   44 	OPT-STRING-4  */
+	u8	border_mode;		/* 0xd8     0   44 	KEYWORD-4     */
 	u8 	border_width;		/* 0x56     6   45 	DECIMAL	      */
 	u32	border_color;		/* 0x0f     7	46 	HEX-CODE      */
 
@@ -86,14 +86,14 @@ struct fh_stylesheet {
 	u8	radius_bottom_left;	/* 0x1e     6   53 	DECIMAL	      */
 
 	/* 	INFILL 					    		      */
-	u8	infill_mode;		/* 0x54     4   54 	OPT-STRING-5  */
+	u8	infill_mode;		/* 0x54     4   54 	KEYWORD-5     */
 	u32	infill_color;		/* 0xf9     1   55 	HEX-CODE      */
 
 	/* 	LAYOUT					    		      */
-	u8	layout_mode;		/* 0x3f     7   59 	OPT-STRING-6  */
+	u8	layout_mode;		/* 0x3f     7   59 	KEYWORD-6     */
 
 	/* 	SCROLLBAR				    		      */
-	u8	scrollbar_mode;		/* 0x02     2   60 	OPT-STRING-7  */
+	u8	scrollbar_mode;		/* 0x02     2   60 	KEYWORD-7     */
 	u32	scrollbar_track_color;	/* 0x34	    4	61	HEX-CODE      */
 	u32	scrollbar_thumb_color;	/* 0x2e	    6   65	HEX-CODE      */
 } __attribute__((__packed__));

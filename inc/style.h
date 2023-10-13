@@ -169,30 +169,6 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
 
 
 /*
- * Compress the stylesheet into a binary buffer so it can be handled easier.
- * This function will allocate the necessary memory.
- *
- * @style: Pointer to the style struct
- * @buf: A pointer to attach the buffer to
- *
- * Returns: The number of bytes returned, or -1 if an error occurred
- */
-FH_XMOD s32 fh_style_compress(struct fh_style *style, u8 **buf);
-
-
-/*
- * Modify the given stylestruct with the style buffer.
- *
- * @style: Pointer to the style struct
- * @buf: The change buffer
- * @len: The length of the buffer in bytes
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-FH_XMOD s8 fh_style_apply(struct fh_style *style, u8 *buf, s32 len);
-
-
-/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE

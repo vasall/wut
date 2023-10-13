@@ -66,7 +66,8 @@ FH_XMOD s8 fh_parser_decimal(char *in, u8 ctg, u8 *out)
 		}
 		in++;
 	}
-	if(!start) return -1;
+	if(!start)
+		return -1;
 
 	while((c = *(in++))) {
 		if(!(c >= 0x30 && c <= 0x39)) {
@@ -83,7 +84,7 @@ FH_XMOD s8 fh_parser_decimal(char *in, u8 ctg, u8 *out)
 		off *= 10;
 	}
 
-	return 0;
+	return 1;
 }
 
 
@@ -109,7 +110,8 @@ FH_XMOD s8 fh_parser_percent(char *in, u8 ctg, u8 *out)
 		}
 		in++;
 	}
-	if(!start) return -1;
+	if(!start)
+		return -1;
 
 	while((c = *(in++))) {
 		if(!(c >= 0x30 && c <= 0x39)) {
@@ -129,7 +131,7 @@ FH_XMOD s8 fh_parser_percent(char *in, u8 ctg, u8 *out)
 
 	if(c != '.') {
 		*out_ptr /= 100.0;
-		return 0;
+		return 4;
 	}
 
 	len = 0;
@@ -153,8 +155,7 @@ FH_XMOD s8 fh_parser_percent(char *in, u8 ctg, u8 *out)
 
 	*out_ptr /= 100.0;
 
-	return 0;
-	
+	return 4;
 }
 
 
@@ -177,7 +178,8 @@ FH_XMOD s8 fh_parser_hexcode(char *in, u8 ctg, u8 *out)
 		}
 		in++;
 	}
-	if(!start) return -1;
+	if(!start)
+		return -1;
 
 	for(i = 0; i < 7; i += 2) {
 		if(!parser_check_hex(start[i]))
@@ -192,7 +194,7 @@ FH_XMOD s8 fh_parser_hexcode(char *in, u8 ctg, u8 *out)
 		off -= 1;
 	}
 
-	return 0;
+	return 4;
 	
 }
 
@@ -204,12 +206,30 @@ FH_XMOD s8 fh_parser_keyword(char *in, u8 ctg, u8 *out)
 	for(i = 0; i < fh_c_stylesheet_kv[ctg].number;  i++) {
 		if(!strcmp(fh_c_stylesheet_kv[ctg].entries[i].string, in)) {
 			*out = fh_c_stylesheet_kv[ctg].entries[i].value;
-			return 0;
+			return 1;
 		}
 	}
 	
 
 	return -1;
+}
+
+
+FH_XMOD s8 fh_parser_value(char *in, u8 type, u8 ctg, u8 *out)
+{
+	switch(type) {
+		case FH_STYLE_INPUT_DECIMAL:
+			return fh_parser_decimal(in, ctg, out);
+
+		case FH_STYLE_INPUT_PERCENT:
+			return fh_parser_percent(in, ctg, out);
+
+		case FH_STYLE_INPUT_HEXCODE:
+			return fh_parser_hexcode(in, ctg, out);
+
+		case FH_STYLE_INPUT_KEYWORD:
+			return fh_parser_keyword(in, ctg, out);
+	}
 }
 
 

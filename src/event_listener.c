@@ -1,5 +1,7 @@
 #include "event_listener.h"
 
+#include "window.h"
+#include "element.h"
 
 #include <stdlib.h>
 
@@ -157,10 +159,33 @@ FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
 				run = run->below;
 			}
 		}
+
+		run = run->next;
 	}
 
 	return 0;
 }
+
+
+FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr)
+{
+	u8 identifier;
+
+	if(!ptr)
+		return NULL;
+
+
+	switch(*(u8 *)ptr) {
+		case FH_IDT_WINDOW:
+			return ((struct fh_window *)ptr)->event_handler;
+
+		case FH_IDT_ELEMENT:
+			return ((struct fh_element *)ptr)->event_handler;
+	}
+
+	return NULL;
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
