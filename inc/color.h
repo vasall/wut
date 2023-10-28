@@ -1,10 +1,7 @@
 #ifndef _FH_COLOR_H
 #define _FH_COLOR_H
 
-
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 
 /*
  * A pixel is defined by 4 attributes representing the RGBA-values.

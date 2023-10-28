@@ -2,6 +2,7 @@
 #define _FH_ELEMENT_WIDGET_H
 
 #include "stdinc.h"
+
 #include "element.h"
 
 enum fh_widget_type {

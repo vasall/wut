@@ -1,10 +1,8 @@
 #ifndef _FH_CORE_H
 #define _FH_CORE_H
 
+#include "stdinc.h"
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
 #include "window.h"
 #include "event.h"
 #include "camera.h"

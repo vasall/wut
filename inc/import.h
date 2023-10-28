@@ -9,6 +9,7 @@
 #include <GL/gl.h> 
 
 #include "../../alarm/inc/alarm.h"
+#include "../../gentils/inc/gentils.h"
 #include "../../mate/inc/mate.h"
 
 #endif /* _FH_IMPORT_H */

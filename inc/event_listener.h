@@ -1,9 +1,7 @@
 #ifndef _FH_EVENT_LISTENER_H
 #define _FH_EVENT_LISTENER_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 
 #include "event.h"
 #include "event_types.h"

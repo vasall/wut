@@ -1,8 +1,8 @@
 #ifndef _FH_OBJECT_H
 #define _FH_OBJECT_H
 
-#include "define.h"
-#include "import.h"
+#include "stdinc.h"
+
 #include "model.h"
 
 

@@ -1,9 +1,8 @@
 #ifndef _FH_CAMERA_H
 #define _FH_CAMERA_H
 
-#include "define.h"
-#include "import.h"
-#include "datatype.h"
+#include "stdinc.h"
+
 #include "window.h"
 
 #define FH_CAM_NAME_LIM		128

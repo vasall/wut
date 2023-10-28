@@ -1,10 +1,8 @@
 #ifndef _FH_ELEMENT_H
 #define _FH_ELEMENT_H
 
+#include "stdinc.h"
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
 #include "identity.h"
 #include "style.h"
 #include "event_listener.h"

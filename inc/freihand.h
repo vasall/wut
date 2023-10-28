@@ -1,10 +1,9 @@
 #ifndef _FH_FREIHAND_H
 #define _FH_FREIHAND_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
+
 #include "table.h"
-#include "import.h"
 #include "system.h"
 #include "core.h"
 #include "sdl.h"

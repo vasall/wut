@@ -1,9 +1,9 @@
 #ifndef _FH_CONTEXT_H
 #define _FH_CONTEXT_H
 
-#include "stdinc.h" 
-#include "window.h"
+#include "stdinc.h"
 
+#include "window.h"
 #include "shader.h"
 #include "texture.h"
 #include "font.h"

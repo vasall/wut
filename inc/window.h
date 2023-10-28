@@ -4,6 +4,7 @@
 struct fh_window;
 
 #include "stdinc.h"
+
 #include "context.h"
 #include "identity.h"
 #include "event.h"

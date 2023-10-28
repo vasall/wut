@@ -1,9 +1,7 @@
 #ifndef _FH_SDL_H
 #define _FH_SDL_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define SDL_R_MASK 0xff000000

@@ -1,9 +1,8 @@
 #ifndef _FH_FLAT_H
 #define _FH_FLAT_H
 
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
+
 #include "window.h"
 #include "texture.h"
 #include "model.h"

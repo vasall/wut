@@ -2,6 +2,7 @@
 #define _FH_ELEMENT_STYLE_H
 
 #include "stdinc.h"
+
 #include "stylesheet.h"
 #include "color.h"
 

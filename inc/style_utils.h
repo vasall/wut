@@ -2,6 +2,7 @@
 #define _FH_STYLE_UTILS_H
 
 #include "stdinc.h"
+
 #include "stylesheet.h"
 #include "style.h"
 

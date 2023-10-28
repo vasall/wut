@@ -1,8 +1,7 @@
 #ifndef _FH_SYSTEM_H
 #define _FH_SYSTEM_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
 
 /*
  * Safer reimplementation of malloc().

@@ -1,10 +1,7 @@
 #ifndef _FH_EVENT_H
 #define _FH_EVENT_H
 
-
-#include "define.h"
-#include "datatype.h"
-#include "import.h"
+#include "stdinc.h"
 
 
 struct fh_event;

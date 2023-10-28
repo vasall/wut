@@ -2,6 +2,7 @@
 #define _FH_VIEW_H
 
 #include "stdinc.h"
+
 #include "pipe.h"
 #include "camera.h"
 #include "context.h"

@@ -1,7 +1,6 @@
 #ifndef _FH_PREDEF_RESOURCES_H
 #define _FH_PREDEF_RESOURCES_H
 
-#include "define.h"
 #include "stdinc.h"
 
 

@@ -1,10 +1,9 @@
 #ifndef _FH_TEXTURE_H
 #define _FH_TEXTURE_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
+
 #include "table.h"
-#include "import.h"
 #include "context.h"
 
 #define FH_TEXTURE_NAME_LIM		128

@@ -1,8 +1,8 @@
 #ifndef _FH_MODEL_CONSTRUCTOR_H
 #define _FH_MODEL_CONSTRUCTOR_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
+
 #include "window.h"
 
 struct fh_model_c;

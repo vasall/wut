@@ -1,8 +1,7 @@
 #ifndef _FH_TABLE_H
 #define _FH_TABLE_H
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
 
 #define FH_TABLE_NAME_LIM	128
 #define FH_TABLE_ROWS		128

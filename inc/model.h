@@ -3,10 +3,9 @@
 
 struct fh_model;
 
-#include "define.h"
-#include "datatype.h"
+#include "stdinc.h"
+
 #include "table.h"
-#include "import.h"
 #include "window.h"
 #include "view.h"
 
