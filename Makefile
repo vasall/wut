@@ -1,14 +1,3 @@
-# ------------------------------------------------
-# Generic Makefile, capable of including static
-# libraries
-#
-# Modified by:      admin@vasall.net
-# Date:             2020-01-09
-#
-# Original Author:  yanick.rochon@gmail.com
-# Date:             2011-08-10
-# ------------------------------------------------
-
 # Name of the created executable
 TARGET     := lfreihand.a
 
@@ -25,25 +14,29 @@ CC         := gcc
 # Error flags for compiling
 WARNFLAGS   := -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
 # Compiling flags here
-CFLAGS     := -g -O0 -ansi -std=c89 -I. -I./inc/ -pedantic -D_POSIX_C_SOURCE=200809L -I./$(LIB_PTH)/
+CFLAGS     := -g -O0 -ansi -std=c89 -I./source -pedantic -D_POSIX_C_SOURCE=200809L -I./$(LIB_PTH)/
 
 # The linker to use
 LINKER     := gcc
 
+# Make does not offer a recursive wildcard function, so here's one:
+# https://stackoverflow.com/a/12959694
+rwildcard   = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
+
 # Change these to proper directories where each file should be
-SRCDIR     := src
+SRCDIR     := source
 OBJDIR     := obj
 
-SOURCES    := $(wildcard $(SRCDIR)/*.c)
+SOURCES    := $(call rwildcard,$(SRCDIR)/,*.c)
 OBJECTS    := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 rm         := rm -f
 
 $(TARGET): $(OBJECTS)
-	@ar -r -o $@ $^
+	@ar -r -o $@ $(addprefix $(OBJDIR)/, $(notdir $^))
 	@echo "Linking complete!"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $(OBJDIR)/$(notdir $@)
+	@echo "Compiled $<"
 

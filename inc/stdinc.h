@@ -1,6 +1,0 @@
-#include "define.h"
-#include "import.h"
-#include "system.h"
-#include "shape.h"
-#include "file.h"
-#include "utils.h"
