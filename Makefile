@@ -32,15 +32,11 @@ OBJECTS    := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 rm         := rm -f
 
-$(info $$SOURCES is [${SOURCES}])
-
-$(info $$OBJECTS is [${OBJECTS}])
-
 $(TARGET): $(OBJECTS)
-	@ar -r -o $@ $^
+	@ar -r -o $@ $(addprefix $(OBJDIR)/, $(notdir $^))
 	@echo "Linking complete!"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+	@$(CC) $(CFLAGS) $(WARNFLAGS) -c $< -o $(OBJDIR)/$(notdir $@)
+	@echo "Compiled $<"
 

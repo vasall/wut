@@ -1,4 +1,6 @@
-#include "widgets/inc/view.h"
+#include "widget/inc/view.h"
+
+#include "system/inc/system.h"
 
 #include <stdlib.h>
 

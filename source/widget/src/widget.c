@@ -1,8 +1,10 @@
-#include "widgets/inc/widget.h"
+#include "widget/inc/widget.h"
 
-#include "widgets/inc/view.h"
+#include "widget/inc/view.h"
 
 #include "document/inc/document.h"
+
+#include "system/inc/system.h"
 
 
 #include <stdlib.h>

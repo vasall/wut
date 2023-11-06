@@ -6,6 +6,8 @@
 
 #include "document/inc/context.h"
 
+#include "utils/inc/utils.h"
+
 #define FH_FONT_NAME_LIM	128
 
 

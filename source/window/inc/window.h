@@ -12,6 +12,7 @@ struct fh_window;
 #include "event/inc/event.h"
 #include "event/inc/event_listener.h"
 
+#include "graphic/inc/shape.h"
 
 #define FH_WIN_NAME_LIM  	126
 #define FH_WIN_CHILDREN_LIM     6

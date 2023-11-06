@@ -1,4 +1,4 @@
-#include "graphics/inc/model.h"
+#include "graphic/inc/model.h"
 
 #include "core/inc/core.h"
 

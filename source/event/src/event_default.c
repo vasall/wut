@@ -16,6 +16,8 @@ FH_INTERN s8 def_dump(struct fh_event *evt)
 		printf("element: %s   ", evt->context.element->name);
 
 	printf("\n");
+
+	return 0;
 }
 
 
@@ -148,7 +150,7 @@ FH_INTERN s8 def_elemententer(struct fh_event *evt)
 	printf("elemententer\n");
 	def_dump(evt);
 #endif
-	
+
 	printf("Entered %s\n", evt->context.element->name);
 
 	return 1;
@@ -196,8 +198,6 @@ FH_INTERN s8 def_elementunselect(struct fh_event *evt)
 
 FH_INTERN s8 def_mousemotion(struct fh_event *evt)
 {
-	struct fh_sin2 pos;
-
 	struct fh_window *s_w = evt->context.window;
 	struct fh_element *s_e = evt->context.element;
 

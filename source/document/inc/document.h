@@ -9,9 +9,9 @@
 #include "document/inc/element.h"
 #include "document/inc/element_manager.h"
 
-#include "graphics/inc/model.h"
-#include "graphics/inc/model_constructor.h"
-#include "graphics/inc/flat.h"
+#include "graphic/inc/model.h"
+#include "graphic/inc/model_constructor.h"
+#include "graphic/inc/flat.h"
 
 
 struct fh_document {

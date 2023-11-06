@@ -1,8 +1,8 @@
-#include "graphics/inc/model_constructor.h"
+#include "graphic/inc/model_constructor.h"
 
-#include "graphics/inc/shader.h"
-#include "graphics/inc/texture.h"
-#include "graphics/inc/camera.h"
+#include "graphic/inc/shader.h"
+#include "graphic/inc/texture.h"
+#include "graphic/inc/camera.h"
 
 #include "system/inc/system.h"
 

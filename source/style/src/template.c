@@ -4,10 +4,10 @@
 #include "document/inc/element.h"
 #include "document/inc/context.h"
 
-#include "widgets/inc/widget.h"
-#include "widgets/inc/view.h"
+#include "widget/inc/widget.h"
+#include "widget/inc/view.h"
 
-#include "graphics/inc/camera.h"
+#include "graphic/inc/camera.h"
 
 #include <stdlib.h>
 

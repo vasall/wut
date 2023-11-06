@@ -1,10 +1,10 @@
-#include "graphics/inc/camera.h"
+#include "graphic/inc/camera.h"
 
 #include "core/inc/core.h"
 
 #include "system/inc/system.h"
 
-#include "widgets/inc/view.h"
+#include "widget/inc/view.h"
 
 #include <stdio.h>
 #include <stdlib.h>

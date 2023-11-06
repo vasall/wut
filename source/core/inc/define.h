@@ -1,5 +1,5 @@
-#ifndef _FH_DEFINE_H
-#define _FH_DEFINE_H
+#ifndef _FH_CORE_DEFINE_H
+#define _FH_CORE_DEFINE_H
 
 
 #define FH_API 			extern

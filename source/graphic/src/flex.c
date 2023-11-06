@@ -1,4 +1,4 @@
-#include "graphics/inc/flex.h"
+#include "graphic/inc/flex.h"
 
 #include "system/inc/system.h"
 

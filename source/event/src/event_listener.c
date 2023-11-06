@@ -4,6 +4,8 @@
 
 #include "document/inc/element.h"
 
+#include "system/inc/system.h"
+
 #include <stdlib.h>
 
 
@@ -170,8 +172,6 @@ FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
 
 FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr)
 {
-	u8 identifier;
-
 	if(!ptr)
 		return NULL;
 

@@ -8,6 +8,8 @@
 
 #include "style/inc/layout.h"
 
+#include "graphic/inc/shape.h"
+
 #include <stdlib.h>
 
 
@@ -177,7 +179,6 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
 
 	struct fh_color col;
 	struct fh_rect	elebox;
-	struct fh_sin2	ele_rect;
 	struct fh_rect out;
 
 	elebox = fh_GetElementBox(ele);

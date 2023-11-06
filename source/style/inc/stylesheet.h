@@ -4,8 +4,8 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphics/inc/flex.h"
-#include "graphics/inc/color.h"
+#include "graphic/inc/flex.h"
+#include "graphic/inc/color.h"
 
 
 #define FH_DISPLAY_VISIBLE	0

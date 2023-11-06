@@ -2,6 +2,8 @@
 
 #include "core/inc/predef_resources.h"
 
+#include "system/inc/system.h"
+
 #include <stdlib.h>
 
 

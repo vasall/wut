@@ -1,5 +1,6 @@
 #include "style/inc/layout.h"
 
+#include "document/inc/element_manager.h"
 
 #include <stdlib.h>
 

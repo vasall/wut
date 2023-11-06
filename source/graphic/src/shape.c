@@ -1,4 +1,4 @@
-#include "graphics/inc/shape.h"
+#include "graphic/inc/shape.h"
 
 #include <stdlib.h>
 #include <string.h>

@@ -7,12 +7,12 @@
 
 #include "document/inc/document.h"
 #include "event/inc/event.h"
-#include "graphics/inc/graphics.h"
+#include "graphic/inc/graphic.h"
 #include "parser/inc/parser.h"
 #include "style/inc/style.h"
 #include "system/inc/system.h"
 #include "utils/inc/utils.h"
-#include "widgets/inc/widget.h"
+#include "widget/inc/widget.h"
 
 #include "window/inc/window.h"
 #include "window/inc/sdl.h"

@@ -1,6 +1,8 @@
 #ifndef _FH_ELEMENT_H
 #define _FH_ELEMENT_H
 
+struct fh_element;
+
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 

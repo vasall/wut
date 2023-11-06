@@ -6,9 +6,9 @@
 
 #include "window/inc/window.h"
 
-#include "graphics/inc/graphics.h"
+#include "graphic/inc/graphic.h"
 
-#include "widgets/inc/view.h"
+#include "widget/inc/view.h"
 
 
 struct fh_context {

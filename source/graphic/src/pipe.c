@@ -1,4 +1,6 @@
-#include "graphics/inc/pipe.h"
+#include "graphic/inc/pipe.h"
+
+#include "system/inc/system.h"
 
 
 FH_INTERN s32 pip_get_slot(struct fh_pipe *pip)

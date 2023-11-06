@@ -3,6 +3,12 @@
 
 struct fh_model;
 
+#define FH_MODEL_NAME_LIM		128
+#define FH_MODEL_ATTRIB_LIM		12
+#define FH_MODEL_UNIFORM_LIM		6
+#define FH_MODEL_ATTRIB_NAME_LIM	128
+#define FH_MODEL_UNIFORM_NAME_LIM	128
+
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
@@ -10,13 +16,7 @@ struct fh_model;
 
 #include "window/inc/window.h"
 
-#include "widgets/inc/view.h"
-
-#define FH_MODEL_NAME_LIM		128
-#define FH_MODEL_ATTRIB_LIM		12
-#define FH_MODEL_UNIFORM_LIM		6
-#define FH_MODEL_ATTRIB_NAME_LIM	128
-#define FH_MODEL_UNIFORM_NAME_LIM	128
+#include "widget/inc/view.h"
 
 
 struct fh_model_uniform {

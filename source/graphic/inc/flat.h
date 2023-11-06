@@ -6,10 +6,11 @@
 
 #include "window/inc/window.h"
 
-#include "graphics/inc/texture.h"
-#include "graphics/inc/model.h"
-#include "graphics/inc/shader.h"
-#include "graphics/inc/color.h"
+#include "graphic/inc/texture.h"
+#include "graphic/inc/model.h"
+#include "graphic/inc/shader.h"
+#include "graphic/inc/color.h"
+#include "graphic/inc/shape.h"
 
 #define FH_FLAT_NAME_LIM	128
 

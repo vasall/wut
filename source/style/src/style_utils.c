@@ -2,6 +2,8 @@
 
 #include "style/inc/stylesheet_tables.h"
 
+#include "system/inc/system.h"
+
 #include "parser/inc/parser.h"
 
 #include <stdlib.h>

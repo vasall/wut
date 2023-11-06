@@ -293,8 +293,6 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 
 	u8 out[4];
 
-	s8 r;
-
 	s8 idx;
 	const struct fh_stylesheet_attribute *ent;
 

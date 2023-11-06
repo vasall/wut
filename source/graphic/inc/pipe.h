@@ -4,8 +4,8 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphics/inc/model.h"
-#include "graphics/inc/camera.h"
+#include "graphic/inc/model.h"
+#include "graphic/inc/camera.h"
 
 
 #define FH_PIPE_MIN		32

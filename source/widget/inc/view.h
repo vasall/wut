@@ -4,10 +4,10 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphics/inc/pipe.h"
-#include "graphics/inc/camera.h"
-#include "graphics/inc/model.h"
-#include "graphics/inc/shape.h"
+#include "graphic/inc/pipe.h"
+#include "graphic/inc/camera.h"
+#include "graphic/inc/model.h"
+#include "graphic/inc/shape.h"
 
 #include "document/inc/context.h"
 

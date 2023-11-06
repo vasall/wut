@@ -2,13 +2,16 @@
 #define _FH_MODEL_CONSTRUCTOR_H
 
 #include "core/inc/define.h"
+#include "core/inc/import.h"
+
+#include "graphic/inc/model.h"
 
 #include "window/inc/window.h"
 
 struct fh_model_c;
 
 
-#include "graphics/inc/model.h"
+#include "graphic/inc/model.h"
 
 
 struct fh_model_c_attrib {

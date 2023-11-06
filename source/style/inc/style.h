@@ -6,7 +6,8 @@
 
 #include "style/inc/stylesheet.h"
 
-#include "graphics/inc/color.h"
+#include "graphic/inc/color.h"
+#include "graphic/inc/shape.h"
 
 enum fh_style_attrib {
 	FH_STYLE_DISPLAY_MODE,

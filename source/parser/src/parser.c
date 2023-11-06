@@ -1,5 +1,7 @@
 #include "parser/inc/parser.h"
 
+#include "utils/inc/utils.h"
+
 #include "style/inc/stylesheet_tables.h"
 
 
@@ -230,6 +232,8 @@ FH_XMOD s8 fh_parser_value(char *in, u8 type, u8 ctg, u8 *out)
 		case FH_STYLE_INPUT_KEYWORD:
 			return fh_parser_keyword(in, ctg, out);
 	}
+
+	return -1;
 }
 
 

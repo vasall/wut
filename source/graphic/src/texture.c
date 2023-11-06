@@ -1,4 +1,4 @@
-#include "graphics/inc/texture.h"
+#include "graphic/inc/texture.h"
 
 #include "core/inc/core.h"
 

@@ -1,4 +1,4 @@
-#include "graphics/inc/font.h"
+#include "graphic/inc/font.h"
 
 #include "system/inc/system.h"
 
