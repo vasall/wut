@@ -1,5 +1,5 @@
-#ifndef _FH_ELEMENT_H
-#define _FH_ELEMENT_H
+#ifndef _FH_DOCUMENT_ELEMENT_H
+#define _FH_DOCUMENT_ELEMENT_H
 
 struct fh_element;
 
@@ -132,4 +132,4 @@ struct fh_element {
  */
 typedef s8 (*fh_ele_cfnc)(struct fh_element *, void *);
 
-#endif /* _FH_ELEMENT_H */
+#endif /* _FH_DOCUMENT_ELEMENT_H */

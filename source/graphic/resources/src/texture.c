@@ -1,11 +1,11 @@
-#include "graphic/inc/texture.h"
+#include "graphic/resources/inc/texture.h"
 
 #include "core/inc/core.h"
 
 #include "system/inc/system.h"
 #include "system/inc/file.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include <stdlib.h>
 

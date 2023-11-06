@@ -1,5 +1,5 @@
-#ifndef _FH_STYLESHEET_TABLES_H
-#define _FH_STYLESHEET_TABLES_H
+#ifndef _FH_STYLE_STYLESHEET_TABLES_H
+#define _FH_STYLE_STYLESHEET_TABLES_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -54,4 +54,4 @@ struct fh_stylesheet_kv {
 
 FH_XMOD const struct fh_stylesheet_kv fh_c_stylesheet_kv[8];
 
-#endif /* _FH_STYLESHEET_TABLES_H */
+#endif /* _FH_STYLE_STYLESHEET_TABLES_H */

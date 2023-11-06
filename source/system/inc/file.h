@@ -1,5 +1,5 @@
-#ifndef _FH_FILE_H
-#define _FH_FILE_H
+#ifndef _FH_SYSTEM_FILE_H
+#define _FH_SYSTEM_FILE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -66,4 +66,4 @@ FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out);
 FH_API void fh_fs_image_cleanup(struct fh_fs_r_image *img);
 
 
-#endif /* _FH_FILE_H */
+#endif /* _FH_SYSTEM_FILE_H */

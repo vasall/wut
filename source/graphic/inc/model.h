@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHICS_MODEL_H
-#define _FH_GRAPHICS_MODEL_H
+#ifndef _FH_GRAPHIC_MODEL_H
+#define _FH_GRAPHIC_MODEL_H
 
 struct fh_model;
 
@@ -12,7 +12,7 @@ struct fh_model;
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include "window/inc/window.h"
 
@@ -154,4 +154,4 @@ FH_API void fh_RenderModel(struct fh_model *mdl, struct fh_shader *shd,
 		struct fh_texture *tex);
 
 
-#endif /* _FH_GRAPHICS_MODEL_H */
+#endif /* _FH_GRAPHIC_MODEL_H */

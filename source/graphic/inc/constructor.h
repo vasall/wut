@@ -1,5 +1,5 @@
-#ifndef _FH_MODEL_CONSTRUCTOR_H
-#define _FH_MODEL_CONSTRUCTOR_H
+#ifndef _FH_GRAPHIC_CONSTRUCTOR_H
+#define _FH_GRAPHIC_CONSTRUCTOR_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -163,4 +163,4 @@ FH_API void fh_ModelConstrUniform(struct fh_model_c *c, char *name, u32 size);
 
 
 
-#endif /* _FH_MODEL_CONSTRUCTOR_H */
+#endif /* _FH_GRAPHIC_CONSTRUCTOR_H */

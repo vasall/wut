@@ -1,13 +1,13 @@
-#ifndef _FH_ELEMENT_STYLE_H
-#define _FH_ELEMENT_STYLE_H
+#ifndef _FH_STYLE_H
+#define _FH_STYLE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "style/inc/stylesheet.h"
 
-#include "graphic/inc/color.h"
-#include "graphic/inc/shape.h"
+#include "utility/inc/color.h"
+#include "utility/inc/shape.h"
 
 enum fh_style_attrib {
 	FH_STYLE_DISPLAY_MODE,
@@ -211,4 +211,4 @@ FH_API void fh_DumpStylesheet(struct fh_style *style);
  */
 FH_API void fh_DumpStyle(struct fh_style *style);
 
-#endif /* _FH_ELEMENT_STYLE_H */
+#endif /* _FH_STYLE_H */

@@ -1,5 +1,5 @@
-#ifndef _FH_TEMPLATE_H
-#define _FH_TEMPLATE_H
+#ifndef _FH_STYLE_TEMPLATE_H
+#define _FH_STYLE_TEMPLATE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -18,5 +18,5 @@
 FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data);
 
 
-#endif /* _FH_TEMPLATE_H */
+#endif /* _FH_STYLE_TEMPLATE_H */
 

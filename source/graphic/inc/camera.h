@@ -1,5 +1,5 @@
-#ifndef _FH_CAMERA_H
-#define _FH_CAMERA_H
+#ifndef _FH_GRAPHIC_CAMERA_H
+#define _FH_GRAPHIC_CAMERA_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -227,4 +227,4 @@ FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info);
  */
 FH_API void fh_UpdateCamera(struct fh_camera *cam);
 
-#endif /* _FH_CAMERA_H */
+#endif /* _FH_GRAPHIC_CAMERA_H */

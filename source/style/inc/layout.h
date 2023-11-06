@@ -1,5 +1,5 @@
-#ifndef _FH_LAYOUT_H
-#define _FH_LAYOUT_H
+#ifndef _FH_STYLE_LAYOUT_H
+#define _FH_STYLE_LAYOUT_H
 
 #include "document/inc/element.h"
 
@@ -39,4 +39,4 @@ FH_XMOD void fh_layout_rows(struct fh_element *ele);
 FH_XMOD void fh_layout_columns(struct fh_element *ele);
 
 
-#endif /* _FH_LAYOUT_H */
+#endif /* _FH_STYLE_LAYOUT_H */

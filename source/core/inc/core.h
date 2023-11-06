@@ -10,7 +10,7 @@
 #include "parser/inc/parser.h"
 #include "style/inc/style.h"
 #include "system/inc/system.h"
-#include "utils/inc/utils.h"
+#include "utility/inc/utils.h"
 #include "widget/inc/widget.h"
 
 #include "window/inc/window.h"

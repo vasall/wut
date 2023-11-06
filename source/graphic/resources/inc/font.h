@@ -1,12 +1,12 @@
-#ifndef _FH_FONT_H
-#define _FH_FONT_H
+#ifndef _FH_GRAPHIC_RESOURCES_FONT_H
+#define _FH_GRAPHIC_RESOURCES_FONT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "document/inc/context.h"
 
-#include "utils/inc/utils.h"
+#include "utility/inc/utils.h"
 
 #define FH_FONT_NAME_LIM	128
 
@@ -73,4 +73,4 @@ FH_API void fh_RemoveFont(struct fh_font *font);
 FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name);
 
 
-#endif /* _FH_FONT_H */
+#endif /* _FH_GRAPHIC_RESOURCES_FONT_H */

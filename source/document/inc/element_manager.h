@@ -1,5 +1,5 @@
-#ifndef _FH_ELEMENT_MANAGER_H
-#define _FH_ELEMENT_MANAGER_H
+#ifndef _FH_DOCUMENT_ELEMENT_MANAGER_H
+#define _FH_DOCUMENT_ELEMENT_MANAGER_H
 
 #include "document/inc/element.h"
 
@@ -246,4 +246,4 @@ FH_API struct fh_view *fh_GetView(struct fh_element *ele);
 
 
 
-#endif /* _FH_ELEMENT_MANAGER_H */
+#endif /* _FH_DOCUMENT_ELEMENT_MANAGER_H */

@@ -8,7 +8,7 @@
 
 #include "style/inc/layout.h"
 
-#include "graphic/inc/shape.h"
+#include "utility/inc/shape.h"
 
 #include <stdlib.h>
 

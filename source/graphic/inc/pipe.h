@@ -1,5 +1,5 @@
-#ifndef _FH_PIPE_H
-#define _FH_PIPE_H
+#ifndef _FH_GRAPHIC_PIPE_H
+#define _FH_GRAPHIC_PIPE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -112,4 +112,4 @@ FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m));
  */
 FH_API void fh_PipeShow(struct fh_pipe *pip);
 
-#endif /* _FH_PIPE_H */
+#endif /* _FH_GRAPHIC_PIPE_H */

@@ -1,5 +1,5 @@
-#ifndef _FH_TABLE_H
-#define _FH_TABLE_H
+#ifndef _FH_UTILITY_TABLE_H
+#define _FH_UTILITY_TABLE_H
 
 
 #include "core/inc/define.h"
@@ -109,4 +109,4 @@ FH_API s8 fh_tbl_get(struct fh_table *tbl, char *name, u32 *size, void **ptr);
  */
 FH_API void fh_tbl_dump(struct fh_table *tbl);
 
-#endif /* _FH_TABLE_H */
+#endif /* _FH_UTILITY_TABLE_H */

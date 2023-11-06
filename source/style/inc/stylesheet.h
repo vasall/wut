@@ -1,11 +1,11 @@
-#ifndef _FH_STYLESHEET_H
-#define _FH_STYLESHEET_H
+#ifndef _FH_STYLE_STYLESHEET_H
+#define _FH_STYLE_STYLESHEET_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "graphic/inc/flex.h"
-#include "graphic/inc/color.h"
+#include "utility/inc/color.h"
 
 
 #define FH_DISPLAY_VISIBLE	0
@@ -108,4 +108,4 @@ struct fh_stylesheet_attribute {
 	u8 	category;
 };
 
-#endif /* _FH_STYLESHEET_H */
+#endif /* _FH_STYLE_STYLESHEET_H */

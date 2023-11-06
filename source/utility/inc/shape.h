@@ -1,5 +1,5 @@
-#ifndef _FH_SHAPE_H
-#define _FH_SHAPE_H
+#ifndef _FH_UTILITY_SHAPE_H
+#define _FH_UTILITY_SHAPE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -64,4 +64,4 @@ FH_API void fh_rect_mov(struct fh_rect *out, struct fh_rect *in,
 FH_API void fh_rect_dump(struct fh_rect *r);
 FH_API void fh_rect_lim_dump(struct fh_rect_lim *lim);
 
-#endif /* _FH_SHAPE_H */
+#endif /* _FH_UTILITY_SHAPE_H */

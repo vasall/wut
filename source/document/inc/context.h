@@ -1,5 +1,5 @@
-#ifndef _FH_CONTEXT_H
-#define _FH_CONTEXT_H
+#ifndef _FH_DOCUMENT_CONTEXT_H
+#define _FH_DOCUMENT_CONTEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -119,4 +119,4 @@ FH_API void fh_ContextDisableScissor(struct fh_context *ctx);
 
 
 
-#endif /* _FH_CONTEXT_H */
+#endif /* _FH_DOCUMENT_CONTEXT_H */

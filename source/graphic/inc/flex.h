@@ -1,5 +1,5 @@
-#ifndef _FH_FLEXVALUE_H
-#define _FH_FLEXVALUE_H
+#ifndef _FH_GRAPHIC_FLEX_H
+#define _FH_GRAPHIC_FLEX_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -68,4 +68,4 @@ FH_API u32 fh_flex_comp_lim(struct fh_flex *flex, struct fh_flex *min,
  */
 FH_API void fh_flex_show(struct fh_flex *flex);
 
-#endif /* _FH_FLEXVALUE_H */
+#endif /* _FH_GRAPHIC_FLEX_H */

@@ -1,8 +1,8 @@
-#include "graphic/inc/font.h"
+#include "graphic/resources/inc/font.h"
 
 #include "system/inc/system.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include <stdlib.h>
 

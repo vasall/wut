@@ -4,7 +4,7 @@
 
 #include "system/inc/system.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include <stdlib.h>
 

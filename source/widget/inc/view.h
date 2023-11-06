@@ -1,5 +1,5 @@
-#ifndef _FH_VIEW_H
-#define _FH_VIEW_H
+#ifndef _FH_WIDGET_VIEW_H
+#define _FH_WIDGET_VIEW_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -7,7 +7,7 @@
 #include "graphic/inc/pipe.h"
 #include "graphic/inc/camera.h"
 #include "graphic/inc/model.h"
-#include "graphic/inc/shape.h"
+#include "utility/inc/shape.h"
 
 #include "document/inc/context.h"
 
@@ -135,4 +135,4 @@ FH_API s8 fh_ViewAddModel(struct fh_view *v, struct fh_model *mdl);
  */
 FH_API void fh_ViewRemoveModel(struct fh_model *mdl);
 
-#endif /* _FH_VIEW_H */
+#endif /* _FH_WIDGET_VIEW_H */

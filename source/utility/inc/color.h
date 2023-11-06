@@ -1,5 +1,5 @@
-#ifndef _FH_COLOR_H
-#define _FH_COLOR_H
+#ifndef _FH_UTILITY_COLOR_H
+#define _FH_UTILITY_COLOR_H
 
 
 #include "core/inc/define.h"
@@ -82,4 +82,4 @@ FH_API struct fh_color fh_col_conv_itos(u32 v);
 FH_API struct fh_color fh_col_invform(struct fh_color in);
 FH_API u32 fh_col_invform_s32(u32 in);
 
-#endif /* FH_COLOR_H */
+#endif /* FH_UTILITY_COLOR_H */

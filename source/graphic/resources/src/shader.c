@@ -1,4 +1,4 @@
-#include "graphic/inc/shader.h"
+#include "graphic/resources/inc/shader.h"
 
 #include "core/inc/core.h"
 

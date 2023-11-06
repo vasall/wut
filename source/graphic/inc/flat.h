@@ -1,16 +1,16 @@
-#ifndef _FH_FLAT_H
-#define _FH_FLAT_H
+#ifndef _FH_GRAPHIC_FLAT_H
+#define _FH_GRAPHIC_FLAT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "window/inc/window.h"
 
-#include "graphic/inc/texture.h"
+#include "graphic/resources/inc/texture.h"
 #include "graphic/inc/model.h"
-#include "graphic/inc/shader.h"
-#include "graphic/inc/color.h"
-#include "graphic/inc/shape.h"
+#include "graphic/resources/inc/shader.h"
+#include "utility/inc/color.h"
+#include "utility/inc/shape.h"
 
 #define FH_FLAT_NAME_LIM	128
 
@@ -98,4 +98,4 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r,
 FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
 		struct fh_color c);
 
-#endif /* _FH_FLAT_H */
+#endif /* _FH_GRAPHIC_FLAT_H */

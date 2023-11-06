@@ -1,5 +1,5 @@
-#ifndef _FH_ELEMENT_WIDGET_H
-#define _FH_ELEMENT_WIDGET_H
+#ifndef _FH_WIDGET_H
+#define _FH_WIDGET_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -60,4 +60,4 @@ FH_API void fh_UpdateWidget(struct fh_widget *w, void *data);
  */
 FH_API void fh_RenderWidget(struct fh_widget *w);
 
-#endif /* _FH_ELEMENT_WIDGET_H */
+#endif /* _FH_WIDGET_H */

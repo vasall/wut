@@ -1,5 +1,5 @@
-#ifndef _FH_ELEMENT_EVENT_H
-#define _FH_ELEMENT_EVENT_H
+#ifndef _FH_DOCUMENT_ELEMENT_EVENT_H
+#define _FH_DOCUMENT_ELEMENT_EVENT_H
 
 
 struct fh_element_event {
@@ -7,4 +7,4 @@ struct fh_element_event {
 };
 
 
-#endif
+#endif /* _FH_DOCUMENT_ELEMENT_EVENT_H */

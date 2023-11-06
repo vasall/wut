@@ -1,10 +1,10 @@
-#ifndef _FH_TEXTURE_H
-#define _FH_TEXTURE_H
+#ifndef _FH_GRAPHIC_RESOURCES_TEXTURE_H
+#define _FH_GRAPHIC_RESOURCES_TEXTURE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include "document/inc/context.h"
 
@@ -146,4 +146,4 @@ FH_API void fh_UnuseTexture(void);
 
 
 
-#endif /* _FH_TEXTURE_H */
+#endif /* _FH_GRAPHIC_RESOURCES_TEXTURE_H */

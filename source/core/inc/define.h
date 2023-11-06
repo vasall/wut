@@ -6,4 +6,4 @@
 #define FH_INTERN		static
 #define FH_XMOD			extern
 
-#endif /* _FH_DEFINE_H */
+#endif /* _FH_CORE_DEFINE_H */

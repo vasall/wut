@@ -1,10 +1,10 @@
-#ifndef _FH_SHADER_H
-#define _FH_SHADER_H
+#ifndef _FH_GRAPHIC_RESOURCES_SHADER_H
+#define _FH_GRAPHIC_RESOURCES_SHADER_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "utils/inc/table.h"
+#include "utility/inc/table.h"
 
 #include "document/inc/context.h"
 
@@ -170,4 +170,4 @@ FH_API s8 fh_ShaderGetUniformLoc(struct fh_shader *shd, char *uni);
 FH_API void fh_shd_show_attrib(struct fh_shader *shd);
 #endif
 
-#endif
+#endif /* _FH_GRAPHIC_RESOURCES_SHADER_H */
