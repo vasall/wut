@@ -1,5 +1,5 @@
-#ifndef _FH_WINDOW_OPENGL_H
-#define _FH_WINDOW_OPENGL_H
+#ifndef _FH_WINDOW_SUBSYSTEMS_OPENGL_H
+#define _FH_WINDOW_SUBSYSTEMS_OPENGL_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -20,4 +20,4 @@ FH_API s8 fh_gl_init(void);
  */
 FH_API void fh_gl_print_info(void);
 
-#endif /* _FH_WINDOW_OPENGL_H */
+#endif /* _FH_WINDOW_SUBSYSTEMS_OPENGL_H */

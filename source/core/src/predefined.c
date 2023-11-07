@@ -1,4 +1,4 @@
-#include "core/inc/predef_resources.h"
+#include "core/inc/predefined.h"
 
 
  const u8 fh_ps_num = 3;

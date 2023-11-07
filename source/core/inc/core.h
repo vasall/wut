@@ -1,8 +1,10 @@
 #ifndef _FH_CORE_H
 #define _FH_CORE_H
 
+/* ---- Catch-all ---- */
 #include "core/inc/define.h"
 #include "core/inc/import.h"
+#include "core/inc/predefined.h"
 
 #include "document/inc/document.h"
 #include "event/inc/event.h"
@@ -10,12 +12,11 @@
 #include "parser/inc/parser.h"
 #include "style/inc/style.h"
 #include "system/inc/system.h"
-#include "utility/inc/utils.h"
+#include "utility/inc/utility.h"
 #include "widget/inc/widget.h"
 
 #include "window/inc/window.h"
-#include "window/inc/sdl.h"
-#include "window/inc/opengl.h"
+
 
 struct fh_core_container {
 	/* The main window and by that all windows attached to it */

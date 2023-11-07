@@ -1,5 +1,5 @@
-#ifndef _FH_WINDOW_SDL_H
-#define _FH_WINDOW_SDL_H
+#ifndef _FH_WINDOW_SUBSYSTEMS_SDL_H
+#define _FH_WINDOW_SUBSYSTEMS_SDL_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -38,4 +38,4 @@ FH_API void fh_sdl_quit(void);
 FH_API void fh_sdl_print_info(void);
 
 
-#endif /* _FH_WINDOW_SDL_H */
+#endif /* _FH_WINDOW_SUBSYSTEMS_SDL_H */
