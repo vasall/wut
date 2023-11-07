@@ -2,7 +2,7 @@
 
 #include "system/inc/system.h"
 
-#include "utility/inc/utils.h"
+#include "utility/inc/utility.h"
 
 #include <stdlib.h>
 

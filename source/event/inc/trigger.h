@@ -3,12 +3,12 @@
 
 
 struct fh_trigger {
-
+    u8 i;
 };
 
 
 struct fh_trigger_table {
-
+    u8 i;
 };
 
 

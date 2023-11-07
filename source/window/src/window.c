@@ -1,10 +1,8 @@
 #include "window/inc/window.h"
 
-#include "window/inc/opengl.h"
-
 #include "system/inc/system.h"
 
-#include "core/inc/predef_resources.h"
+#include "core/inc/predefined.h"
 #include "core/inc/core.h"
 
 #include "document/inc/document.h"

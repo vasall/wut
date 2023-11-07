@@ -1,6 +1,6 @@
 #include "document/inc/context.h"
 
-#include "core/inc/predef_resources.h"
+#include "core/inc/predefined.h"
 
 #include "system/inc/system.h"
 

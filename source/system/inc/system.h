@@ -4,6 +4,9 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
+/* Catch-all */
+#include "system/inc/file.h"
+
 /*
  * Safer reimplementation of malloc().
  *

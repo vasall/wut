@@ -1,6 +1,6 @@
-#include "window/inc/sdl.h"
+#include "window/subsystems/inc/sdl.h"
 
-#include "window/inc/opengl.h"
+#include "window/subsystems/inc/opengl.h"
 
 #include "system/inc/system.h"
 

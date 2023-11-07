@@ -13,8 +13,12 @@ typedef s8 (*fh_evt_cfnc)(struct fh_event *, void *);
 
 #include "window/inc/window.h"
 
-#include "event/inc/event_types.h"
+/* Catch-all */
+#include "event/inc/event_default.h"
 #include "event/inc/event_listener.h"
+#include "event/inc/event_types.h"
+#include "event/inc/trigger.h"
+
 
 #define FH_EVT_PIPE_LIM	64
 
