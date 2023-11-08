@@ -1,0 +1,6 @@
+#ifndef _FH_CORE_CONFIGURATION_H
+#define _FH_CORE_CONFIGURATION_H
+
+
+
+#endif /* _FH_CORE_CONFIGURATION_H */

@@ -143,5 +143,4 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name)
 err_return:
 	ALARM(ALARM_ERR, "Failed to get font from font table");
 	return NULL;
-
 }
