@@ -12,7 +12,7 @@
 #define FH_MDLC_DEBUG 0
 
 
-FH_INTERN u32 mdlc_type_size(GLenum type) {
+FH_INTERN u32 objc_type_size(GLenum type) {
 	switch(type) {
 		case GL_FLOAT: return sizeof(f32);
 	}
@@ -21,11 +21,11 @@ FH_INTERN u32 mdlc_type_size(GLenum type) {
 }
 
 
-FH_INTERN u32 mdlc_calc_stride(struct fh_model_c *c)
+FH_INTERN u32 objc_calc_stride(struct fh_object_c *c)
 {
 	u32 stride = 0;
 	u8 i;
-	struct fh_model_c_attrib *attr;
+	struct fh_object_c_attrib *attr;
 
 	for(i = 0; i < c->attrib_num; i++) {
 		attr = &c->attribs[i];
@@ -36,18 +36,18 @@ FH_INTERN u32 mdlc_calc_stride(struct fh_model_c *c)
 }
 
 
-FH_INTERN void mdlc_concate_data(struct fh_model *mdl, struct fh_model_c *c)
+FH_INTERN void objc_concate_data(struct fh_object *obj, struct fh_object_c *c)
 {
 	u8 *ptr;
 	u32 i;
 	u32 j;
-	struct fh_model_c_attrib *attr;
+	struct fh_object_c_attrib *attr;
 	u32 tmp = 0;
 
-	ptr = mdl->vertex_buffer;
+	ptr = obj->vertex_buffer;
 	
 	/* Iterate through all vertices... */
-	for(i = 0; i < mdl->vertex_number; i++) {
+	for(i = 0; i < obj->vertex_number; i++) {
 		/* ...and for every vertex write all attributes */
 		for(j = 0; j < c->attrib_num; j++) {
 			attr = &c->attribs[j];
@@ -61,26 +61,26 @@ FH_INTERN void mdlc_concate_data(struct fh_model *mdl, struct fh_model_c *c)
 }
 
 
-FH_INTERN void mdlc_create_buffers(struct fh_model *mdl)
+FH_INTERN void objc_create_buffers(struct fh_object *obj)
 {
 	u32 size;
 
 	/* Create the vertex-array-object */
-	glGenVertexArrays(1, &mdl->vao);
-	glBindVertexArray(mdl->vao);
+	glGenVertexArrays(1, &obj->vao);
+	glBindVertexArray(obj->vao);
 
 	/* Create the buffer-array-object */
-	glGenBuffers(1, &mdl->bao);
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->bao);
-	size = mdl->vertex_number * mdl->vertex_stride;
-	glBufferData(GL_ARRAY_BUFFER, size, mdl->vertex_buffer,
+	glGenBuffers(1, &obj->bao);
+	glBindBuffer(GL_ARRAY_BUFFER, obj->bao);
+	size = obj->vertex_number * obj->vertex_stride;
+	glBufferData(GL_ARRAY_BUFFER, size, obj->vertex_buffer,
 			GL_STATIC_DRAW);
 
 	/* Create the element-buffer-object */
-	glGenBuffers(1, &mdl->ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->ebo);
-	size = mdl->index_number * U32_S;
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, mdl->index_buffer,
+	glGenBuffers(1, &obj->ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, obj->ebo);
+	size = obj->index_number * U32_S;
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, obj->index_buffer,
 			GL_STATIC_DRAW);
 
 
@@ -88,21 +88,21 @@ FH_INTERN void mdlc_create_buffers(struct fh_model *mdl)
 }
 
 
-FH_INTERN void mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
+FH_INTERN void objc_enable_attr(struct fh_object *obj, struct fh_object_c *c)
 {
 	u32 i;
-	struct fh_model_c_attrib *attr;
-	u16 slot_lst[FH_MODEL_ATTRIB_LIM];
+	struct fh_object_c_attrib *attr;
+	u16 slot_lst[FH_OBJECT_ATTRIB_LIM];
 	s8 slot;
 	void *p;
 	u32 count;
 
-	fh_zeros(slot_lst, FH_MODEL_ATTRIB_LIM * U16_S);
+	fh_zeros(slot_lst, FH_OBJECT_ATTRIB_LIM * U16_S);
 
 	for(i = 0; i < c->attrib_num; i++) {
 		attr = &c->attribs[i];
 
-		if((slot = fh_ShaderGetInputLoc(mdl->shader, attr->name)) < 0) {
+		if((slot = fh_ShaderGetInputLoc(obj->shader, attr->name)) < 0) {
 			ALARM(ALARM_ERR, "Input variable not found");
 			return;
 		}
@@ -112,10 +112,10 @@ FH_INTERN void mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
 
 
 	/* Bind the vertex-array-object */
-	glBindVertexArray(mdl->vao);
+	glBindVertexArray(obj->vao);
 
 	/* Bind the buffer-array-object */
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->bao);
+	glBindBuffer(GL_ARRAY_BUFFER, obj->bao);
 
 
 	/*
@@ -133,7 +133,7 @@ FH_INTERN void mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
 				attr->elements,
 				attr->type,
 				GL_FALSE,
-				mdl->vertex_stride,
+				obj->vertex_stride,
 				p
 				);
 
@@ -141,23 +141,21 @@ FH_INTERN void mdlc_enable_attr(struct fh_model *mdl, struct fh_model_c *c)
 	}
 }
 
-FH_INTERN s8 mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
+FH_INTERN s8 objc_init_uniforms(struct fh_object *obj, struct fh_object_c *c)
 {
 	u32 i;
 	s32 j;
-	struct fh_model_c_unibuf *unibuf;
-	struct fh_model_uniform *uniform;
+	struct fh_object_c_unibuf *unibuf;
+	struct fh_object_uniform *uniform;
 
 	s32 slot;
 
-	printf("For model %s\n", mdl->name);
-
 	/* Bind the vertex-array-object */
-	glBindVertexArray(mdl->vao);
+	glBindVertexArray(obj->vao);
 
 	for(i = 0; i < c->unibuf_num; i++) {
 		unibuf = &c->unibufs[i];
-		uniform = &mdl->uniforms[i];
+		uniform = &obj->uniforms[i];
 
 		/* First write everything to the uniform buffer */
 		strcpy(uniform->name, unibuf->name);
@@ -176,7 +174,7 @@ FH_INTERN s8 mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 		printf("Uniform %d: %s\n", i, uniform->name);
 
 		/* Retrieve the binding location in the shader */
-		if((slot = fh_ShaderGetUniformLoc(mdl->shader, uniform->name)) < 0) {
+		if((slot = fh_ShaderGetUniformLoc(obj->shader, uniform->name)) < 0) {
 			ALARM(ALARM_ERR, "Uniform not found");
 			goto err_free;
 		}
@@ -186,14 +184,14 @@ FH_INTERN s8 mdlc_init_uniforms(struct fh_model *mdl, struct fh_model_c *c)
 		uniform->location = slot;
 	}
 
-	mdl->uniform_number = c->unibuf_num;
+	obj->uniform_number = c->unibuf_num;
 
 
 	return 0;
 
 err_free:
-	for(j = i - 1;j >= 0; j--) {
-		uniform = &mdl->uniforms[j];
+	for(j = i - 1; j >= 0; j--) {
+		uniform = &obj->uniforms[j];
 		glDeleteBuffers(1, &uniform->bao);
 		fh_free(uniform->data);
 	}
@@ -212,17 +210,17 @@ err_free:
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_model_c *fh_BeginModelConstr(char *name,
+FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
 		u32 vnum, u32 inum, u32 *idx)
 {
-	struct fh_model_c *c;
+	struct fh_object_c *c;
 
 	if(!name || vnum < 1 || inum < 1 || !idx) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(c = fh_malloc(sizeof(struct fh_model_c)))) {
+	if(!(c = fh_malloc(sizeof(struct fh_object_c)))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for constructor");
 		goto err_return;
 	}
@@ -251,19 +249,19 @@ err_free_c:
 	fh_free(c);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to begin creating new model");
+	ALARM(ALARM_ERR, "Failed to begin creating new object");
 	return NULL;
 
 
 }
 
 
-FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
+FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 		struct fh_context *ctx, vec3_t pos, vec3_t rot)
 {
 	u32 i;
 
-	struct fh_model *mdl;
+	struct fh_object *obj;
 	u32 tmp;
 
 	u32 size;
@@ -274,43 +272,43 @@ FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
 		goto err_return;
 	}
 
-	if(!(mdl = fh_malloc(sizeof(struct fh_model)))) {
-		ALARM(ALARM_ERR, "Failed to alloctae memory for model");
+	if(!(obj = fh_malloc(sizeof(struct fh_object)))) {
+		ALARM(ALARM_ERR, "Failed to alloctae memory for object");
 		goto err_return;
 	}
 
 	
 	/* Copy basic attributes */
-	strcpy(mdl->name, c->name);
+	strcpy(obj->name, c->name);
 	
 	/* Copy the resource references over */
-	mdl->shader = c->shader;
-	mdl->texture = c->texture;
+	obj->shader = c->shader;
+	obj->texture = c->texture;
 	
 	/*
 	 * Copy the indices.
 	 */
 
-	mdl->index_number = c->idx_num;
+	obj->index_number = c->idx_num;
 
-	tmp = mdl->index_number * U32_S;
-	if(!(mdl->index_buffer = fh_malloc(tmp))) {
+	tmp = obj->index_number * U32_S;
+	if(!(obj->index_buffer = fh_malloc(tmp))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for index buffer");
-		goto err_free_mdl;
+		goto err_free_obj;
 	}
 
-	memcpy(mdl->index_buffer, c->idx, tmp);
+	memcpy(obj->index_buffer, c->idx, tmp);
 
 
 	/*
 	 * Set the basic vertex data attributes and allocate the buffer.
 	 */
 
-	mdl->vertex_number = c->vtx_num;
-	mdl->vertex_stride = mdlc_calc_stride(c);
+	obj->vertex_number = c->vtx_num;
+	obj->vertex_stride = objc_calc_stride(c);
 
-	tmp = mdl->vertex_stride * mdl->vertex_number;
-	if(!(mdl->vertex_buffer = fh_malloc(tmp))) {
+	tmp = obj->vertex_stride * obj->vertex_number;
+	if(!(obj->vertex_buffer = fh_malloc(tmp))) {
 		ALARM(ALARM_ERR, "Failed to allocate memory for vertex buffer");
 		goto err_free_index_buffer;
 	}
@@ -322,61 +320,61 @@ FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
 	 *  < pos  tex  nrm >  < pos  tex  nrm >  < pos  tex  nrm >
 	 */
 
-	mdlc_concate_data(mdl, c);
+	objc_concate_data(obj, c);
 
 	/*
 	 * Create and initialize the data objects in OpenGL.
 	 */
-	mdlc_create_buffers(mdl);
+	objc_create_buffers(obj);
 
 	/*
 	 * Enable the vertex attributes.
 	 */
-	mdlc_enable_attr(mdl, c);
+	objc_enable_attr(obj, c);
 
 	/*
 	 * Create and initialize the uniform buffers.
 	 */
-	if(mdlc_init_uniforms(mdl, c) < 0)
+	if(objc_init_uniforms(obj, c) < 0)
 		goto err_destroy_buffers;
 
 
-	vec3_cpy(mdl->position, pos);
-	vec3_cpy(mdl->rotation, rot);
+	vec3_cpy(obj->position, pos);
+	vec3_cpy(obj->rotation, rot);
 
 	/* Reset view pointer */
-	mdl->view = NULL;
+	obj->view = NULL;
 
-	/* Insert the new model into the context model table */
-	mdl->context = ctx;
+	/* Insert the new object into the context object table */
+	obj->context = ctx;
 
-	size = sizeof(struct fh_model);
-	p = (void **)&mdl;
+	size = sizeof(struct fh_object);
+	p = (void **)&obj;
 
-	if(fh_tbl_add(ctx->models, mdl->name, size, p) < 0) {
+	if(fh_tbl_add(ctx->objects, obj->name, size, p) < 0) {
 		ALARM(ALARM_ERR, "Failed to insert entry into fh_table");
 		goto err_destroy_uniforms;
 	}
 
-	return mdl;
+	return obj;
 
 err_destroy_uniforms:
-	for(i = 0; i < mdl->uniform_number; i++) {
-		glDeleteBuffers(1, &mdl->uniforms[i].bao);
-		fh_free(mdl->uniforms[i].data);	
+	for(i = 0; i < obj->uniform_number; i++) {
+		glDeleteBuffers(1, &obj->uniforms[i].bao);
+		fh_free(obj->uniforms[i].data);	
 	}
 
 err_destroy_buffers:
 
-	glDeleteBuffers(1, &mdl->ebo);
-	glDeleteBuffers(1, &mdl->bao);
-	glDeleteVertexArrays(1, &mdl->vao);
+	glDeleteBuffers(1, &obj->ebo);
+	glDeleteBuffers(1, &obj->bao);
+	glDeleteVertexArrays(1, &obj->vao);
 
 err_free_index_buffer:
-	fh_free(mdl->index_buffer);
+	fh_free(obj->index_buffer);
 
-err_free_mdl:
-	fh_free(mdl);
+err_free_obj:
+	fh_free(obj);
 
 err_return:
 	ALARM(ALARM_ERR, "Failed to convert constructor");
@@ -384,7 +382,7 @@ err_return:
 }
 
 
-FH_API void fh_ModelConstrCleanup(struct fh_model_c *c)
+FH_API void fh_ObjectConstrCleanup(struct fh_object_c *c)
 {
 	u8 i;
 
@@ -405,7 +403,7 @@ FH_API void fh_ModelConstrCleanup(struct fh_model_c *c)
  * GENERAL
  */
 
-FH_API void fh_ModelConstrTexture(struct fh_model_c *c, struct fh_texture *tex)
+FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex)
 {
 	if(!c || !tex) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
@@ -421,7 +419,7 @@ FH_API void fh_ModelConstrTexture(struct fh_model_c *c, struct fh_texture *tex)
  * CUSTOM MODE
  */
 
-FH_API void fh_ModelConstrShader(struct fh_model_c *c, struct fh_shader *shd)
+FH_API void fh_ObjectConstrShader(struct fh_object_c *c, struct fh_shader *shd)
 {
 	if(!c || !shd) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
@@ -432,10 +430,10 @@ FH_API void fh_ModelConstrShader(struct fh_model_c *c, struct fh_shader *shd)
 }
 
 
-FH_API void fh_ModelConstrAttrib(struct fh_model_c *c, char *name, u8 size,
+FH_API void fh_ObjectConstrAttrib(struct fh_object_c *c, char *name, u8 size,
 		GLenum type, void *data)
 {
-	struct fh_model_c_attrib *a;
+	struct fh_object_c_attrib *a;
 	u32 s;
 
 	if(!c || !name || size < 1 || !data) {
@@ -443,14 +441,14 @@ FH_API void fh_ModelConstrAttrib(struct fh_model_c *c, char *name, u8 size,
 		return;
 	}
 
-	if(c->attrib_num + 1 > FH_MODEL_ATTRIB_LIM)
+	if(c->attrib_num + 1 > FH_OBJECT_ATTRIB_LIM)
 		return;
 
 	a = &c->attribs[c->attrib_num];
 
 	strcpy(a->name, name);
 	a->elements = size;
-	a->element_size = mdlc_type_size(type);
+	a->element_size = objc_type_size(type);
 	a->type = type;
 
 	s = c->vtx_num * a->elements * a->element_size;
@@ -465,16 +463,16 @@ FH_API void fh_ModelConstrAttrib(struct fh_model_c *c, char *name, u8 size,
 }
 
 
-FH_API void fh_ModelConstrUniform(struct fh_model_c *c, char *name, u32 size)
+FH_API void fh_ObjectConstrUniform(struct fh_object_c *c, char *name, u32 size)
 {
-	struct fh_model_c_unibuf *u;
+	struct fh_object_c_unibuf *u;
 
 	if(!c || !name || size < 1) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		return;
 	}
 
-	if(c->unibuf_num + 1 > FH_MODEL_UNIFORM_LIM)
+	if(c->unibuf_num + 1 > FH_OBJECT_UNIFORM_LIM)
 		return;
 
 	u = &c->unibufs[c->unibuf_num];

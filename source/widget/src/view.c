@@ -17,9 +17,9 @@ FH_INTERN s8 view_get_slot(struct fh_view_list *lst)
 	return -1;
 }
 
-FH_INTERN void view_render_models(struct fh_model *m)
+FH_INTERN void view_render_objects(struct fh_object *m)
 {
-	fh_RenderModel(m, NULL, NULL);
+	fh_RenderObject(m, NULL, NULL);
 }
 
 
@@ -135,7 +135,7 @@ FH_API struct fh_view *fh_CreateView(struct fh_view_list *lst,
 
 	/* Create a new pipeline */
 	if(!(v->pipe = fh_CreatePipe(v->camera->pos))) {
-		ALARM(ALARM_ERR, "Failed to create new model pipeline");
+		ALARM(ALARM_ERR, "Failed to create new object pipeline");
 		goto err_destroy_cam;
 	}
 
@@ -199,9 +199,9 @@ FH_API void fh_RenderView(struct fh_view *v)
 
 
 	/*
-	 * Now we can render all models in order.
+	 * Now we can render all objects in order.
 	 */
-	fh_PipeApply(v->pipe, &view_render_models);			
+	fh_PipeApply(v->pipe, &view_render_objects);			
 
 
 	/*
@@ -249,45 +249,45 @@ FH_API void fh_UpdateViewPipe(struct fh_view *v)
 }
 
 
-FH_API s8 fh_ViewAddModel(struct fh_view *v, struct fh_model *mdl)
+FH_API s8 fh_ViewAddObject(struct fh_view *v, struct fh_object *obj)
 {
-	if(!v || !mdl) {
+	if(!v || !obj) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_PipeAddModel(v->pipe, mdl) < 0) {
-		ALARM(ALARM_ERR, "Failed to add model to pipe");
+	if(fh_PipeAddObject(v->pipe, obj) < 0) {
+		ALARM(ALARM_ERR, "Failed to add object to pipe");
 		goto err_return;
 	}
 
-	mdl->view = v;
+	obj->view = v;
 
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to add model to view");
+	ALARM(ALARM_ERR, "Failed to add object to view");
 	return -1;
 }
 
 
-FH_API void fh_ViewRemoveModel(struct fh_model *mdl)
+FH_API void fh_ViewRemoveObject(struct fh_object *obj)
 {
 	struct fh_pipe *pip;
 
-	if(!mdl) {
+	if(!obj) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
 
-	if(!mdl->view) {
-		ALARM(ALARM_WARN, "Model is not attached to any view");
+	if(!obj->view) {
+		ALARM(ALARM_WARN, "Object is not attached to any view");
 		return;
 	}
 
-	pip = mdl->view->pipe;
+	pip = obj->view->pipe;
 
-	fh_PipeRemoveModel(pip, fh_PipeGetSlot(pip, mdl->name));
+	fh_PipeRemoveObject(pip, fh_PipeGetSlot(pip, obj->name));
 
-	mdl->view = NULL;
+	obj->view = NULL;
 }

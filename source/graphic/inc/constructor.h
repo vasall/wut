@@ -4,17 +4,17 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 
 #include "window/inc/window.h"
 
-struct fh_model_c;
+struct fh_object_c;
 
 
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 
 
-struct fh_model_c_attrib {
+struct fh_object_c_attrib {
 	/* The name of the attribute */
 	char name[128];
 
@@ -33,7 +33,7 @@ struct fh_model_c_attrib {
 	u8 *data;
 };
 
-struct fh_model_c_unibuf {
+struct fh_object_c_unibuf {
 	/* The name of the new uniform buffer */
 	char name[128];
 
@@ -41,23 +41,23 @@ struct fh_model_c_unibuf {
 	u32 size;
 };
 
-enum fh_model_c_type {
-	FH_MODELC_DEFAULT,
-	FH_MODELC_RIGGED,
-	FH_MODELC_CUSTOM
+enum fh_object_c_type {
+	FH_OBJECTC_DEFAULT,
+	FH_OBJECTC_RIGGED,
+	FH_OBJECTC_CUSTOM
 };
 
-struct fh_model_c {
-	/* The name of the new model */
-	char name[FH_MODEL_NAME_LIM];
+struct fh_object_c {
+	/* The name of the new object */
+	char name[FH_OBJECT_NAME_LIM];
 
 	/* The construction process to utilize */
-	enum fh_model_c_type type;
+	enum fh_object_c_type type;
 
-	/* The shader to use for the model */
+	/* The shader to use for the object */
 	struct fh_shader *shader;
 
-	/* The texture to use for the model */
+	/* The texture to use for the object */
 	struct fh_texture *texture;
 
 	/* The number of vertices */
@@ -67,99 +67,99 @@ struct fh_model_c {
 	u32 idx_num;
 	u32 *idx;
 
-	/* The attributes of the new model */
+	/* The attributes of the new object */
 	u32 attrib_num;
-	struct fh_model_c_attrib attribs[FH_MODEL_ATTRIB_LIM];
+	struct fh_object_c_attrib attribs[FH_OBJECT_ATTRIB_LIM];
 
-	/* The uniform buffers for the new model */
+	/* The uniform buffers for the new object */
 	u32 unibuf_num;
-	struct fh_model_c_unibuf unibufs[FH_MODEL_UNIFORM_LIM]; 
+	struct fh_object_c_unibuf unibufs[FH_OBJECT_UNIFORM_LIM]; 
 };
 
 
 /*
- * Create a new model constructor and begin creating a new model.
+ * Create a new object constructor and begin creating a new object.
  *
- * @name: The name of the new model
+ * @name: The name of the new object
  * @vnum: The number of vertices
  * @inum: The number of indices
  * @idx: The index data
  *
  * Returns: A new constructor or NULL if an error occurred
  */
-FH_API struct fh_model_c *fh_BeginModelConstr(char *name,
+FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
 		u32 vnum, u32 inum, u32 *idx);
 
 
 /*
- * Finalize construction and get the finished model. This function will also
- * insert the model into the model table of the given context.
+ * Finalize construction and get the finished object. This function will also
+ * insert the object into the object table of the given context.
  *
  * @c: Pointer to the constructor
  * @ctx: Pointer to the context
- * @pos: The initial position of the model
- * @rot: The initial rotation of the model
+ * @pos: The initial position of the object
+ * @rot: The initial rotation of the object
  *
- * Returns: Either a pointer to the finished model or NULL if an error occurred
+ * Returns: Either a pointer to the finished object or NULL if an error occurred
  */
-FH_API struct fh_model *fh_EndModelConstr(struct fh_model_c *c,
+FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 		struct fh_context *ctx, vec3_t pos, vec3_t rot);
 
 
 /*
- * After the model constructor has been utilized and is not need anymore, this
+ * After the object constructor has been utilized and is not need anymore, this
  * function should be called to cleanup everything and free the allocated
- * memory. The models that have been created using the constructor are
+ * memory. The objects that have been created using the constructor are
  * unaffected.
  *
  * @c: Pointer to the constructor
  */
-FH_API void fh_ModelConstrCleanup(struct fh_model_c *c);
+FH_API void fh_ObjectConstrCleanup(struct fh_object_c *c);
 
 
 /*
- * Set the texture of the model during construction.
+ * Set the texture of the object during construction.
  *
- * @c: Pointer to the model constructor
+ * @c: Pointer to the object constructor
  * @tex: Pointer to the texture
  */
-FH_API void fh_ModelConstrTexture(struct fh_model_c *c, struct fh_texture *tex);
+FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex);
 
 
 /*
- * Set the shader of the model during construction.
+ * Set the shader of the object during construction.
  *
- * @c: Pointer to the model constructor
+ * @c: Pointer to the object constructor
  * @shd: Pointer to the shader
  */
-FH_API void fh_ModelConstrShader(struct fh_model_c *c, struct fh_shader *shd);
+FH_API void fh_ObjectConstrShader(struct fh_object_c *c, struct fh_shader *shd);
 
 
 /*
- * Attach a new attribute to the model.
+ * Attach a new attribute to the object.
  *
- * Use like: fh_ModelConstrAttrib(c, "v_pos", 3, GL_FLOAT, vtx);
+ * Use like: fh_ObjectConstrAttrib(c, "v_pos", 3, GL_FLOAT, vtx);
  *
- * @c: Pointer to the model constructor
+ * @c: Pointer to the object constructor
  * @name: The name of the new attribute(has to match the shader input)
  * @size: The size of the element in data type quantities (ie 3 * GL_FLOAT)
  * @type: The data type of an element
  * @data: The buffer containing the data
  */
-FH_API void fh_ModelConstrAttrib(struct fh_model_c *c, char *name, u8 size,
+FH_API void fh_ObjectConstrAttrib(struct fh_object_c *c, char *name, u8 size,
 		GLenum type, void *data);
 
 
 /*
- * Add a new uniform buffer to the model.
+ * Add a new uniform buffer to the object.
  *
- * Use like: fh_ModelConstrUniform(c, "camera", sizeof(struct uniform_buffer));
+ * Use like: fh_ObjectConstrUniform(c, "camera", sizeof(struct uniform_buffer));
  *
- * @c: Pointer to the model constructor
+ * @c: Pointer to the object constructor
  * @name: The name of the uniform buffer
  * @size: The size of the uniform buffer in bytes
  */
-FH_API void fh_ModelConstrUniform(struct fh_model_c *c, char *name, u32 size);
+FH_API void fh_ObjectConstrUniform(struct fh_object_c *c, char *name, u32 size);
 
 
 

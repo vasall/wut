@@ -4,7 +4,7 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 #include "graphic/inc/camera.h"
 
 
@@ -21,7 +21,6 @@ struct fh_pipe {
 
 	struct fh_pipe_entry *entries;
 	s32 start;
-
 	vec3_t ref_point;
 };
 
@@ -29,8 +28,8 @@ struct fh_pipe_entry {
 	/* Flags indicating certain states of the entry  */
 	u8 			flags;
 
-	/* A pointer to the underlying model */
-	struct fh_model 	*model;
+	/* A pointer to the underlying object */
+	struct fh_object 	*object;
 
 	/* The evaluation criteria */
 	f32 			crit;
@@ -58,30 +57,30 @@ FH_API void fh_DestroyPipe(struct fh_pipe *pip);
 
 
 /*
- * Push a model into the rendering pipe.
+ * Push a object into the rendering pipe.
  *
  * @pip: Pointer to the pipe
- * @mdl: Pointer to the model
+ * @obj: Pointer to the object
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_PipeAddModel(struct fh_pipe *pip, struct fh_model *mdl);
+FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *object);
 
 
 /*
- * Remove a model from the rendering pipe.
+ * Remove a object from the rendering pipe.
  *
  * @pip: Pointer to the pipe
- * @slot: The slot of the model
+ * @slot: The slot of the object
  */
-FH_API void fh_PipeRemoveModel(struct fh_pipe *pip, s32 slot);
+FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot);
 
 
 /*
- * Get the slot of a model in the pipe.
+ * Get the slot of a object in the pipe.
  *
  * @pip: Pointer to the pipe
- * @name: The name of the model to search for
+ * @name: The name of the object to search for
  */
 FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name);
 
@@ -96,13 +95,13 @@ FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref);
 
 
 /*
- * Apply a higher level function to all model entries in the pipe, in the sorted
+ * Apply a higher level function to all object entries in the pipe, in the sorted
  * order.
  *
  * @pip: Pointer to the pipe
- * @fnc: The callback function to call on every model
+ * @fnc: The callback function to call on every object
  */
-FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m));
+FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *o));
 
 
 /*

@@ -126,14 +126,14 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	if(fh_InitShaderTable(ctx) < 0) goto err_free_ctx;
 	if(fh_InitTextureTable(ctx) < 0) goto err_close_shd;
 	if(fh_InitFontTable(ctx) < 0) goto err_close_tex;
-	if(fh_InitModelTable(ctx) < 0) goto err_close_font;
+	if(fh_InitObjectTable(ctx) < 0) goto err_close_font;
 
 	/*
 	 * Create the underlying OpenGL-context.
 	 */
 	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
 		ALARM(ALARM_ERR, "Failed to create GL context");
-		goto err_close_mdl;
+		goto err_close_obj;
 	}
 
 	/*
@@ -158,8 +158,8 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 err_delete_context:
 	SDL_GL_DeleteContext(ctx->gl_context);
 
-err_close_mdl:
-	fh_CloseModelTable(ctx);
+err_close_obj:
+	fh_CloseObjectTable(ctx);
 
 err_close_font:
 	fh_CloseFontTable(ctx);
@@ -189,7 +189,7 @@ FH_API void fh_DestroyContext(struct fh_context *ctx)
 	/* 
 	 * Second, close the resource tables.
 	 */
-	fh_CloseModelTable(ctx);
+	fh_CloseObjectTable(ctx);
 	fh_CloseFontTable(ctx);
 	fh_CloseTextureTable(ctx);
 	fh_CloseShaderTable(ctx);
@@ -212,7 +212,7 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
 		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
 		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
-		case FH_CONTEXT_MODELS: tbl = ctx->models; break;
+		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
 		default: ALARM(ALARM_ERR, "Table not found"); goto err_return;
 	}
 
@@ -241,7 +241,7 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
 		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
 		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
-		case FH_CONTEXT_MODELS: tbl = ctx->models; break;
+		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
 		default: ALARM(ALARM_WARN, "Table not found"); return;
 	}
 

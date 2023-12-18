@@ -462,10 +462,6 @@ FH_API void fh_UseShader(struct fh_shader *shd)
 
 	/* First activate the shader */
 	glUseProgram(shd->program);
-
-	/* ...then enable the attributes */
-	for(i = 0; i < shd->inputs.num; i++)
-		glEnableVertexAttribArray(shd->inputs.vars[i].location);
 } 
 
 

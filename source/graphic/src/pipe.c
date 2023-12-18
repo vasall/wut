@@ -25,14 +25,14 @@ FH_INTERN void pip_calculate(struct fh_pipe *pip)
 {
 	u8 i;
 	struct fh_pipe_entry *ent;
-	struct fh_model *mdl;
+	struct fh_object *obj;
 	vec3_t del;
 
 	for(i = 0; i < pip->number; i++) {
 		ent = &pip->entries[i];
-		mdl = ent->model;
+		obj = ent->object;
 
-		vec3_sub(mdl->position, pip->ref_point, del);
+		vec3_sub(obj->position, pip->ref_point, del);
 		
 		ent->crit = vec2_len(del);
 	}
@@ -43,21 +43,21 @@ FH_INTERN void pip_calculate(struct fh_pipe *pip)
  * Calculate the distance from the camera for given slots.
  *
  * @pip: Pointer to the pipe
- * @num: The number of models to update
- * @slt: The slots of the models in the pipe
+ * @num: The number of objects to update
+ * @slt: The slots of the objects in the pipe
  */
 FH_INTERN void pip_calculate_select(struct fh_pipe *pip, u8 num, s32 *slt)
 {
 	u8 i;
 	struct fh_pipe_entry *ent;
-	struct fh_model *mdl;
+	struct fh_object *obj;
 	vec3_t del;
 
 	for(i = 0; i < num; i++) {
 		ent = &pip->entries[slt[i]];
-		mdl = ent->model;
+		obj = ent->object;
 
-		vec3_sub(mdl->position, pip->ref_point, del);
+		vec3_sub(obj->position, pip->ref_point, del);
 		
 		ent->crit = vec2_len(del);
 	}
@@ -215,7 +215,7 @@ FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
 	pip->start = -1;
 	vec3_cpy(pip->ref_point, ref);
 
-	/* Preallocate slots for the models */
+	/* Preallocate slots for the objects */
 	size = sizeof(struct fh_pipe_entry) * pip->alloc;
 	if(!(pip->entries = fh_malloc(size))) {
 		ALARM(ALARM_ERR, "Failed to preallocate memory for entries");
@@ -252,12 +252,12 @@ FH_API void fh_DestroyPipe(struct fh_pipe *pip)
 }
 
 
-FH_API s8 fh_PipeAddModel(struct fh_pipe *pip, struct fh_model *mdl)
+FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *obj)
 {
 	s32 slot;
 	struct fh_pipe_entry *ent;
 
-	if(!pip || !mdl) {
+	if(!pip || !obj) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;
 	}
@@ -271,7 +271,7 @@ FH_API s8 fh_PipeAddModel(struct fh_pipe *pip, struct fh_model *mdl)
 	ent = &pip->entries[slot];
 
 	ent->flags = FH_PIPE_F_USED;
-	ent->model = mdl;
+	ent->object = obj;
 
 	pip_calculate_select(pip, 1, &slot);
 
@@ -282,12 +282,12 @@ FH_API s8 fh_PipeAddModel(struct fh_pipe *pip, struct fh_model *mdl)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to insert model into pipe");
+	ALARM(ALARM_ERR, "Failed to insert object into pipe");
 	return -1;
 }
 
 
-FH_API void fh_PipeRemoveModel(struct fh_pipe *pip, s32 slot)
+FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot)
 {
 	struct fh_pipe_entry *ent;
 	struct fh_pipe_entry *hdl;
@@ -339,13 +339,13 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 	while(1) {
 		run = &pip->entries[i];
 
-		if(strcmp(run->model->name, name) == 0)
+		if(strcmp(run->object->name, name) == 0)
 			return i;
 
 		i = run->next;
 	}
 	
-	ALARM(ALARM_ERR, "Model could not be found in the pipe");
+	ALARM(ALARM_ERR, "Object could not be found in the pipe");
 	return -1;
 }
 
@@ -364,7 +364,7 @@ FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref)
 }
 
 
-FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m))
+FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *m))
 {
 	s32 itr;
 	struct fh_pipe_entry *ent;
@@ -378,7 +378,7 @@ FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_model *m))
 	while(itr != -1) {
 		ent = &pip->entries[itr];
 
-		fh_RenderModel(ent->model, NULL, NULL);
+		fh_RenderObject(ent->object, NULL, NULL);
 
 		itr = ent->next;
 	}
@@ -398,7 +398,7 @@ FH_API void fh_PipeShow(struct fh_pipe *pip)
 	itr = pip->start;
 	c = 0;
 	while(itr != -1) {
-		printf("%d: %s (%d)", c, pip->entries[itr].model->name, itr);
+		printf("%d: %s (%d)", c, pip->entries[itr].object->name, itr);
 		itr = pip->entries[itr].next;
 		c++;
 	}
