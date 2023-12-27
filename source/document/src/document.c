@@ -162,27 +162,17 @@ FH_INTERN struct fh_shader *doc_create_batch_shader(struct fh_document *doc)
 FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
-		{2, GL_INT},			/* position */
-		{4, GL_FLOAT},			/* color */
-		{1, GL_INT}			/* rectangle_index */
-	};
-
-	struct fh_uniform_temp u_attributes[] = {
-		{"u_frame", FH_UNIFORM_2IV, 1000, 0},
-		{"u_rect", FH_UNIFORM_4IV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_radii", FH_UNIFORM_4IV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bor_thick", FH_UNIFORM_1IV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bor_color", FH_UNIFORM_4FV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+		{2, GL_INT},		/* position */
+		{4, GL_FLOAT}		/* color */
 	};
 
 	return fh_batch_create(
-			shd,
-			3,			/* Number of vertex attributes */
+			2,			/* Number of vertex attributes */
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
 			6000,			/* Index capacity */
-			5,			/* Number of uniform buffers */
-			u_attributes		/* List of all uniforms */
+			0,			/* Number of uniform buffers */
+			NULL			/* List of all uniforms */
 			);
 }
 
@@ -465,12 +455,9 @@ FH_API void fh_RenderDocument(struct fh_document *doc)
 		return;
 	}
 
+	fh_RenderDocumentUI(doc);
 
-	fh_batch_flush(doc->batch);		
-
-	/* fh_RenderViewList(doc->views); */
-	/* fh_RenderObject(doc->ui, NULL, NULL); */
-
+	fh_batch_flush(doc->batch);
 }
 
 
@@ -484,10 +471,8 @@ FH_API void fh_ShowDocumentTree(struct fh_document *doc,
 		return;
 	}
 
-	if(ele)
-		start = ele;
-	else
-		start = doc->body;
+	if(ele) start = ele;
+	else start = doc->body;
 
 	fh_element_hlf(start, &doc_cfnc_show, NULL, NULL);
 }

@@ -4,10 +4,12 @@
 
 #include "window/subsystems/inc/opengl.h"
 
+#include "core/inc/predefined.h"
+
+
 FH_INTERN size_t batch_sizeof_GLenum(GLenum type)
 {
-	switch(type)
-	{
+	switch(type) {
 		case GL_BYTE:
 		case GL_UNSIGNED_BYTE:
 			return sizeof(GLbyte);
@@ -88,22 +90,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 
 	switch(uniform->type) {
 		case FH_UNIFORM_1F:
-			glUniform1f(uniform->location, 
+			glUniform1f(uniform->slot, 
 					((GLfloat *)uniform->data)[0]);
 			return;
 		case FH_UNIFORM_2F:
-			glUniform2f(uniform->location, 
+			glUniform2f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1]);
 			return;
 		case FH_UNIFORM_3F:
-			glUniform3f(uniform->location, 
+			glUniform3f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1],
 					((GLfloat *)uniform->data)[2]);
 			return;
 		case FH_UNIFORM_4F:
-			glUniform4f(uniform->location, 
+			glUniform4f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1],
 					((GLfloat *)uniform->data)[2],
@@ -111,22 +113,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 			return;
 
 		case FH_UNIFORM_1I:
-			glUniform1i(uniform->location, 
+			glUniform1i(uniform->slot, 
 					((GLint *)uniform->data)[0]);
 			return;
 		case FH_UNIFORM_2I:
-			glUniform2i(uniform->location, 
+			glUniform2i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1]);
 			return;
 		case FH_UNIFORM_3I:
-			glUniform3i(uniform->location, 
+			glUniform3i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1],
 					((GLint *)uniform->data)[2]);
 			return;
 		case FH_UNIFORM_4I:
-			glUniform4i(uniform->location, 
+			glUniform4i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1],
 					((GLint *)uniform->data)[2],
@@ -134,22 +136,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 			return;
 
 		case FH_UNIFORM_1UI:
-			glUniform1ui(uniform->location, 
+			glUniform1ui(uniform->slot, 
 					((GLuint *)uniform->data)[0]);
 			return;
 		case FH_UNIFORM_2UI:
-			glUniform2ui(uniform->location, 
+			glUniform2ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1]);
 			return;
 		case FH_UNIFORM_3UI:
-			glUniform3ui(uniform->location, 
+			glUniform3ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1],
 					((GLuint *)uniform->data)[2]);
 			return;
 		case FH_UNIFORM_4UI:
-			glUniform4ui(uniform->location, 
+			glUniform4ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1],
 					((GLuint *)uniform->data)[2],
@@ -157,318 +159,367 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 			return;
 
 		case FH_UNIFORM_1FV:
-			glUniform1fv(uniform->location,
+			glUniform1fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
 		case FH_UNIFORM_2FV:
-			glUniform2fv(uniform->location,
+			glUniform2fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
 		case FH_UNIFORM_3FV:
-			glUniform3fv(uniform->location,
+			glUniform3fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
 		case FH_UNIFORM_4FV:
-			glUniform4fv(uniform->location,
+			glUniform4fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
 
 		case FH_UNIFORM_1IV:
-			glUniform1iv(uniform->location,
+			glUniform1iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
 		case FH_UNIFORM_2IV:
-			glUniform2iv(uniform->location,
+			glUniform2iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
 		case FH_UNIFORM_3IV:
-			glUniform3iv(uniform->location,
+			glUniform3iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
 		case FH_UNIFORM_4IV:
-			glUniform4iv(uniform->location,
+			glUniform4iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
 
 		case FH_UNIFORM_1UIV:
-			glUniform1uiv(uniform->location,
+			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
 		case FH_UNIFORM_2UIV:
-			glUniform1uiv(uniform->location,
+			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
 		case FH_UNIFORM_3UIV:
-			glUniform1uiv(uniform->location,
+			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
 		case FH_UNIFORM_4UIV:
-			glUniform1uiv(uniform->location,
+			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
 
 		case FH_UNIFORM_M2FV:
-			glUniformMatrix2fv(uniform->location, count,
+			glUniformMatrix2fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
 		case FH_UNIFORM_M3FV:
-			glUniformMatrix3fv(uniform->location, count,
+			glUniformMatrix3fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
 		case FH_UNIFORM_M4FV:
-			glUniformMatrix4fv(uniform->location, count,
+			glUniformMatrix4fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
 	}
 }
 
 
-
-
-
-FH_XMOD struct fh_batch *fh_batch_create(struct fh_shader *shd, u32 attribnum, 
-		struct fh_vertex_attrib *attribs, u32 vlimit, u32 ilimit,
-		u32 uninum, struct fh_uniform_temp *unis)
+static int batch_compile_source(unsigned int type, const char *src, unsigned int *shd_out)
 {
-	u32 i;
-	u32 vsize;
-	u32 offset;
-	u32 temp;
+	unsigned int shd;
+	char info_log[512];
+	int success;
 
+	/*
+	 * Create and compile the shader.
+	 */
+	shd = glCreateShader(type);
+	glShaderSource(shd, 1, &src, NULL);
+	glCompileShader(shd);
+
+	/*
+	 * Check if something went wrong.
+	 */
+	glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
+	if(success != GL_TRUE) {
+		glGetShaderInfoLog(shd, 512, NULL, info_log);
+		printf("Failed to compile shader source: %s\n", info_log);
+		glDeleteShader(shd);
+		return -1;
+	}
+
+	*shd_out = shd;
+	return 0;
+}
+
+
+static int batch_load_shader(const char *v_src, const char *f_src, unsigned int *prog)
+{
+	unsigned int vshader;
+	unsigned int fshader;
+
+	int success;
+	char info_log[512];
+
+	/*
+	 * Create and compile the vertex- and fragment-shader.
+	 */
+	printf("Compile vertex shader\n");
+	if(batch_compile_source(GL_VERTEX_SHADER, v_src, &vshader) < 0)
+		goto erfh_batch_return;
+
+	printf("Compile fragment shader\n");
+	if(batch_compile_source(GL_FRAGMENT_SHADER, f_src, &fshader) < 0)
+		goto erfh_batch_delete_vshader;
+
+
+	/*
+	 * Create shader program.
+	 */
+	if((*prog = glCreateProgram()) == 0) {
+		printf("Failed to create shader program\n");
+		goto erfh_batch_delete_fshader;
+	}
+
+
+	/*
+	 * Link shaders to program.
+	 */
+	glAttachShader(*prog, vshader);
+	glAttachShader(*prog, fshader);
+
+	/*
+	 * Finally link the program.
+	 */
+	glLinkProgram(*prog);
+
+	glGetProgramiv(*prog, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(*prog, 512, NULL, info_log);
+		printf("Failed to link shader\n");
+		printf("Error: %s", info_log);
+		goto erfh_batch_delete_program;
+	}
+
+	/*
+	 * Finally detach and delete source shaders.
+	 */
+	glDetachShader(*prog, vshader);
+	glDetachShader(*prog, fshader);
+	glDeleteShader(vshader);
+	glDeleteShader(fshader);
+
+	return 0;
+
+erfh_batch_delete_program:
+	glDeleteProgram(*prog);	
+
+erfh_batch_delete_fshader:
+	glDeleteShader(fshader);
+
+erfh_batch_delete_vshader:
+	glDeleteShader(vshader);	
+
+erfh_batch_return:
+	return -1;
+}
+
+static int calculate_vertex_size(int attribnum, struct fh_vertex_attrib *attribs)
+{
+	int i;
+	int size = 0;
+
+	for(i = 0; i < attribnum; i++) {
+		size += (batch_sizeof_GLenum(attribs[i].type) * attribs[i].number);
+	}
+
+	return size;
+}
+
+extern struct fh_batch *fh_batch_create(int attribnum, struct fh_vertex_attrib *attribs, int vertex_capacity,
+		int index_capacity, int uniformnum, struct fh_uniform_temp *uniforms)
+{
+	GLuint program;
 	struct fh_batch *ren;
 
-	if(attribnum < 1 || vlimit < 1 || ilimit < 1) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
-		return NULL;
-	}
+	char *vertex;
+	char *fragment;
 
-	/* Allocate the batch renderer */
-	if(!(ren = fh_malloc(sizeof(struct fh_batch)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for batch");
-		goto err_return;
-	}
+	int vsize;
+	int i;
 
-	/* Calculate the size of a single vertex */
-	vsize = 0;
-	for(i = 0; i < attribnum; i++) {
-		temp = batch_sizeof_GLenum(attribs[i].type);
-		vsize += temp * attribs[i].number;
-	}
+	int offset;
 
-	/*  Create the Vertex Array Object */
-	glGenVertexArrays(1, &ren->gl_objects[0]);
-	glBindVertexArray(ren->gl_objects[0]);
+	ren = malloc(sizeof(struct fh_batch));
+
+	/* calculate the size of a single vertex */
+	vsize = calculate_vertex_size(attribnum, attribs);
 
 
-	glGenBuffers(2, &ren->gl_objects[1]);
+	/* create the vertex array object */
+	glGenVertexArrays(1, &ren->vao);
+	glBindVertexArray(ren->vao);
 
-	/* Create and initialize the Vertex Buffer Object */
-	glBindBuffer(GL_ARRAY_BUFFER, ren->gl_objects[1]);
-	glBufferData(GL_ARRAY_BUFFER, vsize * vlimit, NULL, GL_DYNAMIC_DRAW);
+	/* create the dynamic vertex buffer */
+	glGenBuffers(1, &ren->vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, ren->vbo);
+	glBufferData(GL_ARRAY_BUFFER, vsize * vertex_capacity, NULL,GL_DYNAMIC_DRAW);
 
-	/* Create and initialize the Index Buffer Object */
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->gl_objects[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, U32_S * ilimit, NULL,
-			GL_STREAM_DRAW);
+	/* create the dynamic index buffer */
+	glGenBuffers(1, &ren->ibo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_capacity, NULL, GL_STREAM_DRAW);
 
-	/* Enable and configure vertex data */
+
+	/* enable and configure vertex data */
 	offset = 0;
 	for(i = 0; i < attribnum; i++) {
+
+		printf("Enable %d with offset %d and %d elements\n", i, offset, attribs[i].number);
+
 		glEnableVertexAttribArray(i);
 
-		if(attribs[i].type == GL_INT) {
-			glVertexAttribIPointer(
-					i,
-					attribs[i].number,
-					attribs[i].type,
-					vsize,
-					(void *)(offset)
-					);
-		}
-		else {
-			glVertexAttribPointer(
-					i,
-					attribs[i].number,
-					attribs[i].type,
-					GL_FALSE,
-					vsize,
-					(void *)(offset)
-					);
+		switch(attribs[i].type) {
+			case GL_INT:
+				glVertexAttribIPointer(
+						i, 
+						attribs[i].number,
+						attribs[i].type,
+						vsize,
+						(void *)(offset)
+						);
+				break;
+
+
+			default:
+				glVertexAttribPointer(
+						i, 
+						attribs[i].number,
+						attribs[i].type,
+						GL_FALSE,
+						vsize,
+						(void *)(offset)
+						);
 		}
 
-		temp = batch_sizeof_GLenum(attribs[i].type);
-		offset += attribs[i].number * temp;
+		offset += (attribs[i].number * batch_sizeof_GLenum(attribs[i].type));
 	}
-
-	/* Copy data into batch renderer and allocate memory */
-	ren->shader = shd;
 
 	ren->vertex_size = vsize;
-	ren->vertex_number = 0;
-	ren->vertex_limit = vlimit;
-	if(!(ren->vertices = fh_malloc(vsize * vlimit))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for vertices");
-		goto err_delete_glObjects;
+	ren->vertex_count = 0;
+	ren->vertex_capacity = vertex_capacity;
+	ren->vertices = malloc(vsize * vertex_capacity);
+
+
+	/* Initialize and configure index data */
+	ren->index_capacity = index_capacity;
+	ren->index_count = 0;
+	ren->indices = malloc(sizeof(unsigned int) * index_capacity);
+
+	if (batch_load_shader(fh_ps_batch_vshader, fh_ps_batch_fshader, &program) < 0) {
+		exit(1);
 	}
 
-	ren->index_limit = ilimit;
-	ren->index_number = 0;
-	if(!(ren->indices = fh_malloc(U32_S * ilimit))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for indices");
-		goto err_free_vertices;
-	}
+	ren->shader = program;
 
-	/* Configure uniform data */
-	if(!(ren->uniforms = fh_malloc(sizeof(struct fh_uniform) * uninum))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for uniforms");
-		goto err_free_indices;
-	}
-
-	for(i = 0; i < uninum; i++) {
-		temp = glGetUniformLocation(shd->program, unis[i].name);
-		ren->uniforms[i].location = temp;
-		ren->uniforms[i].type = unis[i].type;
-		ren->uniforms[i].size = batch_sizeof_UniformType(unis[i].type);
-		ren->uniforms[i].number = 0;
-		ren->uniforms[i].limit = unis[i].limit;
-		temp = ren->uniforms[i].size * ren->uniforms[i].limit;	
-		if(!(ren->uniforms[i].data = fh_malloc(temp))) {
-			ALARM(ALARM_ERR, "Failed to allocate uniform data");
-			break;
+	if(uniformnum>0) {
+		/* configure uniform data */
+		for(i = 0; i < uniformnum; i++) {
+			ren->uniforms[i].slot = glGetUniformLocation(program, uniforms[i].name);
+			ren->uniforms[i].type = uniforms[i].type;
+			ren->uniforms[i].size = batch_sizeof_UniformType(uniforms[i].type);
+			ren->uniforms[i].number = 0;
+			ren->uniforms[i].limit = uniforms[i].limit;
+			ren->uniforms[i].data = malloc(ren->uniforms[i].size * uniforms[i].limit);
+			ren->uniforms[i].flags = uniforms[i].flags;
 		}
-		ren->uniforms[i].flags = unis[i].flags;
 	}
-	if(i != uninum)
-		goto err_free_uniforms;
-
-	ren->uniform_number = uninum;
+	ren->uniform_count = uniformnum;
 
 	return ren;
-
-err_free_uniforms:
-	i--;
-	do {
-		fh_free(ren->uniforms[i].data);
-	} while(i-- != 0);
-	fh_free(ren->uniforms);
-
-err_free_indices:
-	fh_free(ren->indices);
-
-err_free_vertices:
-	fh_free(ren->vertices);
-
-err_delete_glObjects:
-	glDeleteBuffers(2, &ren->gl_objects[1]);
-	glDeleteVertexArrays(1, &ren->gl_objects[0]);
-
-	/* err_free_ren: */
-	fh_free(ren);
-
-err_return:
-	return NULL;
 }
 
-
-FH_XMOD s32 fh_batch_push_vertex(struct fh_batch *ren, void *ptr)
+extern int fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
 {
-	u32 offset = ren->vertex_size * ren->vertex_number;
+	int offset = renderer->vertex_size * renderer->vertex_count;
 
-	if(ren->vertex_number >= ren->vertex_limit) {
-		ALARM(ALARM_WARN, "Vertex limit has been reached");
+	if(renderer->vertex_count == renderer->vertex_capacity) {
 		return -1;
 	}
 
-	memcpy(ren->vertices + offset, ptr, ren->vertex_size);
-	ren->vertex_number++;
+	memcpy(renderer->vertices + offset, ptr, renderer->vertex_size);
+	renderer->vertex_count++;
 
-	return (ren->vertex_number - 1);
+	return (renderer->vertex_count-1);
 }
 
-
-FH_XMOD s32 fh_batch_push_index(struct fh_batch *ren, u32 idx)
+extern int fh_batch_push_index(struct fh_batch *renderer, unsigned int idx)
 {
-	if(ren->index_number >= ren->index_limit) {
-		ALARM(ALARM_ERR, "Index limit has been reached");
+	if(renderer->index_count >= renderer->index_capacity) {
 		return -1;
 	}
 
-	ren->indices[ren->index_number] = idx;
-	ren->index_number++;
+	renderer->indices[renderer->index_count] = idx;
+	renderer->index_count++;
 
-	return (ren->index_number - 1);
+	return (renderer->index_count - 1);
+}
+
+extern int fh_batch_push_uniform(struct fh_batch *renderer, int index, void *ptr)
+{
+	int offset = renderer->uniforms[index].size * renderer->uniforms[index].number;
+
+	memcpy(renderer->uniforms[index].data + offset, ptr, renderer->uniforms[index].size);
+	renderer->uniforms[index].number++;
+
+	return (renderer->uniforms[index].number-1);
+}
+
+extern void fh_batch_reset_uniform(struct fh_batch *renderer, int index)
+{
+	renderer->uniforms[index].number = 0;
 }
 
 
-FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, u32 slot, void *ptr)
+extern void fh_batch_flush(struct fh_batch *renderer)
 {
-	u32 offset = ren->uniforms[slot].size * ren->uniforms[slot].number;
+	int i;
 
-	if(ren->uniforms[slot].number >= ren->uniforms[slot].limit) {
-		ALARM(ALARM_ERR, "Uniform entry limit has been reached");
-		return -1;
-	}
-
-	memcpy(ren->uniforms[slot].data + offset, ptr, ren->uniforms[slot].size);
-	ren->uniforms[slot].number++;
-
-	return (ren->uniforms[slot].number - 1);
-}
-
-
-FH_XMOD void fh_batch_reset_uniform(struct fh_batch *ren, u32 slot)
-{
-	ren->uniforms[slot].number = 0;
-}
-
-
-FH_XMOD void fh_batch_flush(struct fh_batch *ren)
-{
-	u32 i;
-
-	if(ren->vertex_number == 0) {
+	if (renderer->vertex_count == 0) {
 		return;
 	}
 
 	/* Activate the relevant shader */
-	fh_UseShader(ren->shader);
+	glUseProgram(renderer->shader);
 
 	/* Pass the uniform view matrix onto the shader */
-	for(i = 0; i < ren->uniform_number; i++) {
-		batch_write_uniform(&ren->uniforms[i]);
+	for(i = 0; i < renderer->uniform_count; i++) {
+		batch_write_uniform(&renderer->uniforms[i]);
 	}
 
 	/* Bind the vertex buffer and write the data */
-	glBindBuffer(GL_ARRAY_BUFFER, ren->gl_objects[1]);
-	printf("A\n");
-	glBufferSubData(GL_ARRAY_BUFFER,
-			0, 
-			ren->vertex_size * ren->vertex_number,
-			ren->vertices
-	);
-	printf("B %d\n", U32_S * ren->index_number);
+	glBindBuffer(GL_ARRAY_BUFFER, renderer->vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertex_size * renderer->vertex_count,
+			renderer->vertices);
 
 	/* Bind the index buffer and write data*/
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->gl_objects[2]);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER,
-			0, 
-			U32_S * ren->index_number,
-			ren->indices
-	);
-	printf("C\n");
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned int) * renderer->index_count,
+			renderer->indices);
 
 
 	/* Finally render the data */
-	glBindVertexArray(ren->gl_objects[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->gl_objects[2]);
-	glDrawElements(GL_TRIANGLES, ren->index_number, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(renderer->vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->ibo);
+	glDrawElements(GL_TRIANGLES, renderer->index_count, GL_UNSIGNED_INT, 0);
 
-	ren->vertex_number = 0;
-	ren->index_number = 0;
+	renderer->vertex_count = 0;
+	renderer->index_count = 0;
 
-	for(i = 0; i < ren->uniform_number; i++) {
-		if(ren->uniforms[i].flags & FH_UNIFORM_F_CLEANUP) {
-			fh_batch_reset_uniform(ren, i);
+	for(i = 0; i < renderer->uniform_count; i++) {
+		if(renderer->uniforms[i].flags & FH_UNIFORM_F_CLEANUP) {
+			fh_batch_reset_uniform(renderer, i);
 		}
 	}
 }

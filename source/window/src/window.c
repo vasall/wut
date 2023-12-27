@@ -189,17 +189,21 @@ FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 {
 	fh_Ignore(data);
 
+#if 0
 	/* Select the current context */
 	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);	
+#endif
 
 	/* Clear the window */
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* Render the Document-UI and views */
 	fh_RenderDocument(win->document);
+	printf("Render document\n");
 
 	/* Swap buffer */
-        SDL_GL_SwapWindow(win->handle);
+	printf("Swap window\n");
+	SDL_GL_SwapWindow(win->handle);
 
 	return 0;
 }
@@ -384,7 +388,7 @@ FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 		s32 width, s32 height)
 {
 	struct fh_window *win;
-		
+
 	if(name == NULL || width < 0 || height < 0) {
 		ALARM(ALARM_ERR, "Input parameters invalid");
 		goto err_return;

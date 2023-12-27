@@ -453,12 +453,10 @@ FH_API void fh_UseShader(struct fh_shader *shd)
 {
 	u8 i;
 
-
 	if(!shd) {
 		ALARM(ALARM_WARN, "Input parameters invalid");
 		return;
 	}
-
 
 	/* First activate the shader */
 	glUseProgram(shd->program);

@@ -151,6 +151,9 @@ FH_INTERN s8 def_elemententer(struct fh_event *evt)
 	def_dump(evt);
 #endif
 
+	/* TODO: This is only a Hotfix*/
+	if(!evt->context.element) return 1;
+
 	printf("Entered %s\n", evt->context.element->name);
 
 	return 1;

@@ -54,57 +54,57 @@ enum fh_uniform_type {
 	FH_UNIFORM_M4FV
 };
 
-#define FH_UNIFORM_F_ALL	(1<<0)
+#define FH_UNIFORM_F_ALL		(1<<0)
 #define FH_UNIFORM_F_CLEANUP	(1<<1)
 
 struct fh_uniform_temp {
-	char 			name[256]; /* Name of uniform in the shader */
+	char 					name[256]; /* Name of uniform in the shader */
 	enum fh_uniform_type	type;	   /* Variable type in the shader */
-	u32 			limit;     /* Number of preallocated slots */
-	u8			flags;	   /* Behaviour flags */
+	int 					limit;     /* Number of preallocated slots */
+	u8						flags;	   /* Behaviour flags */
 };
 
 
 
 struct fh_uniform {
-	u32 			location;
+	int 					slot;
 	enum fh_uniform_type	type;
-	u32 			size;
-	u32 			number;
-	u32 			limit;
-	u8 			*data;
-	u8 			flags;
+	int 					count;
+	int 					number;
+	int 					limit;
+	u8 						*data;
+	u8 						flags;
+	int 					size;
 };
 
 
 struct fh_batch {
-	struct fh_shader 	*shader;
+	GLuint shader;
 
-	/* 0: VAO, 1: VBO, 2: IBO */
-	u32 			gl_objects[3];
+	GLuint vao;
+	GLuint vbo;
+	GLuint ibo;
 
 	/* vertex buffer data */
-	u32 			vertex_size;
-	u32 			vertex_number;
-	u32 			vertex_limit;
-	u8 			*vertices;
+	int vertex_size;
+	int vertex_count;
+	int vertex_capacity;
+	unsigned char *vertices;
 
 	/* index buffer data */
-	u32 			index_size;
-	u32 			index_number;
-	u32 			index_limit;
-	u8 			*indices;
+	int index_size;
+	int index_count;
+	int index_capacity;
+	unsigned int *indices;
 
-	/* uniform data  */
-	u32 			uniform_number;
-	struct fh_uniform 	*uniforms;
+	/* uniform data */
+	int uniform_count;
+	struct fh_uniform uniforms[5];
 };
-
 
 /*
  * Create a new batch renderer.
  *
- * @shd: Pointer to the shader to use for this batch renderer
  * @attribnum: The number of attributes for the vertices
  * @attribs: A list of all attributes for the vertices
  * @vlimit: The vertex capacity
@@ -114,9 +114,8 @@ struct fh_batch {
  *
  * Returns: Either a new batch renderer or NULL if an error occurred
  */
-FH_XMOD struct fh_batch *fh_batch_create(struct fh_shader *shd, u32 attribnum, 
-		struct fh_vertex_attrib *vattribs, u32 vlimit, u32 ilimit,
-		u32 uninum, struct fh_uniform_temp *unis);
+extern struct fh_batch *fh_batch_create(int attribnum, struct fh_vertex_attrib *attribs, int vertex_capacity,
+		int index_capacity, int uniformnum, struct fh_uniform_temp *uniforms);
 
 
 /*
@@ -144,13 +143,28 @@ FH_XMOD s32 fh_batch_push_index(struct fh_batch *ren, u32 idx);
 
 
 /*
+ * Set the data of a uniform of the batch renderer.
+ *
+ * @ren: Pointer to the batch renderer
+ * @slot: The slot of the uniform in the batch renderer
+ * @ptr: Pointer to the data
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_XMOD s8 fh_batch_set_uniform(struct fh_batch *ren, u32 slot, void *ptr);
+
+
+/*
  * Push a new uniform entry into the batch renderer.
  *
  * @ren: Pointer to the batch renderer
  * @slot: The slot of the uniform in the batch renderer
  * @ptr: Pointer to the data
+ *
+ * Returns: Either the index of the new entry in the uniform list or -1 if an
+ *	        error occurred
  */
-FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, u32 slot, void *ptr);
+FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, int slot, void *ptr);
 
 
 /*
@@ -159,7 +173,7 @@ FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, u32 slot, void *ptr);
  * @ren: Pointer to the batch renderer
  * @slot: The slot of the uniform in the batch renderer
  */
-FH_XMOD void fh_batch_reset_uniform(struct fh_batch *ren, u32 slot);
+FH_XMOD void fh_batch_reset_uniform(struct fh_batch *ren, int slot);
 
 
 /*

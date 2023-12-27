@@ -9,22 +9,13 @@
 
 FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 {
-	struct fh_rect out;
-	s32 rect_index;
 	s32 indices[4];
 
 	struct tempStruct {
 		s32 x;
 		s32 y;
 		f32 color[4];
-		s32 rect_index;
 	} vdata;
-
-	f32 color[4];
-
-	s32 radius[4] = {0, 0, 0, 0};
-	s32 border_thickness = 0;
-	f32 border_color[4] = {1, 0, 0, 1};
 
 	s32 p0x = ele->output_rect.x;
 	s32 p0y = ele->output_rect.y;
@@ -42,23 +33,28 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-	color[0] = (f32)ele->style.infill.color.r / 255.0;
-	color[1] = (f32)ele->style.infill.color.g / 255.0;
-	color[2] = (f32)ele->style.infill.color.b / 255.0;
-	color[3] = (f32)ele->style.infill.color.a / 255.0;
+	printf("Pos: %d, %d / %d, %d\n", p0x, p0y, p1x, p1y);
 
-	rect_index = fh_batch_push_uniform(ren, 1, &ele->output_rect);
-	fh_batch_push_uniform(ren, 2, radius);
-	fh_batch_push_uniform(ren, 3, &border_thickness);
-	fh_batch_push_uniform(ren, 4, border_color);
+	vdata.color[0] = (f32)ele->style.infill.color.r / 255.0;
+	vdata.color[1] = (f32)ele->style.infill.color.g / 255.0;
+	vdata.color[2] = (f32)ele->style.infill.color.b / 255.0;
+	vdata.color[3] = (f32)ele->style.infill.color.a / 255.0;
 
-	vdata = (struct tempStruct){p0x, p0y, {color[0], color[1], color[2], color[3]}, rect_index};
+
+	vdata.x = p0x;
+	vdata.y = p0y;
 	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
-	vdata = (struct tempStruct){p1x, p0y, {color[0], color[1], color[2], color[3]}, rect_index};
+
+	vdata.x = p1x;
+	vdata.y = p0y;
 	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
-	vdata = (struct tempStruct){p1x, p1y, {color[0], color[1], color[2], color[3]}, rect_index};
+
+	vdata.x = p1x;
+	vdata.y = p1y;
 	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
-	vdata = (struct tempStruct){p0x, p1y, {color[0], color[1], color[2], color[3]}, rect_index};
+
+	vdata.x = p0x;
+	vdata.y = p1y;
 	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
 
 	fh_batch_push_index(ren, indices[0]);
@@ -70,14 +66,6 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_index(ren, indices[2]);
 
 #if 0
-
-	if(ele->type == FH_VIEW) {
-		col = fh_col_set(0, 0, 0, 0);
-		/*fh_FlatRectSet(ele->document->flat, &out, col);*/
-	}
-	else {
-		/*fh_FlatRect(ele->document->flat, &out, col);*/
-	}
 
 	/* If the element has a context, render that aswell */
 	if(ele->widget) {
@@ -94,7 +82,6 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
 
 	f32 prop;
 
-	struct fh_color col;
 	struct fh_rect	elebox;
 	struct fh_rect out;
 
@@ -114,7 +101,6 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
 		fh_rect_dump(&out);
 		printf("\n");
 
-		col = fh_col_set(255, 0, 255, 255);
 		/*fh_FlatRectSet(ele->document->flat, &out, col);*/
 	}
 
