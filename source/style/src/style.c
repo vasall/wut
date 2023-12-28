@@ -71,12 +71,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out = style;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * DISPLAY
 	 */
 	
 	out->display.mode = style->sheet.display_mode;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * REFERENCE
 	 */
 
@@ -103,7 +107,9 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 
 	/* 
-	 * CALCULATE SIZE
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * SIZE
 	 */
 
 	/* height */
@@ -113,6 +119,8 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	width = ref_width * style->sheet.hsize;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * SPACING
 	 */
 
@@ -153,6 +161,8 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->element_delta.x = spacing[3];
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * PADDING
 	 */
 
@@ -182,8 +192,31 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	/* position */
 	out->content_delta.y = out->element_delta.y + padding[0];
 	out->content_delta.x = out->element_delta.x + padding[3];
+	
+	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * BORDER
+	 */
+	
+	out->border.mode = style->sheet.border_mode;
+	out->border.width = style->sheet.border_width;
+	out->border.color = fh_col_conv_itos(style->sheet.border_color);
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * RADIUS
+	 */
+
+	out->radius.corner[0] = style->sheet.radius_top_left;
+	out->radius.corner[1] = style->sheet.radius_top_right;
+	out->radius.corner[2] = style->sheet.radius_bottom_right;
+	out->radius.corner[3] = style->sheet.radius_bottom_left;
+
+	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * INFILL
 	 */
 
@@ -191,12 +224,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->infill.color = fh_col_conv_itos(style->sheet.infill_color);
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * LAYOUT
 	 */
 
 	out->layout.mode = style->sheet.layout_mode;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * SCROLLBAR
 	 */
 	out->scrollbar.flags = 0;
@@ -271,7 +308,7 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 	 * INFILL
 	 */
 	style->sheet.infill_mode = FH_INFILL_COLOR;
-	style->sheet.infill_color =  fh_col_set_u32(0xFF, 0x69, 0xB4, 0xFF);
+	style->sheet.infill_color =  fh_col_set_u32(0xB0, 0x0B, 0x1E, 0xFF);
 
 	/*
 	 * LAYOUT

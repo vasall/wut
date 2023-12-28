@@ -167,6 +167,7 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 	};
 
 	return fh_batch_create(
+			shd,			/* Pointer to the shader to use */
 			2,			/* Number of vertex attributes */
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
@@ -221,6 +222,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	if(!(doc->views = fh_CreateViewList(doc->context)))
 		goto err_destroy_body;
 
+	/* Create the shader used for batch rendering */
 	if(!(doc->batch_shader = doc_create_batch_shader(doc)))
 		goto err_destroy_views;
 

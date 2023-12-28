@@ -33,13 +33,10 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-	printf("Pos: %d, %d / %d, %d\n", p0x, p0y, p1x, p1y);
-
 	vdata.color[0] = (f32)ele->style.infill.color.r / 255.0;
 	vdata.color[1] = (f32)ele->style.infill.color.g / 255.0;
 	vdata.color[2] = (f32)ele->style.infill.color.b / 255.0;
 	vdata.color[3] = (f32)ele->style.infill.color.a / 255.0;
-
 
 	vdata.x = p0x;
 	vdata.y = p0y;

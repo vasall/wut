@@ -189,20 +189,16 @@ FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 {
 	fh_Ignore(data);
 
-#if 0
 	/* Select the current context */
-	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);	
-#endif
+	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);
 
 	/* Clear the window */
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* Render the Document-UI and views */
 	fh_RenderDocument(win->document);
-	printf("Render document\n");
 
 	/* Swap buffer */
-	printf("Swap window\n");
 	SDL_GL_SwapWindow(win->handle);
 
 	return 0;

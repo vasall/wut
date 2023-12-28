@@ -7,8 +7,6 @@
 #include "graphic/resources/inc/shader.h"
 
 
-
-
 /*
  * This struct is used to represent a single attribute of a vertex like the
  * vertex position, color or UV-coordinates.
@@ -55,56 +53,66 @@ enum fh_uniform_type {
 };
 
 #define FH_UNIFORM_F_ALL		(1<<0)
-#define FH_UNIFORM_F_CLEANUP	(1<<1)
+#define FH_UNIFORM_F_CLEANUP		(1<<1)
 
 struct fh_uniform_temp {
-	char 					name[256]; /* Name of uniform in the shader */
+	char 			name[256]; /* Name of uniform in the shader */
 	enum fh_uniform_type	type;	   /* Variable type in the shader */
-	int 					limit;     /* Number of preallocated slots */
-	u8						flags;	   /* Behaviour flags */
+	int 			limit;     /* Number of preallocated slots */
+	u8			flags;	   /* Behaviour flags */
 };
 
 
 
 struct fh_uniform {
-	int 					slot;
+	int 			slot;
 	enum fh_uniform_type	type;
-	int 					count;
-	int 					number;
-	int 					limit;
-	u8 						*data;
-	u8 						flags;
-	int 					size;
+	int 			count;
+	int 			number;
+	int 			limit;
+	u8 			*data;
+	u8 			flags;
+	int 			size;
 };
 
 
 struct fh_batch {
-	GLuint shader;
+	struct fh_shader *shader;
 
-	GLuint vao;
-	GLuint vbo;
-	GLuint ibo;
+	u32 vao;
+	u32 vbo;
+	u32 ibo;
 
 	/* vertex buffer data */
-	int vertex_size;
-	int vertex_count;
-	int vertex_capacity;
-	unsigned char *vertices;
+	s32 vertex_size;
+	s32 vertex_count;
+	s32 vertex_capacity;
+	u8 *vertices;
 
 	/* index buffer data */
-	int index_size;
-	int index_count;
-	int index_capacity;
-	unsigned int *indices;
+	s32 index_size;
+	s32 index_count;
+	s32 index_capacity;
+	u32 *indices;
 
 	/* uniform data */
-	int uniform_count;
+	s32 uniform_count;
 	struct fh_uniform uniforms[5];
 };
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
 
 /*
  * Create a new batch renderer.
  *
+ * @shd: Pointer to the shader to used for this batch renderer
  * @attribnum: The number of attributes for the vertices
  * @attribs: A list of all attributes for the vertices
  * @vlimit: The vertex capacity
@@ -114,8 +122,9 @@ struct fh_batch {
  *
  * Returns: Either a new batch renderer or NULL if an error occurred
  */
-extern struct fh_batch *fh_batch_create(int attribnum, struct fh_vertex_attrib *attribs, int vertex_capacity,
-		int index_capacity, int uniformnum, struct fh_uniform_temp *uniforms);
+FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, int attribnum,
+		struct fh_vertex_attrib *attribs, int vtx_cap,
+		int idx_cap, int uninum, struct fh_uniform_temp *unis);
 
 
 /*
