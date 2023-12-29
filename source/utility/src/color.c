@@ -32,6 +32,20 @@ FH_API u32 fh_color_get(struct fh_color color)
 }
 
 
+FH_API void fh_color_get_fv(struct fh_color color, float *fv)
+{
+	if(!fv) {
+		ALARM(ALARM_WARN, "Input parameters invalid");
+		return;
+	}
+
+	fv[0] = (f32)color.r / 255.0;
+	fv[1] = (f32)color.g / 255.0;
+	fv[2] = (f32)color.b / 255.0;
+	fv[3] = (f32)color.a / 255.0;
+}
+
+
 FH_API struct fh_color fh_BlendColor(struct fh_color px, struct fh_color col)
 {
 	struct fh_color c;

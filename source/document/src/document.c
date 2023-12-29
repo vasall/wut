@@ -163,7 +163,11 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
 		{2, GL_INT},		/* position */
-		{4, GL_FLOAT}		/* color */
+		{1, GL_INT}		/* index */
+	};
+
+	struct fh_uniform_temp uniforms[] = {
+		{"u_color", FH_UNIFORM_4FV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
 	};
 
 	return fh_batch_create(
@@ -172,8 +176,8 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
 			6000,			/* Index capacity */
-			0,			/* Number of uniform buffers */
-			NULL			/* List of all uniforms */
+			1,			/* Number of uniform buffers */
+			uniforms		/* List of all uniforms */
 			);
 }
 

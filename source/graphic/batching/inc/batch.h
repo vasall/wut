@@ -12,7 +12,7 @@
  * vertex position, color or UV-coordinates.
  */
 struct fh_vertex_attrib {
-	int 	number;		/* The number of elements */
+	s32 	number;		/* The number of elements */
 	GLenum 	type;		/* The type of element */
 };
 
@@ -58,21 +58,21 @@ enum fh_uniform_type {
 struct fh_uniform_temp {
 	char 			name[256]; /* Name of uniform in the shader */
 	enum fh_uniform_type	type;	   /* Variable type in the shader */
-	int 			limit;     /* Number of preallocated slots */
+	s32 			limit;     /* Number of preallocated slots */
 	u8			flags;	   /* Behaviour flags */
 };
 
 
 
 struct fh_uniform {
-	int 			slot;
+	s32 			slot;
 	enum fh_uniform_type	type;
-	int 			count;
-	int 			number;
-	int 			limit;
+	s32 			count;
+	s32 			number;
+	s32 			limit;
 	u8 			*data;
 	u8 			flags;
-	int 			size;
+	s32 			size;
 };
 
 
@@ -122,9 +122,9 @@ struct fh_batch {
  *
  * Returns: Either a new batch renderer or NULL if an error occurred
  */
-FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, int attribnum,
-		struct fh_vertex_attrib *attribs, int vtx_cap,
-		int idx_cap, int uninum, struct fh_uniform_temp *unis);
+FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
+		struct fh_vertex_attrib *attribs, s32 vtx_cap,
+		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis);
 
 
 /*
@@ -173,7 +173,7 @@ FH_XMOD s8 fh_batch_set_uniform(struct fh_batch *ren, u32 slot, void *ptr);
  * Returns: Either the index of the new entry in the uniform list or -1 if an
  *	        error occurred
  */
-FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, int slot, void *ptr);
+FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, s32 slot, void *ptr);
 
 
 /*
@@ -182,7 +182,7 @@ FH_XMOD s32 fh_batch_push_uniform(struct fh_batch *ren, int slot, void *ptr);
  * @ren: Pointer to the batch renderer
  * @slot: The slot of the uniform in the batch renderer
  */
-FH_XMOD void fh_batch_reset_uniform(struct fh_batch *ren, int slot);
+FH_XMOD void fh_batch_reset_uniform(struct fh_batch *ren, s32 slot);
 
 
 /*

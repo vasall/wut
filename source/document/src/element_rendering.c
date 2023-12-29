@@ -10,11 +10,13 @@
 FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 {
 	s32 indices[4];
+	s32 rect_index;
+	f32 color[4];
 
 	struct tempStruct {
 		s32 x;
 		s32 y;
-		f32 color[4];
+		s32 index;
 	} vdata;
 
 	s32 p0x = ele->output_rect.x;
@@ -33,10 +35,11 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-	vdata.color[0] = (f32)ele->style.infill.color.r / 255.0;
-	vdata.color[1] = (f32)ele->style.infill.color.g / 255.0;
-	vdata.color[2] = (f32)ele->style.infill.color.b / 255.0;
-	vdata.color[3] = (f32)ele->style.infill.color.a / 255.0;
+	fh_color_get_fv(ele->style.infill.color, color);
+
+	rect_index = fh_batch_push_uniform(ren, 0, color);
+
+	vdata.index = rect_index;
 
 	vdata.x = p0x;
 	vdata.y = p0y;

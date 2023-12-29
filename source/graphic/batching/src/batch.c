@@ -233,16 +233,16 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, int attribnum,
-		struct fh_vertex_attrib *attribs, int vtx_cap, int idx_cap, 
-		int uninum, struct fh_uniform_temp *unis)
+FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
+		struct fh_vertex_attrib *attribs, s32 vtx_cap, s32 idx_cap, 
+		s32 uninum, struct fh_uniform_temp *unis)
 {
 	struct fh_batch *ren;
 
 	s32 vsize;
 	s32 i;
 
-	int offset;
+	s32 offset;
 
 	ren = malloc(sizeof(struct fh_batch));
 
@@ -331,9 +331,9 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, int attribnum,
 	return ren;
 }
 
-FH_API int fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
+FH_API s32 fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
 {
-	int offset = renderer->vertex_size * renderer->vertex_count;
+	s32 offset = renderer->vertex_size * renderer->vertex_count;
 
 	if(renderer->vertex_count == renderer->vertex_capacity) {
 		return -1;
@@ -345,7 +345,7 @@ FH_API int fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
 	return (renderer->vertex_count-1);
 }
 
-FH_API int fh_batch_push_index(struct fh_batch *renderer, unsigned int idx)
+FH_API s32 fh_batch_push_index(struct fh_batch *renderer, u32 idx)
 {
 	if(renderer->index_count >= renderer->index_capacity) {
 		return -1;
@@ -357,9 +357,9 @@ FH_API int fh_batch_push_index(struct fh_batch *renderer, unsigned int idx)
 	return (renderer->index_count - 1);
 }
 
-FH_API int fh_batch_push_uniform(struct fh_batch *renderer, int index, void *ptr)
+FH_API s32 fh_batch_push_uniform(struct fh_batch *renderer, s32 index, void *ptr)
 {
-	int offset = renderer->uniforms[index].size * renderer->uniforms[index].number;
+	s32 offset = renderer->uniforms[index].size * renderer->uniforms[index].number;
 
 	memcpy(renderer->uniforms[index].data + offset, ptr, renderer->uniforms[index].size);
 	renderer->uniforms[index].number++;
@@ -367,7 +367,7 @@ FH_API int fh_batch_push_uniform(struct fh_batch *renderer, int index, void *ptr
 	return (renderer->uniforms[index].number-1);
 }
 
-FH_API void fh_batch_reset_uniform(struct fh_batch *renderer, int index)
+FH_API void fh_batch_reset_uniform(struct fh_batch *renderer, s32 index)
 {
 	renderer->uniforms[index].number = 0;
 }
@@ -375,7 +375,7 @@ FH_API void fh_batch_reset_uniform(struct fh_batch *renderer, int index)
 
 FH_API void fh_batch_flush(struct fh_batch *renderer)
 {
-	int i;
+	s32 i;
 
 	if (renderer->vertex_count == 0) {
 		return;
@@ -396,7 +396,7 @@ FH_API void fh_batch_flush(struct fh_batch *renderer)
 
 	/* Bind the index buffer and write data*/
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned int) * renderer->index_count,
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(u32) * renderer->index_count,
 			renderer->indices);
 
 

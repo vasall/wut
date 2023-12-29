@@ -13,11 +13,12 @@ char *fh_ps_lst[3][3] = {
 char *fh_ps_batch_vshader = 
 "#version 420 core\n"
 "layout(location=0) in ivec2 in_position;\n"
-"layout(location=1) in vec4 in_color;\n"
+"layout(location=1) in int in_index;\n"
+"uniform vec4 u_color[1000];\n"
 "out vec4 fs_color;"
 "void main() {\n"
 "    vec2 t = vec2(800, 600) * 0.5;\n"
-"    fs_color = in_color;\n"
+"    fs_color = u_color[in_index];\n"
 "    gl_Position = vec4((in_position.x - t.x) / t.x, (t.y - in_position.y) / t.y, 0, 1);\n"
 "}\0";
 
