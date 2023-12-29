@@ -1,5 +1,7 @@
 #include "window/inc/window.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include "core/inc/predefined.h"
@@ -19,19 +21,19 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 
 	name_len = strlen(name);
 	if(name_len < 1 || name_len > FH_WIN_NAME_LIM) {
-		ALARM(ALARM_ERR, "Window name is invalid");
+		FH_ALARM(FH_ERROR, "Window name is invalid");
 		goto err_return;
 	}
 
 	/* Allocate the memory for the window struct */
 	if(!(win = fh_malloc(sizeof(struct fh_window)))) {
-		ALARM(ALARM_ERR, "Failed to allocate the window struct");
+		FH_ALARM(FH_ERROR, "Failed to allocate the window struct");
 		goto err_return;
 	}
 
 	/* Create the SDL window */
 	if(!(hdl = SDL_CreateWindow(name, 0, 0, w, h, SDL_WINDOW_OPENGL))) {
-		ALARM(ALARM_ERR, "Failed to create SDL window");
+		FH_ALARM(FH_ERROR, "Failed to create SDL window");
 		goto err_free_win;
 	}
 
@@ -58,13 +60,13 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 
 	/* Create the rendering context used by the window */
 	if(!(win->context = fh_CreateContext(win))) {
-		ALARM(ALARM_ERR, "Failed to create rendering context");
+		FH_ALARM(FH_ERROR, "Failed to create rendering context");
 		goto err_destroy_hdl;
 	}
 
 	/* Create the document contained in the window */
 	if(!(win->document = fh_CreateDocument(win))) {
-		ALARM(ALARM_ERR, "Failed to create document for window");
+		FH_ALARM(FH_ERROR, "Failed to create document for window");
 		goto err_destroy_ctx;
 	}
 
@@ -87,7 +89,7 @@ err_free_win:
 	fh_free(win);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create window");
+	FH_ALARM(FH_ERROR, "Failed to create window");
 	return NULL;
 }
 
@@ -386,7 +388,7 @@ FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 	struct fh_window *win;
 
 	if(name == NULL || width < 0 || height < 0) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -410,7 +412,7 @@ FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 	return win;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create add new window");
+	FH_ALARM(FH_ERROR, "Failed to create add new window");
 	return NULL;
 }
 
@@ -418,7 +420,7 @@ err_return:
 FH_API void fh_CloseWindow(struct fh_window *win)
 {
 	if(!win) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -428,7 +430,7 @@ FH_API void fh_CloseWindow(struct fh_window *win)
 	return;
 
 err_return:
-	ALARM(ALARM_WARN, "Failed to close window");
+	FH_ALARM(FH_WARNING, "Failed to close window");
 }
 
 
@@ -457,7 +459,7 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h)
 {
 	if(!win) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -476,7 +478,7 @@ FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h)
 FH_API void fh_ActivateWindow(struct fh_window *win)
 {
 	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -487,7 +489,7 @@ FH_API void fh_ActivateWindow(struct fh_window *win)
 FH_API struct fh_context *fh_GetContext(struct fh_window *win)
 {
 	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -498,7 +500,7 @@ FH_API struct fh_context *fh_GetContext(struct fh_window *win)
 FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 {
 	if(!win) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 

@@ -1,5 +1,7 @@
 #include "graphic/inc/camera.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "core/inc/core.h"
 
 #include "system/inc/system.h"
@@ -149,7 +151,7 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
 	struct fh_camera *cam;
 
 	if(!(cam = fh_malloc(sizeof(struct fh_camera)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for camera");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for camera");
 		goto err_return;
 	}
 
@@ -179,7 +181,7 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
 	return cam;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new camera");
+	FH_ALARM(FH_ERROR, "Failed to create new camera");
 	return NULL;
 }
 
@@ -187,7 +189,7 @@ err_return:
 FH_API void fh_DestroyCamera(struct fh_camera *cam)
 {	
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -198,7 +200,7 @@ FH_API void fh_DestroyCamera(struct fh_camera *cam)
 FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		mat4_idt(out);
 		return;
 	}
@@ -210,7 +212,7 @@ FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out)
 FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		mat4_idt(out);
 		return;
 	}
@@ -222,7 +224,7 @@ FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out)
 FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out)
 {
 	if(!cam) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		vec3_clr(out);
 		return;
 	}
@@ -234,7 +236,7 @@ FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out)
 FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -249,7 +251,7 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos)
 FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -264,7 +266,7 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del)
 FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -275,7 +277,7 @@ FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out)
 FH_API void fh_SetCameraDirection(struct fh_camera *cam, vec3_t dir)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 	
@@ -291,7 +293,7 @@ FH_API void fh_SetCameraDirection(struct fh_camera *cam, vec3_t dir)
 FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam)
 {
 	if(!cam) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return 0;
 	}
 
@@ -302,7 +304,7 @@ FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam)
 FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -313,7 +315,7 @@ FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode)
 FH_API void fh_ToggleCameraMode(struct fh_camera *cam)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -324,7 +326,7 @@ FH_API void fh_ToggleCameraMode(struct fh_camera *cam)
 FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -339,7 +341,7 @@ FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt)
 FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg)
 {
 	if(cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -363,7 +365,7 @@ FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f)
 	vec3_t del;
 
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -455,7 +457,7 @@ FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam)
 {
 	if(!cam) {
 		struct fh_camera_info info = {0, 0, 0, 0};
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return info;
 	}
 
@@ -466,7 +468,7 @@ FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam)
 FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info)
 {
 	if(!cam) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

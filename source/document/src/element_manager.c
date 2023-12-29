@@ -2,13 +2,15 @@
 
 #include "document/inc/document.h"
 
+#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/shape.h"
+
 #include "widget/inc/widget.h"
 
 #include "system/inc/system.h"
 
 #include "style/inc/layout.h"
 
-#include "utility/inc/shape.h"
 
 #include <stdlib.h>
 
@@ -204,19 +206,19 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	s8 name_len;
 
 	if(!name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	name_len = strlen(name);
 	if(name_len < 1 || name_len > FH_ELEMENT_NAME_LIM) {
-		ALARM(ALARM_ERR, "Element name is invalid");
+		FH_ALARM(FH_ERROR, "Element name is invalid");
 		goto err_return;
 	}
 
 	
 	if(!(ele = fh_zalloc(sizeof(struct fh_element)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for new element");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for new element");
 		goto err_return;
 	}
 
@@ -244,14 +246,14 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 
 	/* Initialize the style structure */
 	if(fh_style_init(&ele->style, NULL) < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize style for element");
+		FH_ALARM(FH_ERROR, "Failed to initialize style for element");
 		goto err_destroy_handler;
 	}
 
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
 	if(fh_eletemp_load(ele, data) < 0) {
-		ALARM(ALARM_ERR, "Failed to load the template for the element");
+		FH_ALARM(FH_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
 	}
 
@@ -264,7 +266,7 @@ err_free_ele:
 	fh_free(ele);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new element");
+	FH_ALARM(FH_ERROR, "Failed to create new element");
 	return NULL;
 }
 
@@ -291,7 +293,7 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 	struct fh_element *run;
 
 	if(!parent || !ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -320,7 +322,7 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to attach element to parent");
+	FH_ALARM(FH_ERROR, "Failed to attach element to parent");
 	return -1;
 }
 
@@ -330,7 +332,7 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 	struct fh_element *par;
 
 	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -364,7 +366,7 @@ FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
 	struct fh_element *next;
 
 	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -385,7 +387,7 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 	struct fh_style_pass pass;
 
 	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -404,7 +406,7 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 {
 	if(!ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -420,7 +422,7 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 {
 	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -478,7 +480,7 @@ FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele)
 FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
 {
 	if(!ele || !str) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -487,7 +489,7 @@ FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to set attribute");
+	FH_ALARM(FH_ERROR, "Failed to set attribute");
 	return -1;
 }
 
@@ -495,18 +497,18 @@ err_return:
 FH_API struct fh_view *fh_GetView(struct fh_element *ele)
 {
 	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(ele->type != FH_VIEW || !ele->widget) {
-		ALARM(ALARM_ERR, "Wrong element type");
+		FH_ALARM(FH_ERROR, "Wrong element type");
 		goto err_return;
 	}
 
 	return (struct fh_view *)ele->widget->ref;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get view");
+	FH_ALARM(FH_ERROR, "Failed to get view");
 	return NULL;
 }

@@ -14,12 +14,12 @@ FH_API void *fh_malloc(s32 len)
 	void *p;
 
 	if(len < 1) {
-		ALARM(ALARM_WARN, "len invalid");
+		FH_ALARM(FH_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = malloc(len))) {
-		ALARM(ALARM_ERR, "failed to allocate memory");
+		FH_ALARM(FH_ERROR, "failed to allocate memory");
 		return NULL;
 	}
 
@@ -32,12 +32,12 @@ FH_API void *fh_calloc(s32 len)
 	void *p;
 
 	if(len < 1) {
-		ALARM(ALARM_WARN, "len invalid");
+		FH_ALARM(FH_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = calloc(1, len))) {
-		ALARM(ALARM_ERR, "failed to callocate memory");
+		FH_ALARM(FH_ERROR, "failed to callocate memory");
 		return NULL;
 	}
 
@@ -50,12 +50,12 @@ FH_API void *fh_zalloc(s32 len)
 	void *p;
 
 	if(len < 1) {
-		ALARM(ALARM_WARN, "len invalid");
+		FH_ALARM(FH_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = malloc(len))) {
-		ALARM(ALARM_ERR, "failed to allocate memory");
+		FH_ALARM(FH_ERROR, "failed to allocate memory");
 		return NULL;
 	}
 
@@ -69,12 +69,12 @@ FH_API void *fh_realloc(void *old, s32 newlen)
 	void *p;
 
 	if(!old || newlen < 1) {
-		ALARM(ALARM_WARN, "old undefined or newlen invalid");
+		FH_ALARM(FH_WARNING, "old undefined or newlen invalid");
 		return NULL;
 	}
 
 	if(!(p = realloc(old, newlen))) {
-		ALARM(ALARM_ERR, "failed to reallocate memory");
+		FH_ALARM(FH_ERROR, "failed to reallocate memory");
 		return NULL;
 	}
 
@@ -111,15 +111,15 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 
 	/* Both checks are needed because INT_MAX == LONG_MAX is possible. */
 	if(l > INT_MAX || (errno == ERANGE && l == LONG_MAX)) {
-		ALARM(ALARM_ERR, "integer overflow");
+		FH_ALARM(FH_ERROR, "integer overflow");
 		goto err_return;
 	}
 	if(l < INT_MIN || (errno == ERANGE && l == LONG_MIN)) {
-		ALARM(ALARM_ERR, "integer undeflow");
+		FH_ALARM(FH_ERROR, "integer undeflow");
 		goto err_return;
 	}
 	if(*end != '\0') {
-		ALARM(ALARM_ERR, "inconvertible");
+		FH_ALARM(FH_ERROR, "inconvertible");
 		goto err_return;
 	}
 
@@ -127,7 +127,7 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to convert string to integer");
+	FH_ALARM(FH_ERROR, "Failed to convert string to integer");
 	return -1;
 }
 
@@ -139,7 +139,7 @@ FH_API void fh_bindump(void *p, s32 len)
 	s32 i;
 
 	if(!p || len < 1) {
-		ALARM(ALARM_WARN, "p undefined or len invalid");
+		FH_ALARM(FH_WARNING, "p undefined or len invalid");
 		return;
 	}
 

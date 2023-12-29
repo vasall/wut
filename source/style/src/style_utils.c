@@ -86,7 +86,7 @@ FH_API struct fh_style_mod *fh_CompressStyleMod(char *str)
 	struct fh_style_mod *mod;
 
 	if(!str) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -109,7 +109,7 @@ FH_API struct fh_style_mod *fh_CompressStyleMod(char *str)
 	 * Allocate memory for the modification-struct.
 	 */
 	if(!(mod = fh_malloc(sizeof(struct fh_style_mod)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for style_mod");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for style_mod");
 		goto err_return;
 	}
 
@@ -118,7 +118,7 @@ FH_API struct fh_style_mod *fh_CompressStyleMod(char *str)
 	 * Now allocate the buffer.
 	 */
 	if(!(mod->buf = fh_malloc(req_len))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory");
 		goto err_free_mod;
 	}
 
@@ -159,7 +159,7 @@ err_free_mod:
 	fh_free(mod);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to compress style modifications");
+	FH_ALARM(FH_ERROR, "Failed to compress style modifications");
 	return NULL;
 }
 
@@ -183,7 +183,7 @@ FH_API s8 fh_ApplyStyleMod(struct fh_style *style, struct fh_style_mod *mod)
 	const struct fh_stylesheet_attribute *ent;
 
 	if(!style || !mod) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -203,6 +203,6 @@ FH_API s8 fh_ApplyStyleMod(struct fh_style *style, struct fh_style_mod *mod)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to apply mods to style");
+	FH_ALARM(FH_ERROR, "Failed to apply mods to style");
 	return -1;
 }

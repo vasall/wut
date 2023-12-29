@@ -1,10 +1,11 @@
 #include "graphic/inc/object.h"
 
+#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/table.h"
+
 #include "core/inc/core.h"
 
 #include "system/inc/system.h"
-
-#include "utility/inc/table.h"
 
 #include <stdlib.h>
 
@@ -81,12 +82,12 @@ FH_API s8 fh_InitObjectTable(struct fh_context *ctx)
 	struct fh_table *tbl;
 
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(tbl = fh_tbl_create(&obj_rmv_fnc))) {
-		ALARM(ALARM_ERR, "Failed to create new table");
+		FH_ALARM(FH_ERROR, "Failed to create new table");
 		goto err_return;
 	}
 
@@ -96,7 +97,7 @@ FH_API s8 fh_InitObjectTable(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new object table.");
+	FH_ALARM(FH_ERROR, "Failed to create new object table.");
 	return -1;
 }
 
@@ -125,19 +126,19 @@ FH_API struct fh_object *fh_GetObject(struct fh_context *ctx, char *name)
 	struct fh_object *obj;
 
 	if(!ctx || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(fh_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
-		ALARM(ALARM_ERR, "Object could not be found in fh_table");
+		FH_ALARM(FH_ERROR, "Object could not be found in fh_table");
 		goto err_return;
 	}
 
 	return obj;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get object from object table");
+	FH_ALARM(FH_ERROR, "Failed to get object from object table");
 	return NULL;
 
 
@@ -150,7 +151,7 @@ FH_API void fh_SetObjectUniform(struct fh_object *obj, char *name, void *ptr)
 	struct fh_object_uniform *uniform;
 
 	if(!obj || !name || !ptr) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -163,7 +164,7 @@ FH_API void fh_SetObjectUniform(struct fh_object *obj, char *name, void *ptr)
 		}
 	}
 
-	ALARM(ALARM_ERR, "Uniform buffer not found");
+	FH_ALARM(FH_ERROR, "Uniform buffer not found");
 }
 
 

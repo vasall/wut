@@ -35,7 +35,7 @@ FH_API u32 fh_color_get(struct fh_color color)
 FH_API void fh_color_get_fv(struct fh_color color, float *fv)
 {
 	if(!fv) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

@@ -205,7 +205,7 @@ FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
 	s32 i;
 
 	if(!(pip = fh_malloc(sizeof(struct fh_pipe)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for pipe");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for pipe");
 		goto err_return;
 	}
 
@@ -218,7 +218,7 @@ FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
 	/* Preallocate slots for the objects */
 	size = sizeof(struct fh_pipe_entry) * pip->alloc;
 	if(!(pip->entries = fh_malloc(size))) {
-		ALARM(ALARM_ERR, "Failed to preallocate memory for entries");
+		FH_ALARM(FH_ERROR, "Failed to preallocate memory for entries");
 		goto err_free_pip;
 	}
 
@@ -235,7 +235,7 @@ err_free_pip:
 	fh_free(pip);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new pipe");
+	FH_ALARM(FH_ERROR, "Failed to create new pipe");
 	return NULL;
 }
 
@@ -243,7 +243,7 @@ err_return:
 FH_API void fh_DestroyPipe(struct fh_pipe *pip)
 {
 	if(!pip) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -258,12 +258,12 @@ FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *obj)
 	struct fh_pipe_entry *ent;
 
 	if(!pip || !obj) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if((slot = pip_get_slot(pip)) < 0) {
-		ALARM(ALARM_ERR, "No more free slots");
+		FH_ALARM(FH_ERROR, "No more free slots");
 		goto err_return;
 	}
 
@@ -282,7 +282,7 @@ FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *obj)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to insert object into pipe");
+	FH_ALARM(FH_ERROR, "Failed to insert object into pipe");
 	return -1;
 }
 
@@ -293,7 +293,7 @@ FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot)
 	struct fh_pipe_entry *hdl;
 
 	if(!pip || slot < 0) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -326,12 +326,12 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 	struct fh_pipe_entry *run;
 
 	if(!pip || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
 	if(pip->number < 1) {
-		ALARM(ALARM_ERR, "The pipe is empty");
+		FH_ALARM(FH_ERROR, "The pipe is empty");
 		return -1;
 	}
 
@@ -345,7 +345,7 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 		i = run->next;
 	}
 	
-	ALARM(ALARM_ERR, "Object could not be found in the pipe");
+	FH_ALARM(FH_ERROR, "Object could not be found in the pipe");
 	return -1;
 }
 
@@ -353,7 +353,7 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref)
 {
 	if(!pip) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -370,7 +370,7 @@ FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *m))
 	struct fh_pipe_entry *ent;
 
 	if(!pip || !fnc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

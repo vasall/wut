@@ -1,5 +1,7 @@
 #include "graphic/inc/constructor.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "graphic/resources/inc/shader.h"
 #include "graphic/resources/inc/texture.h"
 #include "graphic/inc/camera.h"
@@ -103,7 +105,7 @@ FH_INTERN void objc_enable_attr(struct fh_object *obj, struct fh_object_c *c)
 		attr = &c->attribs[i];
 
 		if((slot = fh_ShaderGetInputLoc(obj->shader, attr->name)) < 0) {
-			ALARM(ALARM_ERR, "Input variable not found");
+			FH_ALARM(FH_ERROR, "Input variable not found");
 			return;
 		}
 
@@ -161,7 +163,7 @@ FH_INTERN s8 objc_init_uniforms(struct fh_object *obj, struct fh_object_c *c)
 		strcpy(uniform->name, unibuf->name);
 		uniform->size = unibuf->size;
 		if(!(uniform->data = fh_malloc(uniform->size))) {
-			ALARM(ALARM_ERR, "Failed to allocate memory");
+			FH_ALARM(FH_ERROR, "Failed to allocate memory");
 			goto err_free;
 		}
 
@@ -175,7 +177,7 @@ FH_INTERN s8 objc_init_uniforms(struct fh_object *obj, struct fh_object_c *c)
 
 		/* Retrieve the binding location in the shader */
 		if((slot = fh_ShaderGetUniformLoc(obj->shader, uniform->name)) < 0) {
-			ALARM(ALARM_ERR, "Uniform not found");
+			FH_ALARM(FH_ERROR, "Uniform not found");
 			goto err_free;
 		}
 
@@ -197,7 +199,7 @@ err_free:
 	}
 
 
-	ALARM(ALARM_ERR, "Failed to initialize uniform buffers");
+	FH_ALARM(FH_ERROR, "Failed to initialize uniform buffers");
 	return -1;
 }
 
@@ -216,12 +218,12 @@ FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
 	struct fh_object_c *c;
 
 	if(!name || vnum < 1 || inum < 1 || !idx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(c = fh_malloc(sizeof(struct fh_object_c)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for constructor");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for constructor");
 		goto err_return;
 	}
 
@@ -234,7 +236,7 @@ FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
 
 	/* Copy the indices */
 	if(!(c->idx = fh_malloc(inum * sizeof(u32)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for index buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for index buffer");
 		goto err_free_c;
 	}
 	memcpy(c->idx, idx, inum * sizeof(u32));
@@ -249,7 +251,7 @@ err_free_c:
 	fh_free(c);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to begin creating new object");
+	FH_ALARM(FH_ERROR, "Failed to begin creating new object");
 	return NULL;
 
 
@@ -268,12 +270,12 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 	void **p;
 
 	if(!c || !ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(obj = fh_malloc(sizeof(struct fh_object)))) {
-		ALARM(ALARM_ERR, "Failed to alloctae memory for object");
+		FH_ALARM(FH_ERROR, "Failed to alloctae memory for object");
 		goto err_return;
 	}
 
@@ -293,7 +295,7 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 
 	tmp = obj->index_number * U32_S;
 	if(!(obj->index_buffer = fh_malloc(tmp))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for index buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for index buffer");
 		goto err_free_obj;
 	}
 
@@ -309,7 +311,7 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 
 	tmp = obj->vertex_stride * obj->vertex_number;
 	if(!(obj->vertex_buffer = fh_malloc(tmp))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for vertex buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for vertex buffer");
 		goto err_free_index_buffer;
 	}
 
@@ -352,7 +354,7 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 	p = (void **)&obj;
 
 	if(fh_tbl_add(ctx->objects, obj->name, size, p) < 0) {
-		ALARM(ALARM_ERR, "Failed to insert entry into fh_table");
+		FH_ALARM(FH_ERROR, "Failed to insert entry into fh_table");
 		goto err_destroy_uniforms;
 	}
 
@@ -377,7 +379,7 @@ err_free_obj:
 	fh_free(obj);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to convert constructor");
+	FH_ALARM(FH_ERROR, "Failed to convert constructor");
 	return NULL;
 }
 
@@ -406,7 +408,7 @@ FH_API void fh_ObjectConstrCleanup(struct fh_object_c *c)
 FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex)
 {
 	if(!c || !tex) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -422,7 +424,7 @@ FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex
 FH_API void fh_ObjectConstrShader(struct fh_object_c *c, struct fh_shader *shd)
 {
 	if(!c || !shd) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -437,7 +439,7 @@ FH_API void fh_ObjectConstrAttrib(struct fh_object_c *c, char *name, u8 size,
 	u32 s;
 
 	if(!c || !name || size < 1 || !data) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -453,7 +455,7 @@ FH_API void fh_ObjectConstrAttrib(struct fh_object_c *c, char *name, u8 size,
 
 	s = c->vtx_num * a->elements * a->element_size;
 	if(!(a->data = fh_malloc(s))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for attribute");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for attribute");
 		return;
 	}
 
@@ -468,7 +470,7 @@ FH_API void fh_ObjectConstrUniform(struct fh_object_c *c, char *name, u32 size)
 	struct fh_object_c_unibuf *u;
 
 	if(!c || !name || size < 1) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 

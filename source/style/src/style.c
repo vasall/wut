@@ -22,7 +22,7 @@
 FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 {
 	if(!style) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -38,7 +38,7 @@ FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to initialize style structure");
+	FH_ALARM(FH_ERROR, "Failed to initialize style structure");
 	return -1;
 }
 
@@ -268,7 +268,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 FH_API void fh_ResetStyle(struct fh_style *style)
 {
 	if(!style) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -334,7 +334,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	const struct fh_stylesheet_attribute *ent;
 
 	if(!style || !in) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -378,7 +378,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 FH_API void fh_DumpStylesheet(struct fh_style *style)
 {
 	if(!style) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

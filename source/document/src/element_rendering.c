@@ -2,6 +2,8 @@
 
 #include "document/inc/document.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "widget/inc/widget.h"
 
 #include "utility/inc/color.h"
@@ -25,7 +27,7 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	s32 p1y = ele->output_rect.x + ele->output_rect.h;
 
 	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 

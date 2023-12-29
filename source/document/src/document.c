@@ -2,6 +2,8 @@
 
 #include "document/inc/element_rendering.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "core/inc/predefined.h"
 
 #include "system/inc/system.h"
@@ -197,7 +199,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 
 	/* Allocate memory for the document */
 	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for document");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for document");
 		goto err_return;
 	}
 
@@ -210,7 +212,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 
 	/* Create the body element */	
 	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY, NULL))) {
-		ALARM(ALARM_ERR, "Failed to create body for document");
+		FH_ALARM(FH_ERROR, "Failed to create body for document");
 		goto err_free_doc;
 	}
 
@@ -252,7 +254,7 @@ err_free_doc:
 	fh_free(doc);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new document");
+	FH_ALARM(FH_ERROR, "Failed to create new document");
 	return NULL;
 }
 
@@ -276,7 +278,7 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 FH_API void fh_ResizeDocument(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -292,19 +294,19 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 	struct fh_element *ele;
 
 	if(!doc || !parent || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* Create new element */
 	if(!(ele = fh_CreateElement(doc, name, type, data))) {
-		ALARM(ALARM_ERR, "Failed to create new element for document");
+		FH_ALARM(FH_ERROR, "Failed to create new element for document");
 		goto err_return;
 	}
 
 	/* Attach element to parent */
 	if(fh_AttachElement(parent, ele) < 0) {
-		ALARM(ALARM_ERR, "Failed to attach element to parent");
+		FH_ALARM(FH_ERROR, "Failed to attach element to parent");
 		goto err_destroy_ele;
 	}
 
@@ -317,7 +319,7 @@ err_destroy_ele:
 	fh_DestroyElement(ele);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to add element to document");
+	FH_ALARM(FH_ERROR, "Failed to add element to document");
 	return NULL;
 }
 
@@ -325,7 +327,7 @@ err_return:
 FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele)
 {
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -338,7 +340,7 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	struct fh_ele_selector sel;
 
 	if(!doc || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -354,7 +356,7 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	}
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get element");
+	FH_ALARM(FH_ERROR, "Failed to get element");
 	return NULL;
 }
 
@@ -365,7 +367,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	struct fh_ele_selector sel;
 
 	if(!doc) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -382,7 +384,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	return NULL;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get hovered element");
+	FH_ALARM(FH_ERROR, "Failed to get hovered element");
 	return NULL;
 }
 
@@ -391,7 +393,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -419,7 +421,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 FH_API void fh_UpdateDocument(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -431,7 +433,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -445,7 +447,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -457,7 +459,7 @@ FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 FH_API void fh_RenderDocument(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -473,7 +475,7 @@ FH_API void fh_ShowDocumentTree(struct fh_document *doc,
 	struct fh_element *start;
 
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
