@@ -30,8 +30,7 @@ FH_API int fh_alarm_log(enum fh_alarm_prio prio, const char *format, ...);
  * this macro additionally outputs the file and line number, where FH_ALARM_LOG was
  * called from.
  */
-#define FH_ALARM(prio, msg) fh_alarm_log(prio, "%s:%d %s", __FILE__, \
-		__LINE__, msg)
+#define FH_ALARM(prio, msg) fh_alarm_log(prio, "%s:%d %s", __FILE__, __LINE__, msg)
 
 
 

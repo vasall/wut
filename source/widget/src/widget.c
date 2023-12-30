@@ -1,5 +1,7 @@
 #include "widget/inc/widget.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "widget/inc/view.h"
 
 #include "document/inc/document.h"

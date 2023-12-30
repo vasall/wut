@@ -169,7 +169,12 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 	};
 
 	struct fh_uniform_temp uniforms[] = {
-		{"u_color", FH_UNIFORM_4FV, 1000, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_rect", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_color", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_radius", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bwidth", FH_UNIFORM_1IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bcolor", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
 	};
 
 	return fh_batch_create(
@@ -178,7 +183,7 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
 			6000,			/* Index capacity */
-			1,			/* Number of uniform buffers */
+			5,			/* Number of uniform buffers */
 			uniforms		/* List of all uniforms */
 			);
 }
@@ -458,10 +463,16 @@ FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 
 FH_API void fh_RenderDocument(struct fh_document *doc)
 {
+	s32 frame[2];
+
 	if(!doc) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
+
+	frame[0] = doc->shape_ref->w;
+	frame[1] = doc->shape_ref->h;
+	fh_batch_push_uniform(doc->batch, 0, frame);
 
 	fh_RenderDocumentUI(doc);
 

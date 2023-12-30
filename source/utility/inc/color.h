@@ -5,9 +5,6 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-
-#define FH_SWAP32(x) (__builtin_bswap32(x))
-
 /*
  * A pixel is defined by 4 attributes representing the RGBA-values.
  * Each value can be set in range of 0 t0 255.

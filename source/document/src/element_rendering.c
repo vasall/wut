@@ -37,9 +37,22 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-	fh_color_get_fv(ele->style.infill.color, color);
+	/* Unioform: u_rect */
+	rect_index = fh_batch_push_uniform(ren, 1, &ele->output_rect);
 
-	rect_index = fh_batch_push_uniform(ren, 0, color);
+	/* Uniform: u_color */
+	fh_color_get_fv(ele->style.infill.color, color);
+	fh_batch_push_uniform(ren, 2, color);
+
+	/* Uniform: u_radius */
+	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
+
+	/* Uniform: u_bwidth */
+	fh_batch_push_uniform(ren, 4, &ele->style.border.width);
+
+	/* Uniform: u_bcolor */
+	fh_color_get_fv(ele->style.border.color, color);
+	fh_batch_push_uniform(ren, 5, color);
 
 	vdata.index = rect_index;
 

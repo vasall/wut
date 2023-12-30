@@ -1,5 +1,7 @@
 #include "system/inc/system.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

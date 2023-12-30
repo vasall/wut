@@ -1,5 +1,7 @@
 #include "style/inc/style.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "style/inc/style_utils.h"
 
 #include "system/inc/system.h"
@@ -100,10 +102,12 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	/* width */
 
-	if(ref)
+	if(ref) {
 		ref_width = ref->bounding_box.w + ref->content_delta.w;
-	else
+	}
+	else {
 		ref_width = (u16)pass->document_shape->w;
+	}
 
 
 	/* 
@@ -196,16 +200,6 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	/*
 	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	 *
-	 * BORDER
-	 */
-	
-	out->border.mode = style->sheet.border_mode;
-	out->border.width = style->sheet.border_width;
-	out->border.color = fh_col_conv_itos(style->sheet.border_color);
-
-	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	 *
 	 * RADIUS
 	 */
 
@@ -213,6 +207,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->radius.corner[1] = style->sheet.radius_top_right;
 	out->radius.corner[2] = style->sheet.radius_bottom_right;
 	out->radius.corner[3] = style->sheet.radius_bottom_left;
+
+	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * BORDER
+	 */
+	
+	out->border.mode = style->sheet.border_mode;
+	out->border.width = style->sheet.border_width;
+	out->border.color = fh_col_conv_itos(style->sheet.border_color);
 
 	/*
 	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -305,10 +309,25 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 	style->sheet.padding_left = 0;
 
 	/*
+	 * RADIUS
+	 */
+	style->sheet.radius_top_left = 0;
+	style->sheet.radius_top_right = 0;
+	style->sheet.radius_bottom_right = 0;
+	style->sheet.radius_bottom_left = 0;
+
+	/*
+	 * BORDER
+	 */
+	style->sheet.border_mode = 0;
+	style->sheet.border_width = 0;
+	style->sheet.border_color = fh_col_set_u32(0x00, 0x00, 0x00, 0xFF);
+
+	/*
 	 * INFILL
 	 */
 	style->sheet.infill_mode = FH_INFILL_COLOR;
-	style->sheet.infill_color =  fh_col_set_u32(0xB0, 0x0B, 0x1E, 0xFF);
+	style->sheet.infill_color = fh_col_set_u32(0xB0, 0x0B, 0x1E, 0xFF);
 
 	/*
 	 * LAYOUT

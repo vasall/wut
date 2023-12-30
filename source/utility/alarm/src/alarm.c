@@ -43,3 +43,4 @@ FH_API int fh_alarm_log(enum fh_alarm_prio prio, const char *format, ...)
 
 	return 0;
 }
+

@@ -67,14 +67,14 @@ struct fh_restyle_reference {
 	u8 				mode;
 };
 
-struct fh_restyle_border {
-	u8				mode;
-	u8				width;
-	struct fh_color			color;
+struct fh_restyle_radius {
+	s32				corner[4];
 };
 
-struct fh_restyle_radius {
-	u8				corner[4];
+struct fh_restyle_border {
+	u8				mode;
+	s32				width;
+	struct fh_color			color;
 };
 
 struct fh_restyle_infill {
@@ -118,14 +118,14 @@ struct fh_style {
 	struct fh_rect			content_delta;	/* -Spacing, -Padding */
 
 	/*
-	 * BORDER
-	 */
-	struct fh_restyle_border	border;
-
-	/*
 	 * RADIUS
 	 */
 	struct fh_restyle_radius	radius;
+
+	/*
+	 * BORDER
+	 */
+	struct fh_restyle_border	border;
 
 	/*
 	 * INFILL

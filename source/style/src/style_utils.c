@@ -1,5 +1,7 @@
 #include "style/inc/style_utils.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "style/inc/stylesheet_tables.h"
 
 #include "system/inc/system.h"

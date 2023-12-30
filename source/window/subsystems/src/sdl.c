@@ -2,6 +2,8 @@
 
 #include "window/subsystems/inc/opengl.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include "core/inc/core.h"

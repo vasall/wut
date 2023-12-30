@@ -1,5 +1,7 @@
 #include "style/inc/template.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "document/inc/document.h"
 #include "document/inc/element.h"
 #include "document/inc/context.h"

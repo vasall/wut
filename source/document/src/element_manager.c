@@ -131,7 +131,7 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 	if(inner_rect.w < ele->content_size.x)
 		flag |= FH_RESTYLE_SCROLL_H;
 
-	
+
 	ele->scrollbar_flags = flag & ele->style.scrollbar.flags;
 }
 
@@ -216,7 +216,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 		goto err_return;
 	}
 
-	
+
 	if(!(ele = fh_zalloc(sizeof(struct fh_element)))) {
 		FH_ALARM(FH_ERROR, "Failed to allocate memory for new element");
 		goto err_return;
@@ -311,7 +311,7 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 	}
 
 	parent->children_num++;
-		
+
 	ele->parent = parent;
 	ele->body = parent->body;
 	ele->layer = parent->layer + 1;
@@ -394,7 +394,7 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele)
 	/* First process the style for this element */
 	pass.document_shape = ele->document->shape_ref;
 	fh_style_process(&ele->style, &pass);
-	
+
 
 	/* Then if the element has a widget, update that aswell */
 	if(ele->widget) {
