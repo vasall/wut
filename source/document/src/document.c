@@ -164,7 +164,7 @@ FH_INTERN struct fh_shader *doc_create_batch_shader(struct fh_document *doc)
 FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
-		{2, GL_INT},		/* position */
+		{3, GL_FLOAT},		/* position */
 		{1, GL_INT}		/* index */
 	};
 
@@ -269,6 +269,8 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 	if(!doc)
 		return;
 
+	/* Destroy the batch renderer */
+	fh_batch_destroy(doc->batch);
 
 	/* If the document contains a body, recursivly remove it */
 	fh_RemoveElement(doc, doc->body);	

@@ -97,7 +97,7 @@ struct fh_batch {
 
 	/* uniform data */
 	s32 uniform_count;
-	struct fh_uniform uniforms[5];
+	struct fh_uniform *uniforms;
 };
 
 
@@ -125,6 +125,14 @@ struct fh_batch {
 FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
 		struct fh_vertex_attrib *attribs, s32 vtx_cap,
 		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis);
+
+
+/*
+ * Destroy a batch renderer and free the allocated memory.
+ *
+ * @ren: Pointer to the batch renderer
+ */
+FH_API void fh_batch_destroy(struct fh_batch *ren);
 
 
 /*

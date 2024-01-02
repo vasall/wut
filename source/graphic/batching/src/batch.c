@@ -2,6 +2,8 @@
 
 #include "system/inc/system.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "window/subsystems/inc/opengl.h"
 
 #include "core/inc/predefined.h"
@@ -304,17 +306,29 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
 	ren->vertex_size = vsize;
 	ren->vertex_count = 0;
 	ren->vertex_capacity = vtx_cap;
-	ren->vertices = malloc(vsize * vtx_cap);
+	if(!(ren->vertices = fh_malloc(vsize * vtx_cap))) {
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for vertices");
+		goto err_delete_buffers;
+	}
 
 
 	/* Initialize and configure index data */
 	ren->index_capacity = idx_cap;
 	ren->index_count = 0;
-	ren->indices = malloc(U32_S * idx_cap);
+	if(!(ren->indices = fh_malloc(U32_S * idx_cap))) {
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for indices");
+		goto err_free_vertices;
+	}
 
+	/* Set the shader for this batch renderer */
 	ren->shader = shd;
 
 	if(uninum > 0) {
+		if(!(ren->uniforms = fh_malloc(uninum * sizeof(struct fh_uniform)))) {
+			FH_ALARM(FH_ERROR, "Failed to allocate mem for uniforms");
+			goto err_free_indices;
+		}
+
 		/* configure uniform data */
 		for(i = 0; i < uninum; i++) {
 			ren->uniforms[i].slot = glGetUniformLocation(shd->program, unis[i].name);
@@ -322,14 +336,58 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
 			ren->uniforms[i].size = batch_sizeof_UniformType(unis[i].type);
 			ren->uniforms[i].number = 0;
 			ren->uniforms[i].limit = unis[i].limit;
-			ren->uniforms[i].data = malloc(ren->uniforms[i].size * unis[i].limit);
+			if(!(ren->uniforms[i].data = fh_malloc(ren->uniforms[i].size * unis[i].limit))) {
+				goto err_free_uniforms;
+			}
 			ren->uniforms[i].flags = unis[i].flags;
 		}
 	}
 	ren->uniform_count = uninum;
 
 	return ren;
+
+err_free_uniforms:
+	for(i = i - 1; i >= 0; i--) {
+		fh_free(ren->uniforms[i].data);
+	}
+	fh_free(ren->uniforms);
+
+err_free_indices:
+	fh_free(ren->indices);
+
+err_free_vertices:
+	fh_free(ren->vertices);
+
+err_delete_buffers:
+	glDeleteBuffers(1, &ren->ibo);
+	glDeleteBuffers(1, &ren->vbo);
+	glDeleteVertexArrays(1, &ren->vao);
+
+	return NULL;
 }
+
+
+FH_API void fh_batch_destroy(struct fh_batch *ren)
+{
+	s32 i;
+
+	if(!ren) return;
+
+	if(ren->uniform_count > 0) {
+		for(i = ren->uniform_count - 1; i >= 0; i--) {
+			fh_free(ren->uniforms[i].data);
+		}
+		fh_free(ren->uniforms);
+	}
+
+	fh_free(ren->indices);
+	fh_free(ren->vertices);
+
+	glDeleteBuffers(1, &ren->ibo);
+	glDeleteBuffers(1, &ren->vbo);
+	glDeleteVertexArrays(1, &ren->vao);
+}
+
 
 FH_API s32 fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
 {
@@ -364,7 +422,7 @@ FH_API s32 fh_batch_push_uniform(struct fh_batch *renderer, s32 index, void *ptr
 	memcpy(renderer->uniforms[index].data + offset, ptr, renderer->uniforms[index].size);
 	renderer->uniforms[index].number++;
 
-	return (renderer->uniforms[index].number-1);
+	return (renderer->uniforms[index].number - 1);
 }
 
 FH_API void fh_batch_reset_uniform(struct fh_batch *renderer, s32 index)

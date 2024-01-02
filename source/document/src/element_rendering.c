@@ -16,26 +16,27 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	f32 color[4];
 
 	struct tempStruct {
-		s32 x;
-		s32 y;
+		f32 x;
+		f32 y;
+		f32 z;
 		s32 index;
 	} vdata;
 
 	s32 p0x = ele->output_rect.x;
 	s32 p0y = ele->output_rect.y;
 	s32 p1x = ele->output_rect.x + ele->output_rect.w;
-	s32 p1y = ele->output_rect.x + ele->output_rect.h;
+	s32 p1y = ele->output_rect.y + ele->output_rect.h;
 
-	if(!ele) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
-		return;
-	}
 
 	/*
 	 * Return if the element is not visible.
 	 */
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
+
+	printf("%s: X- %d, Y- %d, W- %d, H- %d\n", ele->name, 
+			ele->output_rect.x, ele->output_rect.y,
+			ele->output_rect.w, ele->output_rect.h);
 
 	/* Unioform: u_rect */
 	rect_index = fh_batch_push_uniform(ren, 1, &ele->output_rect);
@@ -55,22 +56,31 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_uniform(ren, 5, color);
 
 	vdata.index = rect_index;
+	vdata.z = (f32)ele->layer / 100.0;
 
-	vdata.x = p0x;
-	vdata.y = p0y;
+	printf("Layer: %f\n", vdata.z);
+
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p0y;
 	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
+	printf(">A: (%f, %f)\n", vdata.x, vdata.y);
 
-	vdata.x = p1x;
-	vdata.y = p0y;
+
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p0y;
 	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
+	printf(">B: (%f, %f)\n", vdata.x, vdata.y);
 
-	vdata.x = p1x;
-	vdata.y = p1y;
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p1y;
 	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
-
-	vdata.x = p0x;
-	vdata.y = p1y;
+	printf(">C: (%f, %f)\n", vdata.x, vdata.y);
+	
+	
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p1y;
 	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
+	printf(">D: (%f, %f)\n", vdata.x, vdata.y);
 
 	fh_batch_push_index(ren, indices[0]);
 	fh_batch_push_index(ren, indices[2]);
