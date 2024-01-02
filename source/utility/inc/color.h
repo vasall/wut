@@ -48,11 +48,20 @@ FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
 /*
  * Get the color as an 32 bit unsigned integer.
  *
- * @color: The color
+ * @color: The color struct
  *
  * Returns: The color code
  */
 FH_API u32 fh_color_get(struct fh_color color);
+
+
+/*
+ * Get the color as a float vector. This is used when sending data to OpenGL.
+ *
+ * @color: The color struct
+ * @fv: A float array to write the output color to
+ */
+FH_API void fh_color_get_fv(struct fh_color color, float *fv);
 
 
 /*

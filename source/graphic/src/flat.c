@@ -1,5 +1,7 @@
 #include "graphic/inc/flat.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 FH_INTERN void flat_mod(struct fh_flat *f, s32 x, s32 y,
@@ -59,12 +61,12 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 	struct fh_color *px;
 		
 	if(!ctx || !name || w < 1 || h < 1) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(f = fh_malloc(sizeof(struct fh_flat)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for flat struct");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for flat struct");
 		goto err_return;
 	}
 
@@ -77,7 +79,7 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 	/* Allocate memory for pixels */
 	size = w * h * sizeof(struct fh_color);
 	if(!(f->pixels = fh_malloc(size))) {
-		ALARM(ALARM_ERR, "Failed to allocate pixel data buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate pixel data buffer");
 		goto err_free_f;
 	}
 
@@ -94,7 +96,7 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 
 	/* Create a texture to put the flat struct onto */
 	if(!(f->texture = fh_CreateTexture(ctx, name, w, h, GL_RGBA, (u8 *)f->pixels))) {
-		ALARM(ALARM_ERR, "Failed to create tetxure for flat");
+		FH_ALARM(FH_ERROR, "Failed to create tetxure for flat");
 		goto err_free_pixels;
 	}
 
@@ -108,7 +110,7 @@ err_free_f:
 	fh_free(f);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create flat structure");
+	FH_ALARM(FH_ERROR, "Failed to create flat structure");
 	return NULL;
 }
 
@@ -131,7 +133,7 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 	u32 i;
 
 	if(!f) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -140,7 +142,7 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 	 */
 	size = w * h * sizeof(struct fh_color); 
 	if(!(p = fh_realloc(f->pixels, size))) {
-		ALARM(ALARM_ERR, "Failed to reallocate memory");
+		FH_ALARM(FH_ERROR, "Failed to reallocate memory");
 		goto err_return;
 	}
 
@@ -170,7 +172,7 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 	f->height = h;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to resize flat struct");
+	FH_ALARM(FH_ERROR, "Failed to resize flat struct");
 	return -1;
 }
 
@@ -190,7 +192,7 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 	s32 off_y;
 
 	if(!f || !r) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -200,7 +202,7 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 
 	size = lim_x * lim_y * FH_COLOR_SIZE; 
 	if(!(swap = fh_malloc(size))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for swap buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for swap buffer");
 		return;
 	}
 
@@ -228,7 +230,7 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
 	s32 y;
 
 	if(!f) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -247,7 +249,7 @@ FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
 	s32 y;
 
 	if(!f) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

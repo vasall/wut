@@ -1,5 +1,7 @@
 #include "widget/inc/widget.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "widget/inc/view.h"
 
 #include "document/inc/document.h"
@@ -48,7 +50,7 @@ FH_INTERN s8 widget_create_view(struct fh_widget *w, void *data)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create view widget");
+	FH_ALARM(FH_ERROR, "Failed to create view widget");
 	return -1;
 }
 
@@ -148,12 +150,12 @@ FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
 	s8 r = -1;
 
 	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(w = fh_malloc(sizeof(struct fh_widget)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for widget");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for widget");
 		goto err_return;
 	}
 
@@ -171,7 +173,7 @@ FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
 		case FH_WIDGET_VIEW: 
 			r = widget_create_view(w, data); 
 			break;
-		default: ALARM(ALARM_ERR, "Type not found"); break;
+		default: FH_ALARM(FH_ERROR, "Type not found"); break;
 	}
 
 	if(r < 0) goto err_free_comp;
@@ -182,7 +184,7 @@ err_free_comp:
 	fh_free(w);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create widget");
+	FH_ALARM(FH_ERROR, "Failed to create widget");
 	return NULL;
 }
 
@@ -190,7 +192,7 @@ err_return:
 FH_API void fh_DestroyWidget(struct fh_widget *w)
 {
 	if(!w) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -213,7 +215,7 @@ FH_API void fh_DestroyWidget(struct fh_widget *w)
 FH_API void fh_UpdateWidget(struct fh_widget *w, void *data)
 {
 	if(!w) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -234,7 +236,7 @@ FH_API void fh_UpdateWidget(struct fh_widget *w, void *data)
 FH_API void fh_RenderWidget(struct fh_widget *w)
 {
 	if(!w) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

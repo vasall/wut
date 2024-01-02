@@ -1,5 +1,7 @@
 #include "system/inc/file.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include <stdlib.h>
@@ -16,12 +18,12 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		ALARM(ALARM_ERR, "Failed to open file");
+		FH_ALARM(FH_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -31,12 +33,12 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 
 
 	if(!(buf = fh_malloc(file_size + 1))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for file buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		ALARM(ALARM_ERR, "Failed to read file");
+		FH_ALARM(FH_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -51,7 +53,7 @@ err_close_fd:
 	fclose(fd);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load file");
+	FH_ALARM(FH_ERROR, "Failed to load file");
 	return -1;
 }
 
@@ -64,12 +66,12 @@ FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		ALARM(ALARM_ERR, "Failed to open file");
+		FH_ALARM(FH_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -79,12 +81,12 @@ FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
 
 
 	if(!(buf = fh_malloc(file_size + 1))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for file buffer");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		ALARM(ALARM_ERR, "Failed to read file");
+		FH_ALARM(FH_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -101,7 +103,7 @@ err_close_fd:
 	fclose(fd);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load file");
+	FH_ALARM(FH_ERROR, "Failed to load file");
 	return -1;
 }
 
@@ -190,20 +192,20 @@ FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
 	u64 size;
 	
 	if(!pth || !out) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 
 	if(!(surf = IMG_Load(pth))) {
-		ALARM(ALARM_ERR, "Failed to open and read file");
+		FH_ALARM(FH_ERROR, "Failed to open and read file");
 		goto err_return;
 	}
 
 
 	size = surf->pitch * surf->h;
 	if(!(buf = fh_malloc(size))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for image");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for image");
 		goto err_free_surface;
 	}
 
@@ -222,7 +224,7 @@ err_free_surface:
 	SDL_FreeSurface(surf);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load PNG file");
+	FH_ALARM(FH_ERROR, "Failed to load PNG file");
 	return -1;
 }
 

@@ -1,94 +1,16 @@
 #include "document/inc/document.h"
 
+#include "document/inc/element_rendering.h"
+
+#include "utility/alarm/inc/alarm.h"
+
+#include "core/inc/predefined.h"
+
 #include "system/inc/system.h"
 
 #include "utility/inc/utility.h"
 
 #include <stdlib.h>
-
-
-FH_INTERN s8 doc_create_flat(struct fh_document *doc)
-{
-	struct fh_context *ctx = doc->context;
-	u16 w = doc->shape_ref->w;
-	u16 h = doc->shape_ref->h;
-	
-	printf("Create flat with w=%d, h=%d\n", w, h);
-
-	if(!(doc->flat = fh_CreateFlat(ctx, "ui", w, h)))
-		goto err_return;
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create flat for document");
-	return -1;
-}
-
-
-FH_INTERN void doc_destroy_flat(struct fh_document *doc)
-{
-	fh_DestroyFlat(doc->flat);
-}
-
-
-FH_INTERN s8 doc_create_ui(struct fh_document *doc)
-{
-	struct fh_model_c *c;
-
-	unsigned int vtxnum = 4;
-	unsigned int idxnum = 6;
-	struct fh_context *ctx = doc->context;
-
-	float vertices[] = {
-		-1,  -1,   0,
-		-1,   1,   0,
-		 1,   1,   0,
-		 1,  -1,   0
-	};
-
-	/* Texture coordinates (2 floats per vertex) */
-	float texCoords[] = {
-		0.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f
-	};
-
-	/* Indices (3 ints per triangle) */
-	unsigned int indices[] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	vec3_t ini_pos = {0, 0, 0};
-	vec3_t ini_rot = {0, 0, 0};
-
-	if(!(c = fh_BeginModelConstr("ui", vtxnum, idxnum, indices))) {
-		printf("Failed to begin construction\n");
-		goto err_return;
-	}
-
-	fh_ModelConstrShader(c, fh_GetShader(ctx, "flat"));
-	fh_ModelConstrTexture(c, fh_GetTexture(ctx, "ui"));
-
-	fh_ModelConstrAttrib(c, "v_pos", 3, GL_FLOAT, vertices);
-	fh_ModelConstrAttrib(c, "v_uv", 2, GL_FLOAT, texCoords);
-
-	if(!(doc->ui = fh_EndModelConstr(c, ctx, ini_pos, ini_rot))) {
-		printf("Failed to finalize construction\n");
-		goto err_return;
-	}
-
-	fh_ModelConstrCleanup(c);	
-
-	return 0;
-
-err_return:
-	ALARM(ALARM_ERR, "Failed to create UI model for document");
-	return -1;
-}
-
 
 /*
  * 
@@ -170,9 +92,9 @@ FH_INTERN s8 doc_cfnc_update_shape(struct fh_element *ele, void *data)
 
 FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 {
-	fh_Ignore(data);
+	struct fh_batch *batch = (struct fh_batch *)data;
 
-	fh_element_render(ele);
+	fh_element_render(batch, ele);
 
 	return 0;
 }
@@ -180,6 +102,8 @@ FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 
 FH_INTERN s8 doc_cfnc_render_ui_post(struct fh_element *ele, void *data)
 {
+	return 0;
+
 	fh_Ignore(data);
 
 	fh_element_ren_scrollbar(ele);
@@ -222,7 +146,46 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 	printf("\n");
 
 	return 0;
-	
+
+}
+
+
+FH_INTERN struct fh_shader *doc_create_batch_shader(struct fh_document *doc)
+{
+	return fh_CreateShader(
+			doc->context, 
+			"batch_shader", 
+			(const char *)fh_ps_batch_vshader,
+			(const char *)fh_ps_batch_fshader
+			);
+}
+
+
+FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
+{
+	struct fh_vertex_attrib v_attributes[] = {
+		{3, GL_FLOAT},		/* position */
+		{1, GL_INT}		/* index */
+	};
+
+	struct fh_uniform_temp uniforms[] = {
+		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_rect", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_color", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_radius", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bwidth", FH_UNIFORM_1IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bcolor", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+	};
+
+	return fh_batch_create(
+			shd,			/* Pointer to the shader to use */
+			2,			/* Number of vertex attributes */
+			v_attributes,		/* List of all vertex attributes */
+			6000,			/* Vertex capacity */
+			6000,			/* Index capacity */
+			5,			/* Number of uniform buffers */
+			uniforms		/* List of all uniforms */
+			);
 }
 
 
@@ -241,7 +204,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 
 	/* Allocate memory for the document */
 	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for document");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for document");
 		goto err_return;
 	}
 
@@ -254,7 +217,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 
 	/* Create the body element */	
 	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY, NULL))) {
-		ALARM(ALARM_ERR, "Failed to create body for document");
+		FH_ALARM(FH_ERROR, "Failed to create body for document");
 		goto err_free_doc;
 	}
 
@@ -266,31 +229,28 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->selected	= NULL;
 	doc->hovered	= NULL;
 
-	/* Create the flat */
-	if(doc_create_flat(doc) < 0)
-		goto err_destroy_body;
-
-	/* Create the UI model */
-	if(doc_create_ui(doc) < 0)
-		goto err_destroy_flat;
-
 	/* Create the view list */
 	if(!(doc->views = fh_CreateViewList(doc->context)))
-		goto err_destroy_ui;
+		goto err_destroy_body;
+
+	/* Create the shader used for batch rendering */
+	if(!(doc->batch_shader = doc_create_batch_shader(doc)))
+		goto err_destroy_views;
+
+	/* Create the batch renderer */
+	if(!(doc->batch = doc_create_batch(doc->batch_shader)))
+		goto err_remove_shader;
 
 	/* Update the body element */
 	fh_UpdateDocument(doc);
-	
-	/* Render the UI for the first time */
-	fh_RenderDocumentUI(doc);
 
 	return doc;
 
-err_destroy_ui:
-	fh_RemoveModel(doc->ui);	
+err_remove_shader:
+	fh_RemoveShader(doc->batch_shader);
 
-err_destroy_flat:
-	fh_DestroyFlat(doc->flat);
+err_destroy_views:
+	fh_DestroyViewList(doc->views);
 
 err_destroy_body:
 	fh_DestroyElement(doc->body);
@@ -299,7 +259,7 @@ err_free_doc:
 	fh_free(doc);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new document");
+	FH_ALARM(FH_ERROR, "Failed to create new document");
 	return NULL;
 }
 
@@ -309,9 +269,8 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 	if(!doc)
 		return;
 
-	/* Destroy the UI flat */
-	doc_destroy_flat(doc);
-	
+	/* Destroy the batch renderer */
+	fh_batch_destroy(doc->batch);
 
 	/* If the document contains a body, recursivly remove it */
 	fh_RemoveElement(doc, doc->body);	
@@ -326,16 +285,12 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 FH_API void fh_ResizeDocument(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	/* First resize the flat */
-	fh_ResizeFlat(doc->flat, doc->shape_ref->w, doc->shape_ref->h);
-
 	/* Then resize the elements */
 	fh_UpdateDocument(doc);
-	fh_RenderDocumentUI(doc);
 }
 
 
@@ -346,25 +301,24 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
 	struct fh_element *ele;
 
 	if(!doc || !parent || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* Create new element */
 	if(!(ele = fh_CreateElement(doc, name, type, data))) {
-		ALARM(ALARM_ERR, "Failed to create new element for document");
+		FH_ALARM(FH_ERROR, "Failed to create new element for document");
 		goto err_return;
 	}
 
 	/* Attach element to parent */
 	if(fh_AttachElement(parent, ele) < 0) {
-		ALARM(ALARM_ERR, "Failed to attach element to parent");
+		FH_ALARM(FH_ERROR, "Failed to attach element to parent");
 		goto err_destroy_ele;
 	}
 
 	/* Update the new element */
 	fh_UpdateDocumentBranch(doc, ele);
-	fh_RenderDocumentUIBranch(doc, ele);
 
 	return ele;
 
@@ -372,7 +326,7 @@ err_destroy_ele:
 	fh_DestroyElement(ele);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to add element to document");
+	FH_ALARM(FH_ERROR, "Failed to add element to document");
 	return NULL;
 }
 
@@ -380,7 +334,7 @@ err_return:
 FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele)
 {
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -393,14 +347,14 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	struct fh_ele_selector sel;
 
 	if(!doc || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	sel.state = 0;
 	sel.name = name;
 	sel.element = NULL;
-	
+
 	/* Recursivly search for the element in the document */
 	fh_element_hlf(doc->body, NULL, &doc_cfnc_find, &sel);
 
@@ -409,7 +363,7 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	}
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get element");
+	FH_ALARM(FH_ERROR, "Failed to get element");
 	return NULL;
 }
 
@@ -420,7 +374,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	struct fh_ele_selector sel;
 
 	if(!doc) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -437,7 +391,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	return NULL;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get hovered element");
+	FH_ALARM(FH_ERROR, "Failed to get hovered element");
 	return NULL;
 }
 
@@ -446,7 +400,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -474,7 +428,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 FH_API void fh_UpdateDocument(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -485,26 +439,22 @@ FH_API void fh_UpdateDocument(struct fh_document *doc)
 FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
-	struct fh_rect r;
-
 	if(!doc || !ele) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_element_hlf(ele, &doc_cfnc_render_ui, &doc_cfnc_render_ui_post,
-			NULL);
-
-	r = fh_GetBoundingBox(ele);
-	fh_UpdateFlat(doc->flat, &r);
-	
+	fh_element_hlf(ele,
+			&doc_cfnc_render_ui,
+			&doc_cfnc_render_ui_post,
+			doc->batch);
 }
 
 
 FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 {
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -515,14 +465,20 @@ FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 
 FH_API void fh_RenderDocument(struct fh_document *doc)
 {
+	s32 frame[2];
+
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_RenderViewList(doc->views);
-	fh_RenderModel(doc->ui, NULL, NULL);
+	frame[0] = doc->shape_ref->w;
+	frame[1] = doc->shape_ref->h;
+	fh_batch_push_uniform(doc->batch, 0, frame);
 
+	fh_RenderDocumentUI(doc);
+
+	fh_batch_flush(doc->batch);
 }
 
 
@@ -532,14 +488,12 @@ FH_API void fh_ShowDocumentTree(struct fh_document *doc,
 	struct fh_element *start;
 
 	if(!doc) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	if(ele)
-		start = ele;
-	else
-		start = doc->body;
+	if(ele) start = ele;
+	else start = doc->body;
 
 	fh_element_hlf(start, &doc_cfnc_show, NULL, NULL);
 }

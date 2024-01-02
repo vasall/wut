@@ -1,11 +1,12 @@
 #include "graphic/resources/inc/texture.h"
 
+#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/table.h"
+
 #include "core/inc/core.h"
 
 #include "system/inc/system.h"
 #include "system/inc/file.h"
-
-#include "utility/inc/table.h"
 
 #include <stdlib.h>
 
@@ -21,7 +22,7 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	}
 
 	if(!(tex = fh_malloc(sizeof(struct fh_texture)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for texture");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for texture");
 		goto err_return;
 	}
 
@@ -45,7 +46,7 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	return tex;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new texture");
+	FH_ALARM(FH_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
@@ -74,7 +75,7 @@ err_cleanup_img:
 	fh_fs_image_cleanup(&img);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load texture");
+	FH_ALARM(FH_ERROR, "Failed to load texture");
 	return NULL;
 }
 
@@ -115,12 +116,12 @@ FH_API s8 fh_InitTextureTable(struct fh_context *ctx)
 	struct fh_table *tbl;
 
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(tbl = fh_tbl_create(&tex_rmv_fnc))) {
-		ALARM(ALARM_ERR, "Failed to create fh_table");
+		FH_ALARM(FH_ERROR, "Failed to create fh_table");
 		goto err_return;
 	}
 
@@ -130,7 +131,7 @@ FH_API s8 fh_InitTextureTable(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to initialize the texture table");
+	FH_ALARM(FH_ERROR, "Failed to initialize the texture table");
 	return -1;
 }
 
@@ -138,7 +139,7 @@ err_return:
 FH_API void fh_CloseTextureTable(struct fh_context *ctx)
 {
 	if(!ctx) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -155,7 +156,7 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
 	void **p;
 
 	if(!ctx || !name || w < 1 || h < 1 || !px) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -177,7 +178,7 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new texture");
+	FH_ALARM(FH_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
@@ -189,7 +190,7 @@ FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, cha
 	void **p;
 
 	if(!ctx || !name || !pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -211,7 +212,7 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load new texture");
+	FH_ALARM(FH_ERROR, "Failed to load new texture");
 	return NULL;
 }
 
@@ -219,7 +220,7 @@ err_return:
 FH_API void fh_RemoveTexture(struct fh_texture *tex)
 {
 	if(!tex) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -232,7 +233,7 @@ FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 	u32 newTex;
 		
 	if(!tex) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -266,7 +267,7 @@ FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to resize texture");
+	FH_ALARM(FH_ERROR, "Failed to resize texture");
 	return -1;
 }
 
@@ -275,7 +276,7 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px)
 {
 	if(!tex || !px) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -297,19 +298,19 @@ FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name)
 	struct fh_texture *tex;
 
 	if(!ctx || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(fh_tbl_get(ctx->textures, name, NULL, (void **)&tex) != 1) {
-		ALARM(ALARM_ERR, "Texture could not be found in fh_table");
+		FH_ALARM(FH_ERROR, "Texture could not be found in fh_table");
 		goto err_return;
 	}
 
 	return tex;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get texture from texture table");
+	FH_ALARM(FH_ERROR, "Failed to get texture from texture table");
 	return NULL;
 }
 
@@ -317,7 +318,7 @@ err_return:
 FH_API void fh_UseTexture(struct fh_texture *tex)
 {
 	if(!tex) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

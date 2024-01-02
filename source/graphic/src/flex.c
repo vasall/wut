@@ -1,5 +1,7 @@
 #include "graphic/inc/flex.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include <stdlib.h>
@@ -25,7 +27,7 @@ FH_API struct fh_flex fh_flex_set(u8 mode, u32 value)
 FH_API u32 fh_flex_comp(struct fh_flex *flex, u32 ref)
 {
 	if(!flex) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return 0;
 	}
 

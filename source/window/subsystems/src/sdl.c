@@ -2,6 +2,8 @@
 
 #include "window/subsystems/inc/opengl.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include "core/inc/core.h"
@@ -14,18 +16,18 @@ FH_API s8 fh_sdl_init(void)
 	s32 imgFlags = IMG_INIT_PNG;
 
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize SDL");
-		ALARM(ALARM_ERR, SDL_GetError());
+		FH_ALARM(FH_ERROR, "Failed to initialize SDL");
+		FH_ALARM(FH_ERROR, SDL_GetError());
 		goto err_return;
 	}
 
 	if(TTF_Init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize SDL_TTF");
+		FH_ALARM(FH_ERROR, "Failed to initialize SDL_TTF");
 		goto err_quit_sdl;
 	}
 
 	if(!(IMG_Init(imgFlags) & imgFlags)) {
-		ALARM(ALARM_ERR, "Failed to initialize SDL_IMG");
+		FH_ALARM(FH_ERROR, "Failed to initialize SDL_IMG");
 		goto err_quit_sdl;
 	}
 	
@@ -35,7 +37,7 @@ err_quit_sdl:
 	SDL_Quit();
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to initialize SDL module");
+	FH_ALARM(FH_ERROR, "Failed to initialize SDL module");
 	return -1;
 }
 

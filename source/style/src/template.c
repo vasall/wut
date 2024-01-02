@@ -1,5 +1,7 @@
 #include "style/inc/template.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "document/inc/document.h"
 #include "document/inc/element.h"
 #include "document/inc/context.h"
@@ -116,7 +118,7 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data)
 {
 	if(!ele) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -139,6 +141,6 @@ FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load element template");
+	FH_ALARM(FH_ERROR, "Failed to load element template");
 	return -1;
 }

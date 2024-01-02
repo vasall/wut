@@ -1,5 +1,7 @@
 #include "widget/inc/view.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include <stdlib.h>
@@ -17,9 +19,9 @@ FH_INTERN s8 view_get_slot(struct fh_view_list *lst)
 	return -1;
 }
 
-FH_INTERN void view_render_models(struct fh_model *m)
+FH_INTERN void view_render_objects(struct fh_object *m)
 {
-	fh_RenderModel(m, NULL, NULL);
+	fh_RenderObject(m, NULL, NULL);
 }
 
 
@@ -38,12 +40,12 @@ FH_API struct fh_view_list *fh_CreateViewList(struct fh_context *ctx)
 	u8 i;
 
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(lst = fh_malloc(sizeof(struct fh_view_list)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for view list");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for view list");
 		goto err_return;
 	}
 
@@ -57,7 +59,7 @@ FH_API struct fh_view_list *fh_CreateViewList(struct fh_context *ctx)
 	return lst;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create view list");
+	FH_ALARM(FH_ERROR, "Failed to create view list");
 	return NULL;
 }
 
@@ -67,7 +69,7 @@ FH_API void fh_DestroyViewList(struct fh_view_list *lst)
 	s8 i;
 
 	if(!lst) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -102,17 +104,17 @@ FH_API struct fh_view *fh_CreateView(struct fh_view_list *lst,
 	s8 slot;
 
 	if(!lst) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if((slot = view_get_slot(lst)) < 0) {
-		ALARM(ALARM_ERR, "No more free slots in view list");
+		FH_ALARM(FH_ERROR, "No more free slots in view list");
 		goto err_return;
 	}
 
 	if(!(v = fh_malloc(sizeof(struct fh_view)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for view struct");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for view struct");
 		goto err_return;
 	}
 
@@ -129,13 +131,13 @@ FH_API struct fh_view *fh_CreateView(struct fh_view_list *lst,
         cam_info.near = 0.01;
         cam_info.far = 1000;
 	if(!(v->camera = fh_CreateCamera(cam_info, v))) {
-		ALARM(ALARM_ERR, "Failed to create camera");
+		FH_ALARM(FH_ERROR, "Failed to create camera");
 		goto err_free_v;
 	}
 
 	/* Create a new pipeline */
 	if(!(v->pipe = fh_CreatePipe(v->camera->pos))) {
-		ALARM(ALARM_ERR, "Failed to create new model pipeline");
+		FH_ALARM(FH_ERROR, "Failed to create new object pipeline");
 		goto err_destroy_cam;
 	}
 
@@ -155,7 +157,7 @@ err_free_v:
 	fh_free(v);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to create new view struct");
+	FH_ALARM(FH_ERROR, "Failed to create new view struct");
 	return NULL;
 }
 
@@ -199,9 +201,9 @@ FH_API void fh_RenderView(struct fh_view *v)
 
 
 	/*
-	 * Now we can render all models in order.
+	 * Now we can render all objects in order.
 	 */
-	fh_PipeApply(v->pipe, &view_render_models);			
+	fh_PipeApply(v->pipe, &view_render_objects);			
 
 
 	/*
@@ -217,7 +219,7 @@ FH_API void fh_ResizeView(struct fh_view *v, struct fh_rect *rect)
 	struct fh_camera_info info;
 
 	if(!v || !rect) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -232,7 +234,7 @@ FH_API void fh_ResizeView(struct fh_view *v, struct fh_rect *rect)
 FH_API struct fh_camera *fh_GetViewCamera(struct fh_view *v)
 {
 	if(!v) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -249,45 +251,45 @@ FH_API void fh_UpdateViewPipe(struct fh_view *v)
 }
 
 
-FH_API s8 fh_ViewAddModel(struct fh_view *v, struct fh_model *mdl)
+FH_API s8 fh_ViewAddObject(struct fh_view *v, struct fh_object *obj)
 {
-	if(!v || !mdl) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+	if(!v || !obj) {
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_PipeAddModel(v->pipe, mdl) < 0) {
-		ALARM(ALARM_ERR, "Failed to add model to pipe");
+	if(fh_PipeAddObject(v->pipe, obj) < 0) {
+		FH_ALARM(FH_ERROR, "Failed to add object to pipe");
 		goto err_return;
 	}
 
-	mdl->view = v;
+	obj->view = v;
 
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to add model to view");
+	FH_ALARM(FH_ERROR, "Failed to add object to view");
 	return -1;
 }
 
 
-FH_API void fh_ViewRemoveModel(struct fh_model *mdl)
+FH_API void fh_ViewRemoveObject(struct fh_object *obj)
 {
 	struct fh_pipe *pip;
 
-	if(!mdl) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+	if(!obj) {
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	if(!mdl->view) {
-		ALARM(ALARM_WARN, "Model is not attached to any view");
+	if(!obj->view) {
+		FH_ALARM(FH_WARNING, "Object is not attached to any view");
 		return;
 	}
 
-	pip = mdl->view->pipe;
+	pip = obj->view->pipe;
 
-	fh_PipeRemoveModel(pip, fh_PipeGetSlot(pip, mdl->name));
+	fh_PipeRemoveObject(pip, fh_PipeGetSlot(pip, obj->name));
 
-	mdl->view = NULL;
+	obj->view = NULL;
 }

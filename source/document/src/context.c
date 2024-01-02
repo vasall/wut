@@ -1,5 +1,7 @@
 #include "document/inc/context.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "core/inc/predefined.h"
 
 #include "system/inc/system.h"
@@ -102,7 +104,7 @@ FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load predefined resources");
+	FH_ALARM(FH_ERROR, "Failed to load predefined resources");
 	return -1;
 }
 
@@ -126,14 +128,14 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	if(fh_InitShaderTable(ctx) < 0) goto err_free_ctx;
 	if(fh_InitTextureTable(ctx) < 0) goto err_close_shd;
 	if(fh_InitFontTable(ctx) < 0) goto err_close_tex;
-	if(fh_InitModelTable(ctx) < 0) goto err_close_font;
+	if(fh_InitObjectTable(ctx) < 0) goto err_close_font;
 
 	/*
 	 * Create the underlying OpenGL-context.
 	 */
 	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
-		ALARM(ALARM_ERR, "Failed to create GL context");
-		goto err_close_mdl;
+		FH_ALARM(FH_ERROR, "Failed to create GL context");
+		goto err_close_obj;
 	}
 
 	/*
@@ -143,11 +145,10 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 		goto err_delete_context;
 
 
-	glClearColor(1, 0, 0, 1);
-	glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
-	glEnable(GL_BLEND);
+	glClearColor(1, 1, 1, 1);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(gl_callback, 0);
@@ -158,8 +159,8 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 err_delete_context:
 	SDL_GL_DeleteContext(ctx->gl_context);
 
-err_close_mdl:
-	fh_CloseModelTable(ctx);
+err_close_obj:
+	fh_CloseObjectTable(ctx);
 
 err_close_font:
 	fh_CloseFontTable(ctx);
@@ -174,7 +175,7 @@ err_free_ctx:
 	fh_free(ctx);
 	
 err_return:
-	ALARM(ALARM_ERR, "Failed to create context");
+	FH_ALARM(FH_ERROR, "Failed to create context");
 	return NULL;
 }
 
@@ -182,14 +183,14 @@ err_return:
 FH_API void fh_DestroyContext(struct fh_context *ctx)
 {
 	if(!ctx) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/* 
 	 * Second, close the resource tables.
 	 */
-	fh_CloseModelTable(ctx);
+	fh_CloseObjectTable(ctx);
 	fh_CloseFontTable(ctx);
 	fh_CloseTextureTable(ctx);
 	fh_CloseShaderTable(ctx);
@@ -204,7 +205,7 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
 	struct fh_table *tbl;
 
 	if(!ctx || !name || !p) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -212,8 +213,8 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
 		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
 		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
-		case FH_CONTEXT_MODELS: tbl = ctx->models; break;
-		default: ALARM(ALARM_ERR, "Table not found"); goto err_return;
+		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
+		default: FH_ALARM(FH_ERROR, "Table not found"); goto err_return;
 	}
 
 	if(fh_tbl_add(tbl, name, size, p) < 0)
@@ -222,7 +223,7 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to insert element into table");
+	FH_ALARM(FH_ERROR, "Failed to insert element into table");
 	return -1;
 }
 
@@ -233,7 +234,7 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 	struct fh_table *tbl;
 
 	if(!ctx || !name) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -241,8 +242,8 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
 		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
 		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
-		case FH_CONTEXT_MODELS: tbl = ctx->models; break;
-		default: ALARM(ALARM_WARN, "Table not found"); return;
+		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
+		default: FH_ALARM(FH_WARNING, "Table not found"); return;
 	}
 
 	fh_tbl_rmv(tbl, name);
@@ -252,7 +253,7 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect)
 {
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -263,7 +264,7 @@ FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect)
 FH_API void fh_ResetViewport(struct fh_context *ctx)
 {
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 

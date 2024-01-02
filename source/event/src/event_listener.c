@@ -1,5 +1,7 @@
 #include "event/inc/event_listener.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "window/inc/window.h"
 
 #include "document/inc/element.h"
@@ -23,7 +25,7 @@ FH_XMOD struct fh_event_handler *fh_handler_create(void)
 	struct fh_event_handler *hdl;
 
 	if(!(hdl = fh_malloc(sizeof(struct fh_event_handler)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for event handler");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for event handler");
 		return NULL;
 	}
 
@@ -204,7 +206,7 @@ FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
 	struct fh_event_listener *lst;
 
 	if(!(lst = fh_malloc(sizeof(struct fh_event_listener)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for listener");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for listener");
 		return -1;
 	}
 

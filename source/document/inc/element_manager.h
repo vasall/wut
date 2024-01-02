@@ -46,23 +46,6 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele);
 
 
 /*
- * Render an element onto a flat struct using the given renderer.
- *
- * @ele: Pointer to the element
- */
-FH_API void fh_element_render(struct fh_element *ele);
-
-
-/*
- * Render the scrollbar of the element. This feature is configure through the
- * scrollbar-setting in the stylesheet.
- *
- * @ele: Pointer to the element
- */
-FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele);
-
-
-/*
  * Check if the two element pointers point to the same element.
  *
  * @in1: First element pointer
@@ -242,8 +225,6 @@ FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str);
  * Returns: Either a pointer to the view struct or NULL if an error occurred
  */
 FH_API struct fh_view *fh_GetView(struct fh_element *ele);
-
-
 
 
 #endif /* _FH_DOCUMENT_ELEMENT_MANAGER_H */

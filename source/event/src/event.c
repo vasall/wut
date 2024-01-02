@@ -1,5 +1,7 @@
 #include "event/inc/event.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include "core/inc/core.h"
@@ -298,7 +300,7 @@ FH_XMOD void fh_event_trigger_raw(enum fh_event_type type,
 FH_API void fh_PreventDefault(struct fh_event *evt)
 {
 	if(!evt) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

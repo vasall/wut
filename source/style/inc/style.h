@@ -67,6 +67,16 @@ struct fh_restyle_reference {
 	u8 				mode;
 };
 
+struct fh_restyle_radius {
+	s32				corner[4];
+};
+
+struct fh_restyle_border {
+	u8				mode;
+	s32				width;
+	struct fh_color			color;
+};
+
 struct fh_restyle_infill {
 	u8				mode;
 	struct fh_color			color;
@@ -106,6 +116,16 @@ struct fh_style {
 	struct fh_rect			bounding_box;	
 	struct fh_rect			element_delta;	/* -Spacing */
 	struct fh_rect			content_delta;	/* -Spacing, -Padding */
+
+	/*
+	 * RADIUS
+	 */
+	struct fh_restyle_radius	radius;
+
+	/*
+	 * BORDER
+	 */
+	struct fh_restyle_border	border;
 
 	/*
 	 * INFILL

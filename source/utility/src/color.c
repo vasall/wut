@@ -1,5 +1,7 @@
 #include "utility/inc/color.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include <stdlib.h>
 
 
@@ -29,6 +31,20 @@ FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
 FH_API u32 fh_color_get(struct fh_color color)
 {
 	return *((u32 *)&color);
+}
+
+
+FH_API void fh_color_get_fv(struct fh_color color, float *fv)
+{
+	if(!fv) {
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		return;
+	}
+
+	fv[0] = (f32)color.r / 255.0;
+	fv[1] = (f32)color.g / 255.0;
+	fv[2] = (f32)color.b / 255.0;
+	fv[3] = (f32)color.a / 255.0;
 }
 
 

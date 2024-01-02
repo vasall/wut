@@ -6,7 +6,7 @@
 #include "graphic/inc/flat.h"
 #include "graphic/inc/flex.h"
 #include "graphic/resources/inc/font.h"
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 #include "graphic/inc/constructor.h"
 #include "graphic/inc/pipe.h"
 #include "graphic/resources/inc/shader.h"

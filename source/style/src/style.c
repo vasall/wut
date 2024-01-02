@@ -1,5 +1,7 @@
 #include "style/inc/style.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "style/inc/style_utils.h"
 
 #include "system/inc/system.h"
@@ -22,7 +24,7 @@
 FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 {
 	if(!style) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -38,7 +40,7 @@ FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to initialize style structure");
+	FH_ALARM(FH_ERROR, "Failed to initialize style structure");
 	return -1;
 }
 
@@ -71,12 +73,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out = style;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * DISPLAY
 	 */
 	
 	out->display.mode = style->sheet.display_mode;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * REFERENCE
 	 */
 
@@ -96,14 +102,18 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	/* width */
 
-	if(ref)
+	if(ref) {
 		ref_width = ref->bounding_box.w + ref->content_delta.w;
-	else
+	}
+	else {
 		ref_width = (u16)pass->document_shape->w;
+	}
 
 
 	/* 
-	 * CALCULATE SIZE
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * SIZE
 	 */
 
 	/* height */
@@ -113,6 +123,8 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	width = ref_width * style->sheet.hsize;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * SPACING
 	 */
 
@@ -153,6 +165,8 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->element_delta.x = spacing[3];
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * PADDING
 	 */
 
@@ -182,8 +196,31 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	/* position */
 	out->content_delta.y = out->element_delta.y + padding[0];
 	out->content_delta.x = out->element_delta.x + padding[3];
+	
+	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * RADIUS
+	 */
+
+	out->radius.corner[0] = style->sheet.radius_top_left;
+	out->radius.corner[1] = style->sheet.radius_top_right;
+	out->radius.corner[2] = style->sheet.radius_bottom_right;
+	out->radius.corner[3] = style->sheet.radius_bottom_left;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
+	 * BORDER
+	 */
+	
+	out->border.mode = style->sheet.border_mode;
+	out->border.width = style->sheet.border_width;
+	out->border.color = fh_col_conv_itos(style->sheet.border_color);
+
+	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * INFILL
 	 */
 
@@ -191,12 +228,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->infill.color = fh_col_conv_itos(style->sheet.infill_color);
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * LAYOUT
 	 */
 
 	out->layout.mode = style->sheet.layout_mode;
 
 	/*
+	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 *
 	 * SCROLLBAR
 	 */
 	out->scrollbar.flags = 0;
@@ -231,7 +272,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 FH_API void fh_ResetStyle(struct fh_style *style)
 {
 	if(!style) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -268,10 +309,25 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 	style->sheet.padding_left = 0;
 
 	/*
+	 * RADIUS
+	 */
+	style->sheet.radius_top_left = 0;
+	style->sheet.radius_top_right = 0;
+	style->sheet.radius_bottom_right = 0;
+	style->sheet.radius_bottom_left = 0;
+
+	/*
+	 * BORDER
+	 */
+	style->sheet.border_mode = 0;
+	style->sheet.border_width = 0;
+	style->sheet.border_color = fh_col_set_u32(0x00, 0x00, 0x00, 0xFF);
+
+	/*
 	 * INFILL
 	 */
 	style->sheet.infill_mode = FH_INFILL_COLOR;
-	style->sheet.infill_color =  fh_col_set_u32(0xFF, 0x69, 0xB4, 0xFF);
+	style->sheet.infill_color = fh_col_set_u32(0xB0, 0x0B, 0x1E, 0xFF);
 
 	/*
 	 * LAYOUT
@@ -297,7 +353,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	const struct fh_stylesheet_attribute *ent;
 
 	if(!style || !in) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -341,7 +397,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 FH_API void fh_DumpStylesheet(struct fh_style *style)
 {
 	if(!style) {
-		ALARM(ALARM_WARN, "Input parameters invalid");
+		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 

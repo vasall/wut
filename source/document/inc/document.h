@@ -9,34 +9,35 @@
 #include "document/inc/element.h"
 #include "document/inc/element_manager.h"
 
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 #include "graphic/inc/constructor.h"
 #include "graphic/inc/flat.h"
+
+#include "graphic/batching/inc/batch.h"
 
 
 struct fh_document {
 	/* A pointer to the window this document belongs to */
-	struct fh_window 	*window;
+	struct fh_window 		*window;
 
 	/* A pointer to the context */
-	struct fh_context 	*context;
+	struct fh_context 		*context;
 
 	/* The body element, to which all future elements will be attached */
-	struct fh_element 	*body;
+	struct fh_element 		*body;
 
-	struct fh_element	*selected;
-	struct fh_element	*hovered;
+	struct fh_element		*selected;
+	struct fh_element		*hovered;
 	
 	/* A reference to the window size */
-	struct fh_rect 		*shape_ref;
-
-	/* The flat surface used for rendering */
-	struct fh_flat 		*flat;
-
-	struct fh_model 	*ui;
+	struct fh_rect 			*shape_ref;
 
 	/* A list of all views */
-	struct fh_view_list 	*views;
+	struct fh_view_list 		*views;
+
+	/* A list of all batch renderers used for this document */
+	struct fh_shader		*batch_shader;
+	struct fh_batch 		*batch;
 
 #if 0
 	/* A list of all canvas widgets */
@@ -45,10 +46,10 @@ struct fh_document {
 };
 
 struct fh_ele_selector {
-	s8 state;
-	char *name;
-	struct fh_sin2 *pos;
-	struct fh_element *element;
+	s8 					state;
+	char 				*name;
+	struct fh_sin2 		*pos;
+	struct fh_element 	*element;
 };
 
 

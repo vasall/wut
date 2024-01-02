@@ -7,7 +7,6 @@
 #include "window/inc/window.h"
 
 #include "graphic/resources/inc/texture.h"
-#include "graphic/inc/model.h"
 #include "graphic/resources/inc/shader.h"
 #include "utility/inc/color.h"
 #include "utility/inc/shape.h"

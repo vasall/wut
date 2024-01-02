@@ -6,7 +6,7 @@
 
 #include "graphic/inc/pipe.h"
 #include "graphic/inc/camera.h"
-#include "graphic/inc/model.h"
+#include "graphic/inc/object.h"
 #include "utility/inc/shape.h"
 
 #include "document/inc/context.h"
@@ -120,19 +120,19 @@ FH_API void fh_UpdateViewPipe(struct fh_view *v);
 
 
 /*
- * Attach a model to a view.
+ * Attach a object to a view.
  *
  * @v: Pointer to the view
- * @mdl: Pointer to the model
+ * @obj: Pointer to the object
  */
-FH_API s8 fh_ViewAddModel(struct fh_view *v, struct fh_model *mdl);
+FH_API s8 fh_ViewAddObject(struct fh_view *v, struct fh_object *obj);
 
 
 /*
- * Remove a model from the view.
+ * Remove a object from the view.
  *
- * @mdl: Pointer to the model
+ * @obj: Pointer to the object
  */
-FH_API void fh_ViewRemoveModel(struct fh_model *mdl);
+FH_API void fh_ViewRemoveObject(struct fh_object *obj);
 
 #endif /* _FH_WIDGET_VIEW_H */

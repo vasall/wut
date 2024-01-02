@@ -1,5 +1,7 @@
 #include "core/inc/core.h"
 
+#include "utility/alarm/inc/alarm.h"
+
 #include "system/inc/system.h"
 
 #include <stdlib.h>
@@ -89,13 +91,13 @@ FH_API s8 fh_Init(void)
 
 	/* Then initialize the SDL-frameworks */
 	if(fh_sdl_init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize SDL");
+		FH_ALARM(FH_ERROR, "Failed to initialize SDL");
 		goto err_return;
 	}
 
 	/* Initialize OpenGL */
 	if(fh_gl_init() < 0) {
-		ALARM(ALARM_ERR, "Failed to initialize OpenGL");
+		FH_ALARM(FH_ERROR, "Failed to initialize OpenGL");
 		goto err_quit_sdl;
 	}
 
@@ -108,7 +110,7 @@ err_return:
 	/* Reset te core */
 	fh_core_reset();
 
-	ALARM(ALARM_ERR, "Failed to initialize the freihand framework");
+	FH_ALARM(FH_ERROR, "Failed to initialize the freihand framework");
 	return -1;
 }
 

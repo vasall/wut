@@ -1,8 +1,10 @@
 #include "graphic/resources/inc/font.h"
 
+#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/table.h"
+
 #include "system/inc/system.h"
 
-#include "utility/inc/table.h"
 
 #include <stdlib.h>
 
@@ -43,12 +45,12 @@ FH_API s8 fh_InitFontTable(struct fh_context *ctx)
 	struct fh_table *tbl;
 
 	if(!ctx) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 	
 	if(!(tbl = fh_tbl_create(&font_rmv_fnc))) {
-		ALARM(ALARM_ERR, "Failed to create the fh_table");
+		FH_ALARM(FH_ERROR, "Failed to create the fh_table");
 		goto err_return;
 	}
 
@@ -58,7 +60,7 @@ FH_API s8 fh_InitFontTable(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to initializie the font table");
+	FH_ALARM(FH_ERROR, "Failed to initializie the font table");
 	return -1;
 }
 
@@ -78,12 +80,12 @@ FH_API struct fh_font *fh_LoadFont(struct fh_context *ctx, char *name,
 	void **p;
 
 	if(!ctx || !name || !pth) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(font = fh_malloc(sizeof(struct fh_font)))) {
-		ALARM(ALARM_ERR, "Failed to allocate memory for font");
+		FH_ALARM(FH_ERROR, "Failed to allocate memory for font");
 		goto err_return;
 	}
 
@@ -93,7 +95,7 @@ FH_API struct fh_font *fh_LoadFont(struct fh_context *ctx, char *name,
 
 	/* Actually load the font from the file */
 	if(!(font->font = TTF_OpenFont(pth, s))) {
-		ALARM(ALARM_ERR, "Failed to load font from file");
+		FH_ALARM(FH_ERROR, "Failed to load font from file");
 		goto err_free_font;
 	}
 
@@ -112,7 +114,7 @@ err_free_font:
 	fh_free(font);
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to load font");
+	FH_ALARM(FH_ERROR, "Failed to load font");
 	return NULL;
 }
 
@@ -131,7 +133,7 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name)
 	struct fh_font *font;
 
 	if(!ctx || !name) {
-		ALARM(ALARM_ERR, "Input parameters invalid");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -141,7 +143,6 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name)
 	return font;
 
 err_return:
-	ALARM(ALARM_ERR, "Failed to get font from font table");
+	FH_ALARM(FH_ERROR, "Failed to get font from font table");
 	return NULL;
-
 }
