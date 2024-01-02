@@ -14,9 +14,9 @@
 
 
 
-FH_INTERN vec3_t FH_CAM_RIGHT =    {1.0, 0.0, 0.0};
-FH_INTERN vec3_t FH_CAM_FORWARD =  {0.0, 1.0, 0.0};
-FH_INTERN vec3_t FH_CAM_UP =       {0.0, 0.0, 1.0};
+FH_INTERN fh_vec3_t FH_CAM_RIGHT =    {1.0, 0.0, 0.0};
+FH_INTERN fh_vec3_t FH_CAM_FORWARD =  {0.0, 1.0, 0.0};
+FH_INTERN fh_vec3_t FH_CAM_UP =       {0.0, 0.0, 1.0};
 
 
 
@@ -44,7 +44,7 @@ FH_INTERN void cam_update_proj(struct fh_camera *cam)
 	right = top * asp;
 	left = -right; 
 
-	mat4_idt(cam->projection_m);
+	fh_mat4_idt(cam->projection_m);
 
 	cam->projection_m[0x0] = (2 * near) / (right - left);
 	cam->projection_m[0x5] = (2 * near) / (top - bottom); 	
@@ -59,14 +59,14 @@ FH_INTERN void cam_update_proj(struct fh_camera *cam)
 
 FH_INTERN void cam_update_view(struct fh_camera *cam)
 {
-	vec3_t f;
-	vec3_t r;
-	vec3_t u;
-	vec3_t p;	
+	fh_vec3_t f;
+	fh_vec3_t r;
+	fh_vec3_t u;
+	fh_vec3_t p;	
 
-	mat4_t m;
+	fh_mat4_t m;
 
-	mat4_t conv = {
+	fh_mat4_t conv = {
 		1.0,  0.0,  0.0,  0.0,
    		0.0,  1.0,  0.0,  0.0,
    		0.0,  0.0, -1.0,  0.0,
@@ -74,26 +74,26 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	};
 
 	/* Copy the current position of the camera */
-	vec3_cpy(p, cam->pos);
+	fh_vec3_cpy(p, cam->pos);
 
-	/* Calculate the forward, right and up vector for the camera */
+	/* Calculate the forward, right and up fh_vector for the camera */
 	if(cam->mode == FH_CAM_FOCUS) {
-		vec4_t tmp = {0, 1, 0};
-		vec4_trans(tmp, cam->forw_m, tmp);
+		fh_vec4_t tmp = {0, 1, 0};
+		fh_vec4_trans(tmp, cam->forw_m, tmp);
 
-		vec3_cpy(f, tmp);
-		vec3_nrm(f, f);
+		fh_vec3_cpy(f, tmp);
+		fh_vec3_nrm(f, f);
 
-		vec3_cross(f, FH_CAM_UP, r);
-		vec3_nrm(r, r);
+		fh_vec3_cross(f, FH_CAM_UP, r);
+		fh_vec3_nrm(r, r);
 	}
 	else {
-		vec3_cpy(f, cam->v_forward);
-		vec3_cpy(r, cam->v_right);
+		fh_vec3_cpy(f, cam->v_forward);
+		fh_vec3_cpy(r, cam->v_right);
 	}
 
-	vec3_cross(r, f, u);
-	vec3_nrm(u, u);
+	fh_vec3_cross(r, f, u);
+	fh_vec3_nrm(u, u);
 
 
 	/*
@@ -102,7 +102,7 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	 * https://gamedev.stackexchange.com/a/181826
 	 */
 
-	mat4_idt(m);
+	fh_mat4_idt(m);
 
 	m[0x0] = r[0];
 	m[0x4] = r[1];
@@ -116,14 +116,14 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	m[0x6] = f[1];
 	m[0xa] = f[2];
 
-	mat4_mult(conv, m, m);
+	fh_mat4_mult(conv, m, m);
 
-	mat4_idt(cam->view_m);
+	fh_mat4_idt(cam->view_m);
 	cam->view_m[0xc] = -p[0];
 	cam->view_m[0xd] = -p[1];
 	cam->view_m[0xe] = -p[2];
 
-	mat4_mult(m, cam->view_m, cam->view_m);
+	fh_mat4_mult(m, cam->view_m, cam->view_m);
 }
 
 
@@ -160,19 +160,19 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
 	cam->info = info;
 
 	/* Set the default position of the camera */
-	vec3_clr(cam->pos);
+	fh_vec3_clr(cam->pos);
 
-	/* Set the direction-vector for the camera */	
-	vec3_cpy(cam->v_forward, FH_CAM_FORWARD);
-	vec3_cpy(cam->v_right,   FH_CAM_RIGHT);
+	/* Set the direction-fh_vector for the camera */	
+	fh_vec3_cpy(cam->v_forward, FH_CAM_FORWARD);
+	fh_vec3_cpy(cam->v_right,   FH_CAM_RIGHT);
 
 	/* Set the sensitivity of the mouse */
 	cam->sens = 0.01;
 
 	/* Calculate the initial distance */
-	cam->dist = vec3_len(cam->pos);
+	cam->dist = fh_vec3_len(cam->pos);
 
-	mat4_idt(cam->forw_m);
+	fh_mat4_idt(cam->forw_m);
 
 	/* Calculate the projection- and view-matrix */
 	cam_update_proj(cam);
@@ -197,50 +197,50 @@ FH_API void fh_DestroyCamera(struct fh_camera *cam)
 }
 
 
-FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out)
+FH_API void fh_GetViewMat(struct fh_camera *cam, fh_mat4_t out)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
-		mat4_idt(out);
+		fh_mat4_idt(out);
 		return;
 	}
 
-	mat4_cpy(out, cam->view_m);
+	fh_mat4_cpy(out, cam->view_m);
 }
 
 
-FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out)
+FH_API void fh_GetProjectionMat(struct fh_camera *cam, fh_mat4_t out)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
-		mat4_idt(out);
+		fh_mat4_idt(out);
 		return;
 	}
 
-	mat4_cpy(out, cam->projection_m);
+	fh_mat4_cpy(out, cam->projection_m);
 }
 
 
-FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out)
+FH_API void fh_GetCameraPosition(struct fh_camera *cam, fh_vec3_t out)
 {
 	if(!cam) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
-		vec3_clr(out);
+		fh_vec3_clr(out);
 		return;
 	}
 
-	vec3_cpy(out, cam->pos);
+	fh_vec3_cpy(out, cam->pos);
 }
 
 
-FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos)
+FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	vec3_cpy(cam->pos, pos);
+	fh_vec3_cpy(cam->pos, pos);
 
 	cam_update_view(cam);
 
@@ -248,14 +248,14 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos)
 }
 
 
-FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del)
+FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	vec3_add(cam->pos, del, cam->pos);
+	fh_vec3_add(cam->pos, del, cam->pos);
 
 	cam_update_view(cam);
 
@@ -263,28 +263,28 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del)
 }
 
 
-FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out)
+FH_API void fh_GetCameraDirection(struct fh_camera *cam, fh_vec3_t out)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	vec3_cpy(out, cam->v_forward);
+	fh_vec3_cpy(out, cam->v_forward);
 }
 
 
-FH_API void fh_SetCameraDirection(struct fh_camera *cam, vec3_t dir)
+FH_API void fh_SetCameraDirection(struct fh_camera *cam, fh_vec3_t dir)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 	
-	vec3_cpy(cam->v_forward, dir);
-	vec3_nrm(cam->v_forward, cam->v_forward);
+	fh_vec3_cpy(cam->v_forward, dir);
+	fh_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
+	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
 
 	cam_update_view(cam);
 }
@@ -323,22 +323,22 @@ FH_API void fh_ToggleCameraMode(struct fh_camera *cam)
 }
 
 
-FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt)
+FH_API void fh_CameraLookAt(struct fh_camera *cam, fh_vec3_t pnt)
 {
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	vec3_sub(pnt, cam->pos, cam->v_forward);
-	vec3_nrm(cam->v_forward, cam->v_forward);
+	fh_vec3_sub(pnt, cam->pos, cam->v_forward);
+	fh_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	vec3_nrm(cam->v_right, cam->v_right);
+	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
+	fh_vec3_nrm(cam->v_right, cam->v_right);
 }
 
 
-FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg)
+FH_API void fh_FocusCamera(struct fh_camera *cam, fh_vec3_t trg)
 {
 	if(cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
@@ -347,13 +347,13 @@ FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg)
 
 	cam->mode = FH_CAM_FOCUS;
 
-	vec3_cpy(cam->target, trg);
+	fh_vec3_cpy(cam->target, trg);
 
-	vec3_sub(trg, cam->pos, cam->v_forward);
-	vec3_nrm(cam->v_forward, cam->v_forward);
+	fh_vec3_sub(trg, cam->pos, cam->v_forward);
+	fh_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	vec3_nrm(cam->v_right, cam->v_right);
+	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
+	fh_vec3_nrm(cam->v_right, cam->v_right);
 
 	cam_update_view(cam);
 
@@ -362,7 +362,7 @@ FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg)
 
 FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f)
 {
-	vec3_t del;
+	fh_vec3_t del;
 
 	if(!cam) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
@@ -375,8 +375,8 @@ FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f)
 			cam->dist = 0.5;
 	}
 	else {
-		vec3_scl(cam->v_forward, f, del);
-		vec3_add(cam->pos, del, cam->pos);
+		fh_vec3_scl(cam->v_forward, f, del);
+		fh_vec3_add(cam->pos, del, cam->pos);
 	}
 
 	fh_UpdateCamera(cam);
@@ -391,11 +391,11 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 	d_pitch *= cam->sens;
 
 	if(d_yaw != 0.0) {
-		vec3_rot_z(cam->v_forward, d_yaw, cam->v_forward);
+		fh_vec3_rot_z(cam->v_forward, d_yaw, cam->v_forward);
 	}
 
 	if(d_pitch != 0.0) {
-		vec3_rot_axes(cam->v_forward, d_pitch,
+		fh_vec3_rot_axes(cam->v_forward, d_pitch,
 				cam->v_right, cam->v_forward);
 	}
 
@@ -427,10 +427,10 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 		}
 	}
 
-	vec3_nrm(cam->v_forward, cam->v_forward);
+	fh_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	vec3_nrm(cam->v_right, cam->v_right);
+	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
+	fh_vec3_nrm(cam->v_right, cam->v_right);
 
 	/*
 	 * Calculate the forward-rotation-matrix.
@@ -438,9 +438,9 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 	if(cam->mode == FH_CAM_FOCUS) {
 		f32 yaw;
 		f32 pitch;
-		vec3_t f;
+		fh_vec3_t f;
 
-		vec3_cpy(f, cam->v_forward);
+		fh_vec3_cpy(f, cam->v_forward);
 
 		yaw = atan2(f[0], f[1]);
 		pitch = -asin(f[2]);
@@ -448,7 +448,7 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 		yaw = RAD_TO_DEG(yaw);
 		pitch = RAD_TO_DEG(pitch);
 
-		mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
+		fh_mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
 	}
 }
 

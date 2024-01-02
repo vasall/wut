@@ -13,6 +13,7 @@ struct fh_object;
 #include "core/inc/import.h"
 
 #include "utility/inc/table.h"
+#include "utility/inc/matrix.h"
 
 #include "window/inc/window.h"
 
@@ -67,8 +68,8 @@ struct fh_object {
 	/* Pointer to the view, if object is attached */
 	struct fh_view *view;
 
-	vec3_t position;
-	vec3_t rotation;
+	fh_vec3_t position;
+	fh_vec3_t rotation;
 };
 
 

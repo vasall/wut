@@ -6,6 +6,8 @@
 
 #include "window/inc/window.h"
 
+#include "utility/inc/matrix.h"
+
 #define FH_CAM_NAME_LIM		128
 #define FH_CAM_PITCH_LIM	50.0
 
@@ -27,19 +29,19 @@ struct fh_camera {
 
 	enum fh_cam_mode mode;
 
-	vec3_t pos;
+	fh_vec3_t pos;
 
-	vec3_t v_forward;
-	vec3_t v_right;
+	fh_vec3_t v_forward;
+	fh_vec3_t v_right;
 
 	struct fh_camera_info info;
 
-	vec3_t aim;
+	fh_vec3_t aim;
 	f32 dist;
-	mat4_t forw_m;
+	fh_mat4_t forw_m;
 
-	mat4_t view_m;
-	mat4_t projection_m;
+	fh_mat4_t view_m;
+	fh_mat4_t projection_m;
 
 	f32 sens;
 
@@ -49,7 +51,7 @@ struct fh_camera {
 	 * With this mode, the camera will focus on a given target.
 	 */
 
-	vec3_t target;		/* The point to focus on */
+	fh_vec3_t target;		/* The point to focus on */
 	f32 distance;		/* The distance from the target point */
 };
 
@@ -82,7 +84,7 @@ FH_API void fh_DestroyCamera(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @out: A matrix to write the view matrix to
  */
-FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out);
+FH_API void fh_GetViewMat(struct fh_camera *cam, fh_mat4_t out);
 
 
 /*
@@ -93,7 +95,7 @@ FH_API void fh_GetViewMat(struct fh_camera *cam, mat4_t out);
  * @cam: Pointer to the camera
  * @out: A matrix to write the projection matrix to
  */
-FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out);
+FH_API void fh_GetProjectionMat(struct fh_camera *cam, fh_mat4_t out);
 
 
 /*
@@ -101,9 +103,9 @@ FH_API void fh_GetProjectionMat(struct fh_camera *cam, mat4_t out);
  * If the camera is NULL, a Null-Vector will be returned.
  *
  * @cam: Pointer to the camera
- * @out: A vector to write the position to
+ * @out: A fh_vector to write the position to
  */
-FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out);
+FH_API void fh_GetCameraPosition(struct fh_camera *cam, fh_vec3_t out);
 
 /*
  * Set the position of a camera.
@@ -111,7 +113,7 @@ FH_API void fh_GetCameraPosition(struct fh_camera *cam, vec3_t out);
  * @cam: Pointer to the camera
  * @pos: The new position of the camera
  */
-FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos);
+FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos);
 
 
 /*
@@ -120,7 +122,7 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, vec3_t pos);
  * @cam: Pointer to the camera
  * @del: The position difference to move the camera by
  */
-FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del);
+FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del);
 
 
 /*
@@ -128,9 +130,9 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, vec3_t del);
  * If the camera is NULL, a Null-Vector will be returned.
  *
  * @cam: Pointer to the camera
- * @out: A vector to write the direction to
+ * @out: A fh_vector to write the direction to
  */
-FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out);
+FH_API void fh_GetCameraDirection(struct fh_camera *cam, fh_vec3_t out);
 
 
 /*
@@ -140,7 +142,7 @@ FH_API void fh_GetCameraDirection(struct fh_camera *cam, vec3_t out);
  * @cam: Pointer to the camera
  * @dir: The new direction of the camera
  */
-FH_API void fh_SetCameraDirection(struct fh_camera *cam, vec3_t dir);
+FH_API void fh_SetCameraDirection(struct fh_camera *cam, fh_vec3_t dir);
 
 
 /*
@@ -177,7 +179,7 @@ FH_API void fh_ToggleCameraMode(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @pnt: The point to look at
  */
-FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt);
+FH_API void fh_CameraLookAt(struct fh_camera *cam, fh_vec3_t pnt);
 
 
 /*
@@ -186,7 +188,7 @@ FH_API void fh_CameraLookAt(struct fh_camera *cam, vec3_t pnt);
  * @cam: Pointer to the camera
  * @trg: The target point to focus on
  */
-FH_API void fh_FocusCamera(struct fh_camera *cam, vec3_t trg);
+FH_API void fh_FocusCamera(struct fh_camera *cam, fh_vec3_t trg);
 
 
 /*

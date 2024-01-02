@@ -318,7 +318,7 @@ FH_API s8 fh_InitShaderTable(struct fh_context *ctx)
 		goto err_return;
 	}
 
-	vec3_set(vec, 1, 2, 3);
+	fh_vec3_set(vec, 1, 2, 3);
 
 	if(!(tbl = fh_tbl_create(&shd_rmv_fnc))) {
 		FH_ALARM(FH_ERROR, "Failed to create fh_table");

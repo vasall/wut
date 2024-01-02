@@ -28,15 +28,15 @@ FH_INTERN void pip_calculate(struct fh_pipe *pip)
 	u8 i;
 	struct fh_pipe_entry *ent;
 	struct fh_object *obj;
-	vec3_t del;
+	fh_vec3_t del;
 
 	for(i = 0; i < pip->number; i++) {
 		ent = &pip->entries[i];
 		obj = ent->object;
 
-		vec3_sub(obj->position, pip->ref_point, del);
+		fh_vec3_sub(obj->position, pip->ref_point, del);
 		
-		ent->crit = vec2_len(del);
+		ent->crit = fh_vec2_len(del);
 	}
 }
 
@@ -53,15 +53,15 @@ FH_INTERN void pip_calculate_select(struct fh_pipe *pip, u8 num, s32 *slt)
 	u8 i;
 	struct fh_pipe_entry *ent;
 	struct fh_object *obj;
-	vec3_t del;
+	fh_vec3_t del;
 
 	for(i = 0; i < num; i++) {
 		ent = &pip->entries[slt[i]];
 		obj = ent->object;
 
-		vec3_sub(obj->position, pip->ref_point, del);
+		fh_vec3_sub(obj->position, pip->ref_point, del);
 		
-		ent->crit = vec2_len(del);
+		ent->crit = fh_vec2_len(del);
 	}
 }
 
@@ -200,7 +200,7 @@ FH_INTERN void pip_order_single(struct fh_pipe *pip, u8 slot)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
+FH_API struct fh_pipe *fh_CreatePipe(fh_vec3_t ref)
 {
 	struct fh_pipe *pip;
 	u32 size;
@@ -215,7 +215,7 @@ FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref)
 	pip->number = 0;
 	pip->alloc = FH_PIPE_MIN;
 	pip->start = -1;
-	vec3_cpy(pip->ref_point, ref);
+	fh_vec3_cpy(pip->ref_point, ref);
 
 	/* Preallocate slots for the objects */
 	size = sizeof(struct fh_pipe_entry) * pip->alloc;
@@ -352,14 +352,14 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 }
 
 
-FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref)
+FH_API void fh_PipeSetReference(struct fh_pipe *pip, fh_vec3_t ref)
 {
 	if(!pip) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	vec3_cpy(pip->ref_point, ref);
+	fh_vec3_cpy(pip->ref_point, ref);
 
 	pip_calculate(pip);
 	pip_order(pip);

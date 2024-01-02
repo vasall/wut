@@ -259,7 +259,7 @@ err_return:
 
 
 FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
-		struct fh_context *ctx, vec3_t pos, vec3_t rot)
+		struct fh_context *ctx, fh_vec3_t pos, fh_vec3_t rot)
 {
 	u32 i;
 
@@ -341,8 +341,8 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
 		goto err_destroy_buffers;
 
 
-	vec3_cpy(obj->position, pos);
-	vec3_cpy(obj->rotation, rot);
+	fh_vec3_cpy(obj->position, pos);
+	fh_vec3_cpy(obj->rotation, rot);
 
 	/* Reset view pointer */
 	obj->view = NULL;

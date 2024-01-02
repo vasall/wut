@@ -103,7 +103,7 @@ FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
  * Returns: Either a pointer to the finished object or NULL if an error occurred
  */
 FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
-		struct fh_context *ctx, vec3_t pos, vec3_t rot);
+		struct fh_context *ctx, fh_vec3_t pos, fh_vec3_t rot);
 
 
 /*

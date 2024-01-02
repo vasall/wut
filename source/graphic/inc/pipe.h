@@ -7,6 +7,7 @@
 #include "graphic/inc/object.h"
 #include "graphic/inc/camera.h"
 
+#include "utility/inc/matrix.h"
 
 #define FH_PIPE_MIN		32
 
@@ -21,7 +22,7 @@ struct fh_pipe {
 
 	struct fh_pipe_entry *entries;
 	s32 start;
-	vec3_t ref_point;
+	fh_vec3_t ref_point;
 };
 
 struct fh_pipe_entry {
@@ -47,7 +48,7 @@ struct fh_pipe_entry {
  *
  * Returns: Either a pointer to the pipe or NULL if an error occurred
  */
-FH_API struct fh_pipe *fh_CreatePipe(vec3_t ref);
+FH_API struct fh_pipe *fh_CreatePipe(fh_vec3_t ref);
 
 
 /*
@@ -91,7 +92,7 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name);
  * @pip: Pointer to the pipe
  * @ref: The new reference point
  */
-FH_API void fh_PipeSetReference(struct fh_pipe *pip, vec3_t ref);
+FH_API void fh_PipeSetReference(struct fh_pipe *pip, fh_vec3_t ref);
 
 
 /*
