@@ -291,7 +291,6 @@ FH_API void fh_DestroyElement(struct fh_element *ele)
 FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 {
 	struct fh_element *run;
-	static int zdata = 3;
 
 	if(!parent || !ele) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
@@ -315,8 +314,7 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 
 	ele->parent = parent;
 	ele->body = parent->body;
-	ele->layer = zdata;
-	zdata++;
+	ele->layer = parent->layer + 1;
 
 	/* Link the stylesheet */
 	fh_style_link(&ele->style, &parent->style);

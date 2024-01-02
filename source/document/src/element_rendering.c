@@ -34,10 +34,6 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-	printf("%s: X- %d, Y- %d, W- %d, H- %d\n", ele->name, 
-			ele->output_rect.x, ele->output_rect.y,
-			ele->output_rect.w, ele->output_rect.h);
-
 	/* Unioform: u_rect */
 	rect_index = fh_batch_push_uniform(ren, 1, &ele->output_rect);
 
@@ -58,29 +54,23 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	vdata.index = rect_index;
 	vdata.z = (f32)ele->layer / 100.0;
 
-	printf("Layer: %f\n", vdata.z);
-
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
 	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
-	printf(">A: (%f, %f)\n", vdata.x, vdata.y);
 
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
 	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
-	printf(">B: (%f, %f)\n", vdata.x, vdata.y);
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
 	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
-	printf(">C: (%f, %f)\n", vdata.x, vdata.y);
 	
 	
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
 	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
-	printf(">D: (%f, %f)\n", vdata.x, vdata.y);
 
 	fh_batch_push_index(ren, indices[0]);
 	fh_batch_push_index(ren, indices[2]);
