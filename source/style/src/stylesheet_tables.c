@@ -9,8 +9,8 @@
 const struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
 	{ 0, 1, FH_STYLE_INPUT_KEYWORD, 0},	/*  0 display_mode 	    */
 	{ 1, 1, FH_STYLE_INPUT_KEYWORD, 1},	/*  1 reference_mode 	    */
-	{ 2, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  2 vsize 		    */
-	{ 6, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  3 hsize 		    */
+	{ 2, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  2 width 		    */
+	{ 6, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  3 height 		    */
 	{10, 1, FH_STYLE_INPUT_KEYWORD, 2},	/*  4 valignment 	    */
 	{11, 1, FH_STYLE_INPUT_KEYWORD, 3},	/*  5 halignment 	    */
 	{12, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  6 spacing_top 	    */
@@ -42,7 +42,7 @@ const struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
  */
 
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row0[] = {
-	{0xf8,  2},	/* vsize */
+	{0x98,  3},	/* height */
 	{0x68,  9},	/* spacing_left */
 	{0xd8, 14}	/* border_mode */
 
@@ -57,6 +57,7 @@ struct fh_stylesheet_hme fh_c_stylesheet_hm_row2[] = {
 	{0x02, 24}	/* scrollbar_mode */
 };
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row3[] = {
+	{0x3b,  2},	/* width */
 	{0xfb,  6},	/* spacing_top */
 	{0x43,  7},	/* spacing_right */
 	{0x5b, 12}	/* padding_bottom */
@@ -68,7 +69,6 @@ struct fh_stylesheet_hme fh_c_stylesheet_hm_row4[] = {
 	{0x34, 25}	/* scrollbar_track_color */
 };
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row5[] = {
-	{0x95,  3},	/* hsize */
 	{0x25, 17}	/* radius_top_left */
 };
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row6[] = {
@@ -91,9 +91,9 @@ const struct fh_stylesheet_hm fh_c_stylesheet_hm[FH_STYLESHEET_HASH_ROWS] = {
 	{fh_c_stylesheet_hm_row0, 3},
 	{fh_c_stylesheet_hm_row1, 3},
 	{fh_c_stylesheet_hm_row2, 1},
-	{fh_c_stylesheet_hm_row3, 3},
+	{fh_c_stylesheet_hm_row3, 4},
 	{fh_c_stylesheet_hm_row4, 4},
-	{fh_c_stylesheet_hm_row5, 2},
+	{fh_c_stylesheet_hm_row5, 1},
 	{fh_c_stylesheet_hm_row6, 5},
 	{fh_c_stylesheet_hm_row7, 6}
 };

@@ -58,8 +58,8 @@ struct fh_stylesheet {
 	u8	reference_mode;		/* 0x77     7    1    	KEYWORD-1     */
 
 	/* 	SIZE					    		      */
-	f32	vsize;			/* 0xf8     0    2 	PERCENT       */
-	f32	hsize;			/* 0x95     5    6 	PERCENT       */
+	f32	width;			/* 0x3b     3    2 	PERCENT       */
+	f32	height;			/* 0x98     0    6 	PERCENT       */
 
 	/* 	ALIGNMENT				    		      */
 	u8	valignment;		/* 0x8f     7   10 	KEYWORD-2     */

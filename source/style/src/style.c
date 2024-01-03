@@ -117,10 +117,10 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	/* height */
-	height = ref_height * style->sheet.vsize;
+	height = ref_height * style->sheet.height;
 
 	/* width */
-	width = ref_width * style->sheet.hsize;
+	width = ref_width * style->sheet.width;
 
 	/*
 	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -289,8 +289,8 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 	/*
 	 * SIZE
 	 */
-	style->sheet.vsize = 1;
-	style->sheet.hsize = 1;
+	style->sheet.width = 1;
+	style->sheet.height = 1;
 
 	/*
 	 * SPACING
@@ -406,8 +406,8 @@ FH_API void fh_DumpStylesheet(struct fh_style *style)
 	printf("\n");
 	printf("%22s:\t%d\n", "reference_mode", style->sheet.reference_mode);
 	
-	printf("%22s:\t%.2f\n", "vsize", style->sheet.vsize);
-	printf("%22s:\t%.2f\n", "hsize", style->sheet.hsize);
+	printf("%22s:\t%.2f\n", "width", style->sheet.width);
+	printf("%22s:\t%.2f\n", "height", style->sheet.height);
 
 	printf("\n");
 	printf("%22s:\t%d\n", "valignment", style->sheet.valignment);
