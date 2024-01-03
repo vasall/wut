@@ -15,7 +15,7 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	s32 rect_index;
 	f32 color[4];
 
-	struct tempStruct {
+	struct tempStruct_vtx {
 		f32 x;
 		f32 y;
 		f32 z;

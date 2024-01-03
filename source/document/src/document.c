@@ -165,16 +165,16 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
-		{1, GL_INT}		/* index */
+		{2, GL_INT}		/* 0: rect, 1: scrollbar */
 	};
 
 	struct fh_uniform_temp uniforms[] = {
 		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_rect", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_color", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_radius", FH_UNIFORM_4IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bwidth", FH_UNIFORM_1IV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bcolor", FH_UNIFORM_4FV, 500, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
 	};
 
 	return fh_batch_create(

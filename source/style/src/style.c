@@ -95,10 +95,12 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 	/* height */
 
-	if(ref)
+	if(ref) {
 		ref_height = ref->bounding_box.h + ref->content_delta.h;
-	else
+	}
+	else {
 		ref_height = (u16)pass->document_shape->h;
+	}
 
 	/* width */
 
