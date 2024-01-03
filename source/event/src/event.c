@@ -166,6 +166,9 @@ FH_INTERN struct fh_event_handler *evt_find_handler(struct fh_event *evt)
 
 FH_INTERN s8 evt_raise_context(struct fh_event *evt)
 {
+	if(!evt->context.element)
+		return 0;
+
 	if(!evt->context.element->parent)
 		return 0;
 

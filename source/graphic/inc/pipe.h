@@ -7,7 +7,7 @@
 #include "graphic/inc/object.h"
 #include "graphic/inc/camera.h"
 
-#include "utility/inc/matrix.h"
+#include "utility/inc/extended_math.h"
 
 #define FH_PIPE_MIN		32
 

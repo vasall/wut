@@ -13,7 +13,7 @@ struct fh_object;
 #include "core/inc/import.h"
 
 #include "utility/inc/table.h"
-#include "utility/inc/matrix.h"
+#include "utility/inc/extended_math.h"
 
 #include "window/inc/window.h"
 

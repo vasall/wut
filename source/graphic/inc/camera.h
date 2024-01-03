@@ -6,7 +6,7 @@
 
 #include "window/inc/window.h"
 
-#include "utility/inc/matrix.h"
+#include "utility/inc/extended_math.h"
 
 #define FH_CAM_NAME_LIM		128
 #define FH_CAM_PITCH_LIM	50.0
