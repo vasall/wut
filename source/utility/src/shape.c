@@ -55,6 +55,27 @@ FH_API void fh_rect_fromlim(struct fh_rect *out, struct fh_rect_lim *lim)
 }
 
 
+FH_API s8 fh_rect_intersecting(struct fh_rect *in1, struct fh_rect *in2)
+{
+	struct fh_rect_lim r1;
+	struct fh_rect_lim r2;
+
+	fh_rect_tolim(&r1, in1);
+	fh_rect_tolim(&r2, in2);
+
+	/*
+	 * Verify that the two rectangles intersect.
+	 */
+	if(r1.left > r2.right || r1.right < r2.left)
+		return 0;
+
+	if(r1.top > r2.bottom || r1.bottom < r2.top)
+		return 0;
+
+	return 1;
+}
+
+
 FH_API s8 fh_rect_intersect(struct fh_rect *out, struct fh_rect *in1,
 		struct fh_rect *in2)
 {

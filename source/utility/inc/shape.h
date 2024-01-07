@@ -42,6 +42,16 @@ FH_API void fh_rect_fromlim(struct fh_rect *out, struct fh_rect_lim *lim);
 
 
 /*
+ * Check if two rectangles intersect.
+ *
+ * @in1: The first rectangle
+ * @in2: The second rectangle
+ *
+ * Returns: 1 if they intersect and 0 if not
+ */
+FH_API s8 fh_rect_intersecting(struct fh_rect *in1, struct fh_rect *in2);
+
+/*
  * Check if the two given rectangles intersect and then return the intersection
  * rectangle.
  *

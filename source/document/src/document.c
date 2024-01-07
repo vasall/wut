@@ -102,11 +102,9 @@ FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
 
 FH_INTERN s8 doc_cfnc_render_ui_post(struct fh_element *ele, void *data)
 {
-	return 0;
+	struct fh_batch *batch = (struct fh_batch *)data;
 
-	fh_Ignore(data);
-
-	fh_element_ren_scrollbar(ele);
+	fh_element_ren_scrollbar(batch, ele);
 
 	return 0;
 }
@@ -165,7 +163,8 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
-		{2, GL_INT}		/* 0: rect, 1: scrollbar */
+		{2, GL_INT},		/* 0: rect, 1: everything else */
+		{1, GL_INT}		/* type */
 	};
 
 	struct fh_uniform_temp uniforms[] = {
@@ -174,16 +173,17 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
 		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
 		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
 	};
 
 	return fh_batch_create(
 			shd,			/* Pointer to the shader to use */
-			2,			/* Number of vertex attributes */
+			3,			/* Number of vertex attributes */
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
 			6000,			/* Index capacity */
-			5,			/* Number of uniform buffers */
+			7,			/* Number of uniform buffers */
 			uniforms		/* List of all uniforms */
 			);
 }
@@ -385,8 +385,11 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	fh_element_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
 
 	if(sel.state == 1) {
+		printf("Found an element\n");
 		return sel.element;
 	}
+
+	printf("Found no element\n");
 
 	return NULL;
 

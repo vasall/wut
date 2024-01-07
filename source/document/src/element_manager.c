@@ -48,24 +48,25 @@ FH_XMOD void fh_element_calc_off(struct fh_element *ele)
 	 */
 	if(par) {
 		ele->relative_offset.x =
-			par->style.content_delta.x -
-			par->content_offset.x +
-			ele->layout_offset.x;
+			par->style.content_delta.x -	/* Border+Padding */
+			par->content_offset.x +		/* Scrolling */
+			ele->layout_offset.x;		/* Layout */
 		ele->relative_offset.y =
-			par->style.content_delta.y -
-			par->content_offset.y +
-			ele->layout_offset.y;
+			par->style.content_delta.y -	/* Border+Paddaing */
+			par->content_offset.y +		/* Scrolling */
+			ele->layout_offset.y;		/* Layout */
 	}
-
 
 	ele->absolute_offset.x = ele->relative_offset.x;
 	ele->absolute_offset.y = ele->relative_offset.y;
 
+	/*
+	 * If this element has a parent, move the absolute offset by the
+	 * absolute offset of the parent.
+	 */
 	if(par) {
-		ele->absolute_offset.x += 
-			par->absolute_offset.x;
-		ele->absolute_offset.y +=
-			par->absolute_offset.y;
+		ele->absolute_offset.x += par->absolute_offset.x;
+		ele->absolute_offset.y += par->absolute_offset.y;
 	}
 }
 
@@ -111,9 +112,14 @@ FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele)
 	}
 
 	/*
+	 * Copy the visible area into the according rectangle.
+	 */
+	fh_rect_cpy(&ele->visible_out_rect, &dif);
+
+	/*
 	 * Now we can copy the resulting rectangle to the element.
 	 */
-	fh_rect_cpy(&ele->output_rect, &dif);
+	fh_rect_cpy(&ele->output_rect, &out);
 	ele->info_flags |= FH_ELEMENT_F_VISIBLE;
 }
 

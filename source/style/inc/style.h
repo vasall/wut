@@ -115,7 +115,7 @@ struct fh_style {
 	 */
 	struct fh_rect			bounding_box;	
 	struct fh_rect			element_delta;	/* -Spacing */
-	struct fh_rect			content_delta;	/* -Spacing, -Padding */
+	struct fh_rect			content_delta;	/* -Spacing, -Border, -Padding */
 
 	/*
 	 * RADIUS

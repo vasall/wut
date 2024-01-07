@@ -56,6 +56,8 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
 FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 {
 	u32 uref;
+	
+	u32 temp;
 
 	u32 ref_height;
 	u32 ref_width;
@@ -189,15 +191,18 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 	
 	/* size */
-	uref = padding[0] + padding[2];
+	temp = style->sheet.border_width * 2;
+
+	uref = padding[0] + padding[2] + temp;
 	out->content_delta.h = out->element_delta.h - uref; 
 
-	uref = padding[1] + padding[3];
+	uref = padding[1] + padding[3] + temp;
 	out->content_delta.w = out->element_delta.w - uref;
 
 	/* position */
-	out->content_delta.y = out->element_delta.y + padding[0];
-	out->content_delta.x = out->element_delta.x + padding[3];
+	temp = style->sheet.border_width;
+	out->content_delta.y = out->element_delta.y + padding[0] + temp;
+	out->content_delta.x = out->element_delta.x + padding[3] + temp;
 	
 	/*
 	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

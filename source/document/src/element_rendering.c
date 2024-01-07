@@ -12,14 +12,15 @@
 FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 {
 	s32 indices[4];
-	s32 rect_index;
+	s32 v_index[2];
 	f32 color[4];
 
 	struct tempStruct_vtx {
 		f32 x;
 		f32 y;
 		f32 z;
-		s32 index;
+		s32 index[2];
+		s32 type;
 	} vdata;
 
 	s32 p0x = ele->output_rect.x;
@@ -35,11 +36,11 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 		return;
 
 	/* Unioform: u_rect */
-	rect_index = fh_batch_push_uniform(ren, 1, &ele->output_rect);
+	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->output_rect);
 
 	/* Uniform: u_color */
 	fh_color_get_fv(ele->style.infill.color, color);
-	fh_batch_push_uniform(ren, 2, color);
+	v_index[1] = fh_batch_push_uniform(ren, 2, color);
 
 	/* Uniform: u_radius */
 	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
@@ -51,8 +52,11 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_color_get_fv(ele->style.border.color, color);
 	fh_batch_push_uniform(ren, 5, color);
 
-	vdata.index = rect_index;
 	vdata.z = (f32)ele->layer / 100.0;
+	vdata.index[0] = v_index[0];
+	vdata.index[1] = v_index[1];
+	vdata.type = 1;
+
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
@@ -66,8 +70,8 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
 	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
-	
-	
+
+
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
 	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
@@ -90,20 +94,128 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 }
 
 
-FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
+FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *ele)
 {
-	s32 size;
-	s32 width = 5;
+	struct fh_rect rect;
+	s32 indices[4];
+	s32 s_index[2];
 
-	f32 prop;
+	s32 scroll[2] = {0, 100};
 
-	struct fh_rect	elebox;
-	struct fh_rect out;
-
-	elebox = fh_GetElementBox(ele);
+	struct tempStruct_vtx {
+		f32 x;
+		f32 y;
+		f32 z;
+		s32 index[2];
+		s32 type;
+	} vdata;
 
 	/* vertical */
-	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
+	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V || 1) {
+		s32 p0x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width - 10;
+		s32 p0y = ele->output_rect.y + ele->style.border.width;
+		s32 p1x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width;
+		s32 p1y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width;
+		
+		fh_rect_set(&rect,
+				p0x,
+				p0y,
+				10,
+				ele->output_rect.h - (ele->style.border.width * 2));
+
+
+		/* Unioform: u_rect */
+		s_index[0] = fh_batch_push_uniform(ren, 1, &rect);
+
+		/* Uniform: u_scroll */
+		s_index[1] = fh_batch_push_uniform(ren, 6, scroll);
+
+		vdata.z = (f32)ele->layer / 100.0;
+		vdata.index[0] = s_index[0];
+		vdata.index[1] = s_index[1];
+		vdata.type = 2;
+
+
+		vdata.x = (f32)p0x;
+		vdata.y = (f32)p0y;
+		indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+		vdata.x = (f32)p1x;
+		vdata.y = (f32)p0y;
+		indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+		vdata.x = (f32)p1x;
+		vdata.y = (f32)p1y;
+		indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+		vdata.x = (f32)p0x;
+		vdata.y = (f32)p1y;
+		indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+		fh_batch_push_index(ren, indices[0]);
+		fh_batch_push_index(ren, indices[2]);
+		fh_batch_push_index(ren, indices[3]);
+
+		fh_batch_push_index(ren, indices[0]);
+		fh_batch_push_index(ren, indices[1]);
+		fh_batch_push_index(ren, indices[2]);	
+	}
+
+	/* horizontal */
+	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H || 1) {
+		s32 p0x = ele->output_rect.x + ele->style.border.width;
+		s32 p0y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width - 10;
+		s32 p1x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width;
+		s32 p1y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width;
+		
+		fh_rect_set(&rect,
+				p0x,
+				p0y, 
+				ele->output_rect.w - (ele->style.border.width * 2),
+				10);
+
+
+		/* Unioform: u_rect */
+		s_index[0] = fh_batch_push_uniform(ren, 1, &rect);
+
+		/* Uniform: u_scroll */
+		s_index[1] = fh_batch_push_uniform(ren, 6, scroll);
+
+		vdata.z = (f32)ele->layer / 100.0;
+		vdata.index[0] = s_index[0];
+		vdata.index[1] = s_index[1];
+		vdata.type = 3;
+
+
+		vdata.x = (f32)p0x;
+		vdata.y = (f32)p0y;
+		indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+		vdata.x = (f32)p1x;
+		vdata.y = (f32)p0y;
+		indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+		vdata.x = (f32)p1x;
+		vdata.y = (f32)p1y;
+		indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+		vdata.x = (f32)p0x;
+		vdata.y = (f32)p1y;
+		indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+		fh_batch_push_index(ren, indices[0]);
+		fh_batch_push_index(ren, indices[2]);
+		fh_batch_push_index(ren, indices[3]);
+
+		fh_batch_push_index(ren, indices[0]);
+		fh_batch_push_index(ren, indices[1]);
+		fh_batch_push_index(ren, indices[2]);	
+
+#if 0
 		prop = (f32)elebox.h / (f32)ele->content_size.y;
 		size = prop * elebox.h;
 
@@ -117,9 +229,6 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele)
 		printf("\n");
 
 		/*fh_FlatRectSet(ele->document->flat, &out, col);*/
+#endif
 	}
-
-
-
-	/* horizontal */
 }

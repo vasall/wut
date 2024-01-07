@@ -52,7 +52,7 @@ FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
 {
 	u32 type = raw->type;
 	struct fh_window *win;
-	struct fh_element *ele;
+	struct fh_element *ele = NULL;
 	struct fh_sin2 pos;
 
 	/*
@@ -78,14 +78,18 @@ FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
 	 * used.
 	 */
 	if(evt_is_mouse(type)) {
+		printf("Event is mouse!!!\n");
+
 		evt_get_position(type, raw, &pos);
 		ele = fh_GetHoveredElement(win->document, &pos); 
+		printf("Event is mouse (%p, %s)\n", ele, ele->name);
 	}
 	else if(win) {
 		ele = win->selected;
+		printf("Event is window\n");
 	}
 	else {
-		ele = NULL;
+		printf("Event is nothing\n");
 	}
 	
 

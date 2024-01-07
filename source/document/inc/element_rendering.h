@@ -30,9 +30,10 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele);
  * Render the scrollbar of the element. This feature is configure through the
  * scrollbar-setting in the stylesheet.
  *
+ * @ren: Pointer to the batch renderer
  * @ele: Pointer to the element
  */
-FH_XMOD void fh_element_ren_scrollbar(struct fh_element *ele);
+FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *ele);
 
 
 
