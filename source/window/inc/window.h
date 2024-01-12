@@ -30,7 +30,7 @@ struct fh_window;
 
 
 struct fh_window {
-	u8 identifier;
+	fh_identity_t identity;
 
 	/* The unique identifier for this window */
 	u16 id;

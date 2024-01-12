@@ -134,7 +134,7 @@ FH_INTERN s8 def_elementadded(struct fh_event *evt)
 FH_INTERN s8 def_elementremoved(struct fh_event *evt)
 {
 #if FH_EVTDEF_DEBUG
-	printf("ellementremoved\n");
+	printf("elementremoved\n");
 	def_dump(evt);
 #endif
 	
@@ -247,7 +247,7 @@ FH_INTERN s8 def_mousewheel(struct fh_event *evt)
 {
 	s8 ret = 0;
 	struct fh_element *ele = evt->context.element;
-
+	s8 f = 4;
 
 #if FH_EVTDEF_DEBUG
 	printf("mousehweel\n");
@@ -255,13 +255,19 @@ FH_INTERN s8 def_mousewheel(struct fh_event *evt)
 #endif
 
 	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
-		ele->content_offset.y += evt->raw.wheel.y;
+		ele->content_offset.y += evt->raw.wheel.y * f;
 		ret = 1;
+		printf("Scroll vertical\n");
 	}
 
 	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
-		ele->content_offset.x += evt->raw.wheel.x;
+		ele->content_offset.x += evt->raw.wheel.x * f;
 		ret = 1;
+		printf("Scroll horizontal\n");
+	}
+
+	if(ret) {
+		fh_UpdateDocumentBranch(ele->document, ele);	
 	}
 
 	return ret;

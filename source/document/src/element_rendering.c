@@ -12,21 +12,21 @@
 FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 {
 	s32 indices[4];
-	s32 v_index[2];
+	s32 v_index[3];
 	f32 color[4];
 
 	struct tempStruct_vtx {
 		f32 x;
 		f32 y;
 		f32 z;
-		s32 index[2];
+		s32 index[3];
 		s32 type;
 	} vdata;
 
-	s32 p0x = ele->output_rect.x;
-	s32 p0y = ele->output_rect.y;
-	s32 p1x = ele->output_rect.x + ele->output_rect.w;
-	s32 p1y = ele->output_rect.y + ele->output_rect.h;
+	s32 p0x = ele->element_rect.x;
+	s32 p0y = ele->element_rect.y;
+	s32 p1x = ele->element_rect.x + ele->element_rect.w;
+	s32 p1y = ele->element_rect.y + ele->element_rect.h;
 
 
 	/*
@@ -36,11 +36,11 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 		return;
 
 	/* Unioform: u_rect */
-	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->output_rect);
+	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->element_rect);
 
 	/* Uniform: u_color */
 	fh_color_get_fv(ele->style.infill.color, color);
-	v_index[1] = fh_batch_push_uniform(ren, 2, color);
+	v_index[2] = fh_batch_push_uniform(ren, 2, color);
 
 	/* Uniform: u_radius */
 	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
@@ -52,10 +52,19 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_color_get_fv(ele->style.border.color, color);
 	fh_batch_push_uniform(ren, 5, color);
 
+	/* Uniform: u_limit */
+	if(ele->parent) {
+		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->content_rect);
+	}
+	else {
+		v_index[1] = -1;
+	}
+		
 	vdata.z = (f32)ele->layer / 100.0;
 	vdata.index[0] = v_index[0];
 	vdata.index[1] = v_index[1];
-	vdata.type = 1;
+	vdata.index[2] = v_index[2];
+	vdata.type = FH_RENTYPE_DEFAULT;
 
 
 	vdata.x = (f32)p0x;
@@ -86,7 +95,7 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 
 #if 0
 
-	/* If the element has a context, render that aswell */
+	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
 		fh_RenderWidget(ele->widget);
 	}
@@ -98,42 +107,44 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 {
 	struct fh_rect rect;
 	s32 indices[4];
-	s32 s_index[2];
+	s32 s_index[3];
 
-	s32 scroll[2] = {0, 100};
+	s32 v_scroll[2] = {100, 200};
+	s32 h_scroll[2] = {0, 100};
 
 	struct tempStruct_vtx {
 		f32 x;
 		f32 y;
 		f32 z;
-		s32 index[2];
+		s32 index[3];
 		s32 type;
 	} vdata;
 
 	/* vertical */
-	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V || 1) {
-		s32 p0x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width - 10;
-		s32 p0y = ele->output_rect.y + ele->style.border.width;
-		s32 p1x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width;
-		s32 p1y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width;
+	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
+		s32 p0x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width - 10;
+		s32 p0y = ele->element_rect.y + ele->style.border.width;
+		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
+		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
 		
 		fh_rect_set(&rect,
 				p0x,
 				p0y,
 				10,
-				ele->output_rect.h - (ele->style.border.width * 2));
+				ele->element_rect.h - (ele->style.border.width * 2));
 
 
 		/* Unioform: u_rect */
 		s_index[0] = fh_batch_push_uniform(ren, 1, &rect);
 
 		/* Uniform: u_scroll */
-		s_index[1] = fh_batch_push_uniform(ren, 6, scroll);
+		s_index[2] = fh_batch_push_uniform(ren, 6, v_scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
-		vdata.index[1] = s_index[1];
-		vdata.type = 2;
+		vdata.index[1] = -1;
+		vdata.index[2] = s_index[2];
+		vdata.type = FH_RENTYPE_SCROLL_V;
 
 
 		vdata.x = (f32)p0x;
@@ -164,16 +175,16 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 	}
 
 	/* horizontal */
-	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H || 1) {
-		s32 p0x = ele->output_rect.x + ele->style.border.width;
-		s32 p0y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width - 10;
-		s32 p1x = ele->output_rect.x + ele->output_rect.w - ele->style.border.width;
-		s32 p1y = ele->output_rect.y + ele->output_rect.h - ele->style.border.width;
+	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
+		s32 p0x = ele->element_rect.x + ele->style.border.width;
+		s32 p0y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width - 10;
+		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
+		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
 		
 		fh_rect_set(&rect,
 				p0x,
 				p0y, 
-				ele->output_rect.w - (ele->style.border.width * 2),
+				ele->element_rect.w - (ele->style.border.width * 2),
 				10);
 
 
@@ -181,12 +192,13 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 		s_index[0] = fh_batch_push_uniform(ren, 1, &rect);
 
 		/* Uniform: u_scroll */
-		s_index[1] = fh_batch_push_uniform(ren, 6, scroll);
+		s_index[2] = fh_batch_push_uniform(ren, 6, h_scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
-		vdata.index[1] = s_index[1];
-		vdata.type = 3;
+		vdata.index[1] = -1;
+		vdata.index[2] = s_index[2];
+		vdata.type = FH_RENTYPE_SCROLL_H;
 
 
 		vdata.x = (f32)p0x;
@@ -213,22 +225,6 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 
 		fh_batch_push_index(ren, indices[0]);
 		fh_batch_push_index(ren, indices[1]);
-		fh_batch_push_index(ren, indices[2]);	
-
-#if 0
-		prop = (f32)elebox.h / (f32)ele->content_size.y;
-		size = prop * elebox.h;
-
-		out.x = (elebox.x + elebox.w) - (width + 5);
-		out.y = elebox.y;
-		out.w = width;
-		out.h = size;
-
-		printf("Render scrollbar at: ");
-		fh_rect_dump(&out);
-		printf("\n");
-
-		/*fh_FlatRectSet(ele->document->flat, &out, col);*/
-#endif
+		fh_batch_push_index(ren, indices[2]);
 	}
 }

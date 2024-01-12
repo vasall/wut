@@ -38,7 +38,7 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	}
 
 	/* Set the identifier byte */
-	win->identifier = FH_IDT_WINDOW;
+	win->identity = FH_IDT_WINDOW;
 		
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
@@ -328,10 +328,9 @@ FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele)
 				ele
 				);
 
-		return 1;
 	}
 
-	return 0;
+	return 1;
 }
 
 

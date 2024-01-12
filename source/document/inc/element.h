@@ -36,7 +36,7 @@ enum fh_element_type {
 
 
 struct fh_element {
-	u8 identifier;
+	fh_identity_t identity;
 
 	/* The name of the element */
 	char name[FH_ELEMENT_NAME_LIM];
@@ -107,9 +107,9 @@ struct fh_element {
 	/*
 	 * The absolute rectangles of the element in the window.
 	 */
-	struct fh_rect	bounding_box;
-	struct fh_rect	element_box;	/* -Spacing */
-	struct fh_rect	content_box;	/* -Spacing, -Border, -Padding */
+	struct fh_rect	bounding_rect;
+	struct fh_rect	element_rect;	/* -Spacing */
+	struct fh_rect	content_rect;	/* -Spacing, -Border, -Padding */
 
 	
 

@@ -17,27 +17,6 @@ FH_XMOD void fh_element_adjust_shape(struct fh_element *ele);
 
 
 /*
- * Calculate the relative offset of this elements bounding box to its parents
- * bounding box. Or if there is no parent the offset from the upper-left corner
- * of the window to the bounding box of this element.
- * Then extend it so that it contains the absolute offset from the windows
- * upper-left corner to the upper-left corner of the element. This will
- * also include the scrolling of all above elements plus layouting.
- *
- * @ele: Pointer to the element
- */
-FH_XMOD void fh_element_calc_off(struct fh_element *ele);
-
-
-/*
- * Calculate both the input and ouput rectangles used for rendering.
- *
- * @ele: Pointer to the element
- */
-FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele);
-
-
-/*
  * This function will set the scrollbar flag.
  *
  * @ele: Pointer to the element

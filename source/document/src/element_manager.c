@@ -15,25 +15,7 @@
 #include <stdlib.h>
 
 
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- *
- *				CROSS-MODULE-INTERFACE
- *
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-
-FH_XMOD void fh_element_adjust_shape(struct fh_element *ele)
-{
-	fh_element_calc_off(ele);
-
-	fh_element_calc_render_rect(ele);
-}
-
-
-FH_XMOD void fh_element_calc_off(struct fh_element *ele)
+FH_INTERN void element_calc_offset(struct fh_element *ele)
 {
 	struct fh_element *par = ele->parent;
 
@@ -71,7 +53,39 @@ FH_XMOD void fh_element_calc_off(struct fh_element *ele)
 }
 
 
-FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele)
+
+FH_INTERN void element_calc_bounding_rect(struct fh_element *ele)
+{
+	struct fh_rect rect;
+
+	fh_rect_mov(&rect, &ele->style.bounding_box, &ele->absolute_offset);
+
+	fh_rect_cpy(&ele->bounding_rect, &rect);
+}
+
+
+FH_INTERN void element_calc_element_rect(struct fh_element *ele)
+{
+	struct fh_rect rect;
+
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.element_delta);
+
+	fh_rect_cpy(&ele->element_rect, &rect);
+
+}
+
+
+FH_INTERN void element_calc_content_rect(struct fh_element *ele)
+{
+	struct fh_rect rect;
+
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.content_delta);
+
+	fh_rect_cpy(&ele->content_rect, &rect);
+}
+
+
+FH_INTERN void element_calc_visible(struct fh_element *ele)
 {
 	struct fh_rect out;
 	struct fh_rect dif;
@@ -124,6 +138,36 @@ FH_XMOD void fh_element_calc_render_rect(struct fh_element *ele)
 }
 
 
+FH_INTERN void element_calc_shape(struct fh_element *ele)
+{
+	/* First calculate the relative and absolute offset */
+	element_calc_offset(ele);
+
+	/* Then calculate the different shape rectangles */
+	element_calc_bounding_rect(ele);
+	element_calc_element_rect(ele);
+	element_calc_content_rect(ele);
+
+	/* Finally check visibility */
+	element_calc_visible(ele);
+}
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+FH_XMOD void fh_element_adjust_shape(struct fh_element *ele)
+{
+	element_calc_shape(ele);
+}
+
+
 FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 {
 	u8 flag = 0;
@@ -144,9 +188,15 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 
 FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2)
 {
-	if(in1 == in2)
-		return 1;
 
+	if(in1 == in2) {
+		printf("Compare %s and %s\n", in1->name, in2->name);
+
+		printf("equal\n");
+		return 1;
+	}
+
+	printf("Not equal\n");
 	return 0;
 }
 
@@ -229,7 +279,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	}
 
 	/* Set the identifier */
-	ele->identifier = FH_IDT_ELEMENT;
+	ele->identity = FH_IDT_ELEMENT;
 
 	/* Set the basic attributes for the element */
 	strcpy(ele->name, name);
@@ -491,6 +541,8 @@ FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
 	}
 
 	fh_ModifyStyle(&ele->style, str);
+
+	fh_UpdateDocumentBranch(ele->document, ele);		
 
 	return 0;
 

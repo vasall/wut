@@ -80,8 +80,18 @@ FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
 	if(evt_is_mouse(type)) {
 		printf("Event is mouse!!!\n");
 
-		evt_get_position(type, raw, &pos);
-		ele = fh_GetHoveredElement(win->document, &pos); 
+		switch(type) {
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEWHEEL:
+				ele = win->hovered;
+				break;
+
+			default:
+				evt_get_position(type, raw, &pos);
+				ele = fh_GetHoveredElement(win->document, &pos); 
+		}
+		
 		printf("Event is mouse (%p, %s)\n", ele, ele->name);
 	}
 	else if(win) {
@@ -224,28 +234,37 @@ FH_XMOD void fh_event_update(void)
 
 	fh_zeros(&evt, sizeof(struct fh_event));
 
+	printf("Update events\n");
+
 	while(SDL_PollEvent(&evt.raw)) {
+		printf(">> Poll new\n");
+
 		if(evt.raw.type == SDL_QUIT) {
 			fh_core_quit();
 			return;
 		}
-			
+		
+		printf("Collect info\n");
 		/* 
 		 * First collect the relative context for this event like the
 		 * related window and element.
 		 */
 		evt_collect_info(&evt.raw, &evt.context);
 
+		printf("Translate type\n");
 		/*
 		 * Second translate the SDL-event-type to a FH-event-type.
 		 */
 		evt_translate_type(&evt);
 
+		printf("Rundown\n");
 		/*
 		 * Then trigger the enhanced event internally so it can be
 		 * handled.
 		 */
 		fh_event_trigger(&evt);
+		printf("done\n");
+		printf("--------------------------------------\n");
 
 	}
 

@@ -163,7 +163,7 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 {
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
-		{2, GL_INT},		/* 0: rect, 1: everything else */
+		{3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
 		{1, GL_INT}		/* type */
 	};
 
@@ -174,7 +174,9 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
 		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
 		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
+		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
+
 	};
 
 	return fh_batch_create(
@@ -183,7 +185,7 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 			v_attributes,		/* List of all vertex attributes */
 			6000,			/* Vertex capacity */
 			6000,			/* Index capacity */
-			7,			/* Number of uniform buffers */
+			8,			/* Number of uniform buffers */
 			uniforms		/* List of all uniforms */
 			);
 }
@@ -418,7 +420,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * the wanted element.
 	 */
 	if(!ele->parent) {
-		fh_element_calc_render_rect(ele);
+		fh_element_adjust_shape(ele);
 
 		fh_element_hlf(ele, &doc_cfnc_update_shape, NULL, NULL);
 	}
