@@ -60,6 +60,18 @@ FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val);
 
 
 /*
+ * Scroll the element on a given axis by a certain value. This function will
+ * respect the limits of the scrollable area.
+ *
+ * @ele: Pointer to the element
+ * @val: The value to scroll by
+ *
+ * Returns: 1 if scrolling was successfull or 0 if not
+ */
+FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val);
+
+
+/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE

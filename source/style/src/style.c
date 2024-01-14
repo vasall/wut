@@ -74,140 +74,151 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	ref = style->ref;
 	out = style;
 
+		
 	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * CALCULATE REFERENCE SIZE
+	 */
+
+	if(ref) {
+		ref_width = ref->bounding_box.w + ref->content_delta.w;
+		ref_height = ref->bounding_box.h + ref->content_delta.h;
+	}
+	else {
+		ref_width = (u16)pass->document_shape->w;
+		ref_height = (u16)pass->document_shape->h;
+	}
+
+	/* 
+	 * CALCULATE ELEMENT SIZE
+	 */
+
+	width = ref_width * style->sheet.width;
+	height = ref_height * style->sheet.height;
+	
+		
+	/*
+	 * *********************************************************************
 	 *
-	 * DISPLAY
+	 * 		SPACING
+	 *
+	 * *********************************************************************
+	 */
+
+	spacing[0] = ref_height * style->sheet.spacing_top;	
+	spacing[1] = ref_width * style->sheet.spacing_right;
+	spacing[2] = ref_height * style->sheet.spacing_bottom;
+	spacing[3] = ref_width * style->sheet.spacing_left;
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		PADDING
+	 *
+	 * *********************************************************************
+	 */
+
+	padding[0] = ref_height * style->sheet.padding_top;
+	padding[1] = ref_width * style->sheet.padding_right;
+	padding[2] = ref_height * style->sheet.padding_bottom;	
+	padding[3] = ref_width * style->sheet.padding_left;
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		BORDER
+	 *
+	 * *********************************************************************
+	 */
+
+	out->border.mode = style->sheet.border_mode;
+	out->border.width = style->sheet.border_width;
+	out->border.color = fh_col_conv_itos(style->sheet.border_color);
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		BOUNDING BOX
+	 *
+	 * *********************************************************************
+	 */
+
+	uref = spacing[1] + spacing[3] + padding[1] + padding[3];
+	out->bounding_box.w = width + uref + (2 * out->border.width);
+
+	uref = spacing[0] + spacing[2] + padding[0] + padding[2];
+	out->bounding_box.h = height + uref + (2 * out->border.width);
+	
+	out->bounding_box.x = 0;
+	out->bounding_box.y = 0;
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		ELEMENT DELTA
+	 *
+	 * *********************************************************************
+	 */
+	
+	out->element_delta.w = -(spacing[1] + spacing[3]);
+	out->element_delta.h = -(spacing[0] + spacing[2]);
+
+	out->element_delta.x = spacing[3];
+	out->element_delta.y = spacing[0];
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		INNER DELTA
+	 *
+	 * *********************************************************************
+	 */
+
+	out->inner_delta.w = out->element_delta.w - (2 * out->border.width);
+	out->inner_delta.h = out->element_delta.h - (2 * out->border.width);
+
+	out->inner_delta.x = out->element_delta.x + out->border.width;
+	out->inner_delta.y = out->element_delta.y + out->border.width;
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		CONTENT DELTA
+	 *
+	 * *********************************************************************
+	 */
+
+	out->content_delta.w = out->inner_delta.w - padding[1] - padding[3];
+	out->content_delta.h = out->inner_delta.h - padding[0] - padding[2];
+
+	out->content_delta.x = out->inner_delta.x + padding[3];
+	out->content_delta.y = out->inner_delta.y + padding[0];
+
+	/*
+	 * *********************************************************************
+	 *
+	 * 		DISPLAY
+	 *
+	 * *********************************************************************
 	 */
 	
 	out->display.mode = style->sheet.display_mode;
 
 	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * *********************************************************************
 	 *
-	 * REFERENCE
+	 * 		REFERENCE
+	 *
+	 * *********************************************************************
 	 */
 
 	out->reference.mode = style->sheet.reference_mode;
 
-	
 	/*
-	 * CALCULATE REFERENCE SIZE
-	 */
-
-	/* height */
-
-	if(ref) {
-		ref_height = ref->bounding_box.h + ref->content_delta.h;
-	}
-	else {
-		ref_height = (u16)pass->document_shape->h;
-	}
-
-	/* width */
-
-	if(ref) {
-		ref_width = ref->bounding_box.w + ref->content_delta.w;
-	}
-	else {
-		ref_width = (u16)pass->document_shape->w;
-	}
-
-
-	/* 
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * *********************************************************************
 	 *
-	 * SIZE
-	 */
-
-	/* height */
-	height = ref_height * style->sheet.height;
-
-	/* width */
-	width = ref_width * style->sheet.width;
-
-	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * 		RADIUS
 	 *
-	 * SPACING
-	 */
-
-	/* vertical */
-	uref = ref_height;
-
-	spacing[0] = uref * style->sheet.spacing_top;
-	spacing[2] = uref * style->sheet.spacing_bottom;
-
-	/* horizontal */
-	uref = ref_width;
-
-	spacing[3] = uref * style->sheet.spacing_left;
-	spacing[1] = uref * style->sheet.spacing_right;
-
-	/*
-	 * BOUNDING SHAPE
-	 */
-
-	/* size */
-	out->bounding_box.h = height + spacing[0] + spacing[2];
-	out->bounding_box.w = width + spacing[1] + spacing[3];
-
-	/* position */
-	out->bounding_box.y = 0;
-	out->bounding_box.x = 0;
-
-	/*
-	 * SHAPE
-	 */
-
-	/* size */
-	out->element_delta.h = -(spacing[0] + spacing[2]);
-	out->element_delta.w = -(spacing[1] + spacing[3]);
-
-	/* position */
-	out->element_delta.y = spacing[0];
-	out->element_delta.x = spacing[3];
-
-	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	 *
-	 * PADDING
-	 */
-
-	/* vertical */
-	uref = height;
-
-	padding[0] = uref * style->sheet.padding_top;
-	padding[2] = uref * style->sheet.padding_bottom;
-
-	/* horizontal */
-	uref = width;
-
-	padding[3] = uref * style->sheet.padding_left;
-	padding[1] = uref * style->sheet.padding_right;
-
-	/*
-	 * INNER SHAPE
-	 */
-	
-	/* size */
-	temp = style->sheet.border_width * 2;
-
-	uref = padding[0] + padding[2] + temp;
-	out->content_delta.h = out->element_delta.h - uref; 
-
-	uref = padding[1] + padding[3] + temp;
-	out->content_delta.w = out->element_delta.w - uref;
-
-	/* position */
-	temp = style->sheet.border_width;
-	out->content_delta.y = out->element_delta.y + padding[0] + temp;
-	out->content_delta.x = out->element_delta.x + padding[3] + temp;
-	
-	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	 *
-	 * RADIUS
+	 * *********************************************************************
 	 */
 
 	out->radius.corner[0] = style->sheet.radius_top_left;
@@ -216,37 +227,34 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	out->radius.corner[3] = style->sheet.radius_bottom_left;
 
 	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * *********************************************************************
 	 *
-	 * BORDER
-	 */
-	
-	out->border.mode = style->sheet.border_mode;
-	out->border.width = style->sheet.border_width;
-	out->border.color = fh_col_conv_itos(style->sheet.border_color);
-
-	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * 		INFILL
 	 *
-	 * INFILL
+	 * *********************************************************************
 	 */
 
 	out->infill.mode = style->sheet.infill_mode;
 	out->infill.color = fh_col_conv_itos(style->sheet.infill_color);
 
 	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * *********************************************************************
 	 *
-	 * LAYOUT
+	 * 		LAYOUT
+	 *
+	 * *********************************************************************
 	 */
 
 	out->layout.mode = style->sheet.layout_mode;
 
 	/*
-	 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	 * *********************************************************************
 	 *
-	 * SCROLLBAR
+	 * i		SCROLLBAR
+	 *
+	 * *********************************************************************
 	 */
+
 	out->scrollbar.flags = 0;
 
 	switch(style->sheet.scrollbar_mode) {

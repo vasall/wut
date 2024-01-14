@@ -153,6 +153,43 @@ FH_INTERN void element_calc_shape(struct fh_element *ele)
 }
 
 
+FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val)
+{
+	s32 limits[2];
+	u8 ret = 0;
+
+	if(val[0] != 0 && (ele->scrollbar_flags & FH_RESTYLE_SCROLL_H)) {
+		limits[0] = 0;
+		limits[1] = ele->content_size.x - ele->content_rect.w; 
+
+		ele->content_offset.x -= val[0];
+
+		if(ele->content_offset.x < limits[0]) ele->content_offset.x = limits[0];
+		if(ele->content_offset.x > limits[1]) ele->content_offset.x = limits[1];
+
+		ret = 1;
+	}
+	if(val[1] != 0 && (ele->scrollbar_flags & FH_RESTYLE_SCROLL_V)) {
+		limits[0] = 0;
+		limits[1] = ele->content_size.y - ele->content_rect.h; 
+
+		ele->content_offset.y -= val[1];
+
+		if(ele->content_offset.y < limits[0]) ele->content_offset.y = limits[0];
+		if(ele->content_offset.y > limits[1]) ele->content_offset.y = limits[1];
+
+		ret = 1;
+	}
+
+	if(ret) {
+		/* Update after scrolling */
+		fh_UpdateDocumentBranch(ele->document, ele);
+	}
+
+	return ret;
+}
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -188,15 +225,9 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 
 FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2)
 {
-
 	if(in1 == in2) {
-		printf("Compare %s and %s\n", in1->name, in2->name);
-
-		printf("equal\n");
 		return 1;
 	}
-
-	printf("Not equal\n");
 	return 0;
 }
 

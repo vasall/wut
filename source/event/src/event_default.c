@@ -245,32 +245,19 @@ FH_INTERN s8 def_mousebuttonup(struct fh_event *evt)
 
 FH_INTERN s8 def_mousewheel(struct fh_event *evt)
 {
-	s8 ret = 0;
 	struct fh_element *ele = evt->context.element;
-	s8 f = 4;
+	u32 value[2];
+	s8 f = 8;
 
 #if FH_EVTDEF_DEBUG
 	printf("mousehweel\n");
 	def_dump(evt);
 #endif
 
-	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
-		ele->content_offset.y += evt->raw.wheel.y * f;
-		ret = 1;
-		printf("Scroll vertical\n");
-	}
+	value[0] = evt->raw.wheel.x * f;
+	value[1] = evt->raw.wheel.y * f;
 
-	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
-		ele->content_offset.x += evt->raw.wheel.x * f;
-		ret = 1;
-		printf("Scroll horizontal\n");
-	}
-
-	if(ret) {
-		fh_UpdateDocumentBranch(ele->document, ele);	
-	}
-
-	return ret;
+	return fh_element_scroll(ele, value);
 }
 
 

@@ -55,6 +55,7 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	/* Uniform: u_limit */
 	if(ele->parent) {
 		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->content_rect);
+		v_index[1] = -1;
 	}
 	else {
 		v_index[1] = -1;
@@ -109,7 +110,7 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 	s32 indices[4];
 	s32 s_index[3];
 
-	s32 v_scroll[2] = {100, 200};
+	s32 scroll[2];
 	s32 h_scroll[2] = {0, 100};
 
 	struct tempStruct_vtx {
@@ -137,8 +138,10 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 		/* Unioform: u_rect */
 		s_index[0] = fh_batch_push_uniform(ren, 1, &rect);
 
-		/* Uniform: u_scroll */
-		s_index[2] = fh_batch_push_uniform(ren, 6, v_scroll);
+		/* Uniform: u_scroll */	
+		scroll[1] = (p1y - p0y) * ((f32)ele->content_rect.h / (f32)ele->content_size.y);
+		scroll[0] = (p1y - p0y - 2 - scroll[1]) * ((f32)ele->content_offset.y / (f32)(ele->content_size.y - ele->content_rect.h));
+		s_index[2] = fh_batch_push_uniform(ren, 6, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
