@@ -304,32 +304,32 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 	/*
 	 * SIZE
 	 */
-	style->sheet.width = 1;
-	style->sheet.height = 1;
+	fh_flex_reset_input(&style->sheet.width);
+	fh_flex_reset_input(&style->sheet.height);
 
 	/*
 	 * SPACING
 	 */
-	style->sheet.spacing_top = 0;
-	style->sheet.spacing_right = 0;
-	style->sheet.spacing_bottom = 0;
-	style->sheet.spacing_left = 0;
+	fh_flex_reset_input(&style->sheet.spacing_top);
+	fh_flex_reset_input(&style->sheet.spacing_right);
+	fh_flex_reset_input(&style->sheet.spacing_bottom);
+	fh_flex_reset_input(&style->sheet.spacing_left);
 
 	/*
 	 * PADDING 
 	 */
-	style->sheet.padding_top = 0;
-	style->sheet.padding_right = 0;
-	style->sheet.padding_bottom = 0;
-	style->sheet.padding_left = 0;
+	fh_flex_reset_input(&style->sheet.padding_top);
+	fh_flex_reset_input(&style->sheet.padding_right);
+	fh_flex_reset_input(&style->sheet.padding_bottom);
+	fh_flex_reset_input(&style->sheet.padding_left);
 
 	/*
 	 * RADIUS
 	 */
-	style->sheet.radius_top_left = 0;
-	style->sheet.radius_top_right = 0;
-	style->sheet.radius_bottom_right = 0;
-	style->sheet.radius_bottom_left = 0;
+	fh_flex_reset_input(&style->sheet.radius_top_left);
+	fh_flex_reset_input(&style->sheet.radius_top_right);
+	fh_flex_reset_input(&style->sheet.radius_bottom_right);
+	fh_flex_reset_input(&style->sheet.radius_bottom_left);
 
 	/*
 	 * BORDER
@@ -421,24 +421,24 @@ FH_API void fh_DumpStylesheet(struct fh_style *style)
 	printf("\n");
 	printf("%22s:\t%d\n", "reference_mode", style->sheet.reference_mode);
 	
-	printf("%22s:\t%.2f\n", "width", style->sheet.width);
-	printf("%22s:\t%.2f\n", "height", style->sheet.height);
+	printf("%22s:\t\"%s\"\n", "width", style->sheet.width);
+	printf("%22s:\t\"%s\"\n", "height", style->sheet.height);
 
 	printf("\n");
 	printf("%22s:\t%d\n", "valignment", style->sheet.valignment);
 	printf("%22s:\t%d\n", "halignment", style->sheet.halignment);
 
 	printf("\n");
-	printf("%22s:\t%.2f\n", "spacing_top", style->sheet.spacing_top);
-	printf("%22s:\t%.2f\n", "spacing_right", style->sheet.spacing_right);
-	printf("%22s:\t%.2f\n", "spacing_bottom", style->sheet.spacing_bottom);
-	printf("%22s:\t%.2f\n", "spacing_left", style->sheet.spacing_left);
+	printf("%22s:\t\"%s\"\n", "spacing_top", style->sheet.spacing_top);
+	printf("%22s:\t\"%s\"\n", "spacing_right", style->sheet.spacing_right);
+	printf("%22s:\t\"%s\"\n", "spacing_bottom", style->sheet.spacing_bottom);
+	printf("%22s:\t\"%s\"\n", "spacing_left", style->sheet.spacing_left);
 
 	printf("\n");
-	printf("%22s:\t%.2f\n", "padding_top", style->sheet.padding_top);
-	printf("%22s:\t%.2f\n", "padding_right", style->sheet.padding_right);
-	printf("%22s:\t%.2f\n", "padding_bottom", style->sheet.padding_bottom);
-	printf("%22s:\t%.2f\n", "padding_left", style->sheet.padding_left);
+	printf("%22s:\t\"%s\"\n", "padding_top", style->sheet.padding_top);
+	printf("%22s:\t\"%s\"\n", "padding_right", style->sheet.padding_right);
+	printf("%22s:\t\"%s\"\n", "padding_bottom", style->sheet.padding_bottom);
+	printf("%22s:\t\"%s\"\n", "padding_left", style->sheet.padding_left);
 
 	printf("\n");
 	printf("%22s:\t%d\n", "border_mode", style->sheet.border_mode);
@@ -446,10 +446,10 @@ FH_API void fh_DumpStylesheet(struct fh_style *style)
 	printf("%22s:\t%08X\n", "border_color", style->sheet.border_color);
 
 	printf("\n");
-	printf("%22s:\t%d\n", "radius_top_left", style->sheet.radius_top_left);
-	printf("%22s:\t%d\n", "radius_top_right", style->sheet.radius_top_right);
-	printf("%22s:\t%d\n", "radius_bottom_left", style->sheet.radius_bottom_left);
-	printf("%22s:\t%d\n", "radius_bottom_right", style->sheet.radius_bottom_right);
+	printf("%22s:\t\"%s\"\n", "radius_top_left", style->sheet.radius_top_left);
+	printf("%22s:\t\"%s\"\n", "radius_top_right", style->sheet.radius_top_right);
+	printf("%22s:\t\"%s\"\n", "radius_bottom_left", style->sheet.radius_bottom_left);
+	printf("%22s:\t\"%s\"\n", "radius_bottom_right", style->sheet.radius_bottom_right);
 
 	printf("\n");
 	printf("%22s:\t%d\n", "infill_mode", style->sheet.infill_mode);
@@ -457,11 +457,6 @@ FH_API void fh_DumpStylesheet(struct fh_style *style)
 
 	printf("\n");
 	printf("%22s:\t%d\n", "layout_mode", style->sheet.layout_mode);
-
-	printf("\n");
-	printf("%22s:\t%d\n", "scrollbar_mode", style->sheet.scrollbar_mode);
-	printf("%22s:\t%08X\n", "scrollbar_track_color", style->sheet.scrollbar_track_color);
-	printf("%22s:\t%08X\n", "scrollbar_thumb_color", style->sheet.scrollbar_thumb_color);
 }
 
 

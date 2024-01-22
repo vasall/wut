@@ -6,7 +6,7 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-const struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
+const struct fh_stylesheet_attribute fh_stylesheet_attributes[25] = {
 	{ 0, 1, FH_STYLE_INPUT_KEYWORD, 0},	/*  0 display_mode 	    */
 	{ 1, 1, FH_STYLE_INPUT_KEYWORD, 1},	/*  1 reference_mode 	    */
 	{ 2, 4, FH_STYLE_INPUT_PERCENT, 0},	/*  2 width 		    */
@@ -31,9 +31,7 @@ const struct fh_stylesheet_attribute fh_stylesheet_attributes[27] = {
 	{54, 1, FH_STYLE_INPUT_KEYWORD, 5},	/* 21 infill_mode 	    */
 	{55, 4, FH_STYLE_INPUT_HEXCODE, 0},	/* 22 infill_color 	    */
 	{59, 1, FH_STYLE_INPUT_KEYWORD, 6},	/* 23 layout_mode 	    */
-	{60, 1, FH_STYLE_INPUT_KEYWORD, 7},	/* 24 scrollbar_mode 	    */
-	{61, 4, FH_STYLE_INPUT_HEXCODE, 0},	/* 25 scrollbar_track_color */
-	{65, 4, FH_STYLE_INPUT_HEXCODE, 0}	/* 26 scrollbar_thumb_color */
+	{60, 1, FH_STYLE_INPUT_KEYWORD, 7}	/* 24 scrollbar_mode 	    */
 };
 
 
@@ -65,8 +63,7 @@ struct fh_stylesheet_hme fh_c_stylesheet_hm_row3[] = {
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row4[] = {
 	{0xb4,  8},	/* spacing_bottom */
 	{0x2c, 10},	/* padding_top */
-	{0x54, 21},	/* infill_mode */
-	{0x34, 25}	/* scrollbar_track_color */
+	{0x54, 21}	/* infill_mode */
 };
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row5[] = {
 	{0x25, 17}	/* radius_top_left */
@@ -75,8 +72,7 @@ struct fh_stylesheet_hme fh_c_stylesheet_hm_row6[] = {
 	{0x9e, 13},	/* padding_left */
 	{0x56, 15},	/* border_width */
 	{0xa6, 18},	/* radius_top_right */
-	{0x1e, 20},	/* radius_bottom_left */
-	{0x2e, 25}	/* scrollbar_thumb_color */
+	{0x1e, 20}	/* radius_bottom_left */
 };
 struct fh_stylesheet_hme fh_c_stylesheet_hm_row7[] = {
 	{0x77,  1},	/* reference_mode */
@@ -92,9 +88,9 @@ const struct fh_stylesheet_hm fh_c_stylesheet_hm[FH_STYLESHEET_HASH_ROWS] = {
 	{fh_c_stylesheet_hm_row1, 3},
 	{fh_c_stylesheet_hm_row2, 1},
 	{fh_c_stylesheet_hm_row3, 4},
-	{fh_c_stylesheet_hm_row4, 4},
+	{fh_c_stylesheet_hm_row4, 3},
 	{fh_c_stylesheet_hm_row5, 1},
-	{fh_c_stylesheet_hm_row6, 5},
+	{fh_c_stylesheet_hm_row6, 4},
 	{fh_c_stylesheet_hm_row7, 6}
 };
 

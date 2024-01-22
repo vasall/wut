@@ -7,7 +7,7 @@
 #include "graphic/inc/flex.h"
 
 #include "utility/inc/color.h"
-
+#include "utility/inc/flex.h"
 
 #define FH_DISPLAY_VISIBLE	0
 #define FH_DISPLAY_INVISIBLE	1
@@ -44,61 +44,66 @@
 #define FH_STYLE_INPUT_HEXCODE	2
 #define FH_STYLE_INPUT_KEYWORD	3
 
+typedef u8 fh_keyword_t;
+
 
 struct fh_stylesheet {
 
 /*  	
- *   	<type>	<attribute_name>	   <hash> <row> <off>	<input>
+ *   	<type>	         <attribute_name>	  <hash> <row> <off> <input>
  */
 
-	/* 	DISPLAY 			            		      */
-	u8	display_mode;		/* 0x89     1 	 0    	KEYWORD-0     */
+	/* 		  DISPLAY 			                      */
+	fh_keyword_t	  display_mode;		/* 0x89   1    0    KEYWORD-0 */
 
-	/* 	REFERENCE				    		      */
-	u8	reference_mode;		/* 0x77     7    1    	KEYWORD-1     */
+	/* 		  REFERENCE				    	      */
+	fh_keyword_t	  reference_mode;	/* 0x77   7    1    KEYWORD-1 */
 
-	/* 	SIZE					    		      */
-	f32	width;			/* 0x3b     3    2 	PERCENT       */
-	f32	height;			/* 0x98     0    6 	PERCENT       */
+	/* 		  SIZE					    	      */
+	fh_flex_t	  width;		/* 0x3b   3    2    FLEX      */
+	fh_flex_t	  height;		/* 0x98   0   10    FLEX      */
 
-	/* 	ALIGNMENT				    		      */
-	u8	valignment;		/* 0x8f     7   10 	KEYWORD-2     */
-	u8	halignment;		/* 0xbf     7   11 	KEYWORD-3     */
+	/* 		  ALIGNMENT				    	      */
+	fh_keyword_t	  valignment;		/* 0x8f   7   18    KEYWORD-2 */
+	fh_keyword_t	  halignment;		/* 0xbf   7   19    KEYWORD-3 */
 
-	/* 	SPACING 				    		      */
-	f32	spacing_top;		/* 0xfb     3   12 	PERCENT       */
-	f32	spacing_right;		/* 0x43     3   16 	PERCENT       */
-	f32	spacing_bottom;		/* 0xb4     4   20 	PERCENT       */
-	f32	spacing_left;		/* 0x68     0   24 	PERCENT       */
+	/* 		  SPACING 				    	      */
+	fh_flex_t	  spacing_top;		/* 0xfb   3   20    FLEX      */
+	fh_flex_t	  spacing_right;	/* 0x43   3   28    FLEX      */
+	fh_flex_t	  spacing_bottom;	/* 0xb4   4   36    FLEX      */
+	fh_flex_t	  spacing_left;		/* 0x68   0   44    FLEX      */
 
-	/* 	PADDING					    		      */
-	f32	padding_top;		/* 0x2c     4   28 	PERCENT       */
-	f32	padding_right;		/* 0x41     1   32 	PERCENT       */
-	f32	padding_bottom;		/* 0x5b     3   36 	PERCENT       */
-	f32	padding_left;		/* 0x9e     6   40 	PERCENT       */
+	/* 		  PADDING					      */
+	fh_flex_t	  padding_top;		/* 0x2c   4   52    FLEX      */
+	fh_flex_t	  padding_right;	/* 0x41   1   60    FLEX      */
+	fh_flex_t	  padding_bottom;	/* 0x5b   3   68    FLEX      */
+	fh_flex_t	  padding_left;		/* 0x9e   6   76    FLEX      */
 
-	/* 	BORDER					    		      */
-	u8	border_mode;		/* 0xd8     0   44 	KEYWORD-4     */
-	u8 	border_width;		/* 0x56     6   45 	DECIMAL	      */
-	u32	border_color;		/* 0x0f     7	46 	HEX-CODE      */
+	/* 		  BORDER					      */
+	fh_keyword_t	  border_mode;		/* 0xd8   0   84    KEYWORD-4 */
+	u8 		  border_width;		/* 0x56   6   85    DECIMAL   */
+	u32		  border_color;		/* 0x0f   7   86    HEX-CODE  */
 
-	/* 	RADIUS					    		      */
-	u8	radius_top_left;	/* 0x25     5   50 	DECIMAL	      */
-	u8	radius_top_right;	/* 0xa6     6   51 	DECIMAL	      */
-	u8	radius_bottom_right;	/* 0x5f     7   52 	DECIMAL	      */
-	u8	radius_bottom_left;	/* 0x1e     6   53 	DECIMAL	      */
+	/* 		  RADIUS					      */
+	fh_flex_t	  radius_top_left;	/* 0x25   5   90    FLEX      */
+	fh_flex_t	  radius_top_right;	/* 0xa6   6   98    FLEX      */
+	fh_flex_t	  radius_bottom_right;	/* 0x5f   7  106    FLEX      */
+	fh_flex_t	  radius_bottom_left;	/* 0x1e   6  114    FLEX      */
 
-	/* 	INFILL 					    		      */
-	u8	infill_mode;		/* 0x54     4   54 	KEYWORD-5     */
-	u32	infill_color;		/* 0xf9     1   55 	HEX-CODE      */
+	/* 		  INFILL 					      */
+	fh_keyword_t	  infill_mode;		/* 0x54   4  122    KEYWORD-5 */
+	u32		  infill_color;		/* 0xf9   1  123    HEX-CODE  */
 
-	/* 	LAYOUT					    		      */
-	u8	layout_mode;		/* 0x3f     7   59 	KEYWORD-6     */
+	/* 		  LAYOUT					      */
+	fh_keyword_t	  layout_mode;		/* 0x3f   7  127    KEYWORD-6 */
 
-	/* 	SCROLLBAR				    		      */
-	u8	scrollbar_mode;		/* 0x02     2   60 	KEYWORD-7     */
-	u32	scrollbar_track_color;	/* 0x34	    4	61	HEX-CODE      */
-	u32	scrollbar_thumb_color;	/* 0x2e	    6   65	HEX-CODE      */
+	/* 		  SCROLLBAR				    	      */
+	fh_keyword_t	  scrollbar_mode;	/* 0x02   2  128    KEYWORD-7 */
+
+	/* 		  TEXT						      */
+	fh_flex_t	  text_size;		/* 0xb0   0  129    FLEX      */
+	u32		  text_color;		/* 0x93   3  137    HEX-CODE  */
+	u16		  text_weight;		/* 0x0f   7  141    DECIMAL   */
 } __attribute__((__packed__));
 
 

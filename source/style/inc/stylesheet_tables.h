@@ -11,9 +11,9 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-#define FH_STYLESHEET_ATTRIB_LIM	27
+#define FH_STYLESHEET_ATTRIB_LIM	25
 
-FH_XMOD const struct fh_stylesheet_attribute fh_stylesheet_attributes[27];
+FH_XMOD const struct fh_stylesheet_attribute fh_stylesheet_attributes[25];
 
 
 /*
