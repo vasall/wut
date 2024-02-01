@@ -78,7 +78,6 @@ FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
 	 * used.
 	 */
 	if(evt_is_mouse(type)) {
-		printf("Event is mouse!!!\n");
 
 		switch(type) {
 			case SDL_MOUSEBUTTONDOWN:
@@ -91,15 +90,11 @@ FH_INTERN void evt_collect_info(SDL_Event *raw, struct fh_event_context *ctx)
 				evt_get_position(type, raw, &pos);
 				ele = fh_GetHoveredElement(win->document, &pos); 
 		}
-		
-		printf("Event is mouse (%p, %s)\n", ele, ele->name);
 	}
 	else if(win) {
 		ele = win->selected;
-		printf("Event is window\n");
 	}
 	else {
-		printf("Event is nothing\n");
 	}
 	
 

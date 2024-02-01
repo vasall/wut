@@ -4,6 +4,8 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
+#include "utility/inc/list.h"
+
 
 /*
  * ----  CODE-TABLE  ----
@@ -19,16 +21,16 @@
  *
  * OPERAND
  *
- * 	0x07    const
- * 	0x08	PIXEL
- * 	0x09	PERCENT
- * 	0x0a	EM
+ * 	0x11    const
+ * 	0x12	PIXEL
+ * 	0x13	PERCENT
+ * 	0x14	EM
  *
  * ----------------------
  */
 struct fh_flex_token {
-	u8 code;
-	f32 value;
+	u8 	code;
+	f32 	value;
 };
 
 
@@ -38,6 +40,8 @@ struct fh_flex {
 
 
 typedef struct fh_flex *fh_flex_t;
+
+#define FH_FLEX_UNDEF	NULL
 
 
 /*
@@ -64,22 +68,26 @@ FH_XMOD void fh_flex_destroy(fh_flex_t flx);
 /*
  * Process the flex expression with the given reference values.
  *
+ * Note, the reference array has to contain the following values:
+ *
+ * 	0: pct_ref
+ * 	1: text_ref
+ *
+ *
  * @flx: Pointer to the flex struct
- * @ref_pct: The reference value used for percentage calculations
- * @ref_txt: The reference text size used for em
+ * @ref: An array with the reference values
  *
  * Returns: The result of the expression and 0 if an error occurred
  */
-FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 ref_pct, u16 ref_txt);
+FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref);
 
 
 /*
- * Stringify the flex expression and return it as a string.
+ * Print the flex in the console without newline.
  *
- * @flx: Pointer to the flex expression
- *
- * Returns: The stringified version of the flex expression
+ * @flx: Pointer to the flex struct
  */
-FH_XMOD char *fh_flex_stringify(fh_flex_t flx);
+FH_XMOD void fh_flex_print(fh_flex_t flx);
+
 
 #endif /* _FH_UTILITY_FLEX_H */

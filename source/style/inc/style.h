@@ -60,31 +60,39 @@ enum fh_style_attribute {
 };
 
 struct fh_restyle_display {	
-	u8 				mode;
+	fh_keyword_t 			mode;
 };
 
 struct fh_restyle_reference {
-	u8 				mode;
+	fh_keyword_t 			mode;
+};
+
+struct fh_restyle_border {
+	fh_keyword_t			mode;
+	s32				width;
+	struct fh_color			color;
 };
 
 struct fh_restyle_radius {
 	s32				corner[4];
 };
 
-struct fh_restyle_border {
-	u8				mode;
-	s32				width;
-	struct fh_color			color;
-};
-
 struct fh_restyle_infill {
-	u8				mode;
+	fh_keyword_t			mode;
 	struct fh_color			color;
 
 };
 
 struct fh_restyle_layout {
-	u8				mode;
+	fh_keyword_t			mode;
+};
+
+struct fh_restyle_text {
+	u16 				size;
+	struct fh_color			color;
+	u16				weight;
+	fh_keyword_t			options;
+	fh_keyword_t			wrap_mode;
 };
 
 
@@ -142,6 +150,11 @@ struct fh_style {
 	 * SCROLLBAR
 	 */
 	struct fh_restyle_scrollbar	scrollbar;
+
+	/*
+	 * TEXT
+	 */
+	struct fh_restyle_text		text;
 };
 
 
@@ -182,6 +195,19 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref);
 
 
 /*
+ * Get a stylesheet attribute.
+ *
+ * @style: Pointer to the starting stylesheet
+ * @id: The id of the attribute to get
+ * @ret: The return struct
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
+		struct fh_sheet_ret *ret);
+
+
+/*
  * Take in a stylesheet and a reference, apply the specified configurations and
  * write the resutling style to the output.
  *
@@ -202,7 +228,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
  */
 
 /*
- * Reset the stylesheet.
+ * Reset the style struct and stylesheet.
  *
  * @style: Pointer to the style struct
  */

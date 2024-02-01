@@ -2,11 +2,7 @@
 
 #include "utility/alarm/inc/alarm.h"
 
-#include "style/inc/style_utils.h"
-
 #include "system/inc/system.h"
-
-#include "parser/inc/parser.h"
 
 
 
@@ -53,14 +49,36 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
 }
 
 
+FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
+		struct fh_sheet_ret *ret)
+{
+	struct fh_style *run = style;
+
+	if(!style || !ret)
+		return -1;
+
+	while(run) {
+		if(run->sheet.mask & (1<<id)) {
+			break;
+		}
+
+		run = run->ref;
+	}
+
+	return fh_sheet_get(&run->sheet, id, ret);
+}
+
+
 FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 {
 	u32 uref;
-	
-	u32 temp;
 
-	u32 ref_height;
-	u32 ref_width;
+	struct fh_sheet_ret ret;
+	u16 refv[2];
+
+	u16 ref_height;
+	u16 ref_width;
+	u16 ref_text;	
 
 	u32 height;
 	u32 width;
@@ -82,18 +100,27 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	if(ref) {
 		ref_width = ref->bounding_box.w + ref->content_delta.w;
 		ref_height = ref->bounding_box.h + ref->content_delta.h;
+		ref_text = ref->text.size;
 	}
 	else {
 		ref_width = (u16)pass->document_shape->w;
 		ref_height = (u16)pass->document_shape->h;
+		ref_text = 12;
 	}
+
+	refv[1] = ref_text;
 
 	/* 
 	 * CALCULATE ELEMENT SIZE
 	 */
 
-	width = ref_width * style->sheet.width;
-	height = ref_height * style->sheet.height;
+	refv[0] = ref_width;
+	fh_style_get(style, FH_SHEET_WIDTH, &ret);
+	width = fh_flex_process(ret.flex, refv);
+
+	refv[0] = ref_height;
+	fh_style_get(style, FH_SHEET_HEIGHT, &ret);
+	height = fh_flex_process(ret.flex, refv);
 	
 		
 	/*
@@ -104,10 +131,19 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	spacing[0] = ref_height * style->sheet.spacing_top;	
-	spacing[1] = ref_width * style->sheet.spacing_right;
-	spacing[2] = ref_height * style->sheet.spacing_bottom;
-	spacing[3] = ref_width * style->sheet.spacing_left;
+
+	refv[0] = ref_height;
+	fh_style_get(style, FH_SHEET_SPACING_TOP, &ret);
+	spacing[0] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_SPACING_BOTTOM, &ret);
+	spacing[2] = fh_flex_process(ret.flex, refv);
+
+	refv[0] = ref_width;
+	fh_style_get(style, FH_SHEET_SPACING_RIGHT, &ret);
+	spacing[1] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_SPACING_LEFT, &ret);
+	spacing[3] = fh_flex_process(ret.flex, refv);
+
 
 	/*
 	 * *********************************************************************
@@ -117,10 +153,18 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	padding[0] = ref_height * style->sheet.padding_top;
-	padding[1] = ref_width * style->sheet.padding_right;
-	padding[2] = ref_height * style->sheet.padding_bottom;	
-	padding[3] = ref_width * style->sheet.padding_left;
+	refv[0] = ref_height;
+	fh_style_get(style, FH_SHEET_PADDING_TOP, &ret);
+	padding[0] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_PADDING_BOTTOM, &ret);
+	padding[2] = fh_flex_process(ret.flex, refv);
+
+	refv[0] = ref_width;
+	fh_style_get(style, FH_SHEET_PADDING_RIGHT, &ret);
+	padding[1] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_PADDING_LEFT, &ret);
+	padding[3] = fh_flex_process(ret.flex, refv);
+
 
 	/*
 	 * *********************************************************************
@@ -130,9 +174,15 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	out->border.mode = style->sheet.border_mode;
-	out->border.width = style->sheet.border_width;
-	out->border.color = fh_col_conv_itos(style->sheet.border_color);
+	fh_style_get(style, FH_SHEET_BORDER_MODE, &ret);
+	out->border.mode = ret.keyword;
+
+	refv[0] = ref_width;
+	fh_style_get(style, FH_SHEET_BORDER_WIDTH, &ret);
+	out->border.width = fh_flex_process(ret.flex, refv);
+
+	fh_style_get(style, FH_SHEET_BORDER_COLOR, &ret);
+	out->border.color = fh_col_conv_itos(ret.hexcode);
 
 	/*
 	 * *********************************************************************
@@ -200,8 +250,9 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 *
 	 * *********************************************************************
 	 */
-	
-	out->display.mode = style->sheet.display_mode;
+
+	fh_style_get(style, FH_SHEET_DISPLAY_MODE, &ret);
+	out->display.mode = ret.keyword;
 
 	/*
 	 * *********************************************************************
@@ -211,7 +262,8 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	out->reference.mode = style->sheet.reference_mode;
+	fh_style_get(style, FH_SHEET_REFERENCE_MODE, &ret);
+	out->reference.mode = ret.keyword;
 
 	/*
 	 * *********************************************************************
@@ -221,10 +273,17 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	out->radius.corner[0] = style->sheet.radius_top_left;
-	out->radius.corner[1] = style->sheet.radius_top_right;
-	out->radius.corner[2] = style->sheet.radius_bottom_right;
-	out->radius.corner[3] = style->sheet.radius_bottom_left;
+
+	refv[0] = ref_width;
+	fh_style_get(style, FH_SHEET_RADIUS_TOP_LEFT, &ret);
+	out->radius.corner[0] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_RADIUS_TOP_RIGHT, &ret);
+	out->radius.corner[1] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_RADIUS_BOTTOM_RIGHT, &ret);
+	out->radius.corner[2] = fh_flex_process(ret.flex, refv);
+	fh_style_get(style, FH_SHEET_RADIUS_BOTTOM_LEFT, &ret);
+	out->radius.corner[3] = fh_flex_process(ret.flex, refv);
+
 
 	/*
 	 * *********************************************************************
@@ -234,8 +293,13 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	out->infill.mode = style->sheet.infill_mode;
-	out->infill.color = fh_col_conv_itos(style->sheet.infill_color);
+
+	fh_style_get(style, FH_SHEET_INFILL_MODE, &ret);
+	out->infill.mode = ret.keyword;
+
+	fh_style_get(style, FH_SHEET_INFILL_COLOR, &ret);
+	out->infill.color = fh_col_conv_itos(ret.hexcode);
+
 
 	/*
 	 * *********************************************************************
@@ -245,29 +309,31 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	out->layout.mode = style->sheet.layout_mode;
+	fh_style_get(style, FH_SHEET_LAYOUT_MODE, &ret);
+	out->layout.mode = ret.keyword;
 
 	/*
 	 * *********************************************************************
 	 *
-	 * i		SCROLLBAR
+	 * 		SCROLLBAR
 	 *
 	 * *********************************************************************
 	 */
 
-	out->scrollbar.flags = 0;
+	fh_style_get(style, FH_SHEET_SCROLLBAR_MODE, &ret);
 
-	switch(style->sheet.scrollbar_mode) {
-		case FH_SCROLLBAR_AUTO:
+	out->scrollbar.flags = 0;
+	switch(ret.keyword) {
+		case FH_KW_SCROLLBAR_AUTO:
 			out->scrollbar.flags |= FH_RESTYLE_SCROLL_V;
 			out->scrollbar.flags |= FH_RESTYLE_SCROLL_H;
 			break;
-		case FH_SCROLLBAR_NONE:
+		case FH_KW_SCROLLBAR_NONE:
 			break;
-		case FH_SCROLLBAR_VERTICAL:
+		case FH_KW_SCROLLBAR_VERTICAL:
 			out->scrollbar.flags |= FH_RESTYLE_SCROLL_V;
 			break;
-		case FH_SCROLLBAR_HORIZONTAL:
+		case FH_KW_SCROLLBAR_HORIZONTAL:
 			out->scrollbar.flags |= FH_RESTYLE_SCROLL_H;
 			break;
 	}
@@ -291,172 +357,23 @@ FH_API void fh_ResetStyle(struct fh_style *style)
 		return;
 	}
 
-	/* 
-	 * DISPLAY
-	 */
-	style->sheet.display_mode = FH_DISPLAY_VISIBLE;	
+	style->ref = NULL;
 
-	/*
-	 * REFERENCE
-	 */
-	style->sheet.reference_mode = FH_REFERENCE_AUTO;
-
-	/*
-	 * SIZE
-	 */
-	fh_flex_reset_input(&style->sheet.width);
-	fh_flex_reset_input(&style->sheet.height);
-
-	/*
-	 * SPACING
-	 */
-	fh_flex_reset_input(&style->sheet.spacing_top);
-	fh_flex_reset_input(&style->sheet.spacing_right);
-	fh_flex_reset_input(&style->sheet.spacing_bottom);
-	fh_flex_reset_input(&style->sheet.spacing_left);
-
-	/*
-	 * PADDING 
-	 */
-	fh_flex_reset_input(&style->sheet.padding_top);
-	fh_flex_reset_input(&style->sheet.padding_right);
-	fh_flex_reset_input(&style->sheet.padding_bottom);
-	fh_flex_reset_input(&style->sheet.padding_left);
-
-	/*
-	 * RADIUS
-	 */
-	fh_flex_reset_input(&style->sheet.radius_top_left);
-	fh_flex_reset_input(&style->sheet.radius_top_right);
-	fh_flex_reset_input(&style->sheet.radius_bottom_right);
-	fh_flex_reset_input(&style->sheet.radius_bottom_left);
-
-	/*
-	 * BORDER
-	 */
-	style->sheet.border_mode = 0;
-	style->sheet.border_width = 0;
-	style->sheet.border_color = fh_col_set_u32(0x00, 0x00, 0x00, 0xFF);
-
-	/*
-	 * INFILL
-	 */
-	style->sheet.infill_mode = FH_INFILL_COLOR;
-	style->sheet.infill_color = fh_col_set_u32(0xB0, 0x0B, 0x1E, 0xFF);
-
-	/*
-	 * LAYOUT
-	 */
-	style->sheet.layout_mode = FH_LAYOUT_BLOCKS;
-
-	/*
-	 * SCROLLBAR
-	 */
-	style->sheet.scrollbar_mode = FH_SCROLLBAR_AUTO;
+	fh_sheet_reset(&style->sheet);
 }
 
 
 FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 {
-	char *swap;
-	char attr[32];
-	char value[32];
-
-	u8 out[4];
-
-	s8 idx;
-	const struct fh_stylesheet_attribute *ent;
-
 	if(!style || !in) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return;
 	}
 
-	swap = in;
-
 	/*
-	 * Go through all stylesheet inputs.
+	 * Parse the input expressions and modify the stylesheet accordingly.
 	 */
-	while((swap = fh_parser_attribute(swap, attr, value))) {	
-		/*
-		 * Get the index of the stylesheet attribute.
-		 */
-		if((idx = fh_style_utl_find(attr)) < 0) {
-			printf("Attribute \"%s\" not found\n", attr);
-			continue;
-		}
-
-		/*
-		 * Get the according entry from the stylesheet table.
-		 */
-		if(!(ent = fh_style_utl_get(idx))) {
-			printf("No entry in table for \"%s\"\n", attr);
-			continue;
-		}
-
-		/*
-		 * Parse the given value to the contraints of the requested
-		 * attribute.
-		 */
-		if(fh_parser_value(value, ent->input, ent->category, out) < 0) {
-			printf("Input type is invalid");
-			continue;
-		}
-
-		/* Finally write the new data to the stylesheet */
-		memcpy(((u8 *)&style->sheet) + ent->offset, out, ent->size);
-	}
-}
-
-
-FH_API void fh_DumpStylesheet(struct fh_style *style)
-{
-	if(!style) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
-		return;
-	}
-
-	printf("%22s\t%d\n", "display_mode", style->sheet.display_mode);
-	
-	printf("\n");
-	printf("%22s:\t%d\n", "reference_mode", style->sheet.reference_mode);
-	
-	printf("%22s:\t\"%s\"\n", "width", style->sheet.width);
-	printf("%22s:\t\"%s\"\n", "height", style->sheet.height);
-
-	printf("\n");
-	printf("%22s:\t%d\n", "valignment", style->sheet.valignment);
-	printf("%22s:\t%d\n", "halignment", style->sheet.halignment);
-
-	printf("\n");
-	printf("%22s:\t\"%s\"\n", "spacing_top", style->sheet.spacing_top);
-	printf("%22s:\t\"%s\"\n", "spacing_right", style->sheet.spacing_right);
-	printf("%22s:\t\"%s\"\n", "spacing_bottom", style->sheet.spacing_bottom);
-	printf("%22s:\t\"%s\"\n", "spacing_left", style->sheet.spacing_left);
-
-	printf("\n");
-	printf("%22s:\t\"%s\"\n", "padding_top", style->sheet.padding_top);
-	printf("%22s:\t\"%s\"\n", "padding_right", style->sheet.padding_right);
-	printf("%22s:\t\"%s\"\n", "padding_bottom", style->sheet.padding_bottom);
-	printf("%22s:\t\"%s\"\n", "padding_left", style->sheet.padding_left);
-
-	printf("\n");
-	printf("%22s:\t%d\n", "border_mode", style->sheet.border_mode);
-	printf("%22s:\t%d\n", "border_width", style->sheet.border_width);
-	printf("%22s:\t%08X\n", "border_color", style->sheet.border_color);
-
-	printf("\n");
-	printf("%22s:\t\"%s\"\n", "radius_top_left", style->sheet.radius_top_left);
-	printf("%22s:\t\"%s\"\n", "radius_top_right", style->sheet.radius_top_right);
-	printf("%22s:\t\"%s\"\n", "radius_bottom_left", style->sheet.radius_bottom_left);
-	printf("%22s:\t\"%s\"\n", "radius_bottom_right", style->sheet.radius_bottom_right);
-
-	printf("\n");
-	printf("%22s:\t%d\n", "infill_mode", style->sheet.infill_mode);
-	printf("%22s:\t%08X\n", "infill_color", style->sheet.infill_color);
-
-	printf("\n");
-	printf("%22s:\t%d\n", "layout_mode", style->sheet.layout_mode);
+	fh_sheet_parse(&style->sheet, in);	
 }
 
 

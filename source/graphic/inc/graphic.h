@@ -4,7 +4,6 @@
 #include "graphic/inc/camera.h"
 #include "utility/inc/color.h"
 #include "graphic/inc/flat.h"
-#include "graphic/inc/flex.h"
 #include "graphic/resources/inc/font.h"
 #include "graphic/inc/object.h"
 #include "graphic/inc/constructor.h"

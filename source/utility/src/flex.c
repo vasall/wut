@@ -1,6 +1,7 @@
 #include "utility/inc/flex.h"
 
 #include "utility/alarm/inc/alarm.h"
+#include "utility/inc/utility.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,7 +59,7 @@ FH_INTERN void flex_sanitize(char *s)
 		while (*d == ' ') {
 			++d;
 		}
-	} while (*s++ = *d++);
+	} while ((*(s++) = *(d++)));
 }
 
 
@@ -80,7 +81,7 @@ FH_INTERN s8 flex_parse_token(u8 opt, char *s, struct fh_flex_token *tok)
 			return -1;
 		}
 
-		tok->code = 0x07;	/* const */
+		tok->code = 0x11;	/* const */
 		tok->value = atof(buf);
 
 		tail = 0;
@@ -94,15 +95,15 @@ FH_INTERN s8 flex_parse_token(u8 opt, char *s, struct fh_flex_token *tok)
 					FH_ALARM(FH_ERROR, "Pixels must be integer");
 					return -1;
 				}
-				tok->code = 0x08;
+				tok->code = 0x12;
 			}
 			else if(strcmp(buf, "%") == 0) {
 				tok->value /= 100.0;
 
-				tok->code = 0x09;
+				tok->code = 0x13;
 			}
 			else if(strcmp(buf, "em") == 0) {
-				tok->code = 0x0a;
+				tok->code = 0x14;
 			}
 			else {
 				FH_ALARM(FH_ERROR, "Unit invalid");
@@ -189,7 +190,7 @@ FH_INTERN struct fh_list *flex_tokenize(char *inp)
 			goto err_destroy_list;
 		}
 
-		
+
 		if(fin) {
 			buf[buf_tail] = 0;
 
@@ -213,7 +214,7 @@ FH_INTERN struct fh_list *flex_tokenize(char *inp)
 			buf[buf_tail] = *c;
 			buf_tail++;
 		}
-		
+
 	} while(*(c++));
 
 	return lst;
@@ -244,6 +245,7 @@ FH_INTERN struct fh_list *flex_shunting_yard(struct fh_list *inp)
 	struct fh_flex_token tok_swp;
 	u8 prio[2];
 	u8 check;
+	u8 opensign = 0; /* 0: positive, 1: negative */
 
 	if(!(output = fh_list_create(sizeof(struct fh_flex_token), 10))) {
 		FH_ALARM(FH_ERROR, "Failed to create output list");
@@ -258,13 +260,29 @@ FH_INTERN struct fh_list *flex_shunting_yard(struct fh_list *inp)
 	while(fh_list_shift(inp, &tok)) {
 		/* Push operand to output */
 		if(tok.code > 0x06) {
+			/* To indicate the first operand is negative */
+			if(opensign) {
+				tok.value *= -1.0;
+				opensign = 0;
+			}
+
 			fh_list_push(output, &tok);
 		}
 		/* Push operator into operator-stack */
 		else if(tok.code >= 0x03 && tok.code <= 0x06) {
-			if(output->count < 0) {
-				FH_ALARM(FH_ERROR, "Missing operand at beginning");
-				goto err_destroy_operators;
+			if(output->count < 1) {
+				if(tok.code != 0x04 && tok.code != 0x05) {
+					FH_ALARM(FH_ERROR, "Missing operand");
+					goto err_destroy_operators;
+				}
+				/*
+				 * Hotfix, so that the initial operand can be
+				 * negative.
+				 */
+				else if(tok.code == 0x05) {
+					opensign = 1;
+				}
+				continue;
 			}
 
 			while(fh_list_pop(operators, &tok_swp)) {
@@ -323,6 +341,32 @@ err_destroy_output:
 }
 
 
+FH_INTERN s8 flex_clbk_print(void *ptr, u16 idx, void *data)
+{
+	struct fh_flex_token *tok = (struct fh_flex_token *)ptr;
+
+	fh_Ignore(idx);
+	fh_Ignore(data);
+
+	switch(tok->code) {
+		case 0x01: printf("("); break;
+		case 0x02: printf(")"); break;
+		case 0x03: printf("*"); break;
+		case 0x04: printf("+"); break;
+		case 0x05: printf("-"); break;
+		case 0x06: printf("/"); break;
+
+		case 0x11: printf("%f", tok->value); break;
+		case 0x12: printf("%fpx", tok->value); break;
+		case 0x13: printf("%fpct", tok->value); break;
+		case 0x14: printf("%fem", tok->value); break;
+
+		default: printf("?");
+	}
+
+	return 0;
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -373,7 +417,7 @@ FH_XMOD void fh_flex_destroy(fh_flex_t flx)
 }
 
 
-FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 ref_pct, u16 ref_txt)
+FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 {
 	struct fh_flex_token tok;
 	struct fh_list *stk;
@@ -391,10 +435,10 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 ref_pct, u16 ref_txt)
 		/*  Handle operands  */
 		if(tok.code > 0x06) {
 			switch(tok.code) {
-				case 0x07: value = tok.value; break;
-				case 0x08: value = tok.value; break;
-				case 0x09: value = tok.value * ref_pct; break;
-				case 0x0a: value = tok.value * ref_txt; break;
+				case 0x11: value = tok.value; break;
+				case 0x12: value = tok.value; break;
+				case 0x13: value = tok.value * ref[0]; break;
+				case 0x14: value = tok.value * ref[1]; break;
 				default:  value = tok.value; break;
 			}
 			fh_list_push(stk, &value);
@@ -422,7 +466,14 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 ref_pct, u16 ref_txt)
 }
 
 
-FH_XMOD char *fh_flex_stringify(fh_flex_t flx)
+FH_XMOD void fh_flex_print(fh_flex_t flx)
 {
+	if(!flx) {
+		printf("undefined");
+		return;
+	}
 
+	printf("Flex contains %d tokens\n", flx->list->count);
+
+	fh_list_apply(flx->list, &flex_clbk_print, NULL);
 }

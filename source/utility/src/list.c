@@ -138,7 +138,7 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out)
 	s32 off;
 
 	if(!lst || !out) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid!\n");
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -149,4 +149,23 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out)
 	memcpy(out, lst->data + off, lst->size);
 
 	return 1;
+}
+
+
+FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
+{
+	u16 i;
+
+	if(!lst || !fnc) {
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		return -1;
+	}
+
+	for(i = 0; i < lst->count; i++) {
+		if(fnc(lst->data + (i * lst->size), i, data)) {
+			return 0;
+		}
+	}
+
+	return 0;
 }

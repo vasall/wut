@@ -17,6 +17,7 @@ struct fh_color {
 	u8 r;
 };
 
+typedef struct fh_color fh_color_t;
 
 
 /*
@@ -29,7 +30,7 @@ struct fh_color {
  *
  * Returns: A color object
  */
-FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha);
+FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -42,7 +43,7 @@ FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha);
  *
  * Returns: The color as an unsigned integer
  */
-FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
+FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*

@@ -91,4 +91,20 @@ FH_API s16 fh_list_test_head(struct fh_list *lst, void *out);
  */
 FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out);
 
+
+typedef s8 (*fh_list_fnc_t)(void *entry, u16 idx, void *data);
+
+
+/*
+ * Apply a function to all elements in the lits, from the oldest to the newest
+ * entry. If the given function returns 1, the function will stop and return 0.
+ *
+ * @lst: Pointer to the list
+ * @fnc: The function to apply to all entries
+ * @data: A data-pointer passed on every call
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data);
+
 #endif /* _FH_UTILITY_LIST_H */

@@ -498,9 +498,9 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 	}
 
 	switch(ele->style.layout.mode) {
-		case FH_LAYOUT_BLOCKS:	fh_layout_blocks(ele);	break;
-		case FH_LAYOUT_ROWS: 	fh_layout_rows(ele); 	break;
-		case FH_LAYOUT_COLUMNS: fh_layout_columns(ele); break;
+		case FH_KW_LAYOUT_BLOCK:	fh_layout_block(ele);	break;
+		case FH_KW_LAYOUT_ROW: 		fh_layout_row(ele); 	break;
+		case FH_KW_LAYOUT_COLUMN: 	fh_layout_column(ele); break;
 		default: break;
 	}
 }

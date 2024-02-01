@@ -16,7 +16,7 @@
  */
 
 
-FH_XMOD void fh_layout_blocks(struct fh_element *ele)
+FH_XMOD void fh_layout_block(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -45,7 +45,7 @@ FH_XMOD void fh_layout_blocks(struct fh_element *ele)
 
 
 		/* If the position is absolute, do nothing */
-		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
+		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
@@ -100,7 +100,7 @@ FH_XMOD void fh_layout_blocks(struct fh_element *ele)
 }
 
 
-FH_XMOD void fh_layout_rows(struct fh_element *ele)
+FH_XMOD void fh_layout_row(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -118,7 +118,7 @@ FH_XMOD void fh_layout_rows(struct fh_element *ele)
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
-		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
+		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
@@ -156,7 +156,7 @@ FH_XMOD void fh_layout_rows(struct fh_element *ele)
 }
 
 
-FH_XMOD void fh_layout_columns(struct fh_element *ele)
+FH_XMOD void fh_layout_column(struct fh_element *ele)
 {
 	struct fh_element *run;
 	s32 off_x = 0;
@@ -173,7 +173,7 @@ FH_XMOD void fh_layout_columns(struct fh_element *ele)
 		w = run->style.bounding_box.w;
 		h = run->style.bounding_box.h;
 
-		if(run->style.reference.mode == FH_REFERENCE_ABSOLUTE) {
+		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 

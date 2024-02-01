@@ -11,47 +11,47 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-#define FH_STYLESHEET_ATTRIB_LIM	25
+#define FH_SHEET_ATTRIBS	31
 
-FH_XMOD const struct fh_stylesheet_attribute fh_stylesheet_attributes[25];
-
-
-/*
- * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
- */
-
-struct fh_stylesheet_hme {
-	u8 hash;
-	u8 index;
-};
-
-
-struct fh_stylesheet_hm {
-	struct fh_stylesheet_hme *entries;
-	u8 number;
-};
-
-#define FH_STYLESHEET_HASH_ROWS		8
-
-FH_XMOD const struct fh_stylesheet_hm fh_c_stylesheet_hm[8];
+FH_XMOD const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS];
 
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-struct fh_stylesheet_kve {
-	char *string;
-	u8 value;
+struct fh_sheet_id_entry {
+	u8 			hash;
+	enum fh_sheet_id 	id;
 };
 
-struct fh_stylesheet_kv {
-	struct fh_stylesheet_kve *entries;
-	u8 number;
+
+struct fh_sheet_id_table {
+	struct fh_sheet_id_entry 	*entries;
+	u8 				number;
 };
 
-#define FH_STYLESHEET_OPT_ROWS	8
+#define FH_SHEET_ROWS		8
 
-FH_XMOD const struct fh_stylesheet_kv fh_c_stylesheet_kv[8];
+FH_XMOD const struct fh_sheet_id_table fh_c_sheet_ids[FH_SHEET_ROWS];
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+struct fh_sheet_kw {
+	char 	*string;
+	u8 	value;
+};
+
+struct fh_sheet_kw_table {
+	struct fh_sheet_kw 	*entries;
+	u8 			number;
+};
+
+#define FH_SHEET_KW_ROWS	10
+
+FH_XMOD const struct fh_sheet_kw_table fh_c_sheet_keywords[FH_SHEET_KW_ROWS];
 
 #endif /* _FH_STYLE_STYLESHEET_TABLES_H */

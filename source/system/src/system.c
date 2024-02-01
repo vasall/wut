@@ -70,12 +70,18 @@ FH_API void *fh_realloc(void *old, s32 newlen)
 {
 	void *p;
 
-	if(!old || newlen < 1) {
+	if(newlen < 1) {
 		FH_ALARM(FH_WARNING, "old undefined or newlen invalid");
 		return NULL;
 	}
 
-	if(!(p = realloc(old, newlen))) {
+	if(!old) {
+		if(!(p = malloc(newlen))) {
+			printf("failed to allocate memory");
+			return NULL;
+		}
+	}
+	else if(!(p = realloc(old, newlen))) {
 		FH_ALARM(FH_ERROR, "failed to reallocate memory");
 		return NULL;
 	}

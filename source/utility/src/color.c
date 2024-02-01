@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha)
+FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha)
 {
 	struct fh_color col;
 	col.r = red;
@@ -16,7 +16,7 @@ FH_API struct fh_color fh_col_set(u8 red, u8 green, u8 blue, u8 alpha)
 }
 
 
-FH_API u32 fh_col_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
+FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
 {
 	struct fh_color col;
 	col.r = red;
