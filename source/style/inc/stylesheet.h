@@ -123,7 +123,7 @@ struct fh_sheet_attr {
 	/* 
 	 * The offset of the attribute in the stylesheet.
 	 */
-	u8 offset;
+	s16 offset;
 };
 
 

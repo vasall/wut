@@ -497,10 +497,12 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 		return;
 	}
 
+	printf("For element %s use %02x\n", ele->name, ele->style.layout.mode);
+
 	switch(ele->style.layout.mode) {
 		case FH_KW_LAYOUT_BLOCK:	fh_layout_block(ele);	break;
 		case FH_KW_LAYOUT_ROW: 		fh_layout_row(ele); 	break;
-		case FH_KW_LAYOUT_COLUMN: 	fh_layout_column(ele); break;
+		case FH_KW_LAYOUT_COLUMN: 	fh_layout_column(ele);  break;
 		default: break;
 	}
 }
@@ -573,7 +575,7 @@ FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
 
 	fh_ModifyStyle(&ele->style, str);
 
-	fh_UpdateDocumentBranch(ele->document, ele);		
+	fh_UpdateDocumentBranch(ele->document, ele);
 
 	return 0;
 

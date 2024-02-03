@@ -169,3 +169,22 @@ FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
 
 	return 0;
 }
+
+
+FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void *out)
+{
+	s32 off;
+
+	if(!lst || !out) {
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		return -1;
+	}
+
+	if(lst->count < 1 || idx >= lst->count)
+		return 0;
+
+	off = idx * lst->size;
+	memcpy(out, lst->data + off, lst->size);
+
+	return 1;
+}

@@ -97,7 +97,7 @@ FH_INTERN s8 flex_parse_token(u8 opt, char *s, struct fh_flex_token *tok)
 				}
 				tok->code = 0x12;
 			}
-			else if(strcmp(buf, "%") == 0) {
+			else if(strcmp(buf, "pct") == 0) {
 				tok->value /= 100.0;
 
 				tok->code = 0x13;
@@ -237,7 +237,7 @@ FH_INTERN s8 flex_operator_prio(struct fh_flex_token *tok)
 }
 
 
-FH_INTERN struct fh_list *flex_shunting_yard(struct fh_list *inp)
+FH_INTERN s8 flex_shunting_yard(struct fh_list *inp, struct fh_list **out)
 {
 	struct fh_list *output;
 	struct fh_list *operators;
@@ -249,7 +249,7 @@ FH_INTERN struct fh_list *flex_shunting_yard(struct fh_list *inp)
 
 	if(!(output = fh_list_create(sizeof(struct fh_flex_token), 10))) {
 		FH_ALARM(FH_ERROR, "Failed to create output list");
-		return NULL;
+		return -1;
 	}
 
 	if(!(operators = fh_list_create(sizeof(struct fh_flex_token), 10))) {
@@ -328,16 +328,18 @@ FH_INTERN struct fh_list *flex_shunting_yard(struct fh_list *inp)
 	while(fh_list_pop(operators, &tok))
 		fh_list_push(output, &tok);
 
+	
 	fh_list_destroy(operators);
+	*out = output;
 
-	return output;
+	return 0;
 
 err_destroy_operators:
 	fh_list_destroy(operators);
 
 err_destroy_output:
 	fh_list_destroy(output);
-	return NULL;
+	return -1;
 }
 
 
@@ -395,9 +397,13 @@ FH_XMOD fh_flex_t fh_flex_parse(fh_flex_t flx, char *inp)
 			return flx;
 		}
 	}
+	else {
+		fh_list_destroy(f->list);
+	}
 
-	if(!(f->list = flex_shunting_yard(tokens)))
+	if(flex_shunting_yard(tokens, &f->list) < 0) {
 		goto err_destroy_tokens_raw;
+	}
 
 	fh_list_destroy(tokens);
 	return f;
@@ -423,6 +429,7 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 	struct fh_list *stk;
 	f32 value;
 	f32 opd[2];
+	u16 i = 0;
 
 	if(!flx) return 0;
 
@@ -431,7 +438,7 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 		return 0;
 	}
 
-	while(fh_list_shift(flx->list, &tok)) {
+	while(fh_list_get(flx->list, i++, &tok)) {
 		/*  Handle operands  */
 		if(tok.code > 0x06) {
 			switch(tok.code) {
@@ -473,7 +480,12 @@ FH_XMOD void fh_flex_print(fh_flex_t flx)
 		return;
 	}
 
-	printf("Flex contains %d tokens\n", flx->list->count);
+	if(flx->list->count < 1) {
+		printf("empty");
+		return;
+	}
+
+	printf("%d tokens: ", flx->list->count);
 
 	fh_list_apply(flx->list, &flex_clbk_print, NULL);
 }

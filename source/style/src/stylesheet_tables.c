@@ -43,13 +43,13 @@ const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS] = {
 	{FH_SHEET_KEYWORD,    5,	137},	/* 23 align_v    	    */
 	{FH_SHEET_KEYWORD,    6,	138},	/* 24 align_h   	    */
 	
-	{FH_SHEET_KEYWORD,    7,	149},	/* 25 scrollbar_mode 	    */
+	{FH_SHEET_KEYWORD,    7,	139},	/* 25 scrollbar_mode 	    */
 	
 	{FH_SHEET_FLEX,       0,	140},	/* 26 text_size 	    */
 	{FH_SHEET_HEXCODE,    0,	148},	/* 27 text_color 	    */
 	{FH_SHEET_FLEX,       0,	152},	/* 28 text_mass 	    */
 	{FH_SHEET_KEYWORD,    1,	160},	/* 29 text_options 	    */
-	{FH_SHEET_KEYWORD,    8,	161},	/* 30 text_wrap_mode 	    */
+	{FH_SHEET_KEYWORD,    8,	161}	/* 30 text_wrap_mode 	    */
 };
 
 

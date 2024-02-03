@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-#define FH_LAYOUT_DEBUG		0
+#define FH_LAYOUT_DEBUG		1
 
 
 /*

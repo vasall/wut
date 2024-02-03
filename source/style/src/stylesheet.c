@@ -49,7 +49,7 @@ FH_INTERN s8 sheet_ishex(char c)
 }
 
 
-FH_INTERN s8 sheet_offset(enum fh_sheet_id id)
+FH_INTERN s16 sheet_offset(enum fh_sheet_id id)
 {
 	return fh_c_sheet_attribs[id].offset;
 }
@@ -81,8 +81,8 @@ FH_INTERN void sheet_read(struct fh_stylesheet *sheet, enum fh_sheet_id id,
 
 FH_INTERN void sheet_write(struct fh_stylesheet *sheet, enum fh_sheet_id id,
 		void *ptr)
-{
-	memcpy(((u8 *)sheet + sheet_offset(id)), ptr, sheet_sizeof(id));
+{		
+	memcpy(((u8 *)sheet) + sheet_offset(id), ptr, sheet_sizeof(id));
 }
 
 
@@ -118,7 +118,7 @@ FH_INTERN char *sheet_next(char *s, char *attr, char *val)
 			return NULL;
 
 		/* Skip */
-		if(c == '\n')
+		if(c == '\n' || sheet_isspace(c))
 			continue;
 
 		*(ptr++) = c;
@@ -212,8 +212,6 @@ FH_INTERN s8 sheet_convhex(char *val, u32 *out)
 
 	run = val;
 
-	printf("Convert \"%s\"\n", val);
-
 	/* Find the beginning of the hex */
 	while((c = *run)) {
 		if(sheet_ishex(c)) {
@@ -225,24 +223,18 @@ FH_INTERN s8 sheet_convhex(char *val, u32 *out)
 	if(!head)
 		return -1;
 
-	printf("Find the head\n");
-
 	for(i = 2; i >= 0; i--) {
 		if(!sheet_ishex(head[i*2])) {
-			printf("Missing\n");
 			return 0;
 		}
 
 		if(!sheet_ishex(head[i*2+1])) {
-			printf("No second\n");
 			return -1;
 		}
 
 		((u8 *)&buf)[3 - i] = sheet_fromhex(head[i*2]) * 16;
 		((u8 *)&buf)[3 - i] += sheet_fromhex(head[i*2+1]);
 	}
-
-	printf("Converted \"%s\" to %08x\n", val, buf);
 
 	*out = buf;
 
@@ -312,10 +304,16 @@ FH_INTERN void sheet_parse_keyword(struct fh_stylesheet *sheet,
 	/* First process the input and set the according keyword flags */
 	ptr = val;
 	while((ptr = sheet_next_keyword(ptr, buf))) {
+		printf("Check keyword \"%s\"\n", buf);
 		kw |= sheet_find_keyword(ctg, buf);
+
+		printf("Updated: %02x\n", kw);
 	}
 
+	printf("Write %d with %02x\n", id, kw);
 	sheet_write(sheet, id, &kw);
+
+	printf("Offset: %d, Size: %d\n", sheet_offset(id), sheet_sizeof(id));
 }
 
 
@@ -332,7 +330,7 @@ FH_INTERN void sheet_parse_keyword(struct fh_stylesheet *sheet,
 FH_XMOD void fh_sheet_reset(struct fh_stylesheet *sheet)
 {
 	if(!sheet) return;
-	
+
 	sheet->mask = 0;
 
 	sheet->display_mode = 0;
@@ -419,7 +417,6 @@ FH_XMOD void fh_sheet_parse(struct fh_stylesheet *sheet, char *s)
 		/* Don't forget to add the flag to the mask */
 		sheet->mask |= (1<<id);
 	}
-
 }
 
 
@@ -497,7 +494,7 @@ FH_XMOD void fh_sheet_print(struct fh_stylesheet *sheet)
 	printf("\nalign_v: %02x", sheet->align_v);
 	printf("\nalign_h: %02x", sheet->align_h);
 
-	printf("\nscrollbar_mode: %02x\n", sheet->scrollbar_mode);
+	printf("\nscrollbar_mode: %02x", sheet->scrollbar_mode);
 
 	printf("\ntext_size: "); fh_flex_print(sheet->text_size);
 	printf("\ntext_color: %08x", fh_color_get(sheet->text_color));

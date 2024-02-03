@@ -4,7 +4,7 @@
 
 #include "document/inc/document.h"
 
-#define FH_EVTDEF_DEBUG		1
+#define FH_EVTDEF_DEBUG		0
 
 
 FH_INTERN s8 def_dump(struct fh_event *evt)

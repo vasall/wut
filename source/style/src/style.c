@@ -118,10 +118,10 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	fh_style_get(style, FH_SHEET_WIDTH, &ret);
 	width = fh_flex_process(ret.flex, refv);
 
+
 	refv[0] = ref_height;
 	fh_style_get(style, FH_SHEET_HEIGHT, &ret);
 	height = fh_flex_process(ret.flex, refv);
-	
 		
 	/*
 	 * *********************************************************************
@@ -373,7 +373,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
 	/*
 	 * Parse the input expressions and modify the stylesheet accordingly.
 	 */
-	fh_sheet_parse(&style->sheet, in);	
+	fh_sheet_parse(&style->sheet, in);
 }
 
 
