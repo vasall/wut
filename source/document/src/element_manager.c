@@ -327,6 +327,8 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	strcpy(ele->name, name);
 	ele->type = type;
 
+	printf("Element \"%s\" has type %d\n", name, type);
+
 	/* ...and reset the rest */
 	ele->layer = 0;
 	ele->document = doc;
@@ -350,6 +352,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
+	printf("Create widget with %p\n", data);
 	if(fh_eletemp_load(ele, data) < 0) {
 		FH_ALARM(FH_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
@@ -507,8 +510,6 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
-
-	printf("For element %s use %02x\n", ele->name, ele->style.layout.mode);
 
 	switch(ele->style.layout.mode) {
 		case FH_KW_LAYOUT_BLOCK:	fh_layout_block(ele);	break;

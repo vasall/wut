@@ -5,6 +5,7 @@
 #include "core/inc/import.h"
 
 #include "utility/inc/table.h"
+#include "utility/inc/shape.h"
 
 #include "graphic/inc/context.h"
 
@@ -28,8 +29,8 @@ struct fh_texture {
 	/* Reference to the context */
 	struct fh_context *context;
 
-	/* Reference to the batch renderer */
-	struct fh_batch *renderer;
+	/* The batch id */
+	s16 batch_id;
 };
 
 
@@ -144,8 +145,6 @@ FH_API void fh_UseTexture(struct fh_texture *tex);
  * Unuse the currently active texture.
  */
 FH_API void fh_UnuseTexture(void);
-
-
 
 
 

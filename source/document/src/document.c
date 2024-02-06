@@ -147,10 +147,23 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 
 }
 
-
-FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd,
-		struct fh_texture *tex)
+FH_INTERN void doc_batch_cfnc_push(struct fh_batch *ren, void *data)
 {
+	s32 frame[2];
+	struct fh_rect *ref = (struct fh_rect *)data;
+
+	frame[0] = ref->w;
+	frame[1] = ref->h;
+	fh_batch_push_uniform(ren, 0, frame);
+
+}
+
+
+FH_INTERN s8 doc_create_batch(struct fh_document *doc)
+{
+	struct fh_shader *shd;
+	struct fh_batch *ren;
+
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
@@ -168,16 +181,30 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd,
 		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 7 */
 	};
 
-	return fh_batch_create(
+	shd = fh_GetShader(doc->context, "__def_block_shader");
+
+	ren = fh_batch_create(
 			shd,		/* Pointer to the shader to use */
-			tex,		/* Pointer to the texture to use */
+			NULL,		/* Pointer to the texture to use */
 			3,		/* Number of vertex attributes */
 			v_attributes,	/* List of all vertex attributes */
 			6000,		/* Vertex capacity */
 			6000,		/* Index capacity */
 			8,		/* Number of uniform buffers */
-			uniforms	/* List of all uniforms */
+			uniforms,	/* List of all uniforms */
+			&doc_batch_cfnc_push,
+			doc->shape_ref
 			);
+
+	if(!ren)
+		return -1;
+
+	if((doc->batch_id = fh_ContextAddBatch(doc->context, &ren)) < 0) {
+		fh_batch_destroy(ren);
+		return -1;
+	}
+
+	return 0;
 }
 
 
@@ -226,16 +253,14 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 		goto err_destroy_body;
 
 	/* Create the default batch renderer */
-	if(!(doc->batch = doc_create_batch()))
-		goto err_remove_shader;
+	if(doc_create_batch(doc) < 0)
+		goto err_destroy_views;
 
 	/* Update the body element */
 	fh_UpdateDocument(doc);
 
 	return doc;
 
-err_remove_shader:
-	fh_RemoveShader(doc->batch_shader);
 
 err_destroy_views:
 	fh_DestroyViewList(doc->views);
@@ -256,9 +281,6 @@ FH_API void fh_DestroyDocument(struct fh_document *doc)
 {
 	if(!doc)
 		return;
-
-	/* Destroy the batch renderer */
-	fh_batch_destroy(doc->batch);
 
 	/* If the document contains a body, recursivly remove it */
 	fh_RemoveElement(doc, doc->body);	
@@ -430,15 +452,19 @@ FH_API void fh_UpdateDocument(struct fh_document *doc)
 FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
 		struct fh_element *ele)
 {
+	struct fh_batch *ren;
+
 	if(!doc || !ele) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
+	ren = fh_ContextGetBatch(doc->context, doc->batch_id);
+
 	fh_element_hlf(ele,
 			&doc_cfnc_render_ui,
 			&doc_cfnc_render_ui_post,
-			doc->batch);
+			ren);
 }
 
 
@@ -456,20 +482,16 @@ FH_API void fh_RenderDocumentUI(struct fh_document *doc)
 
 FH_API void fh_RenderDocument(struct fh_document *doc)
 {
-	s32 frame[2];
+	struct fh_batch *ren;
 
 	if(!doc) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	frame[0] = doc->shape_ref->w;
-	frame[1] = doc->shape_ref->h;
-	fh_batch_push_uniform(doc->batch, 0, frame);
+	ren = fh_ContextGetBatch(doc->context, doc->batch_id);
 
 	fh_RenderDocumentUI(doc);
-
-	fh_batch_flush(doc->batch);
 }
 
 

@@ -23,10 +23,10 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 		s32 type;
 	} vdata;
 
-	s32 p0x = ele->element_rect.x;
-	s32 p0y = ele->element_rect.y;
-	s32 p1x = ele->element_rect.x + ele->element_rect.w;
-	s32 p1y = ele->element_rect.y + ele->element_rect.h;
+	s32 p0x;
+	s32 p0y;
+	s32 p1x;
+	s32 p1y;
 
 
 	/*
@@ -34,6 +34,15 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	 */
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
+
+
+
+
+
+	p0x = ele->element_rect.x;
+	p0y = ele->element_rect.y;
+	p1x = ele->element_rect.x + ele->element_rect.w;
+	p1y = ele->element_rect.y + ele->element_rect.h;
 
 	/* Unioform: u_rect */
 	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->element_rect);
@@ -59,13 +68,12 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	else {
 		v_index[1] = -1;
 	}
-		
+
 	vdata.z = (f32)ele->layer / 100.0;
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
 	vdata.index[2] = v_index[2];	/* The color to use */
 	vdata.type = FH_RENTYPE_DEFAULT;
-
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
@@ -93,13 +101,10 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_index(ren, indices[1]);
 	fh_batch_push_index(ren, indices[2]);
 
-#if 0
-
 	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
 		fh_RenderWidget(ele->widget);
 	}
-#endif
 }
 
 
@@ -126,7 +131,7 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 		s32 p0y = ele->element_rect.y + ele->style.border.width;
 		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
 		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
-		
+
 		fh_rect_set(&rect,
 				p0x,
 				p0y,
@@ -182,7 +187,7 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 		s32 p0y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width - 10;
 		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
 		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
-		
+
 		fh_rect_set(&rect,
 				p0x,
 				p0y, 

@@ -304,16 +304,10 @@ FH_INTERN void sheet_parse_keyword(struct fh_stylesheet *sheet,
 	/* First process the input and set the according keyword flags */
 	ptr = val;
 	while((ptr = sheet_next_keyword(ptr, buf))) {
-		printf("Check keyword \"%s\"\n", buf);
 		kw |= sheet_find_keyword(ctg, buf);
-
-		printf("Updated: %02x\n", kw);
 	}
 
-	printf("Write %d with %02x\n", id, kw);
 	sheet_write(sheet, id, &kw);
-
-	printf("Offset: %d, Size: %d\n", sheet_offset(id), sheet_sizeof(id));
 }
 
 

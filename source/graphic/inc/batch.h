@@ -4,8 +4,11 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphic/resources/inc/shader.h"
 
+struct fh_batch;
+
+#include "graphic/resources/inc/shader.h"
+#include "graphic/resources/inc/texture.h"
 
 /*
  * This struct is used to represent a single attribute of a vertex like the
@@ -78,6 +81,8 @@ struct fh_uniform {
 };
 
 
+typedef void (*fh_batch_cfnc)(struct fh_batch *ren, void *data);
+
 struct fh_batch {
 	struct fh_shader *shader;
 	struct fh_texture *texture;
@@ -101,6 +106,10 @@ struct fh_batch {
 	/* uniform data */
 	s32 uniform_count;
 	struct fh_uniform *uniforms;
+
+	/* Optional functions */
+	fh_batch_cfnc pre_fnc;
+	void *pre_fnc_data;
 };
 
 
@@ -129,7 +138,8 @@ struct fh_batch {
 FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 		struct fh_texture *tex,s32 attribnum,
 		struct fh_vertex_attrib *attribs, s32 vtx_cap,
-		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis);
+		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis,
+		fh_batch_cfnc pre, void *pre_data);
 
 
 /*

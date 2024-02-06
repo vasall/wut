@@ -6,15 +6,7 @@
 
 #include "document/inc/element.h"
 
-#include "graphic/batching/inc/batch.h"
-
-/*
- * The following types are used to use different rendering options in the
- * shader.
- */
-#define FH_RENTYPE_DEFAULT	1	/* Block with border and color */
-#define FH_RENTYPE_SCROLL_V	2	/* Vertical scrollbar */
-#define FH_RENTYPE_SCROLL_H	3	/* Horizontal scrollbar */
+#include "graphic/inc/batch.h"
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

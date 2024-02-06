@@ -1,5 +1,5 @@
-#ifndef _FH_CONTEXT_H
-#define _FH_CONTEXT_H
+#ifndef _FH_GRAPHIC_CONTEXT_H
+#define _FH_GRAPHIC_CONTEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -7,9 +7,11 @@
 #include "window/inc/window.h"
 
 #include "graphic/inc/graphic.h"
+#include "graphic/inc/batch.h"
 
 #include "widget/inc/view.h"
 
+#include "utility/inc/static_list.h"
 
 struct fh_context {
 	/* Pointer to the window this context belongs to */
@@ -32,7 +34,7 @@ struct fh_context {
 	/*
 	 * A list of all active batch renderers.
 	 */
-	struct fh_list *batches;
+	struct fh_statlist 	*batches;
 
 	/*
 	 * Predefined resources.
@@ -100,9 +102,37 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
  * @ctx: Pointer to the context
  * @ren: A pointer to the pointer of a batch renderer :3
  *
- * Returns: 0 on success or -1 if an error occurred
+ * Returns: The id of the batch in the context or -1 if an error occurred
  */
-FH_API s8 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren);
+FH_API s16 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren);
+
+
+/*
+ * Remove and destroy a batch renderer.
+ *
+ * @ctx: Pointer to the context
+ * @id: The id of the batch renderer
+ */
+FH_API void fh_ContextRmvBatch(struct fh_context *ctx, s16 id);
+
+
+/*
+ * Get a batch renderer from the context.
+ *
+ * @ctx: Pointer to the context
+ * @id: The id of the batch renderer
+ *
+ * Returns: Either a pointer to the batch renderer or NULL if an error occurred
+ */
+FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id);
+
+
+/*
+ * Flush all batch renderers.
+ *
+ * @ctx: Pointer to the context
+ */
+FH_API void fh_ContextRenderBatches(struct fh_context *ctx);
 
 
 /*

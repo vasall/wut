@@ -4,12 +4,13 @@
 #include "./define.h"
 #include "./import.h"
 
-FH_API const u8 fh_ps_num;
-FH_API char *fh_ps_lst[3][3];
+
+FH_API char *fh_ps_shd_def_block_v;
+FH_API char *fh_ps_shd_def_block_f;
 
 
-FH_API char *fh_ps_batch_vshader;
-FH_API char *fh_ps_batch_fshader;
+FH_API char *fh_ps_shd_def_texture_v;
+FH_API char *fh_ps_shd_def_texture_f;
 
 
 

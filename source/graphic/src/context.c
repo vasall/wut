@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 
-FH_INTERNAL void GLAPIENTRY gl_callback(GLenum source,
+FH_INTERN void GLAPIENTRY gl_callback(GLenum source,
 				GLenum type,
 				GLuint id,
 				GLenum severity,
@@ -95,18 +95,30 @@ FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 {
 
 	ctx->def_block_shader = fh_CreateShader(
-			doc->context, 
+			ctx, 
 			"__def_block_shader", 
 			(const char *)fh_ps_shd_def_block_v,
 			(const char *)fh_ps_shd_def_block_f
 			);
 
 	ctx->def_texture_shader = fh_CreateShader(
-			doc->context,
+			ctx,
 			"__def_texture_shader",
 			(const char *)fh_ps_shd_def_texture_v,
 			(const char *)fh_ps_shd_def_texture_f
 			);
+	return 0;
+}
+
+
+FH_INTERN s8 ctx_cfnc_render_batch(void *ptr,  s16 idx, void *p)
+{
+	struct fh_batch *ren = (struct fh_batch *)(*(long *)ptr);
+
+	fh_Ignore(idx);
+	fh_Ignore(p);
+
+	fh_batch_flush(ren);
 
 	return 0;
 }
@@ -145,9 +157,8 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	/*
 	 * Initialize the batch list.
 	 */
-	if(!(ctx->batches = fh_list_create(sizeof(struct fh_batch *), 10))) {
+	if(!(ctx->batches = fh_statlist_create(sizeof(struct fh_batch *), 10)))
 		goto err_close_obj;
-	}
 
 	/*
 	 * Create the underlying OpenGL-context.
@@ -177,7 +188,7 @@ err_delete_context:
 	SDL_GL_DeleteContext(ctx->gl_context);
 
 err_destroy_batches:
-	fh_list_destroy(ctx->batches);
+	fh_statlist_destroy(ctx->batches);
 
 err_close_obj:
 	fh_CloseObjectTable(ctx);
@@ -206,6 +217,11 @@ FH_API void fh_DestroyContext(struct fh_context *ctx)
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
+
+	/*
+	 * Destroy the batch list.
+	 */
+	fh_statlist_destroy(ctx->batches);
 
 	/* 
 	 * Second, close the resource tables.
@@ -270,9 +286,50 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 }
 
 
-FH_API s8 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren)
+FH_API s16 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren)
 {
-	
+	if(!ctx || !ren) {
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		return -1;
+	}
+
+	return fh_statlist_add(ctx->batches, ren);
+}
+
+
+FH_API void fh_ContextRmvBatch(struct fh_context *ctx, s16 idx)
+{
+	if(!ctx)
+		return;
+
+	fh_statlist_rmv(ctx->batches, idx);
+}
+
+
+FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id)
+{
+	struct fh_batch *ren;
+
+	if(!ctx) {
+		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		return NULL;
+	}
+
+	if(fh_statlist_get(ctx->batches, id, &ren) != 1) {
+		printf("Failed to get render batch\n");
+		return NULL;
+	}
+
+	return ren;
+}
+
+
+FH_API void fh_ContextRenderBatches(struct fh_context *ctx)
+{
+	if(!ctx)
+		return;
+
+	fh_statlist_apply(ctx->batches, &ctx_cfnc_render_batch, NULL);		
 }
 
 

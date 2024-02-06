@@ -26,13 +26,14 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 		goto err_return;
 	}
 
+	printf("New texture \"%s\" at %p\n", name, (void *)tex);
+
 	strcpy(tex->name, name);
 	tex->format = format;
 	tex->width = w;
 	tex->height = h;
 
 	glGenTextures(1, &tex->texture);
-
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
@@ -87,40 +88,65 @@ FH_INTERN void tex_destroy(struct fh_texture *tex)
 }
 
 
-FH_INTERN struct fh_batch *tex_create_batch(struct fh_texture *tex)
+FH_INTERN void tex_batch_cfnc_push(struct fh_batch *ren, void *data)
+{
+	s32 frame[2];
+	struct fh_rect *ref = (struct fh_rect *)data;
+
+	frame[0] = ref->w;
+	frame[1] = ref->h;
+	fh_batch_push_uniform(ren, 0, frame);
+
+}
+
+FH_INTERN s8 tex_create_batch(struct fh_texture *tex)
 {
 	struct fh_shader *shd;
+	struct fh_batch *ren;
 
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
-		{3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
-		{1, GL_INT}		/* type */
+		{2, GL_FLOAT},		/* uv-coords */
+		{3, GL_INT}		/* 0: shape, 1: limits */
 	};
 
 	struct fh_uniform_temp uniforms[] = {
 		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_DEFAULT},	 /* 0 */
 		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT},	 /* 1 */
-		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT},	 /* 2 */
-		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}, /* 3 */
-		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_DEFAULT}, /* 4 */
-		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT}, /* 5 */
-		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_DEFAULT}, /* 6 */
-		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 7 */
+		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}, /* 2 */
+		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 3 */
 	};
 
 	shd = fh_GetShader(tex->context, "__def_texture_shader");
 
-	return fh_batch_create(
+	ren = fh_batch_create(
 			shd,		/* Pointer to the shader to use */
-			NULL,		/* Pointer to the texture to use */
+			tex,		/* Pointer to the texture to use */
 			3,		/* Number of vertex attributes */
 			v_attributes,	/* List of all vertex attributes */
 			6000,		/* Vertex capacity */
 			6000,		/* Index capacity */
-			8,		/* Number of uniform buffers */
-			uniforms	/* List of all uniforms */
+			4,		/* Number of uniform buffers */
+			uniforms,	/* List of all uniforms */
+			&tex_batch_cfnc_push,
+			tex->context->window->document->shape_ref
 			);
 
+	if(!ren)
+		return -1;
+
+	if((tex->batch_id = fh_ContextAddBatch(tex->context, &ren)) < 0) {
+		fh_batch_destroy(ren);
+		return -1;
+	}
+
+	return 0;
+}
+
+
+FH_INTERN void tex_destroy_batch(struct fh_texture *tex)
+{
+	fh_ContextRmvBatch(tex->context, tex->batch_id);
 }
 
 
@@ -200,16 +226,22 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
 	if(!(tex = tex_create(name, w, h, format, px)))
 		goto err_return;
 
-	/* Set additional attributes */
+	/* Set the context */
 	tex->context = ctx;
+
+	if(tex_create_batch(tex) < 0)
+		goto err_destroy_tex;
 
 	/* Insert texture into table */
 	size = sizeof(struct fh_texture);
 	p = (void **)&tex;
 	if(fh_ContextAdd(ctx, FH_CONTEXT_TEXTURES, name, size, p) < 0)
-		goto err_destroy_tex;
+		goto err_destroy_batch;
 
 	return tex;
+
+err_destroy_batch:
+	tex_destroy_batch(tex);
 
 err_destroy_tex:
 	tex_destroy(tex);
@@ -237,13 +269,19 @@ FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, cha
 	/* Set additional attributes */
 	tex->context = ctx;
 
+	if(tex_create_batch(tex) < 0)
+		goto err_destroy_tex;
+
 	/* Insert texture into table */
 	size = sizeof(struct fh_texture);
 	p = (void **)&tex;
 	if(fh_ContextAdd(ctx, FH_CONTEXT_TEXTURES, name, size, p) < 0)
-		goto err_destroy_tex;
+		goto err_destroy_batch;
 
 	return tex;
+
+err_destroy_batch:
+	tex_destroy_batch(tex);
 
 err_destroy_tex:
 	tex_destroy(tex);
@@ -355,11 +393,12 @@ err_return:
 FH_API void fh_UseTexture(struct fh_texture *tex)
 {
 	if(!tex) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	glActiveTexture(GL_TEXTURE1);
+	printf("Enable texture %s\n", tex->name);
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 }
 
@@ -368,5 +407,3 @@ FH_API void fh_UnuseTexture(void)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-

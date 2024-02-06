@@ -200,6 +200,9 @@ FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 	/* Render the Document-UI and views */
 	fh_RenderDocument(win->document);
 
+	/* Flush all batches */
+	fh_ContextRenderBatches(win->context);
+
 	/* Swap buffer */
 	SDL_GL_SwapWindow(win->handle);
 

@@ -8,6 +8,7 @@
 
 #include "system/inc/system.h"
 
+#include"graphic/resources/inc/shader.h"
 
 #include <stdlib.h>
 
@@ -29,6 +30,8 @@ FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
 {
 	fh_Ignore(w);
+
+	printf("Create texture widget (%p)!!\n", data);
 
 	w->ref = data;
 
@@ -126,6 +129,9 @@ FH_INTERN void widget_render_text(struct fh_widget *w)
 
 FH_INTERN void widget_render_image(struct fh_widget *w)
 {
+	struct fh_element *ele;
+	struct fh_texture *tex;
+	struct fh_batch *ren;
 
 	s32 indices[4];
 	s32 v_index[3];
@@ -135,42 +141,37 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 		f32 x;
 		f32 y;
 		f32 z;
+		f32 u;
+		f32 v;
 		s32 index[3];
-		s32 type;
 	} vdata;
 
-	s32 p0x = ele->element_rect.x;
-	s32 p0y = ele->element_rect.y;
-	s32 p1x = ele->element_rect.x + ele->element_rect.w;
-	s32 p1y = ele->element_rect.y + ele->element_rect.h;
+	s32 frame[2];
+	
+	s32 p0x;
+	s32 p0y;
+	s32 p1x;
+	s32 p1y;
 
 
-	/*
-	 * Return if the element is not visible.
-	 */
-	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
-		return;
+	ele = w->element;
+	tex = w->ref;
+	ren = fh_ContextGetBatch(ele->document->context, tex->batch_id);
+		
+	p0x = ele->inner_rect.x;
+	p0y = ele->inner_rect.y;
+	p1x = ele->inner_rect.x + ele->inner_rect.w;
+	p1y = ele->inner_rect.y + ele->inner_rect.h;
 
-	/* Unioform: u_rect */
-	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->element_rect);
-
-	/* Uniform: u_color */
-	fh_color_get_fv(ele->style.infill.color, color);
-	v_index[2] = fh_batch_push_uniform(ren, 2, color);
+	/* Uniform: u_rect */
+	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->inner_rect);
 
 	/* Uniform: u_radius */
-	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
-
-	/* Uniform: u_bwidth */
-	fh_batch_push_uniform(ren, 4, &ele->style.border.width);
-
-	/* Uniform: u_bcolor */
-	fh_color_get_fv(ele->style.border.color, color);
-	fh_batch_push_uniform(ren, 5, color);
+	v_index[2] = fh_batch_push_uniform(ren, 2, ele->style.radius.corner);
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->inner_rect);
+		v_index[1] = fh_batch_push_uniform(ren, 3, &ele->parent->inner_rect);
 	}
 	else {
 		v_index[1] = -1;
@@ -179,26 +180,32 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 	vdata.z = (f32)ele->layer / 100.0;
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
-	vdata.index[2] = v_index[2];	/* The color to use */
-	vdata.type = FH_RENTYPE_DEFAULT;
-
+	vdata.index[2] = v_index[2];
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
+	vdata.u = 0;
+	vdata.v = 1;
 	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
+	vdata.u = 1;
+	vdata.v = 1;
 	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
+	vdata.u = 1;
+	vdata.v = 0;
 	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
+	vdata.u = 0;
+	vdata.v = 0;
 	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
 
 	fh_batch_push_index(ren, indices[0]);

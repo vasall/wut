@@ -34,13 +34,8 @@ struct fh_document {
 	/* A list of all views */
 	struct fh_view_list 		*views;
 
-	/* A list of all default batch shaders */
-	struct fh_shader		*def_block_shader;
-	struct fh_shader		*def_texture_shader;
-
-	/* A list of all batch renderers used for this document */
-	struct fh_shader		*batch_shader;
-	struct fh_batch 		*batch;
+	/* The main batch render */
+	s16 				batch_id;
 
 #if 0
 	/* A list of all canvas widgets */

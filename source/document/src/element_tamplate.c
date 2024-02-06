@@ -11,6 +11,7 @@
 #include "graphic/inc/context.h"
 #include "graphic/inc/camera.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -78,7 +79,7 @@ FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele, void *data)
 
 	/*
 	 * LAYOUT
-	*/
+	 */
 	fh_sheet_parse(sheet, "layout_mode: block;");
 
 	/*
@@ -167,7 +168,7 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 
 	/*
 	 * LAYOUT
-	*/
+	 */
 	fh_sheet_parse(sheet, "layout_mode: block;");
 
 	/*
@@ -226,12 +227,18 @@ FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele, void *data)
 	fh_Ignore(ele);
 	fh_Ignore(data);
 
+	printf("Create image widget\n");
+
 	/*
 	 * Create and initialize the Image-Widget.
 	 */
-	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_IMAGE, data)))
-		return -1;
+	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_IMAGE, data))) {
+		printf("Failed to create\n");
 
+		return -1;
+	}
+
+	printf("Success\n");
 
 	return 0;
 }
@@ -256,11 +263,15 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 
 FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data)
 {
+	printf("Load widget template for %p\n", ele);
+
 	if(!ele) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
+
+	printf("Load template %d with %p\n", ele->type, data);
 
 	/* 
 	 * Just call the corresponding template loading function for the

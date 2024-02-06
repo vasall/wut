@@ -237,8 +237,9 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 
 FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 		struct fh_texture *tex, s32 attribnum,
-		struct fh_vertex_attrib *attribs, s32 vtx_cap, s32 idx_cap, 
-		s32 uninum, struct fh_uniform_temp *unis)
+		struct fh_vertex_attrib *attribs, s32 vtx_cap,
+		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis,
+		fh_batch_cfnc pre, void *pre_data)
 {
 	struct fh_batch *ren;
 
@@ -321,9 +322,10 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 		goto err_free_vertices;
 	}
 
-	/* Set the shader and texture for this batch renderer */
+	/* Set the shader and texture for this batch ren */
 	ren->shader = shd;
 	ren->texture = tex;
+	printf("Attach texture %p\n", ren->texture);
 
 	if(uninum > 0) {
 		if(!(ren->uniforms = fh_malloc(uninum * sizeof(struct fh_uniform)))) {
@@ -345,6 +347,10 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 		}
 	}
 	ren->uniform_count = uninum;
+
+	/* Set callback functions */
+	ren->pre_fnc = pre;
+	ren->pre_fnc_data = pre_data;
 
 	return ren;
 
@@ -391,89 +397,94 @@ FH_API void fh_batch_destroy(struct fh_batch *ren)
 }
 
 
-FH_API s32 fh_batch_push_vertex(struct fh_batch *renderer, void *ptr)
+FH_API s32 fh_batch_push_vertex(struct fh_batch *ren, void *ptr)
 {
-	s32 offset = renderer->vertex_size * renderer->vertex_count;
+	s32 offset = ren->vertex_size * ren->vertex_count;
 
-	if(renderer->vertex_count == renderer->vertex_capacity) {
+	if(ren->vertex_count == ren->vertex_capacity) {
 		return -1;
 	}
 
-	memcpy(renderer->vertices + offset, ptr, renderer->vertex_size);
-	renderer->vertex_count++;
+	memcpy(ren->vertices + offset, ptr, ren->vertex_size);
+	ren->vertex_count++;
 
-	return (renderer->vertex_count-1);
+	return (ren->vertex_count-1);
 }
 
-FH_API s32 fh_batch_push_index(struct fh_batch *renderer, u32 idx)
+FH_API s32 fh_batch_push_index(struct fh_batch *ren, u32 idx)
 {
-	if(renderer->index_count >= renderer->index_capacity) {
+	if(ren->index_count >= ren->index_capacity) {
 		return -1;
 	}
 
-	renderer->indices[renderer->index_count] = idx;
-	renderer->index_count++;
+	ren->indices[ren->index_count] = idx;
+	ren->index_count++;
 
-	return (renderer->index_count - 1);
+	return (ren->index_count - 1);
 }
 
-FH_API s32 fh_batch_push_uniform(struct fh_batch *renderer, s32 index, void *ptr)
+FH_API s32 fh_batch_push_uniform(struct fh_batch *ren, s32 index, void *ptr)
 {
-	s32 offset = renderer->uniforms[index].size * renderer->uniforms[index].number;
+	s32 offset = ren->uniforms[index].size * ren->uniforms[index].number;
 
-	memcpy(renderer->uniforms[index].data + offset, ptr, renderer->uniforms[index].size);
-	renderer->uniforms[index].number++;
+	memcpy(ren->uniforms[index].data + offset, ptr, ren->uniforms[index].size);
+	ren->uniforms[index].number++;
 
-	return (renderer->uniforms[index].number - 1);
+	return (ren->uniforms[index].number - 1);
 }
 
-FH_API void fh_batch_reset_uniform(struct fh_batch *renderer, s32 index)
+FH_API void fh_batch_reset_uniform(struct fh_batch *ren, s32 index)
 {
-	renderer->uniforms[index].number = 0;
+	ren->uniforms[index].number = 0;
 }
 
 
-FH_API void fh_batch_flush(struct fh_batch *renderer)
+FH_API void fh_batch_flush(struct fh_batch *ren)
 {
 	s32 i;
 
-	if (renderer->vertex_count == 0) {
+	if (ren->vertex_count == 0) {
 		return;
 	}
 
-	/* Activate the relevant shader */
-	fh_UseShader(renderer->shader);
+	if(ren->pre_fnc) {
+		ren->pre_fnc(ren, ren->pre_fnc_data);
+	}
 
 	/* Activate the relevant shader */
-	fh_UseTexture(renderer->texture);
+	fh_UseShader(ren->shader);
+
+	/* Activate the relevant shader */
+	printf("Use texture %p\n", ren->texture);
+	fh_UseTexture(ren->texture);
 
 	/* Pass the uniform view matrix onto the shader */
-	for(i = 0; i < renderer->uniform_count; i++) {
-		batch_write_uniform(&renderer->uniforms[i]);
+	for(i = 0; i < ren->uniform_count; i++) {
+		batch_write_uniform(&ren->uniforms[i]);
 	}
 
 	/* Bind the vertex buffer and write the data */
-	glBindBuffer(GL_ARRAY_BUFFER, renderer->vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, renderer->vertex_size * renderer->vertex_count,
-			renderer->vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, ren->vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, ren->vertex_size * ren->vertex_count,
+			ren->vertices);
 
 	/* Bind the index buffer and write data*/
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->ibo);
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(u32) * renderer->index_count,
-			renderer->indices);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->ibo);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(u32) * ren->index_count,
+			ren->indices);
 
 
 	/* Finally render the data */
-	glBindVertexArray(renderer->vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer->ibo);
-	glDrawElements(GL_TRIANGLES, renderer->index_count, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(ren->vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ren->ibo);
+	glDrawElements(GL_TRIANGLES, ren->index_count, GL_UNSIGNED_INT, 0);
 
-	renderer->vertex_count = 0;
-	renderer->index_count = 0;
+	ren->vertex_count = 0;
+	ren->index_count = 0;
 
-	for(i = 0; i < renderer->uniform_count; i++) {
-		if(renderer->uniforms[i].flags & FH_UNIFORM_F_CLEANUP) {
-			fh_batch_reset_uniform(renderer, i);
+	for(i = 0; i < ren->uniform_count; i++) {
+		if(ren->uniforms[i].flags & FH_UNIFORM_F_CLEANUP) {
+			fh_batch_reset_uniform(ren, i);
 		}
 	}
 }
