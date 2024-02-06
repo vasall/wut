@@ -1,5 +1,5 @@
-#ifndef _FH_DOCUMENT_CONTEXT_H
-#define _FH_DOCUMENT_CONTEXT_H
+#ifndef _FH_CONTEXT_H
+#define _FH_CONTEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -28,6 +28,17 @@ struct fh_context {
 	struct fh_table *textures;
 	struct fh_table *fonts;
 	struct fh_table *objects;
+
+	/*
+	 * A list of all active batch renderers.
+	 */
+	struct fh_list *batches;
+
+	/*
+	 * Predefined resources.
+	 */
+	struct fh_shader	*def_block_shader;
+	struct fh_shader	*def_texture_shader;
 };
 
 
@@ -81,6 +92,17 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
  */
 FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 		char *name);
+
+
+/*
+ * Add a new batch to the context.
+ *
+ * @ctx: Pointer to the context
+ * @ren: A pointer to the pointer of a batch renderer :3
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+FH_API s8 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren);
 
 
 /*

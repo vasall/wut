@@ -1,4 +1,4 @@
-#include "document/inc/context.h"
+#include "graphic/inc/context.h"
 
 #include "utility/alarm/inc/alarm.h"
 
@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 
-static void GLAPIENTRY gl_callback(GLenum source,
+FH_INTERNAL void GLAPIENTRY gl_callback(GLenum source,
 				GLenum type,
 				GLuint id,
 				GLenum severity,
@@ -85,28 +85,40 @@ static void GLAPIENTRY gl_callback(GLenum source,
  * Load the predefined resources necessary for the basic functions of the
  * context.
  *
+ * TODO: Add error handling
+ *
  * @ctx: Pointer to the context
  *
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 {
-	u8 i;
-	char **p;
 
-	/* 				SHADERS 			      */
-	for(i = 0; i < fh_ps_num; i++) {
-		p = fh_ps_lst[i];
-		if(!fh_LoadShader(ctx, p[0], p[1], p[2]))
-			goto err_return;
-	}
+	ctx->def_block_shader = fh_CreateShader(
+			doc->context, 
+			"__def_block_shader", 
+			(const char *)fh_ps_shd_def_block_v,
+			(const char *)fh_ps_shd_def_block_f
+			);
+
+	ctx->def_texture_shader = fh_CreateShader(
+			doc->context,
+			"__def_texture_shader",
+			(const char *)fh_ps_shd_def_texture_v,
+			(const char *)fh_ps_shd_def_texture_f
+			);
 
 	return 0;
-
-err_return:
-	FH_ALARM(FH_ERROR, "Failed to load predefined resources");
-	return -1;
 }
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				APPLICATION-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
 
 
 FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
@@ -131,11 +143,18 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	if(fh_InitObjectTable(ctx) < 0) goto err_close_font;
 
 	/*
+	 * Initialize the batch list.
+	 */
+	if(!(ctx->batches = fh_list_create(sizeof(struct fh_batch *), 10))) {
+		goto err_close_obj;
+	}
+
+	/*
 	 * Create the underlying OpenGL-context.
 	 */
 	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
 		FH_ALARM(FH_ERROR, "Failed to create GL context");
-		goto err_close_obj;
+		goto err_destroy_batches;
 	}
 
 	/*
@@ -143,7 +162,6 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	 */
 	if(ctx_load_predef(ctx) < 0)
 		goto err_delete_context;
-
 
 	glClearColor(1, 1, 1, 1);
 
@@ -153,11 +171,13 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(gl_callback, 0);
 
-
 	return ctx;
 
 err_delete_context:
 	SDL_GL_DeleteContext(ctx->gl_context);
+
+err_destroy_batches:
+	fh_list_destroy(ctx->batches);
 
 err_close_obj:
 	fh_CloseObjectTable(ctx);
@@ -247,6 +267,12 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 	}
 
 	fh_tbl_rmv(tbl, name);
+}
+
+
+FH_API s8 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren)
+{
+	
 }
 
 

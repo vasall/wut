@@ -4,12 +4,13 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
+#include "graphic/inc/context.h"
 #include "graphic/inc/pipe.h"
 #include "graphic/inc/camera.h"
 #include "graphic/inc/object.h"
+
 #include "utility/inc/shape.h"
 
-#include "document/inc/context.h"
 
 
 #define FH_VIEW_LIST_LIM	8

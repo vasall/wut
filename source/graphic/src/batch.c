@@ -1,4 +1,4 @@
-#include "graphic/batching/inc/batch.h"
+#include "graphic/inc/batch.h"
 
 #include "system/inc/system.h"
 
@@ -235,7 +235,8 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
+FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
+		struct fh_texture *tex, s32 attribnum,
 		struct fh_vertex_attrib *attribs, s32 vtx_cap, s32 idx_cap, 
 		s32 uninum, struct fh_uniform_temp *unis)
 {
@@ -320,8 +321,9 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
 		goto err_free_vertices;
 	}
 
-	/* Set the shader for this batch renderer */
+	/* Set the shader and texture for this batch renderer */
 	ren->shader = shd;
+	ren->texture = tex;
 
 	if(uninum > 0) {
 		if(!(ren->uniforms = fh_malloc(uninum * sizeof(struct fh_uniform)))) {
@@ -441,6 +443,9 @@ FH_API void fh_batch_flush(struct fh_batch *renderer)
 
 	/* Activate the relevant shader */
 	fh_UseShader(renderer->shader);
+
+	/* Activate the relevant shader */
+	fh_UseTexture(renderer->texture);
 
 	/* Pass the uniform view matrix onto the shader */
 	for(i = 0; i < renderer->uniform_count; i++) {

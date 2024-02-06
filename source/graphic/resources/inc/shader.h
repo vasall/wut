@@ -6,7 +6,7 @@
 
 #include "utility/inc/table.h"
 
-#include "document/inc/context.h"
+#include "graphic/inc/context.h"
 
 #define FH_SHADER_LIM		128
 #define FH_SHADER_VAR_LIM	16

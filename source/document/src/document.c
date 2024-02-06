@@ -148,18 +148,8 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 }
 
 
-FH_INTERN struct fh_shader *doc_create_batch_shader(struct fh_document *doc)
-{
-	return fh_CreateShader(
-			doc->context, 
-			"batch_shader", 
-			(const char *)fh_ps_batch_vshader,
-			(const char *)fh_ps_batch_fshader
-			);
-}
-
-
-FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
+FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd,
+		struct fh_texture *tex)
 {
 	struct fh_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
@@ -168,25 +158,25 @@ FH_INTERN struct fh_batch *doc_create_batch(struct fh_shader *shd)
 	};
 
 	struct fh_uniform_temp uniforms[] = {
-		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP},
-		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP}
-
+		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_DEFAULT},	 /* 0 */
+		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT},	 /* 1 */
+		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT},	 /* 2 */
+		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}, /* 3 */
+		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_DEFAULT}, /* 4 */
+		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT}, /* 5 */
+		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_DEFAULT}, /* 6 */
+		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 7 */
 	};
 
 	return fh_batch_create(
-			shd,			/* Pointer to the shader to use */
-			3,			/* Number of vertex attributes */
-			v_attributes,		/* List of all vertex attributes */
-			6000,			/* Vertex capacity */
-			6000,			/* Index capacity */
-			8,			/* Number of uniform buffers */
-			uniforms		/* List of all uniforms */
+			shd,		/* Pointer to the shader to use */
+			tex,		/* Pointer to the texture to use */
+			3,		/* Number of vertex attributes */
+			v_attributes,	/* List of all vertex attributes */
+			6000,		/* Vertex capacity */
+			6000,		/* Index capacity */
+			8,		/* Number of uniform buffers */
+			uniforms	/* List of all uniforms */
 			);
 }
 
@@ -235,12 +225,8 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	if(!(doc->views = fh_CreateViewList(doc->context)))
 		goto err_destroy_body;
 
-	/* Create the shader used for batch rendering */
-	if(!(doc->batch_shader = doc_create_batch_shader(doc)))
-		goto err_destroy_views;
-
-	/* Create the batch renderer */
-	if(!(doc->batch = doc_create_batch(doc->batch_shader)))
+	/* Create the default batch renderer */
+	if(!(doc->batch = doc_create_batch()))
 		goto err_remove_shader;
 
 	/* Update the body element */

@@ -10,7 +10,8 @@ struct fh_window;
 #include "window/subsystems/inc/sdl.h"
 #include "window/subsystems/inc/opengl.h"
 
-#include "document/inc/context.h"
+#include "graphic/inc/context.h"
+
 #include "document/inc/identity.h"
 
 #include "event/inc/event.h"

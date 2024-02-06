@@ -54,17 +54,16 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->content_rect);
-		v_index[1] = -1;
+		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->inner_rect);
 	}
 	else {
 		v_index[1] = -1;
 	}
 		
 	vdata.z = (f32)ele->layer / 100.0;
-	vdata.index[0] = v_index[0];
-	vdata.index[1] = v_index[1];
-	vdata.index[2] = v_index[2];
+	vdata.index[0] = v_index[0];	/* The element rectangle */
+	vdata.index[1] = v_index[1];	/* The rendering zone */
+	vdata.index[2] = v_index[2];	/* The color to use */
 	vdata.type = FH_RENTYPE_DEFAULT;
 
 

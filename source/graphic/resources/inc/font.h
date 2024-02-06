@@ -4,9 +4,9 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "document/inc/context.h"
-
 #include "utility/inc/utility.h"
+
+#include "graphic/inc/context.h"
 
 #define FH_FONT_NAME_LIM	128
 

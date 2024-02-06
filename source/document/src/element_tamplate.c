@@ -1,14 +1,14 @@
-#include "style/inc/template.h"
+#include "document/inc/element_template.h"
 
 #include "utility/alarm/inc/alarm.h"
 
 #include "document/inc/document.h"
 #include "document/inc/element.h"
-#include "document/inc/context.h"
 
 #include "widget/inc/widget.h"
 #include "widget/inc/view.h"
 
+#include "graphic/inc/context.h"
 #include "graphic/inc/camera.h"
 
 #include <stdlib.h>
@@ -226,6 +226,13 @@ FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele, void *data)
 	fh_Ignore(ele);
 	fh_Ignore(data);
 
+	/*
+	 * Create and initialize the Image-Widget.
+	 */
+	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_IMAGE, data)))
+		return -1;
+
+
 	return 0;
 }
 
@@ -234,14 +241,12 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 {
 	struct fh_style *style = &ele->style;
 
-	fh_Ignore(data);
-
 	fh_Ignore(style);
 
 	/*
 	 * Create and initialize the View-Widget.
 	 */
-	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_VIEW, NULL)))
+	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_VIEW, data)))
 		return -1;
 
 

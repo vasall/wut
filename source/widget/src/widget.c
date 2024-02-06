@@ -29,7 +29,8 @@ FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
 {
 	fh_Ignore(w);
-	fh_Ignore(data);
+
+	w->ref = data;
 
 	return 0;
 }
@@ -125,7 +126,88 @@ FH_INTERN void widget_render_text(struct fh_widget *w)
 
 FH_INTERN void widget_render_image(struct fh_widget *w)
 {
-	fh_Ignore(w);
+
+	s32 indices[4];
+	s32 v_index[3];
+	f32 color[4];
+
+	struct tempStruct_vtx {
+		f32 x;
+		f32 y;
+		f32 z;
+		s32 index[3];
+		s32 type;
+	} vdata;
+
+	s32 p0x = ele->element_rect.x;
+	s32 p0y = ele->element_rect.y;
+	s32 p1x = ele->element_rect.x + ele->element_rect.w;
+	s32 p1y = ele->element_rect.y + ele->element_rect.h;
+
+
+	/*
+	 * Return if the element is not visible.
+	 */
+	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
+		return;
+
+	/* Unioform: u_rect */
+	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->element_rect);
+
+	/* Uniform: u_color */
+	fh_color_get_fv(ele->style.infill.color, color);
+	v_index[2] = fh_batch_push_uniform(ren, 2, color);
+
+	/* Uniform: u_radius */
+	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
+
+	/* Uniform: u_bwidth */
+	fh_batch_push_uniform(ren, 4, &ele->style.border.width);
+
+	/* Uniform: u_bcolor */
+	fh_color_get_fv(ele->style.border.color, color);
+	fh_batch_push_uniform(ren, 5, color);
+
+	/* Uniform: u_limit */
+	if(ele->parent) {
+		v_index[1] = fh_batch_push_uniform(ren, 7, &ele->parent->inner_rect);
+	}
+	else {
+		v_index[1] = -1;
+	}
+		
+	vdata.z = (f32)ele->layer / 100.0;
+	vdata.index[0] = v_index[0];	/* The element rectangle */
+	vdata.index[1] = v_index[1];	/* The rendering zone */
+	vdata.index[2] = v_index[2];	/* The color to use */
+	vdata.type = FH_RENTYPE_DEFAULT;
+
+
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p0y;
+	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p0y;
+	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p1y;
+	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p1y;
+	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
+
+	fh_batch_push_index(ren, indices[0]);
+	fh_batch_push_index(ren, indices[2]);
+	fh_batch_push_index(ren, indices[3]);
+
+	fh_batch_push_index(ren, indices[0]);
+	fh_batch_push_index(ren, indices[1]);
+	fh_batch_push_index(ren, indices[2]);
 }
 
 

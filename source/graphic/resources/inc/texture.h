@@ -6,7 +6,7 @@
 
 #include "utility/inc/table.h"
 
-#include "document/inc/context.h"
+#include "graphic/inc/context.h"
 
 #define FH_TEXTURE_NAME_LIM		128
 
@@ -27,6 +27,9 @@ struct fh_texture {
 
 	/* Reference to the context */
 	struct fh_context *context;
+
+	/* Reference to the batch renderer */
+	struct fh_batch *renderer;
 };
 
 

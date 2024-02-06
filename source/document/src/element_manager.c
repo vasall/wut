@@ -75,6 +75,16 @@ FH_INTERN void element_calc_element_rect(struct fh_element *ele)
 }
 
 
+FH_INTERN void element_calc_inner_rect(struct fh_element *ele)
+{
+	struct fh_rect rect;
+
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.inner_delta);
+
+	fh_rect_cpy(&ele->inner_rect, &rect);
+}
+
+
 FH_INTERN void element_calc_content_rect(struct fh_element *ele)
 {
 	struct fh_rect rect;
@@ -146,6 +156,7 @@ FH_INTERN void element_calc_shape(struct fh_element *ele)
 	/* Then calculate the different shape rectangles */
 	element_calc_bounding_rect(ele);
 	element_calc_element_rect(ele);
+	element_calc_inner_rect(ele);
 	element_calc_content_rect(ele);
 
 	/* Finally check visibility */

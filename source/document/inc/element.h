@@ -7,9 +7,9 @@ struct fh_element;
 #include "core/inc/import.h"
 
 #include "document/inc/identity.h"
+#include "document/inc/element_template.h"
 
 #include "style/inc/style.h"
-#include "style/inc/template.h"
 
 #include "event/inc/event_listener.h"
 
@@ -109,6 +109,7 @@ struct fh_element {
 	 */
 	struct fh_rect	bounding_rect;
 	struct fh_rect	element_rect;	/* -Spacing */
+	struct fh_rect  inner_rect;	/* -Spacing, -Border */
 	struct fh_rect	content_rect;	/* -Spacing, -Border, -Padding */
 
 	

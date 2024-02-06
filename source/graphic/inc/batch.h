@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_BATCHING_BATCH_H
-#define _FH_GRAPHIC_BATCHING_BATCH_H
+#ifndef _FH_GRAPHIC_BATCH_H
+#define _FH_GRAPHIC_BATCH_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -55,6 +55,8 @@ enum fh_uniform_type {
 #define FH_UNIFORM_F_ALL		(1<<0)
 #define FH_UNIFORM_F_CLEANUP		(1<<1)
 
+#define FH_UNIFORM_F_DEFAULT		FH_UNIFORM_F_ALL|FH_UNIFORM_F_CLEANUP
+
 struct fh_uniform_temp {
 	char 			name[256]; /* Name of uniform in the shader */
 	enum fh_uniform_type	type;	   /* Variable type in the shader */
@@ -78,6 +80,7 @@ struct fh_uniform {
 
 struct fh_batch {
 	struct fh_shader *shader;
+	struct fh_texture *texture;
 
 	u32 vao;
 	u32 vbo;
@@ -113,6 +116,7 @@ struct fh_batch {
  * Create a new batch renderer.
  *
  * @shd: Pointer to the shader to used for this batch renderer
+ * @tex: Pointer to the texture or NULL if no texture is used
  * @attribnum: The number of attributes for the vertices
  * @attribs: A list of all attributes for the vertices
  * @vlimit: The vertex capacity
@@ -122,7 +126,8 @@ struct fh_batch {
  *
  * Returns: Either a new batch renderer or NULL if an error occurred
  */
-FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd, s32 attribnum,
+FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
+		struct fh_texture *tex,s32 attribnum,
 		struct fh_vertex_attrib *attribs, s32 vtx_cap,
 		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis);
 

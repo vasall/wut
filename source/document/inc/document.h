@@ -9,11 +9,10 @@
 #include "document/inc/element.h"
 #include "document/inc/element_manager.h"
 
+#include "graphic/inc/batch.h"
 #include "graphic/inc/object.h"
 #include "graphic/inc/constructor.h"
 #include "graphic/inc/flat.h"
-
-#include "graphic/batching/inc/batch.h"
 
 
 struct fh_document {
@@ -34,6 +33,10 @@ struct fh_document {
 
 	/* A list of all views */
 	struct fh_view_list 		*views;
+
+	/* A list of all default batch shaders */
+	struct fh_shader		*def_block_shader;
+	struct fh_shader		*def_texture_shader;
 
 	/* A list of all batch renderers used for this document */
 	struct fh_shader		*batch_shader;
