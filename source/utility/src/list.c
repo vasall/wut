@@ -154,7 +154,7 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out)
 
 FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
 {
-	u16 i;
+	s16 i;
 
 	if(!lst || !fnc) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");

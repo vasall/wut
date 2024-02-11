@@ -197,8 +197,13 @@ FH_INTERN s8 fh_eletemp_load_block(struct fh_element *ele, void *data)
 
 FH_INTERN s8 fh_eletemp_load_text(struct fh_element *ele, void *data)
 {
-	fh_Ignore(ele);
-	fh_Ignore(data);
+	/*
+	 * Create and initialize the Image-Widget.
+	 */
+	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_TEXT, data))) {
+		return -1;
+	}
+
 
 	return 0;
 }
@@ -227,18 +232,95 @@ FH_INTERN s8 fh_eletemp_load_image(struct fh_element *ele, void *data)
 	fh_Ignore(ele);
 	fh_Ignore(data);
 
-	printf("Create image widget\n");
+	struct fh_style *style = &ele->style;
+	struct fh_stylesheet *sheet = &style->sheet;
+
+	fh_Ignore(data);
+
+	/*
+	 * DISPLAY
+	 */
+	fh_sheet_parse(sheet, "display_mode: visible;");
+
+	/*
+	 * SIZE
+	 */
+	fh_sheet_parse(sheet, "width: 100pct;");
+	fh_sheet_parse(sheet, "height: 100pct;");
+
+	/*
+	 * REFERENCE
+	 */
+	fh_sheet_parse(sheet, "reference_mode: relative;");
+
+	/*
+	 * SPACING
+	 */
+	fh_sheet_parse(sheet, "spacing_top: 0;");
+	fh_sheet_parse(sheet, "spacing_right: 0;");
+	fh_sheet_parse(sheet, "spacing_bottom: 0;");
+	fh_sheet_parse(sheet, "spacing_left: 0;");
+
+	/*
+	 * PADDING
+	 */
+	fh_sheet_parse(sheet, "padding_top: 0;");
+	fh_sheet_parse(sheet, "padding_right: 0;");
+	fh_sheet_parse(sheet, "padding_bottom: 0;");
+	fh_sheet_parse(sheet, "padding_left: 0;");
+
+	/*
+	 * BORDER
+	 */
+	fh_sheet_parse(sheet, "border_mode: none;");
+	fh_sheet_parse(sheet, "border_width: 0;");
+	fh_sheet_parse(sheet, "border_color: #000000;");
+
+	/*
+	 * RADIUS
+	 */
+	fh_sheet_parse(sheet, "radius_top_left: 0;");
+	fh_sheet_parse(sheet, "radius_top_right: 0;");
+	fh_sheet_parse(sheet, "radius_bottom_right: 0;");
+	fh_sheet_parse(sheet, "radius_bottom_left: 0;");
+
+	/*
+	 * INFILL
+	 */
+	fh_sheet_parse(sheet, "infill_mode: color;");
+	fh_sheet_parse(sheet, "infill_color: #B00B1E;");
+
+	/*
+	 * LAYOUT
+	 */
+	fh_sheet_parse(sheet, "layout_mode: block;");
+
+	/*
+	 * ALIGNMENT
+	 */
+	fh_sheet_parse(sheet, "align_v: top;");
+	fh_sheet_parse(sheet, "align_h: left;");
+
+	/*
+	 * SCROLLBAR
+	 */
+	fh_sheet_parse(sheet, "scrollbar_mode: auto;");
+
+	/*
+	 * TEXT
+	 */
+	fh_sheet_parse(sheet, "text_size: 12px;");
+	fh_sheet_parse(sheet, "text_color: #000000;");
+	fh_sheet_parse(sheet, "text_mass: 50;");
+	fh_sheet_parse(sheet, "text_options: none;");
+	fh_sheet_parse(sheet, "text_wrap_mode: WORDWRAP;");
 
 	/*
 	 * Create and initialize the Image-Widget.
 	 */
 	if(!(ele->widget = fh_CreateWidget(ele, FH_WIDGET_IMAGE, data))) {
-		printf("Failed to create\n");
-
 		return -1;
 	}
-
-	printf("Success\n");
 
 	return 0;
 }

@@ -9,6 +9,8 @@
 
 #include "graphic/inc/context.h"
 
+#define FH_TEXTURE_SLOTS		16
+
 #define FH_TEXTURE_NAME_LIM		128
 
 
@@ -31,6 +33,9 @@ struct fh_texture {
 
 	/* The batch id */
 	s16 batch_id;
+
+	/* The slot in the texture list */
+	s16 texture_slot;
 };
 
 

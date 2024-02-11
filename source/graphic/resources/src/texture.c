@@ -36,11 +36,25 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	glGenTextures(1, &tex->texture);
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
+	/* TODO: Take format from PNG */
+#if 0
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+#else
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED,
+			GL_UNSIGNED_BYTE, px);
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR  );
+
+
+#endif
+
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -150,21 +164,6 @@ FH_INTERN void tex_destroy_batch(struct fh_texture *tex)
 }
 
 
-FH_INTERN void tex_rmv_fnc(u32 size, void *ptr)
-{
-	struct fh_texture *tex;
-
-	fh_Ignore(size);
-
-	if(!ptr)
-		return;
-
-	tex = (struct fh_texture *)ptr;
-
-	tex_destroy(tex);
-}
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -176,20 +175,22 @@ FH_INTERN void tex_rmv_fnc(u32 size, void *ptr)
 
 FH_API s8 fh_InitTextureTable(struct fh_context *ctx)
 {
-	struct fh_table *tbl;
+	struct fh_statlist *lst;
+	s16 size;		
 
 	if(!ctx) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(tbl = fh_tbl_create(&tex_rmv_fnc))) {
+	size = sizeof(struct fh_texture *);
+	if(!(lst = fh_statlist_create(size, FH_TEXTURE_SLOTS))) {
 		FH_ALARM(FH_ERROR, "Failed to create fh_table");
-		goto err_return;
+		goto err_return;	
 	}
 
-	/* Attach the table to the context */
-	ctx->textures = tbl;
+	/* Attach the texture list to the context */
+	ctx->textures = lst;
 
 	return 0;
 
@@ -206,7 +207,7 @@ FH_API void fh_CloseTextureTable(struct fh_context *ctx)
 		return;
 	}
 
-	fh_tbl_destroy(ctx->textures);
+	fh_statlist_destroy(ctx->textures);
 	ctx->textures = NULL;
 }
 
@@ -229,14 +230,14 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
 	/* Set the context */
 	tex->context = ctx;
 
+	/* Create the batch renderer */
 	if(tex_create_batch(tex) < 0)
 		goto err_destroy_tex;
 
-	/* Insert texture into table */
-	size = sizeof(struct fh_texture);
-	p = (void **)&tex;
-	if(fh_ContextAdd(ctx, FH_CONTEXT_TEXTURES, name, size, p) < 0)
+	/* Add the texture to the list  */
+	if((tex->texture_slot = fh_statlist_add(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
+	}
 
 	return tex;
 
@@ -272,11 +273,10 @@ FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, cha
 	if(tex_create_batch(tex) < 0)
 		goto err_destroy_tex;
 
-	/* Insert texture into table */
-	size = sizeof(struct fh_texture);
-	p = (void **)&tex;
-	if(fh_ContextAdd(ctx, FH_CONTEXT_TEXTURES, name, size, p) < 0)
+	/* Add the texture to the list  */
+	if((tex->texture_slot = fh_statlist_add(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
+	}
 
 	return tex;
 
@@ -306,7 +306,7 @@ FH_API void fh_RemoveTexture(struct fh_texture *tex)
 FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 {
 	u32 newTex;
-		
+
 	if(!tex) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
@@ -367,22 +367,55 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 	return 0;
 }
 
+struct fh_tex_filter {
+	char name[128];
+
+	s8 found;
+
+	struct fh_texture *tex;
+};
+
+
+FH_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
+{
+	struct fh_texture *tex = (struct fh_texture *)(*(long *)ptr);
+	struct fh_tex_filter *pass = (struct fh_tex_filter *)data;
+
+	if(pass->found)
+		return 1;
+
+
+	if(strcmp(tex->name, pass->name) == 0) {
+		pass->found = 1;
+		pass->tex = tex;
+		return 1;
+	}
+
+	return 0;
+
+}
+
 
 FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name)
 {
 	struct fh_texture *tex;
+	struct fh_tex_filter flt;
 
 	if(!ctx || !name) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_tbl_get(ctx->textures, name, NULL, (void **)&tex) != 1) {
-		FH_ALARM(FH_ERROR, "Texture could not be found in fh_table");
-		goto err_return;
+	flt.found = 0;
+	strcpy(flt.name, name);
+
+	fh_statlist_apply(ctx->textures, &tex_cfnc_find, &flt);
+
+	if(flt.found) {
+		return flt.tex;
 	}
 
-	return tex;
+	return NULL;
 
 err_return:
 	FH_ALARM(FH_ERROR, "Failed to get texture from texture table");

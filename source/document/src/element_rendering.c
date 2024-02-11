@@ -101,8 +101,10 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_index(ren, indices[1]);
 	fh_batch_push_index(ren, indices[2]);
 
+	printf("Render \"%s\"\n", ele->name);
 	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
+		printf("Render widget\n");
 		fh_RenderWidget(ele->widget);
 	}
 }

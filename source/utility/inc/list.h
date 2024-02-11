@@ -105,7 +105,7 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out);
 FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void *out);
 
 
-typedef s8 (*fh_list_fnc_t)(void *entry, u16 idx, void *data);
+typedef s8 (*fh_list_fnc_t)(void *entry, s16 idx, void *data);
 
 
 /*

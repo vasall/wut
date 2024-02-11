@@ -107,6 +107,15 @@ FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 			(const char *)fh_ps_shd_def_texture_v,
 			(const char *)fh_ps_shd_def_texture_f
 			);
+
+	printf("Load font shader...\n");
+	ctx->def_font_shader = fh_CreateShader(
+			ctx,
+			"__def_font_shader",
+			(const char *)fh_ps_shd_def_font_v,
+			(const char *)fh_ps_shd_def_font_f
+			);
+	printf("done\n");
 	return 0;
 }
 
@@ -247,19 +256,18 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
 
 	switch(opt) {
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
-		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
-		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
 		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
 		default: FH_ALARM(FH_ERROR, "Table not found"); goto err_return;
 	}
 
-	if(fh_tbl_add(tbl, name, size, p) < 0)
+	if(fh_tbl_add(tbl, name, size, p) < 0) {
+		FH_ALARM(FH_ERROR, "Failed to insert element into table");
 		goto err_return;
+	}
 
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to insert element into table");
 	return -1;
 }
 
@@ -276,8 +284,6 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
 
 	switch(opt) {
 		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
-		case FH_CONTEXT_TEXTURES: tbl = ctx->textures; break;
-		case FH_CONTEXT_FONTS: tbl = ctx->fonts; break;
 		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
 		default: FH_ALARM(FH_WARNING, "Table not found"); return;
 	}

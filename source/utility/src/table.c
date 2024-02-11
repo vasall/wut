@@ -110,12 +110,16 @@ FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr)
 		return -1;
 
 	/* Check if there is already an entry with that name */
-	if(fh_table_find(tbl, name, NULL))
+	if(fh_table_find(tbl, name, NULL)) {
+		printf("entry with same name already in table\n");
 		return -1;
+	}
 
 
-	if(!(ent = fh_malloc(sizeof(struct fh_table_entry))))
+	if(!(ent = fh_malloc(sizeof(struct fh_table_entry)))) {
+		printf("Failed to allocate memory for new entry\n");
 		return -1;
+	}
 
 
 	strcpy(ent->name, name);
@@ -146,6 +150,7 @@ FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr)
 		runner = runner->next;
 	}
 
+	printf("WTF¿n\n");
 	return -1;
 }
 

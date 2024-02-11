@@ -341,8 +341,10 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	ele->firstborn = NULL;
 
 	/* Create the event handler */
-	if(!(ele->event_handler = fh_handler_create()))
+	if(!(ele->event_handler = fh_handler_create())) {
+		FH_ALARM(FH_ERROR, "Failed to create event handler");
 		goto err_free_ele;
+	}
 
 	/* Initialize the style structure */
 	if(fh_style_init(&ele->style, NULL) < 0) {

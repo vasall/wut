@@ -335,6 +335,8 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 
 		/* configure uniform data */
 		for(i = 0; i < uninum; i++) {
+			printf("Find \"%s\"\n", unis[i].name);
+
 			ren->uniforms[i].slot = glGetUniformLocation(shd->program, unis[i].name);
 			ren->uniforms[i].type = unis[i].type;
 			ren->uniforms[i].size = batch_sizeof_UniformType(unis[i].type);

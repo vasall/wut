@@ -277,3 +277,59 @@ char *fh_ps_shd_def_texture_f =
 "			out_color = vec4(color.xyz, color.w * alpha);"
 "	}"
 "};";
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *		DEFAULT FONT SHADER
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+*/
+
+
+char *fh_ps_shd_def_font_v = "#version 420 core\n\
+\n\
+layout(location=0) in vec3 in_pos;\n\
+layout(location=1) in vec2 in_uv;\n\
+\n\
+out vec2 fs_uv;\n\
+out vec3 fs_color;\n\
+\n\
+uniform ivec2   u_frame;\n\
+\n\
+\n\
+void main() {\n\
+\n\
+    gl_Position = vec4( in_pos, 1.0 );\n\
+\n\
+    fs_uv      = vec2(in_uv.x, 1.0 - in_uv.y);\n\
+	fs_color   = vec3(1.0, 1.0, 1.0);\n\
+\n\
+\n\
+}\n";
+
+
+char *fh_ps_shd_def_font_f = "#version 420 core\n\
+\n\
+precision mediump float;\n\
+\n\
+in vec2 fs_uv;\n\
+in vec3 fs_color;\n\
+\n\
+uniform sampler2D ourTexture;\n\
+\n\
+out vec4 color;\n\
+\n\
+void main() {\n\
+    float signed_distance = texture( ourTexture, fs_uv ).r;\
+\n\
+    if(signed_distance >= 0.45) {\
+        color.rgb = vec3(0, 0, 0);\
+        color.a   = 1.0;\
+    }\
+    else {\
+        color.rgb = vec3(1, 1, 1);\
+        color.a   = 1.0;\
+    }\
+}\n";

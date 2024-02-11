@@ -27,8 +27,8 @@ struct fh_context {
 	 * RESOURCE-TABLES
 	 */
 	struct fh_table *shaders;
-	struct fh_table *textures;
-	struct fh_table *fonts;
+	struct fh_statlist *textures;
+	struct fh_statlist *fonts;
 	struct fh_table *objects;
 
 	/*
@@ -41,6 +41,7 @@ struct fh_context {
 	 */
 	struct fh_shader	*def_block_shader;
 	struct fh_shader	*def_texture_shader;
+	struct fh_shader	*def_font_shader;
 };
 
 

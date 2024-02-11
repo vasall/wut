@@ -2,6 +2,7 @@
 
 #include "utility/alarm/inc/alarm.h"
 
+#include "widget/inc/textfield.h"
 #include "widget/inc/view.h"
 
 #include "document/inc/document.h"
@@ -20,8 +21,15 @@
 
 FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 {
-	fh_Ignore(w);
-	fh_Ignore(data);
+	struct fh_textfield *txt;
+
+	if(!(txt = fh_txtfield_create(w->element, data))) {
+		printf("Failed to create textfield\n");
+		return -1;
+	}
+
+	printf("Successfully created textfield %p\n", txt);
+	w->ref = txt;
 
 	return 0;
 }
@@ -30,8 +38,6 @@ FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
 {
 	fh_Ignore(w);
-
-	printf("Create texture widget (%p)!!\n", data);
 
 	w->ref = data;
 
@@ -67,7 +73,7 @@ err_return:
 
 FH_INTERN void widget_destroy_text(struct fh_widget *w)
 {
-	fh_Ignore(w);
+	fh_txtfield_destroy(w->ref);
 }
 
 
@@ -123,7 +129,9 @@ FH_INTERN void widget_update_view(struct fh_widget *w, void *data)
 
 FH_INTERN void widget_render_text(struct fh_widget *w)
 {
-	fh_Ignore(w);
+	printf("Render text widget %p\n", w->ref);
+
+	fh_txtfield_render(w->ref);
 }
 
 
@@ -252,6 +260,8 @@ FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
 	w->element = ele;
 	w->type = type;
 
+	printf("Create widget\n");
+
 	switch(type) {
 		case FH_WIDGET_TEXT: 
 			r = widget_create_text(w, data);
@@ -328,6 +338,8 @@ FH_API void fh_RenderWidget(struct fh_widget *w)
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
+
+	printf("Render widget in widget\n");
 
 	switch(w->type) {
 		case FH_WIDGET_TEXT:

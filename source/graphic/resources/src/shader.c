@@ -9,6 +9,8 @@
 #include <stdlib.h>
 
 
+#define FH_SHADER_DEBUG	1
+
 
 FH_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 {
@@ -360,9 +362,11 @@ FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
 		goto err_return;
 	}
 
+	printf("Fail 1\n");
 	if(!(shd = shd_create(name, v_src, f_src)))
 		goto err_return;
 
+	printf("Fail 2\n");
 	/* Set additional attributes */
 	shd->context = ctx;
 
@@ -372,6 +376,7 @@ FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
 	if(fh_ContextAdd(ctx, FH_CONTEXT_SHADERS, name, size, p) < 0)
 		goto err_destroy_shader;
 
+	printf("Fail 3\n");
 	return shd;
 
 err_destroy_shader:
