@@ -449,7 +449,7 @@ FH_XMOD void fh_sheet_print(struct fh_stylesheet *sheet)
 	if(!sheet)
 		return;
 
-	printf("Mask: %08x", sheet->mask);
+	printf("Mask: %016lx", sheet->mask);
 
 	printf("\ndisplay_mode: %02x", sheet->display_mode);
 

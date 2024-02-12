@@ -17,7 +17,6 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	struct fh_texture *tex;
 
 	if(!px) {
-		printf("px is invalid\n");
 		return NULL;
 	}
 
@@ -25,8 +24,6 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 		FH_ALARM(FH_ERROR, "Failed to allocate memory for texture");
 		goto err_return;
 	}
-
-	printf("New texture \"%s\" at %p\n", name, (void *)tex);
 
 	strcpy(tex->name, name);
 	tex->format = format;
@@ -70,8 +67,6 @@ FH_INTERN struct fh_texture *tex_load(char *name, char *pth)
 {
 	struct fh_fs_r_image img;
 	struct fh_texture *tex;
-
-	printf("Load \"%s\" from \"%s\"\n", name, pth);
 
 	/* First load the raw pixel data from a PNG */
 	if((fh_fs_image(pth, &img)) < 0)
@@ -216,8 +211,6 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
 		u16 w, u16 h, GLenum format, u8 *px)
 {
 	struct fh_texture *tex;
-	u32 size;
-	void **p;
 
 	if(!ctx || !name || w < 1 || h < 1 || !px) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
@@ -256,8 +249,6 @@ err_return:
 FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, char *pth)
 {
 	struct fh_texture *tex;
-	u32 size;
-	void **p;
 
 	if(!ctx || !name || !pth) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
@@ -312,8 +303,6 @@ FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 		goto err_return;
 	}
 
-	printf("Resize!!!!!\n");
-
 	/*
 	 * Create the new texture.
 	 */
@@ -355,8 +344,6 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		return -1;
 	}
 
-	printf("Update Texture: %d, %d, %d, %d\n", x, y, w, h);
-
 	glBindTexture(GL_TEXTURE_2D, tex->texture);
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,
@@ -381,6 +368,8 @@ FH_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 	struct fh_texture *tex = (struct fh_texture *)(*(long *)ptr);
 	struct fh_tex_filter *pass = (struct fh_tex_filter *)data;
 
+	fh_Ignore(idx);
+
 	if(pass->found)
 		return 1;
 
@@ -398,7 +387,6 @@ FH_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 
 FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name)
 {
-	struct fh_texture *tex;
 	struct fh_tex_filter flt;
 
 	if(!ctx || !name) {
@@ -428,8 +416,6 @@ FH_API void fh_UseTexture(struct fh_texture *tex)
 	if(!tex) {
 		return;
 	}
-
-	printf("Enable texture %s\n", tex->name);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->texture);

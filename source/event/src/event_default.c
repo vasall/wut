@@ -246,7 +246,7 @@ FH_INTERN s8 def_mousebuttonup(struct fh_event *evt)
 FH_INTERN s8 def_mousewheel(struct fh_event *evt)
 {
 	struct fh_element *ele = evt->context.element;
-	u32 value[2];
+	s32 value[2];
 	s8 f = 8;
 
 #if FH_EVTDEF_DEBUG

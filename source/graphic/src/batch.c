@@ -325,7 +325,6 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 	/* Set the shader and texture for this batch ren */
 	ren->shader = shd;
 	ren->texture = tex;
-	printf("Attach texture %p\n", ren->texture);
 
 	if(uninum > 0) {
 		if(!(ren->uniforms = fh_malloc(uninum * sizeof(struct fh_uniform)))) {
@@ -335,8 +334,6 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 
 		/* configure uniform data */
 		for(i = 0; i < uninum; i++) {
-			printf("Find \"%s\"\n", unis[i].name);
-
 			ren->uniforms[i].slot = glGetUniformLocation(shd->program, unis[i].name);
 			ren->uniforms[i].type = unis[i].type;
 			ren->uniforms[i].size = batch_sizeof_UniformType(unis[i].type);
@@ -457,7 +454,6 @@ FH_API void fh_batch_flush(struct fh_batch *ren)
 	fh_UseShader(ren->shader);
 
 	/* Activate the relevant shader */
-	printf("Use texture %p\n", ren->texture);
 	fh_UseTexture(ren->texture);
 
 	/* Pass the uniform view matrix onto the shader */

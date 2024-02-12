@@ -207,7 +207,7 @@ FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
 
 	if(!hdl) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
-		return;
+		return -1;
 	}
 
 	if(!(lst = fh_malloc(sizeof(struct fh_event_listener)))) {

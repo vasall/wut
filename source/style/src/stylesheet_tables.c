@@ -9,47 +9,47 @@
 const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS] = {
 	{0, 		      0,	  0},	/*  0 UNDEFINED		    */
 
-	{FH_SHEET_KEYWORD,    0,	  4},	/*  1 display_mode 	    */
+	{FH_SHEET_KEYWORD,    0,	  8},	/*  1 display_mode 	    */
 	
-	{FH_SHEET_FLEX,       0,	  5},	/*  2 width 		    */
-	{FH_SHEET_FLEX,       0,	 13},	/*  3 height 		    */
+	{FH_SHEET_FLEX,       0,	  9},	/*  2 width 		    */
+	{FH_SHEET_FLEX,       0,	 17},	/*  3 height 		    */
 	
-	{FH_SHEET_KEYWORD,    1,	 21},	/*  4 reference_mode 	    */
+	{FH_SHEET_KEYWORD,    1,	 25},	/*  4 reference_mode 	    */
 	
-	{FH_SHEET_FLEX,       0,	 22},	/*  5 spacing_top 	    */
-	{FH_SHEET_FLEX,       0,	 30},	/*  6 spacing_right 	    */
-	{FH_SHEET_FLEX,       0,	 38},	/*  7 spacing_bottom 	    */
-	{FH_SHEET_FLEX,       0,	 46},	/*  8 spacing_left 	    */
+	{FH_SHEET_FLEX,       0,	 26},	/*  5 spacing_top 	    */
+	{FH_SHEET_FLEX,       0,	 34},	/*  6 spacing_right 	    */
+	{FH_SHEET_FLEX,       0,	 42},	/*  7 spacing_bottom 	    */
+	{FH_SHEET_FLEX,       0,	 50},	/*  8 spacing_left 	    */
 	
-	{FH_SHEET_FLEX,       0,	 54},	/*  9 padding_top 	    */
-	{FH_SHEET_FLEX,       0,	 62},	/* 10 padding_right 	    */
-	{FH_SHEET_FLEX,       0,	 70},	/* 11 padding_bottom 	    */
-	{FH_SHEET_FLEX,       0,	 78},	/* 12 padding_left 	    */
+	{FH_SHEET_FLEX,       0,	 58},	/*  9 padding_top 	    */
+	{FH_SHEET_FLEX,       0,	 66},	/* 10 padding_right 	    */
+	{FH_SHEET_FLEX,       0,	 74},	/* 11 padding_bottom 	    */
+	{FH_SHEET_FLEX,       0,	 82},	/* 12 padding_left 	    */
 	
-	{FH_SHEET_KEYWORD,    2,	 86},	/* 13 border_mode 	    */
-	{FH_SHEET_FLEX,       0,	 87},	/* 14 border_width 	    */
-	{FH_SHEET_HEXCODE,    0,	 95},	/* 15 border_color 	    */
+	{FH_SHEET_KEYWORD,    2,	 90},	/* 13 border_mode 	    */
+	{FH_SHEET_FLEX,       0,	 91},	/* 14 border_width 	    */
+	{FH_SHEET_HEXCODE,    0,	 99},	/* 15 border_color 	    */
 	
-	{FH_SHEET_FLEX,       0,	 99},	/* 16 radius_top_left 	    */
-	{FH_SHEET_FLEX,       0,	107},	/* 17 radius_top_right 	    */
-	{FH_SHEET_FLEX,       0,	115},	/* 18 radius_bottom_right   */
-	{FH_SHEET_FLEX,       0,	123},	/* 19 radius_bottom_left    */
+	{FH_SHEET_FLEX,       0,	103},	/* 16 radius_top_left 	    */
+	{FH_SHEET_FLEX,       0,	111},	/* 17 radius_top_right 	    */
+	{FH_SHEET_FLEX,       0,	119},	/* 18 radius_bottom_right   */
+	{FH_SHEET_FLEX,       0,	127},	/* 19 radius_bottom_left    */
 	
-	{FH_SHEET_KEYWORD,    3,	131},	/* 20 infill_mode 	    */
-	{FH_SHEET_HEXCODE,    0,	132},	/* 21 infill_color 	    */
+	{FH_SHEET_KEYWORD,    3,	135},	/* 20 infill_mode 	    */
+	{FH_SHEET_HEXCODE,    0,	136},	/* 21 infill_color 	    */
 
-	{FH_SHEET_KEYWORD,    4,	136},	/* 22 layout_mode 	    */
+	{FH_SHEET_KEYWORD,    4,	140},	/* 22 layout_mode 	    */
 	
-	{FH_SHEET_KEYWORD,    5,	137},	/* 23 align_v    	    */
-	{FH_SHEET_KEYWORD,    6,	138},	/* 24 align_h   	    */
+	{FH_SHEET_KEYWORD,    5,	141},	/* 23 align_v    	    */
+	{FH_SHEET_KEYWORD,    6,	142},	/* 24 align_h   	    */
 	
-	{FH_SHEET_KEYWORD,    7,	139},	/* 25 scrollbar_mode 	    */
+	{FH_SHEET_KEYWORD,    7,	143},	/* 25 scrollbar_mode 	    */
 	
-	{FH_SHEET_FLEX,       0,	140},	/* 26 text_size 	    */
-	{FH_SHEET_HEXCODE,    0,	148},	/* 27 text_color 	    */
-	{FH_SHEET_FLEX,       0,	152},	/* 28 text_mass 	    */
-	{FH_SHEET_KEYWORD,    1,	160},	/* 29 text_options 	    */
-	{FH_SHEET_KEYWORD,    8,	161}	/* 30 text_wrap_mode 	    */
+	{FH_SHEET_FLEX,       0,	144},	/* 26 text_size 	    */
+	{FH_SHEET_HEXCODE,    0,	152},	/* 27 text_color 	    */
+	{FH_SHEET_FLEX,       0,	156},	/* 28 text_mass 	    */
+	{FH_SHEET_KEYWORD,    1,	164},	/* 29 text_options 	    */
+	{FH_SHEET_KEYWORD,    8,	165}	/* 30 text_wrap_mode 	    */
 };
 
 

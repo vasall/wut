@@ -301,7 +301,8 @@ uniform ivec2   u_frame;\n\
 \n\
 void main() {\n\
 \n\
-    gl_Position = vec4( in_pos, 1.0 );\n\
+	vec2 lframe = u_frame * 0.5;\n\
+	gl_Position = vec4((in_pos.x - lframe.x) / lframe.x, (lframe.y - in_pos.y) / lframe.y, 1, 1);\n\
 \n\
     fs_uv      = vec2(in_uv.x, 1.0 - in_uv.y);\n\
 	fs_color   = vec3(1.0, 1.0, 1.0);\n\

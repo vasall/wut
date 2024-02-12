@@ -23,12 +23,11 @@ FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 {
 	struct fh_textfield *txt;
 
-	if(!(txt = fh_txtfield_create(w->element, data))) {
-		printf("Failed to create textfield\n");
+	if(!(txt = fh_textfield_create(w->element, data))) {
+		FH_ALARM(FH_ERROR, "Failed to create textfield");
 		return -1;
 	}
 
-	printf("Successfully created textfield %p\n", txt);
 	w->ref = txt;
 
 	return 0;
@@ -73,7 +72,7 @@ err_return:
 
 FH_INTERN void widget_destroy_text(struct fh_widget *w)
 {
-	fh_txtfield_destroy(w->ref);
+	fh_textfield_destroy(w->ref);
 }
 
 
@@ -131,7 +130,7 @@ FH_INTERN void widget_render_text(struct fh_widget *w)
 {
 	printf("Render text widget %p\n", w->ref);
 
-	fh_txtfield_render(w->ref);
+	fh_textfield_render(w->ref);
 }
 
 
@@ -143,7 +142,6 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 
 	s32 indices[4];
 	s32 v_index[3];
-	f32 color[4];
 
 	struct tempStruct_vtx {
 		f32 x;
@@ -153,8 +151,6 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 		f32 v;
 		s32 index[3];
 	} vdata;
-
-	s32 frame[2];
 	
 	s32 p0x;
 	s32 p0y;

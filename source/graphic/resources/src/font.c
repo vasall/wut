@@ -73,7 +73,6 @@ FH_INTERN s8 font_import_meta(struct fh_font_data *data, char *pth)
 	FILE *fd;
 	s32 i;
 
-	char nimport[512];
 	struct fh_font_glyph glyph;
 
 	/* Open the file */
@@ -84,7 +83,7 @@ FH_INTERN s8 font_import_meta(struct fh_font_data *data, char *pth)
 	fscanf(fd, "%f", &data->spread_in_font);
 
 	for(i = 0; i < 194; i++) {
-		fscanf(fd, "%d %f %f %f %f %f %f %f %f %f %f %f %f",
+		fscanf(fd, "%hd %f %f %f %f %f %f %f %f %f %f %f %f",
 				&glyph.codepoint,
 
 				&glyph.width,
@@ -109,6 +108,7 @@ FH_INTERN s8 font_import_meta(struct fh_font_data *data, char *pth)
 	}
 
 	fclose(fd);
+	return 0;
 }
 
 /*
@@ -157,7 +157,6 @@ FH_API struct fh_font *fh_LoadFont(struct fh_context *ctx,
 	struct fh_texture *font_tex;
 	struct fh_font *font;
 	u32 size;
-	void **p;
 
 	if(!ctx || !name || !img_pth || !meta_pth) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
@@ -235,15 +234,15 @@ struct fh_font_filter {
 	struct fh_font *font;
 };
 
-FH_INTERN font_cfnc_find(void *ptr, s16 idx, void *data)
+FH_INTERN s8 font_cfnc_find(void *ptr, s16 idx, void *data)
 {
 	struct fh_font *font = (struct fh_font *)(*(long *)ptr);
 	struct fh_font_filter *pass = (struct fh_font_filter *)data;
 
+	fh_Ignore(idx);
+
 	if(pass->found)
 		return 1;
-
-	printf("Test \"%s\"\n", font->name);
 	
 	if(strcmp(font->name, pass->name) == 0) {
 		pass->found = 1;
@@ -256,7 +255,6 @@ FH_INTERN font_cfnc_find(void *ptr, s16 idx, void *data)
 
 FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name)
 {
-	struct fh_font *font;
 	struct fh_font_filter flt;
 
 	if(!ctx || !name) {
@@ -295,6 +293,8 @@ FH_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
 {
 	struct fh_font_glyph *glyph = (struct fh_font_glyph *)ptr;
 	struct fh_glyph_filter *flt = (struct fh_glyph_filter *)data;
+
+	fh_Ignore(idx);
 
 	if(flt->found)
 		return 1;

@@ -458,8 +458,6 @@ err_return:
 
 FH_API void fh_UseShader(struct fh_shader *shd)
 {
-	u8 i;
-
 	if(!shd) {
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;

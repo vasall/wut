@@ -5,6 +5,8 @@
 #include "document/inc/document.h"
 #include "document/inc/element.h"
 
+#include "style/inc/style.h"
+
 #include "widget/inc/widget.h"
 #include "widget/inc/view.h"
 
@@ -345,15 +347,10 @@ FH_INTERN s8 fh_eletemp_load_view(struct fh_element *ele, void *data)
 
 FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data)
 {
-	printf("Load widget template for %p\n", ele);
-
 	if(!ele) {
 		FH_ALARM(FH_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
-
-
-	printf("Load template %d with %p\n", ele->type, data);
 
 	/* 
 	 * Just call the corresponding template loading function for the

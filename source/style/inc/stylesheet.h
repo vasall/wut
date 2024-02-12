@@ -132,7 +132,7 @@ typedef u8 fh_keyword_t;
 
 struct fh_stylesheet {
 	/* The attribute mask */
-	u32 		mask;
+	u64 		mask;
 
 	/*  	 DISPLAY						   */
 	fh_keyword_t	display_mode;

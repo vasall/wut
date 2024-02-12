@@ -343,7 +343,7 @@ err_destroy_output:
 }
 
 
-FH_INTERN s8 flex_clbk_print(void *ptr, u16 idx, void *data)
+FH_INTERN s8 flex_clbk_print(void *ptr, s16 idx, void *data)
 {
 	struct fh_flex_token *tok = (struct fh_flex_token *)ptr;
 

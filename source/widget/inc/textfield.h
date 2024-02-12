@@ -26,7 +26,7 @@ struct fh_textfield {
  *
  * Returns: Either a pointer to the new textfield or NULL if an error occurred
  */
-FH_API struct fh_textfield *fh_txtfield_create(struct fh_element *ele,
+FH_API struct fh_textfield *fh_textfield_create(struct fh_element *ele,
 		struct fh_font *font);
 
 
@@ -35,12 +35,12 @@ FH_API struct fh_textfield *fh_txtfield_create(struct fh_element *ele,
  *
  * @txt: Pointer to the textfield
  */
-FH_API void fh_txtfield_destroy(struct fh_textfield *txt);
+FH_API void fh_textfield_destroy(struct fh_textfield *txt);
 
 
 /*
  * Render a textfield onto the screen.
  */
-FH_API void fh_txtfield_render(struct fh_textfield *txt);
+FH_API void fh_textfield_render(struct fh_textfield *txt);
 
 #endif /* _FH_WIDGET_TEXTFIELD_H */
