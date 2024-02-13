@@ -125,4 +125,7 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name);
  */
 FH_API struct fh_font_glyph *fh_GetFontGlyph(struct fh_font *font, s16 idx);
 
+
+
+
 #endif /* _FH_GRAPHIC_RESOURCES_FONT_H */

@@ -80,6 +80,7 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 	f32 spread_vertex = font->data.spread_in_font * 0.4f;
 
 	f32 letter_spacing = 1.0;
+	f32 line_height = 1.0;
 
 	s16 origin[2];
 
@@ -99,7 +100,8 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 
 		if(i == 0) {
 			instance_origins[i].y = baseline[1];
-			instance_origins[i].x = baseline[0] - glyph->hori_bearing_x * font_size;
+			instance_origins[i].x = baseline[0] -
+				glyph->hori_bearing_x * font_size;
 		}
 		else {
 			instance_origins[i].y = baseline[1];
@@ -133,14 +135,14 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 		glyph = instance_origins[i].g;
 
 		/* bottom left */
-		vtx[0].vertex_x = bottom_left[i][0] - spread_vertex * font_size;
+		vtx[0].vertex_x = bottom_left[i][0] + spread_vertex * font_size;
 		vtx[0].vertex_y = bottom_left[i][1] - spread_vertex * font_size;
 		vtx[0].vertex_z = 0.0f;
 		vtx[0].texture_u = glyph->tex_coord_x - spread_texture;
 		vtx[0].texture_v = glyph->tex_coord_y + glyph->tex_height + spread_texture;
 
 		/* bottom right */
-		vtx[1].vertex_x = bottom_left[i][0] + ( glyph->width + spread_vertex ) * font_size;
+		vtx[1].vertex_x = bottom_left[i][0] + ( glyph->width - spread_vertex ) * font_size;
 		vtx[1].vertex_y = bottom_left[i][1] - spread_vertex * font_size;
 		vtx[1].vertex_z = 0.0f;
 		vtx[1].texture_u = glyph->tex_coord_x + glyph->tex_width + spread_texture;
