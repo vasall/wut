@@ -1,6 +1,6 @@
 #include "utility/inc/flex.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 #include "utility/inc/utility.h"
 
 #include <stdio.h>

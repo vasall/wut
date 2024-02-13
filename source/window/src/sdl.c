@@ -1,8 +1,8 @@
-#include "window/subsystems/inc/sdl.h"
+#include "window/inc/sdl.h"
 
-#include "window/subsystems/inc/opengl.h"
+#include "window/inc/opengl.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "system/inc/system.h"
 

@@ -16,7 +16,14 @@ done
 # Combine all library-files.
 #
 SUBMODULES_LIBS=$(find ./source -type f -name "*.a")
-libtool --mode=link gcc -all-static -o lfreihand.a ${SUBMODULES_LIBS}
+#libtool --mode=link gcc -all-static -o lfreihand.a ${SUBMODULES_LIBS}
 
-
+mkdir objdir
+for i in ${SUBMODULES_LIBS};
+do
+$(ar --output objdir x $i);
+done
+$(ar r lfreihand.a objdir/*.o)
+(ranlib lfreihand.a)
+rm -rf objdir
 

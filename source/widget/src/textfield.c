@@ -63,7 +63,7 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 	char *input_string = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut l";
 
 	s16 font_size = 50;
-	s16 baseline[2] = {0, 50};
+	s16 baseline[2];
 
 	u32 i;
 	u16 number = 0;

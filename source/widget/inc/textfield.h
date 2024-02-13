@@ -4,7 +4,7 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "graphic/resources/inc/font.h"
+#include "graphic/inc/font.h"
 
 struct fh_textfield {
 	/* The font used for rendering */

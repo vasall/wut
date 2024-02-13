@@ -2,9 +2,9 @@
 
 #include "system/inc/system.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
-#include "window/subsystems/inc/opengl.h"
+#include "window/inc/opengl.h"
 
 #include "core/inc/predefined.h"
 

@@ -1,6 +1,6 @@
 #include "graphic/inc/camera.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "core/inc/core.h"
 
@@ -99,7 +99,7 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	/*
 	 * Calculate the view-matrix.
 	 * See the link for how this works:
-	 * https://gamedev.stackexchange.com/a/181826
+	 * https:/gamedev.stackexchange.com/a/181826
 	 */
 
 	fh_mat4_idt(m);

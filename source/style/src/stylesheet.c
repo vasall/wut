@@ -4,7 +4,7 @@
 
 #include "system/inc/system.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include <stdlib.h>
 

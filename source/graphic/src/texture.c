@@ -1,6 +1,6 @@
-#include "graphic/resources/inc/texture.h"
+#include "graphic/inc/texture.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 #include "utility/inc/table.h"
 
 #include "core/inc/core.h"

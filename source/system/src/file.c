@@ -1,6 +1,6 @@
 #include "system/inc/file.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "system/inc/system.h"
 

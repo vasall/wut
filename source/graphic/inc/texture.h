@@ -60,7 +60,7 @@ FH_API void fh_CloseTextureTable(struct fh_context *ctx);
 /*
  * Create a new texture from raw pixel data.
  * Especially for the format, see:
- * https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+ * https:/registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
  *
  * @ctx: Pointer to the context
  * @name: The name of the new texture

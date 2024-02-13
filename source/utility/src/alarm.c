@@ -1,4 +1,4 @@
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,9 @@
 #include "graphic/inc/constructor.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
-#include "graphic/resources/inc/shader.h"
-#include "graphic/resources/inc/texture.h"
+#include "graphic/inc/shader.h"
+#include "graphic/inc/texture.h"
 #include "graphic/inc/camera.h"
 
 #include "system/inc/system.h"

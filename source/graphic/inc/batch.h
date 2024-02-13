@@ -7,8 +7,8 @@
 
 struct fh_batch;
 
-#include "graphic/resources/inc/shader.h"
-#include "graphic/resources/inc/texture.h"
+#include "graphic/inc/shader.h"
+#include "graphic/inc/texture.h"
 
 /*
  * This struct is used to represent a single attribute of a vertex like the

@@ -7,8 +7,8 @@ struct fh_window;
 #include "core/inc/import.h"
 
 /* Catch-all */
-#include "window/subsystems/inc/sdl.h"
-#include "window/subsystems/inc/opengl.h"
+#include "window/inc/sdl.h"
+#include "window/inc/opengl.h"
 
 #include "graphic/inc/context.h"
 

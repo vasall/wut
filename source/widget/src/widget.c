@@ -1,6 +1,6 @@
 #include "widget/inc/widget.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "widget/inc/textfield.h"
 #include "widget/inc/view.h"
@@ -9,7 +9,7 @@
 
 #include "system/inc/system.h"
 
-#include"graphic/resources/inc/shader.h"
+#include"graphic/inc/shader.h"
 
 #include <stdlib.h>
 

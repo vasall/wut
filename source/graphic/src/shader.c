@@ -1,6 +1,6 @@
-#include "graphic/resources/inc/shader.h"
+#include "graphic/inc/shader.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "core/inc/core.h"
 

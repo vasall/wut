@@ -1,6 +1,6 @@
 #include "document/inc/element_template.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "document/inc/document.h"
 #include "document/inc/element.h"

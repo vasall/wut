@@ -1,6 +1,6 @@
-#include "graphic/resources/inc/font.h"
+#include "graphic/inc/font.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 #include "utility/inc/table.h"
 
 #include "system/inc/system.h"

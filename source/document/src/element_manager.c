@@ -2,7 +2,7 @@
 
 #include "document/inc/document.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 #include "utility/inc/shape.h"
 
 #include "widget/inc/widget.h"

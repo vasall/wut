@@ -1,6 +1,6 @@
 #include "event/inc/event_listener.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "window/inc/window.h"
 

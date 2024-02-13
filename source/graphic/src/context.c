@@ -1,6 +1,6 @@
 #include "graphic/inc/context.h"
 
-#include "utility/alarm/inc/alarm.h"
+#include "utility/inc/alarm.h"
 
 #include "core/inc/predefined.h"
 
