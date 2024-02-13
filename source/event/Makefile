@@ -26,7 +26,6 @@ override LFLAGS += $(SDL_LFLAGS)
 # Change these to proper directories where each file should be
 SRCDIR     := src
 OBJDIR     := .
-RESDIR     := res
 
 SOURCES    := $(wildcard $(SRCDIR)/*.c)
 INCLUDES   := $(wildcard $(SRCDIR)/*.h)
