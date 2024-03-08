@@ -331,6 +331,6 @@ void main() {\n\
     }\
     else {\
         color.rgb = vec3(1, 1, 1);\
-        color.a   = 1.0;\
+        color.a   = 0.0;\
     }\
 }\n";

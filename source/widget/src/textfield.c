@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 
+#define TEXTFIELD_DEBUG 1
 
 FH_INTERN struct fh_rect *textfield_get_limit(struct fh_textfield *txt)
 {
@@ -82,7 +83,13 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 	f32 letter_spacing = 1.0;
 	f32 line_height = 1.0;
 
+	s8 wrap_mode = 0;
+	s16 head = -1;
+
 	s16 origin[2];
+
+	baseline[0] = txt->element->content_rect.x;
+	baseline[1] = txt->element->content_rect.y + font_size;
 
 	/*
 	 * Get the limits of the rendering-space for this textfield.
@@ -91,17 +98,24 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 	fh_Ignore(lim);
 
 	/*
-	 * First calculate the instance origin for all glyphs.
+	 * First calculate the instance origin for all glyphs. And then from
+	 * that derive the position of the bottom-left corner for every glyph.
 	 */
 	for(i = 0; i < strlen(input_string); i++) {
 		glyph = fh_GetFontGlyph(font, input_string[i]);
 
 		instance_origins[i].g = glyph;
 
-		if(i == 0) {
+		if(i%20 == 0 && i == 0) {
 			instance_origins[i].y = baseline[1];
-			instance_origins[i].x = baseline[0] -
-				glyph->hori_bearing_x * font_size;
+			instance_origins[i].x = baseline[0] + spread_vertex * font_size;
+
+		}
+		else if(i%20==0) {
+			baseline[1] += last_glyph->verti_advance * font_size;
+
+			instance_origins[i].y = baseline[1];
+			instance_origins[i].x = baseline[0] + spread_vertex * font_size;
 		}
 		else {
 			instance_origins[i].y = baseline[1];
@@ -109,54 +123,70 @@ FH_API void fh_textfield_render(struct fh_textfield *txt)
 				+ last_glyph->hori_advance * font_size * letter_spacing;
 		}
 
-		number++;
-		last_glyph = glyph;
-	}
-
-	/*
-	 * Next, calculate the bottom-left corner for every glyph.
-	 */
-	for(i = 0; i < number; i++) {
-		glyph = instance_origins[i].g;
-
+		/*
+		 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		 * Calculate the bottom-left corner.
+		 */
 		bottom_left[i][0] = instance_origins[i].x +
 			glyph->hori_bearing_x * font_size;
 
 		bottom_left[i][1] = instance_origins[i].y + 
 			(glyph->height - glyph->hori_bearing_y) * font_size;
+		/*
+		 * =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= 
+		 */
+
+		number++;
+		last_glyph = glyph;
 	}
 
+	
 	/*
 	 * Finally push every glyph to the batch renderer.
 	 */
+	ren = fh_ContextGetBatch(txt->element->document->context, font->batch_id);
 	for(i = 0; i < number; i++) {
-		ren = fh_ContextGetBatch(txt->element->document->context, font->batch_id);
-
 		glyph = instance_origins[i].g;
 
 		/* bottom left */
-		vtx[0].vertex_x = bottom_left[i][0] + spread_vertex * font_size;
+#if TEXTFIELD_DEBUG
+		vtx[0].vertex_x = bottom_left[i][0] - spread_vertex * font_size;
+#else
+		vtx[0].vertex_x = bottom_left[i][0];
+#endif
 		vtx[0].vertex_y = bottom_left[i][1] - spread_vertex * font_size;
 		vtx[0].vertex_z = 0.0f;
 		vtx[0].texture_u = glyph->tex_coord_x - spread_texture;
 		vtx[0].texture_v = glyph->tex_coord_y + glyph->tex_height + spread_texture;
 
 		/* bottom right */
-		vtx[1].vertex_x = bottom_left[i][0] + ( glyph->width - spread_vertex ) * font_size;
+#if TEXTFIELD_DEBUG
+		vtx[1].vertex_x = bottom_left[i][0] + ( glyph->width + spread_vertex ) * font_size;
+#else
+		vtx[1].vertex_x = bottom_left[i][0] + glyph->width * font_size;
+#endif
 		vtx[1].vertex_y = bottom_left[i][1] - spread_vertex * font_size;
 		vtx[1].vertex_z = 0.0f;
 		vtx[1].texture_u = glyph->tex_coord_x + glyph->tex_width + spread_texture;
 		vtx[1].texture_v = glyph->tex_coord_y + glyph->tex_height + spread_texture;
 
 		/* top right */
+#if TEXTFIELD_DEBUG
 		vtx[2].vertex_x = bottom_left[i][0] + ( glyph->width + spread_vertex ) * font_size;
+#else
+		vtx[2].vertex_x = bottom_left[i][0] + glyph->width * font_size;
+#endif
 		vtx[2].vertex_y = bottom_left[i][1] - ( glyph->height + spread_vertex ) * font_size;
 		vtx[2].vertex_z = 0.0f;
 		vtx[2].texture_u = glyph->tex_coord_x + glyph->tex_width + spread_texture;
 		vtx[2].texture_v = glyph->tex_coord_y - spread_texture;
 
 		/* top left */
+#if TEXTFIELD_DEBUG
 		vtx[3].vertex_x = bottom_left[i][0] - spread_vertex * font_size;
+#else
+		vtx[3].vertex_x = bottom_left[i][0];
+#endif
 		vtx[3].vertex_y = bottom_left[i][1] - ( glyph->height + spread_vertex ) * font_size;
 		vtx[3].vertex_z = 0.0f;
 		vtx[3].texture_u = glyph->tex_coord_x - spread_texture;
