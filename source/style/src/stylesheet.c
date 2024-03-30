@@ -66,7 +66,7 @@ FH_INTERN s8 sheet_sizeof(enum fh_sheet_id id)
 }
 
 
-FH_INTERN fh_keyword_t sheet_typeof(enum fh_sheet_id id)
+FH_INTERN u8 sheet_typeof(enum fh_sheet_id id)
 {
 	return fh_c_sheet_attribs[id].type;
 }
@@ -276,7 +276,7 @@ FH_INTERN char *sheet_next_keyword(char *s, char *buf)
 }
 
 
-FH_INTERN fh_keyword_t sheet_find_keyword(u8 ctg, char *val)
+FH_INTERN u8 sheet_find_keyword(u8 ctg, char *val)
 {
 	s8 i;
 
@@ -293,7 +293,7 @@ FH_INTERN fh_keyword_t sheet_find_keyword(u8 ctg, char *val)
 FH_INTERN void sheet_parse_keyword(struct fh_stylesheet *sheet,
 		enum fh_sheet_id id, char *val)
 {
-	fh_keyword_t kw = FH_KW_UNDEFINED;
+	u8 kw = FH_KW_UNDEFINED;
 	u8 ctg;
 	
 	char *ptr;
@@ -368,6 +368,8 @@ FH_XMOD void fh_sheet_reset(struct fh_stylesheet *sheet)
 	sheet->text_mass = FH_FLEX_UNDEF;
 	sheet->text_options = 0;
 	sheet->text_wrap_mode = FH_KW_TEXT_WORDWRAP;
+	sheet->text_spacing = FH_FLEX_UNDEF;
+	sheet->line_height = FH_FLEX_UNDEF;
 }
 
 

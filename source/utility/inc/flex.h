@@ -21,10 +21,10 @@
  *
  * OPERAND
  *
- * 	0x11    const
- * 	0x12	PIXEL
- * 	0x13	PERCENT
- * 	0x14	EM
+ * 	0x11    const		Constant value
+ * 	0x12	PIXEL		Pixel value, works like const
+ * 	0x13	PERCENT		Pct. used to scale with size value
+ * 	0x14	EM		Faktor multp. with text size
  *
  * ----------------------
  */

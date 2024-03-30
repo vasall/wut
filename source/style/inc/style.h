@@ -50,49 +50,59 @@ enum fh_style_attrib {
  * They are used when handling with active styling.
  */
 
-enum fh_style_attribute {
+enum fh_restyle_type {
 	FH_STYLE_DISPLAY,
-	FH_STYLE_SIZE,
-	FH_STYLE_POSITION,
-	FH_STYLE_PADDING,
+	FH_STYLE_REFERENCE,
+	FH_STYLE_SHAPE,
+	FH_STYLE_BORDER,
+	FH_STYLE_RADIUS,
 	FH_STYLE_INFILL,
-	FH_STYLE_BORDER
+	FH_STYLE_LAYOUT,
+	FH_STYLE_TEXT
 };
 
 struct fh_restyle_display {	
-	fh_keyword_t 			mode;
+	u8 			mode;
 };
 
 struct fh_restyle_reference {
-	fh_keyword_t 			mode;
+	u8 			mode;
+};
+
+struct fh_restyle_shape {
+	struct fh_rect		bounding_box;	
+	struct fh_rect		element_delta; /* -Spacing */
+	struct fh_rect		inner_delta;   /* -Spacing, -Border */
+	struct fh_rect		content_delta; /* -Spacing, -Border, -Padding */
 };
 
 struct fh_restyle_border {
-	fh_keyword_t			mode;
-	s32				width;
-	struct fh_color			color;
+	u8			mode;
+	s32			width;
+	struct fh_color		color;
 };
 
 struct fh_restyle_radius {
-	s32				corner[4];
+	s32			corner[4];
 };
 
 struct fh_restyle_infill {
-	fh_keyword_t			mode;
-	struct fh_color			color;
-
+	u8			mode;
+	struct fh_color		color;
 };
 
 struct fh_restyle_layout {
-	fh_keyword_t			mode;
+	u8			mode;
 };
 
 struct fh_restyle_text {
-	u16 				size;
-	struct fh_color			color;
-	u16				weight;
-	fh_keyword_t			options;
-	fh_keyword_t			wrap_mode;
+	u16 			size;
+	struct fh_color		color;
+	u16			mass;
+	u8			options;
+	u8			wrap_mode;
+	u16			spacing;
+	u16			line_height;
 };
 
 
@@ -108,52 +118,22 @@ struct fh_style {
 	struct fh_style			*ref;
 	struct fh_stylesheet		sheet;
 
-	/*
-	 * DISPLAY
-	 */
 	struct fh_restyle_display	display;
 
-	/*
-	 * REFERENCE
-	 */
 	struct fh_restyle_reference	reference;
 
-	/*
-	 * SHAPE
-	 */
-	struct fh_rect			bounding_box;	
-	struct fh_rect			element_delta;	/* -Spacing */
-	struct fh_rect			inner_delta;	/* -Spacing, -Border */
-	struct fh_rect			content_delta;	/* -Spacing, -Border, -Padding */
+	struct fh_restyle_shape		shape;
 
-	/*
-	 * RADIUS
-	 */
-	struct fh_restyle_radius	radius;
-
-	/*
-	 * BORDER
-	 */
 	struct fh_restyle_border	border;
 
-	/*
-	 * INFILL
-	 */
+	struct fh_restyle_radius	radius;
+
 	struct fh_restyle_infill	infill;
 
-	/*
-	 * LAYOUT
-	 */
 	struct fh_restyle_layout	layout;
 
-	/*
-	 * SCROLLBAR
-	 */
 	struct fh_restyle_scrollbar	scrollbar;
 
-	/*
-	 * TEXT
-	 */
 	struct fh_restyle_text		text;
 };
 
@@ -234,6 +214,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
  */
 FH_API void fh_ResetStyle(struct fh_style *style);
 
+
 /*
  * Modify the stylesheet of a style struct.
  *
@@ -241,6 +222,17 @@ FH_API void fh_ResetStyle(struct fh_style *style);
  * @in: A string containing the requested modifications
  */
 FH_API void fh_ModifyStyle(struct fh_style *style, char *in);
+
+
+/*
+ * Get a specific restyle block like text, shape, etc.
+ *
+ * @style: Pointer to the style struct
+ * @type: The restyle block type
+ *
+ * Returns: Either a pointer to the restyle wrapper or NULL
+ */
+FH_API void *fh_GetReStyle(struct fh_style *style, enum fh_restyle_type type);
 
 
 /*

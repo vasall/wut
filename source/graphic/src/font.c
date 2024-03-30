@@ -89,13 +89,13 @@ FH_INTERN s8 font_import_meta(struct fh_font_data *data, char *pth)
 				&glyph.width,
 				&glyph.height,
 
-				&glyph.hori_bearing_x,
-				&glyph.hori_bearing_y,
-				&glyph.hori_advance,
+				&glyph.hbearing_x,
+				&glyph.hbearing_y,
+				&glyph.hadvance,
 
-				&glyph.verti_bearing_x,
-				&glyph.verti_bearing_y,
-				&glyph.verti_advance,
+				&glyph.vbearing_x,
+				&glyph.vbearing_y,
+				&glyph.vadvance,
 
 				&glyph.tex_coord_x,
 				&glyph.tex_coord_y,
@@ -286,6 +286,7 @@ struct fh_glyph_filter {
 	s8 found;
 
 	struct fh_font_glyph *glyph;
+	s16 index;
 };
 
 
@@ -302,6 +303,7 @@ FH_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
 	if(glyph->codepoint == flt->codepoint) {
 		flt->found = 1;
 		flt->glyph = glyph;
+		flt->index = idx;
 		return 1;
 	}
 
@@ -309,11 +311,11 @@ FH_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
 }
 
 
-FH_API struct fh_font_glyph *fh_GetFontGlyph(struct fh_font *font, s16 idx)
+FH_API struct fh_font_glyph *fh_GetGlyph(struct fh_font *font, s16 cpnt)
 {
 	struct fh_glyph_filter flt;
 
-	flt.codepoint = idx;
+	flt.codepoint = cpnt;
 	flt.found = 0;
 
 	fh_list_apply(font->data.glyphs, &font_cfnc_find_glyph, &flt);
@@ -323,4 +325,34 @@ FH_API struct fh_font_glyph *fh_GetFontGlyph(struct fh_font *font, s16 idx)
 	}
 
 	return NULL;
+}
+
+
+FH_API s16 fh_GetGlyphIndex(struct fh_font *font, s16 cpnt)
+{
+	struct fh_glyph_filter flt;
+
+	flt.codepoint = cpnt;
+	flt.found = 0;
+
+	fh_list_apply(font->data.glyphs, &font_cfnc_find_glyph, &flt);
+
+	if(flt.found) {
+		return flt.index;
+	}
+
+	return -1;
+}
+
+
+FH_API struct fh_font_glyph *fh_GetGlyphByIndex(struct fh_font *font,
+		s16 idx)
+{
+	struct fh_font_glyph *glyph;
+
+	if(fh_list_get(font->data.glyphs, idx, &glyph) < 0) {
+		return NULL;
+	}
+
+	return glyph;
 }

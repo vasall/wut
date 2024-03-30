@@ -425,7 +425,7 @@ FH_XMOD void fh_flex_destroy(fh_flex_t flx)
 
 FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 {
-	struct fh_flex_token tok;
+	struct fh_flex_token *tok;
 	struct fh_list *stk;
 	f32 value;
 	f32 opd[2];
@@ -440,13 +440,13 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 
 	while(fh_list_get(flx->list, i++, &tok)) {
 		/*  Handle operands  */
-		if(tok.code > 0x06) {
-			switch(tok.code) {
-				case 0x11: value = tok.value; break;
-				case 0x12: value = tok.value; break;
-				case 0x13: value = tok.value * ref[0]; break;
-				case 0x14: value = tok.value * ref[1]; break;
-				default:  value = tok.value; break;
+		if(tok->code > 0x06) {
+			switch(tok->code) {
+				case 0x11: value = tok->value; break;
+				case 0x12: value = tok->value; break;
+				case 0x13: value = tok->value * ref[0]; break;
+				case 0x14: value = tok->value * ref[1]; break;
+				default:  value = tok->value; break;
 			}
 			fh_list_push(stk, &value);
 		}
@@ -455,7 +455,7 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref)
 			fh_list_pop(stk, &opd[0]);
 			fh_list_pop(stk, &opd[1]);
 
-			switch(tok.code) {
+			switch(tok->code) {
 				case 0x03: value = opd[1] * opd[0]; break;
 				case 0x04: value = opd[1] + opd[0]; break;
 				case 0x05: value = opd[1] - opd[0]; break;

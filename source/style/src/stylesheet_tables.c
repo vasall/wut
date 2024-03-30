@@ -44,12 +44,14 @@ const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS] = {
 	{FH_SHEET_KEYWORD,    6,	142},	/* 24 align_h   	    */
 	
 	{FH_SHEET_KEYWORD,    7,	143},	/* 25 scrollbar_mode 	    */
-	
+
 	{FH_SHEET_FLEX,       0,	144},	/* 26 text_size 	    */
 	{FH_SHEET_HEXCODE,    0,	152},	/* 27 text_color 	    */
 	{FH_SHEET_FLEX,       0,	156},	/* 28 text_mass 	    */
 	{FH_SHEET_KEYWORD,    1,	164},	/* 29 text_options 	    */
-	{FH_SHEET_KEYWORD,    8,	165}	/* 30 text_wrap_mode 	    */
+	{FH_SHEET_KEYWORD,    8,	165},	/* 30 text_wrap_mode 	    */
+	{FH_SHEET_FLEX,	      0,	166},	/* 31 text_spacing          */
+	{FH_SHEET_FLEX,	      0,	174}	/* 32 line_height 	    */
 };
 
 
@@ -68,10 +70,12 @@ struct fh_sheet_id_entry fh_c_sheet_attr_row1[] = {
 	{0x89, FH_SHEET_DISPLAY_MODE},
 	{0x41, FH_SHEET_PADDING_RIGHT},
 	{0xF9, FH_SHEET_INFILL_COLOR},
-	{0x19, FH_SHEET_TEXT_MASS}
+	{0x19, FH_SHEET_TEXT_MASS},
+	{0x01, FH_SHEET_TEXT_SPACING}
 };
 struct fh_sheet_id_entry fh_c_sheet_attr_row2[] = {
-	{0x02, FH_SHEET_SCROLLBAR_MODE}
+	{0x02, FH_SHEET_SCROLLBAR_MODE},
+	{0xD2, FH_SHEET_LINE_HEIGHT}
 };
 struct fh_sheet_id_entry fh_c_sheet_attr_row3[] = {
 	{0x3B, FH_SHEET_WIDTH},
@@ -106,8 +110,8 @@ struct fh_sheet_id_entry fh_c_sheet_attr_row7[] = {
 
 const struct fh_sheet_id_table fh_c_sheet_ids[FH_SHEET_ROWS] = {
 	{fh_c_sheet_attr_row0, 5},
-	{fh_c_sheet_attr_row1, 4},
-	{fh_c_sheet_attr_row2, 1},
+	{fh_c_sheet_attr_row1, 5},
+	{fh_c_sheet_attr_row2, 2},
 	{fh_c_sheet_attr_row3, 6},
 	{fh_c_sheet_attr_row4, 3},
 	{fh_c_sheet_attr_row5, 2},

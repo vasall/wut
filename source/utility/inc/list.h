@@ -93,16 +93,19 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out);
 
 
 /*
- * Get the element at index idx from the list without removing it.
+ * Get the element at the index from the list without removing it and set the
+ * given pointer to the address of the element in the list.
+ * Note that if either an error occurred or the element doesn't exist, the
+ * pointer will not be updated.
  *
  * @lst: Pointer to the list
  * @idx: The index of the element to get
- * @out: A pointer to write the element to
+ * @out: A pointer to write the element address to
  *
  * Returns: 1 if an element has been returned, 0 if empty or out of bounds and
  * 	    -1 if an error occurred
  */
-FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void *out);
+FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void **out);
 
 
 typedef s8 (*fh_list_fnc_t)(void *entry, s16 idx, void *data);

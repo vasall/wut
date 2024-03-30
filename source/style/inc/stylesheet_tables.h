@@ -11,7 +11,7 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-#define FH_SHEET_ATTRIBS	31
+#define FH_SHEET_ATTRIBS	33
 
 FH_XMOD const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS];
 
@@ -21,8 +21,8 @@ FH_XMOD const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS];
  */
 
 struct fh_sheet_id_entry {
-	u8 			hash;
-	enum fh_sheet_id 	id;
+	u8 				hash;
+	enum fh_sheet_id 		id;
 };
 
 

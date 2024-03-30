@@ -19,9 +19,8 @@ SUBMODULES_LIBS=$(find ./source -type f -name "*.a")
 mkdir objdir
 for i in ${SUBMODULES_LIBS};
 do
-$(ar --output objdir x $i);
+	$(ar --output objdir x $i);
 done
 $(ar r lfreihand.a objdir/*.o)
 $(ranlib lfreihand.a)
 rm -rf objdir
-

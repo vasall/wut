@@ -5,16 +5,18 @@
 #include "core/inc/import.h"
 
 #include "graphic/inc/font.h"
+#include "graphic/inc/text.h"
 
 struct fh_textfield {
-	/* The font used for rendering */
-	struct fh_font *font;
-
 	/* A pointer to the element */
 	struct fh_element *element;
 
 	/* The content of the textfield */
+	s16 length;
 	char content[256];
+
+	/* The underlying text buffer used for rendering */
+	struct fh_text_buffer *tbuffer;
 };
 
 

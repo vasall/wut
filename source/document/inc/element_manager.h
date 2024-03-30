@@ -194,6 +194,16 @@ FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele);
 
 
 /*
+ * Get a reference pointer to the content box for the element.
+ *
+ * @ele: Pointer to the element
+ *
+ * Returns: A pointer to the content ractangle struct or NULL if an error
+ * 	    occurred
+ */
+FH_API struct fh_rect *fh_GetContextBoxRef(struct fh_element *ele);
+
+/*
  * Modify the stylesheet of an element.
  *
  * For example: "vposition: 10px;" or "infill-color: #ff00ff00;"

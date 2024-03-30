@@ -30,22 +30,29 @@ FH_XMOD void fh_layout_block(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
+	struct fh_style *style;
+
 	struct fh_rect inner_rect;
 
-	fh_rect_add(&inner_rect, &ele->style.bounding_box,
-		&ele->style.content_delta);
+	
+	style = &ele->style;
+	fh_rect_add(&inner_rect,
+			&style->shape.bounding_box,
+			&style->shape.content_delta);
 
 
 	/* Go through all children */
 	run = ele->firstborn;
 	while(run) {
+		style = &run->style;
+
 		/* Get the size of the current child */
-		w = run->style.bounding_box.w;
-		h = run->style.bounding_box.h;
+		w = style->shape.bounding_box.w;
+		h = style->shape.bounding_box.h;
 
 
 		/* If the position is absolute, do nothing */
-		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
+		if(style->reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
@@ -112,13 +119,16 @@ FH_XMOD void fh_layout_row(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
+	struct fh_style *style;
 
 	run = ele->firstborn;
 	while(run) {
-		w = run->style.bounding_box.w;
-		h = run->style.bounding_box.h;
+		style = &run->style;
 
-		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
+		w = style->shape.bounding_box.w;
+		h = style->shape.bounding_box.h;
+
+		if(style->reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
@@ -168,12 +178,16 @@ FH_XMOD void fh_layout_column(struct fh_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
+	struct fh_style *style;
+
 	run = ele->firstborn;
 	while(run) {
-		w = run->style.bounding_box.w;
-		h = run->style.bounding_box.h;
+		style = &run->style;
 
-		if(run->style.reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
+		w = style->shape.bounding_box.w;
+		h = style->shape.bounding_box.h;
+
+		if(style->reference.mode == FH_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 

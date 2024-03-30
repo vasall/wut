@@ -98,11 +98,13 @@ FH_INTERN s8 fh_eletemp_load_body(struct fh_element *ele, void *data)
 	/*
 	 * TEXT
 	 */
-	fh_sheet_parse(sheet, "text_size: 12px;");
+	fh_sheet_parse(sheet, "text_size: 50px;");
 	fh_sheet_parse(sheet, "text_color: #000000;");
 	fh_sheet_parse(sheet, "text_mass: 50;");
 	fh_sheet_parse(sheet, "text_options: none;");
 	fh_sheet_parse(sheet, "text_wrap_mode: WORDWRAP;");
+	fh_sheet_parse(sheet, "text_spacing: 1.0;");
+	fh_sheet_parse(sheet, "line_height: 20px;");
 
 	return 0;
 }

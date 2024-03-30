@@ -18,13 +18,13 @@ struct fh_font_glyph {
 	f32 width;
 	f32 height;
 
-	f32 hori_bearing_x;
-	f32 hori_bearing_y;
-	f32 hori_advance;
+	f32 hbearing_x;
+	f32 hbearing_y;
+	f32 hadvance;
 
-	f32 verti_bearing_x;
-	f32 verti_bearing_y;
-	f32 verti_advance;
+	f32 vbearing_x;
+	f32 vbearing_y;
+	f32 vadvance;
 
 	f32 tex_coord_x;
 	f32 tex_coord_y;
@@ -118,14 +118,34 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name);
  * Get a pointer to the glyph data for the font.
  *
  * @font: Pointer to the font
- * @idx: The codepoint for the glyph
+ * @cpnt: The codepoint for the glyph
  *
  * Returns: Either a pointer to the glyph or NULL if its missing or an error
  * 	    occurred
  */
-FH_API struct fh_font_glyph *fh_GetFontGlyph(struct fh_font *font, s16 idx);
+FH_API struct fh_font_glyph *fh_GetGlyph(struct fh_font *font, s16 cpnt);
 
 
+/*
+ * Get the index of the codepoint in the font atlas.
+ *
+ * @font: Pointer to the font
+ * @cpnt: The codepoint for the glyph
+ *
+ * Returns: Either the index or -1 if an error occurred
+ */
+FH_API s16 fh_GetGlyphIndex(struct fh_font *font, s16 cpnt);
 
+
+/*
+ * Get a glyph directly from the glyph list through the index.
+ *
+ * @font: Pointer to the font
+ * @idx: The index of the glyph in the list
+ *
+ * Returns: Either a pointer to the glyph or NULL if an error occurred
+ */
+FH_API struct fh_font_glyph *fh_GetGlyphByIndex(struct fh_font *font,
+		s16 idx);
 
 #endif /* _FH_GRAPHIC_RESOURCES_FONT_H */

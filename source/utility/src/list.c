@@ -171,7 +171,7 @@ FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
 }
 
 
-FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void *out)
+FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void **out)
 {
 	s32 off;
 
@@ -184,7 +184,7 @@ FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void *out)
 		return 0;
 
 	off = idx * lst->size;
-	memcpy(out, lst->data + off, lst->size);
+	*out = lst->data + off;
 
 	return 1;
 }

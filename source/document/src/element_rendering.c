@@ -35,10 +35,6 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	if(!(ele->info_flags & FH_ELEMENT_F_VISIBLE))
 		return;
 
-
-
-
-
 	p0x = ele->element_rect.x;
 	p0y = ele->element_rect.y;
 	p1x = ele->element_rect.x + ele->element_rect.w;
@@ -101,7 +97,11 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_index(ren, indices[1]);
 	fh_batch_push_index(ren, indices[2]);
 
-	printf("Render \"%s\"\n", ele->name);
+	printf("Render \"%s\": [%d, %d, %d, %d]\n", 
+			ele->name,
+			p0x, p0y,
+			p1x, p1y);
+
 	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
 		printf("Render widget\n");

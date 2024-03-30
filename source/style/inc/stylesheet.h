@@ -54,58 +54,60 @@ enum fh_sheet_id {
 	FH_SHEET_UNDEFINED = 		 0,
 
 	/*  	 DISPLAY						      */
-	FH_SHEET_DISPLAY_MODE = 	 1,	/* 0x89   1     4   KEYWORD-0 */
+	FH_SHEET_DISPLAY_MODE = 	 1,	/* 0x89   1     8   KEYWORD-0 */
 
 	/*  	 SIZE							      */
-	FH_SHEET_WIDTH =		 2,	/* 0x3B   3     5   FLEX      */
-	FH_SHEET_HEIGHT =	 	 3,	/* 0x98   0    13   FLEX      */
+	FH_SHEET_WIDTH =		 2,	/* 0x3B   3     9   FLEX      */
+	FH_SHEET_HEIGHT =	 	 3,	/* 0x98   0    17   FLEX      */
 
 	/*  	 REFERENCE						      */
-	FH_SHEET_REFERENCE_MODE =	 4,	/* 0x77   7    21   KEYWORD-1 */
+	FH_SHEET_REFERENCE_MODE =	 4,	/* 0x77   7    25   KEYWORD-1 */
 
 	/*  	 SPACING						      */
-	FH_SHEET_SPACING_TOP =		 5,	/* 0xFB   3    22   FLEX      */
-	FH_SHEET_SPACING_RIGHT =	 6,	/* 0x43   3    30   FLEX      */
-	FH_SHEET_SPACING_BOTTOM =	 7,	/* 0xB4   4    38   FLEX      */
-	FH_SHEET_SPACING_LEFT =		 8,	/* 0x68   0    46   FLEX      */
+	FH_SHEET_SPACING_TOP =		 5,	/* 0xFB   3    26   FLEX      */
+	FH_SHEET_SPACING_RIGHT =	 6,	/* 0x43   3    34   FLEX      */
+	FH_SHEET_SPACING_BOTTOM =	 7,	/* 0xB4   4    42   FLEX      */
+	FH_SHEET_SPACING_LEFT =		 8,	/* 0x68   0    50   FLEX      */
 
 	/*  	 PADDING						      */
-	FH_SHEET_PADDING_TOP = 		 9,	/* 0x2C   4    54   FLEX      */
-	FH_SHEET_PADDING_RIGHT = 	10,	/* 0x41   1    62   FLEX      */
-	FH_SHEET_PADDING_BOTTOM = 	11,	/* 0x5B   3    70   FLEX      */
-	FH_SHEET_PADDING_LEFT = 	12,	/* 0x9E   6    78   FLEX      */
+	FH_SHEET_PADDING_TOP = 		 9,	/* 0x2C   4    58   FLEX      */
+	FH_SHEET_PADDING_RIGHT = 	10,	/* 0x41   1    66   FLEX      */
+	FH_SHEET_PADDING_BOTTOM = 	11,	/* 0x5B   3    74   FLEX      */
+	FH_SHEET_PADDING_LEFT = 	12,	/* 0x9E   6    82   FLEX      */
 
 	/*  	 BORDER							      */
-	FH_SHEET_BORDER_MODE =		13,	/* 0xD8   0    86   KEYWORD-2 */
-	FH_SHEET_BORDER_WIDTH =		14,	/* 0x56   6    87   FLEX      */
-	FH_SHEET_BORDER_COLOR =		15,	/* 0x0F   7    95   HEX-CODE  */
+	FH_SHEET_BORDER_MODE =		13,	/* 0xD8   0    90   KEYWORD-2 */
+	FH_SHEET_BORDER_WIDTH =		14,	/* 0x56   6    91   FLEX      */
+	FH_SHEET_BORDER_COLOR =		15,	/* 0x0F   7    99   HEX-CODE  */
 
 	/*  	 RADIUS							      */
-	FH_SHEET_RADIUS_TOP_LEFT =	16,	/* 0x25   6    99   FLEX      */
-	FH_SHEET_RADIUS_TOP_RIGHT =	17,	/* 0xA6   6   107   FLEX      */
-	FH_SHEET_RADIUS_BOTTOM_RIGHT =	18,	/* 0x5F   7   115   FLEX      */
-	FH_SHEET_RADIUS_BOTTOM_LEFT =	19,	/* 0x1E   6   123   FLEX      */
+	FH_SHEET_RADIUS_TOP_LEFT =	16,	/* 0x25   6   103   FLEX      */
+	FH_SHEET_RADIUS_TOP_RIGHT =	17,	/* 0xA6   6   111   FLEX      */
+	FH_SHEET_RADIUS_BOTTOM_RIGHT =	18,	/* 0x5F   7   119   FLEX      */
+	FH_SHEET_RADIUS_BOTTOM_LEFT =	19,	/* 0x1E   6   127   FLEX      */
 
 	/*  	 INFILL							      */
-	FH_SHEET_INFILL_MODE =		20,	/* 0x54   4   131   KEYWORD-3 */
-	FH_SHEET_INFILL_COLOR =		21,	/* 0xF9   1   132   HEX-CODE  */
+	FH_SHEET_INFILL_MODE =		20,	/* 0x54   4   135   KEYWORD-3 */
+	FH_SHEET_INFILL_COLOR =		21,	/* 0xF9   1   136   HEX-CODE  */
 
 	/*  	 LAYOUT							      */
-	FH_SHEET_LAYOUT_MODE =		22,	/* 0x3F   7   136   KEYWORD-4 */
+	FH_SHEET_LAYOUT_MODE =		22,	/* 0x3F   7   140   KEYWORD-4 */
 
 	/*  	 ALIGNMENT						      */
-	FH_SHEET_ALIGN_V =		23,	/* 0x0D   5   137   KEYWORD-5 */
-	FH_SHEET_ALIGN_H = 		24,	/* 0xFE   6   138   KEYWORD-6 */
+	FH_SHEET_ALIGN_V =		23,	/* 0x0D   5   141   KEYWORD-5 */
+	FH_SHEET_ALIGN_H = 		24,	/* 0xFE   6   142   KEYWORD-6 */
 
 	/*  	 SCROLLBAR						      */
-	FH_SHEET_SCROLLBAR_MODE =	25,	/* 0x02   2   139   KEYWORD-7 */
+	FH_SHEET_SCROLLBAR_MODE =	25,	/* 0x02   2   143   KEYWORD-7 */
 
 	/*	 TEXT							      */
-	FH_SHEET_TEXT_SIZE =		26,	/* 0xB0   0   140   FLEX      */
-	FH_SHEET_TEXT_COLOR =		27,	/* 0x93   3   148   HEX-CODE  */
-	FH_SHEET_TEXT_MASS =		28,	/* 0x19   1   152   FLEX      */
-	FH_SHEET_TEXT_OPTIONS =		29,	/* 0xE8   0   160   KEYWORD-8 */
-	FH_SHEET_TEXT_WRAP_MODE =	30	/* 0xB3   3   161   KEYWORD-9 */
+	FH_SHEET_TEXT_SIZE =		26,	/* 0xB0   0   144   FLEX      */
+	FH_SHEET_TEXT_COLOR =		27,	/* 0x93   3   152   HEX-CODE  */
+	FH_SHEET_TEXT_MASS =		28,	/* 0x19   1   156   FLEX      */
+	FH_SHEET_TEXT_OPTIONS =		29,	/* 0xE8   0   164   KEYWORD-8 */
+	FH_SHEET_TEXT_WRAP_MODE =	30,	/* 0xB3   3   165   KEYWORD-9 */
+	FH_SHEET_TEXT_SPACING =		31,	/* 0x01   1   166   FLEX      */
+	FH_SHEET_LINE_HEIGHT =		32	/* 0xD2   2   174   FLEX      */
 };
 
 
@@ -127,22 +129,19 @@ struct fh_sheet_attr {
 };
 
 
-typedef u8 fh_keyword_t;
-
-
 struct fh_stylesheet {
 	/* The attribute mask */
 	u64 		mask;
 
 	/*  	 DISPLAY						   */
-	fh_keyword_t	display_mode;
+	u8		display_mode;
 
 	/*  	 SIZE							   */
 	fh_flex_t	width;
 	fh_flex_t	height;
 
 	/*  	 REFERENCE						   */
-	fh_keyword_t	reference_mode;
+	u8		reference_mode;
 
 	/*  	 SPACING						   */
 	fh_flex_t	spacing_top;
@@ -157,7 +156,7 @@ struct fh_stylesheet {
 	fh_flex_t	padding_left;
 
 	/*  	 BORDER							   */
-	fh_keyword_t	border_mode;
+	u8		border_mode;
 	fh_flex_t	border_width;
 	fh_color_t	border_color;
 
@@ -168,25 +167,27 @@ struct fh_stylesheet {
 	fh_flex_t 	radius_bottom_left;
 
 	/*  	 INFILL							   */
-	fh_keyword_t	infill_mode;
+	u8		infill_mode;
 	fh_color_t	infill_color;
 
 	/*  	 LAYOUT							   */
-	fh_keyword_t	layout_mode;
+	u8		layout_mode;
 
 	/*  	 ALIGNMENT						   */
-	fh_keyword_t	align_v;
-	fh_keyword_t	align_h;
+	u8		align_v;
+	u8		align_h;
 
 	/*  	 SCROLLBAR						   */
-	fh_keyword_t	scrollbar_mode;
+	u8		scrollbar_mode;
 
 	/*	 TEXT							   */
 	fh_flex_t	text_size;
 	fh_color_t	text_color;
 	fh_flex_t	text_mass;
-	fh_keyword_t	text_options;
-	fh_keyword_t	text_wrap_mode;
+	u8		text_options;
+	u8		text_wrap_mode;
+	fh_flex_t	text_spacing;
+	fh_flex_t	line_height;
 } __attribute__((__packed__));
 
 
@@ -196,7 +197,7 @@ struct fh_sheet_ret {
 	enum fh_sheet_type 	type;
 	fh_flex_t 		flex;
 	u32 			hexcode;
-	fh_keyword_t 		keyword;
+	u8 			keyword;
 };
 
 
