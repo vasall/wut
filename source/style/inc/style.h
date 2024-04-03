@@ -61,80 +61,73 @@ enum fh_restyle_type {
 	FH_STYLE_TEXT
 };
 
-struct fh_restyle_display {	
-	u8 			mode;
-};
-
-struct fh_restyle_reference {
-	u8 			mode;
-};
-
-struct fh_restyle_shape {
-	struct fh_rect		bounding_box;	
-	struct fh_rect		element_delta; /* -Spacing */
-	struct fh_rect		inner_delta;   /* -Spacing, -Border */
-	struct fh_rect		content_delta; /* -Spacing, -Border, -Padding */
-};
-
-struct fh_restyle_border {
-	u8			mode;
-	s32			width;
-	struct fh_color		color;
-};
-
-struct fh_restyle_radius {
-	s32			corner[4];
-};
-
-struct fh_restyle_infill {
-	u8			mode;
-	struct fh_color		color;
-};
-
-struct fh_restyle_layout {
-	u8			mode;
-};
-
-struct fh_restyle_text {
-	u16 			size;
-	struct fh_color		color;
-	u16			mass;
-	u8			options;
-	u8			wrap_mode;
-	u16			spacing;
-	u16			line_height;
-};
 
 
 #define FH_RESTYLE_SCROLL_V	(1<<1)
 #define FH_RESTYLE_SCROLL_H	(1<<2)
 
-struct fh_restyle_scrollbar {
-	u8				flags;
-};
 
 
 struct fh_style {
 	struct fh_style			*ref;
 	struct fh_stylesheet		sheet;
 
-	struct fh_restyle_display	display;
+	/*
+	 * DISPLAY
+	 */
+	u8 		display_mode;
 
-	struct fh_restyle_reference	reference;
+	/*
+	 * REFERENCE
+	 */
+	u8 		reference_mode;
 
-	struct fh_restyle_shape		shape;
+	/*
+	 * SHAPE
+	 */
+	struct fh_rect	shape_bounding_box;	
+	struct fh_rect	shape_element_delta; /* -Spacing */
+	struct fh_rect	shape_inner_delta;   /* -Spacing, -Border */
+	struct fh_rect	shape_content_delta; /* -Spacing, -Border, -Padding */
 
-	struct fh_restyle_border	border;
+	/*
+	 * BORDER
+	 */
+	u8		border_mode;
+	s32		border_width;
+	struct fh_color	border_color;
 
-	struct fh_restyle_radius	radius;
+	/*
+	 * RADIUS
+	 */
+	s32		radius_corner[4];
 
-	struct fh_restyle_infill	infill;
+	/*
+	 * INFILL
+	 */
+	u8		infill_mode;
+	struct fh_color	infill_color;
 
-	struct fh_restyle_layout	layout;
+	/*
+	 * LAYOUT
+	 */
+	u8		layout_mode;
 
-	struct fh_restyle_scrollbar	scrollbar;
+	/* 
+	 * SCROLLBAR
+	 */
+	u8		scrollbar_flags;
 
-	struct fh_restyle_text		text;
+	/*
+	 * TEXT
+	 */
+	u16 		text_size;
+	struct fh_color	text_color;
+	u16		text_mass;
+	u8		text_options;
+	u8		text_wrap_mode;
+	u16		text_spacing;
+	u16		text_line_height;
 };
 
 
@@ -175,13 +168,17 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref);
 
 
 /*
- * Get a stylesheet attribute.
+ * This function will aquire an attribute from the stylesheet. To do that, a
+ * stylesheet has to be found which contains the wanted attribute. For that
+ * purpose it will climb up the style-ladder until a stylesheet has been found
+ * with the wanted attribute.
  *
- * @style: Pointer to the starting stylesheet
- * @id: The id of the attribute to get
+ * @style: Pointer to the initial style struct
+ * @id: The id of the attribute
  * @ret: The return struct
  *
- * Returns: 0 on success or -1 if an error occurred
+ * Returns: 1 if the attribute has been found, 0 if not and -1 if an error
+ * 	    occurred
  */
 FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
 		struct fh_sheet_ret *ret);

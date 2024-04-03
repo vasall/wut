@@ -219,8 +219,7 @@ FH_XMOD void fh_sheet_parse(struct fh_stylesheet *sheet, char *s);
 
 
 /*
- * Retrieve the value of an attribute from the stylesheet. Note that the
- * stylesheet is dynamic, so it doesn't have to contain the requested attribute.
+ * Retrieve the value of an attribute from the stylesheet.
  *
  * @sheet: Pointer to the stylesheet
  * @id: The id of the attribute to get
@@ -231,6 +230,7 @@ FH_XMOD void fh_sheet_parse(struct fh_stylesheet *sheet, char *s);
  */
 FH_XMOD s8 fh_sheet_get(struct fh_stylesheet *sheet, enum fh_sheet_id id,
 		struct fh_sheet_ret *ret);
+
 
 
 /*

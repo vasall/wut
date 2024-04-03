@@ -288,7 +288,7 @@ char *fh_ps_shd_def_texture_f =
 */
 
 
-char *fh_ps_shd_def_font_v = "#version 420 core\n\
+char *fh_ps_shd_def_text_v = "#version 420 core\n\
 \n\
 layout(location=0) in vec3 in_pos;\n\
 layout(location=1) in vec2 in_uv;\n\
@@ -311,7 +311,7 @@ void main() {\n\
 }\n";
 
 
-char *fh_ps_shd_def_font_f = "#version 420 core\n\
+char *fh_ps_shd_def_text_f = "#version 420 core\n\
 \n\
 precision mediump float;\n\
 \n\
@@ -325,7 +325,7 @@ out vec4 color;\n\
 void main() {\n\
     float signed_distance = texture( ourTexture, fs_uv ).r;\
 \n\
-    if(signed_distance >= 0.45) {\
+    if(signed_distance >= 0.50) {\
         color.rgb = vec3(0, 0, 0);\
         color.a   = 1.0;\
     }\

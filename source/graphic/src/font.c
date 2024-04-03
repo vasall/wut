@@ -34,7 +34,7 @@ FH_INTERN s8 font_create_batch(struct fh_font *font, struct fh_texture *tex)
 		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_DEFAULT}	 /* 0 */
 	};
 
-	shd = fh_GetShader(font->context, "__def_font_shader");
+	shd = fh_GetShader(font->context, "__def_text_shader");
 
 	ren = fh_batch_create(
 			shd,		/* Pointer to the shader to use */

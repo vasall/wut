@@ -41,8 +41,18 @@ FH_API void fh_textfield_destroy(struct fh_textfield *txt);
 
 
 /*
- * Render a textfield onto the screen.
+ * Update a textfield.
+ *
+ * @txtf: Pointer to the textfield
  */
-FH_API void fh_textfield_render(struct fh_textfield *txt);
+FH_API void fh_textfield_update(struct fh_textfield *txtf);
+
+
+/*
+ * Render a textfield onto the screen.
+ *
+ * @txtf: Pointer to the textfield
+ */
+FH_API void fh_textfield_render(struct fh_textfield *txtf);
 
 #endif /* _FH_WIDGET_TEXTFIELD_H */

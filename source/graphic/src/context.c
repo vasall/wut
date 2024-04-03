@@ -109,11 +109,11 @@ FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
 			);
 
 	printf("Load font shader...\n");
-	ctx->def_font_shader = fh_CreateShader(
+	ctx->def_text_shader = fh_CreateShader(
 			ctx,
-			"__def_font_shader",
-			(const char *)fh_ps_shd_def_font_v,
-			(const char *)fh_ps_shd_def_font_f
+			"__def_text_shader",
+			(const char *)fh_ps_shd_def_text_v,
+			(const char *)fh_ps_shd_def_text_f
 			);
 	printf("done\n");
 	return 0;

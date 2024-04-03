@@ -35,7 +35,7 @@ struct fh_text_info {
 	/*
 	 * The style used for the text.
 	 */
-	struct fh_restyle_text	*style;
+	struct fh_style		*style;
 };
 
 struct fh_text_element {
@@ -99,14 +99,6 @@ FH_API void fh_text_destroy(struct fh_text_buffer *tbuf);
 
 
 /*
- * Update the position of all elements in the text buffer.
- *
- * @tbuf: A pointer to the text buffer
- */
-FH_API void fh_text_process(struct fh_text_buffer *tbuf);
-
-
-/*
  * Push text into the text buffer from the given offset position.
  *
  * @tbuf: Pointer to the text buffer
@@ -138,6 +130,14 @@ FH_API void fh_text_remove(struct fh_text_buffer *tbuf, s16 off, s16 len);
  * Returns: 0 on success or -1 if an error occurred
  */
 FH_API s8 fh_text_send(struct fh_text_buffer *tbuf);
+
+
+/*
+ * Update the position of all elements in the text buffer.
+ *
+ * @tbuf: A pointer to the text buffer
+ */
+FH_API void fh_text_process(struct fh_text_buffer *tbuf);
 
 
 /*

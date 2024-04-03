@@ -41,7 +41,7 @@ struct fh_context {
 	 */
 	struct fh_shader	*def_block_shader;
 	struct fh_shader	*def_texture_shader;
-	struct fh_shader	*def_font_shader;
+	struct fh_shader	*def_text_shader;
 };
 
 

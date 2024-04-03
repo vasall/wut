@@ -30,11 +30,11 @@ FH_INTERN void element_calc_offset(struct fh_element *ele)
 	 */
 	if(par) {
 		ele->relative_offset.x =
-			par->style.shape.content_delta.x -	/* Border+Padding */
+			par->style.shape_content_delta.x -	/* Border+Padding */
 			par->content_offset.x +			/* Scrolling */
 			ele->layout_offset.x;			/* Layout */
 		ele->relative_offset.y =
-			par->style.shape.content_delta.y -	/* Border+Padding */
+			par->style.shape_content_delta.y -	/* Border+Padding */
 			par->content_offset.y +			/* Scrolling */
 			ele->layout_offset.y;			/* Layout */
 	}
@@ -58,7 +58,7 @@ FH_INTERN void element_calc_bounding_rect(struct fh_element *ele)
 {
 	struct fh_rect rect;
 
-	fh_rect_mov(&rect, &ele->style.shape.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&rect, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
 	fh_rect_cpy(&ele->bounding_rect, &rect);
 }
@@ -68,7 +68,7 @@ FH_INTERN void element_calc_element_rect(struct fh_element *ele)
 {
 	struct fh_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape.element_delta);
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_element_delta);
 
 	fh_rect_cpy(&ele->element_rect, &rect);
 
@@ -79,7 +79,7 @@ FH_INTERN void element_calc_inner_rect(struct fh_element *ele)
 {
 	struct fh_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape.inner_delta);
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_inner_delta);
 
 	fh_rect_cpy(&ele->inner_rect, &rect);
 }
@@ -89,7 +89,7 @@ FH_INTERN void element_calc_content_rect(struct fh_element *ele)
 {
 	struct fh_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape.content_delta);
+	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_content_delta);
 
 	fh_rect_cpy(&ele->content_rect, &rect);
 }
@@ -104,12 +104,12 @@ FH_INTERN void element_calc_visible(struct fh_element *ele)
 	 * First calculate the absolute position of the reference-area of the 
 	 * bounding box in the window.
 	 */
-	fh_rect_mov(&out, &ele->style.shape.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&out, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
 	/*
 	 * Finally convert from the bounding box to the element box.
 	 */
-	fh_rect_add(&out, &out, &ele->style.shape.element_delta);
+	fh_rect_add(&out, &out, &ele->style.shape_element_delta);
 
 	fh_rect_cpy(&dif, &out);	/* Will be used later */
 
@@ -230,7 +230,7 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
 		flag |= FH_RESTYLE_SCROLL_H;
 
 
-	ele->scrollbar_flags = flag & ele->style.scrollbar.flags;
+	ele->scrollbar_flags = flag & ele->style.scrollbar_flags;
 }
 
 
@@ -513,7 +513,7 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
 		return;
 	}
 
-	switch(ele->style.layout.mode) {
+	switch(ele->style.layout_mode) {
 		case FH_KW_LAYOUT_BLOCK:	fh_layout_block(ele);	break;
 		case FH_KW_LAYOUT_ROW: 		fh_layout_row(ele); 	break;
 		case FH_KW_LAYOUT_COLUMN: 	fh_layout_column(ele);  break;
@@ -542,7 +542,7 @@ FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele)
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape.bounding_box, &ele->absolute_offset);
+	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
 	return r;
 }
@@ -557,8 +557,8 @@ FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele)
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape.bounding_box, &ele->absolute_offset);
-	fh_rect_add(&r, &r, &ele->style.shape.element_delta);
+	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	fh_rect_add(&r, &r, &ele->style.shape_element_delta);
 
 	return r;
 }
@@ -573,8 +573,8 @@ FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele)
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape.bounding_box, &ele->absolute_offset);
-	fh_rect_add(&r, &r, &ele->style.shape.content_delta);
+	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	fh_rect_add(&r, &r, &ele->style.shape_content_delta);
 
 	return r;
 }

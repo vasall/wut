@@ -99,6 +99,7 @@ FH_INTERN void widget_update_text(struct fh_widget *w, void *data)
 	fh_Ignore(w);
 	fh_Ignore(data);
 
+	fh_textfield_update(w->ref);
 }
 
 
@@ -128,8 +129,6 @@ FH_INTERN void widget_update_view(struct fh_widget *w, void *data)
 
 FH_INTERN void widget_render_text(struct fh_widget *w)
 {
-	printf("Render text widget %p\n", w->ref);
-
 	fh_textfield_render(w->ref);
 }
 
@@ -171,7 +170,7 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->inner_rect);
 
 	/* Uniform: u_radius */
-	v_index[2] = fh_batch_push_uniform(ren, 2, ele->style.radius.corner);
+	v_index[2] = fh_batch_push_uniform(ren, 2, ele->style.radius_corner);
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
@@ -334,8 +333,6 @@ FH_API void fh_RenderWidget(struct fh_widget *w)
 		FH_ALARM(FH_WARNING, "Input parameters invalid");
 		return;
 	}
-
-	printf("Render widget in widget\n");
 
 	switch(w->type) {
 		case FH_WIDGET_TEXT:

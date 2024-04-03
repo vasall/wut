@@ -138,154 +138,6 @@ FH_API void fh_text_destroy(struct fh_text_buffer *tbuf)
 }
 
 
-FH_API void fh_text_process(struct fh_text_buffer *tbuf)
-{
-	struct fh_restyle_text *tstyle;
-	struct fh_rect *limits;
-	struct fh_font *font;
-	s16 tmp;
-		
-	/* The curbatcht offset for placement */
-	s16 line[2] = {0, 0};
-
-	s16 run;
-	struct fh_text_element *tele;
-	struct fh_text_element *tele_last = NULL;
-
-	struct fh_font_glyph *glyph;
-	struct fh_font_glyph *glyph_last = NULL;
-
-	/*
-	 * This var remembers the index of the last space char or the start of
-	 * the line which is needed for wrapping the text.
-	 */
-	s16 lbreak = -1;
-	s8 fsol = 1;	/* This flag indicates if brake is at start of line */
-	s16 lwidth;
-	s8 ladv;	/* This flag indicates if the line should advance */
-
-	printf("Process text:\n");
-
-	tstyle = tbuf->info.style;
-	limits = tbuf->info.limits;
-	font = tbuf->info.font;
-
-	/* Calculate the initial position of the line */
-	line[0] = limits->x;
-	line[1] = 40; 
-
-	printf("Limits: %d, %d\n", line[0], line[1]);
-	printf("Text-Size: %d\n", tstyle->size);
-
-	lbreak = tbuf->head;
-	run = tbuf->head;
-	
-	printf("Head: %d\n", run);
-
-	while(run >= 0) {
-		printf("A\n");	
-	
-		/*
-		 * First gather all refebatchces for the character.
-		 */
-		tele = &tbuf->elements[run];
-		
-		printf("B %d\n", tele->glyph);
-
-		glyph = fh_GetGlyphByIndex(font, tele->glyph);
-
-		printf("C\n");
-
-
-		/*
-		 * Then calculate the instance origin.
-		 */
-		printf("Calc instance origin\n");
-		if(glyph_last == NULL) {
-			tele->inst_origin_y = line[1];
-			tele->inst_origin_x = line[0] + tbuf->vtx_spread * tstyle->size;
-		}
-		else {
-			tele->inst_origin_y = line[1];
-			tmp = glyph_last->hadvance * tstyle->size * tstyle->spacing;
-			tele->inst_origin_x = tele_last->inst_origin_x + tmp; 
-		}
-
-		/*
-		 * After that calculate the bottom left corner for the char.
-		 */
-		printf("Calculate bottom left corner\n");
-		tmp = glyph->hbearing_x * tstyle->size;
-		tele->position_x = tele->inst_origin_x + tmp;
-
-		tmp = (glyph->height - glyph->hbearing_y) * tstyle->size;
-		tele->position_y = tele->inst_origin_y + tmp;
-
-		/*
-		 * Calculate the width either from the start of the line or the
-		 * last space character.
-		 */
-		printf("Calculate the width\n");
-		tmp = tele->position_x + glyph->width * tstyle->size;
-		lwidth = tmp - tbuf->elements[lbreak].position_x; 
-
-		/* If the word extends over the limit try to wrap it */	
-		printf("Apply wrapping\n");
-		if(lwidth > limits->w) {
-			switch(tstyle->wrap_mode) {
-				case FH_TEXT_WORDWRAP:
-					/* Advance to the next line */
-					ladv = 1;
-					
-					if(fsol) {
-						break;
-					}
-
-					run = tbuf->elements[lbreak].next;
-					break;
-
-				case FH_TEXT_NOWRAP:
-					/* Do absolutelly nothing! */
-					break;
-				
-				case FH_TEXT_LETTERWRAP:
-					ladv = 1;
-
-					run = lbreak;
-					break;
-			}
-		}
-
-		/*
-		 * Finally update the last-pointers for the next calculation and
-		 * advance to the next line if requested.
-		 */
-		printf("Depending on wrapping, update offset\n");
-		if(ladv) {	
-			line[0] = limits->x;
-			line[1] += tstyle->line_height;
-
-			tele_last = NULL;
-			glyph_last = NULL;
-
-			ladv = 0;
-			fsol = 1;
-		}
-		else {
-			tele_last = tele;
-			glyph_last = glyph;
-			run = tbuf->elements[run].next;
-
-			if(tele->character == 0x20) {
-				lbreak = run;
-				fsol = 0;
-			}
-		}
-	}
-	
-}
-
-
 FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 		char *text)
 {
@@ -315,9 +167,6 @@ FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 	/* Get the elements before and after the cut */	
 	cut_next = text_find(tbuf, off);
 	cut_prev = cut_next < 0 ? -1 : tbuf->elements[cut_next].prev;
-
-	printf("Push(len %d, off %d): \"%s\"\n", len, off, text);
-	printf("Before %d, After %d\n", cut_prev, cut_next);
 
 	rlast = cut_prev;
 	left = len;
@@ -363,9 +212,6 @@ FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 	tbuf->count += len;
 
 	fh_text_dump(tbuf);
-
-	/* TODO */
-	fh_text_process(tbuf);
 
 	return 0;
 
@@ -426,9 +272,173 @@ FH_API void fh_text_remove(struct fh_text_buffer *tbuf, s16 off, s16 len)
 
 	/* Update number of entries and mark as changed */
 	tbuf->count -= len;
+}
 
-	/* TODO */
-	fh_text_process(tbuf);
+
+FH_API void fh_text_process(struct fh_text_buffer *tbuf)
+{
+	struct fh_style *tstyle;
+	struct fh_rect *limits;
+	struct fh_font *font;
+	s16 tmp;
+		
+	/* The curbatcht offset for placement */
+	s16 line[2] = {0, 0};
+
+	s16 run;
+	struct fh_text_element *tele;
+	struct fh_text_element *tele_last = NULL;
+
+	struct fh_font_glyph *glyph;
+	struct fh_font_glyph *glyph_last = NULL;
+
+	/*
+	 * This var remembers the index of the last space char or the start of
+	 * the line which is needed for wrapping the text.
+	 */
+	s16 lbreak = -1;	/* The index of the element at the linestart */
+	s16 lspace = -1;	/* The index of the last space */
+
+	s8 fsol = 1;	/* This flag indicates if brake is at start of line */
+	s16 lwidth;
+	s8 ladv = 0;	/* This flag indicates if the line should advance */
+
+	printf("Process text:\n");
+
+	tstyle = tbuf->info.style;
+	limits = tbuf->info.limits;
+	font = tbuf->info.font;
+
+	/* Calculate the initial position of the line */
+	line[0] = limits->x;
+	line[1] = limits->y + tstyle->text_line_height;
+
+	printf(">> Line: %d, %d\n", line[0], line[1]);
+	printf(">> Text-Size: %d\n", tstyle->text_size);
+
+	lbreak = tbuf->head;
+	run = tbuf->head;
+
+	while(run >= 0) {
+		/*
+		 * First gather all refebatchces for the character.
+		 */
+		tele = &tbuf->elements[run];
+		glyph = fh_GetGlyphByIndex(font, tele->glyph);	
+
+
+		/*
+		 * Then calculate the instance origin.
+		 */
+		if(glyph_last == NULL) {
+			tele->inst_origin_y = line[1];
+			tele->inst_origin_x = line[0] + tbuf->vtx_spread * tstyle->text_size;
+		}
+		else {
+			tele->inst_origin_y = line[1];
+			tmp = glyph_last->hadvance * tstyle->text_size * tstyle->text_spacing;
+			tele->inst_origin_x = tele_last->inst_origin_x + tmp; 
+		}
+
+		/*
+		 * After that calculate the bottom left corner for the char.
+		 */
+		tmp = glyph->hbearing_x * tstyle->text_size;
+		tele->position_x = tele->inst_origin_x + tmp;
+
+		tmp = (glyph->height - glyph->hbearing_y) * tstyle->text_size;
+		tele->position_y = tele->inst_origin_y + tmp;
+
+		/*
+		 * Calculate the width either from the start of the line or the
+		 * last space character.
+		 */
+		tmp = tele->position_x + glyph->width * tstyle->text_size;
+		lwidth = tmp - tbuf->elements[lbreak].position_x; 
+
+
+		/* If the word extends over the limit try to wrap it */
+		if(lwidth >= limits->w) {
+			printf("Reached end of line(%d)\n", run);
+			printf("tmp: %d, lwidth: %d\n", tmp, lwidth);
+			printf("Wrap_mode: %d\n", tstyle->text_wrap_mode);
+			printf("Width: %d\n", limits->w);
+
+			switch(tstyle->text_wrap_mode) {
+				case FH_TEXT_WORDWRAP:
+					printf("Wordwrap\n");
+
+					if(fsol) {
+						printf("SOL, just go to next!\n");
+						break;
+					}
+					
+					if(lspace >= 0) {
+						/* Advance to the next line */
+						ladv = 1;
+
+						printf("Space, go to last space\n");
+						run = lspace;
+						break;
+					}
+
+					/* Advance to the next line */
+					ladv = 1;
+
+					printf("Otherwise\n");
+					run = tbuf->elements[lbreak].next;
+					break;
+
+				case FH_TEXT_NOWRAP:
+					/* Do absolutelly nothing! */
+					break;
+				
+				case FH_TEXT_LETTERWRAP:
+					printf("Letterwrap!\n");
+
+					ladv = 1;
+
+					if(fsol && lbreak == run) {
+						run = tele->next;
+					}
+
+					printf("Reset to %d\n", run);
+					break;
+			}
+		}
+
+		/*
+		 * Finally update the last-pointers for the next calculation and
+		 * advance to the next line if requested.
+		 */
+		if(ladv) {
+			printf("Go to next line\n");
+
+			line[0] = limits->x;
+			line[1] += tstyle->text_line_height;
+
+			tele_last = NULL;
+			glyph_last = NULL;
+
+			lbreak = run;
+			lspace = -1;
+
+			ladv = 0;
+			fsol = 1;
+		}
+		else {
+			tele_last = tele;
+			glyph_last = glyph;
+			run = tbuf->elements[run].next;
+
+			if(tele->character == 0x20) {
+				printf(">>>>>> FOUND A SPACE!!!\n");
+				lspace = run;
+				fsol = 0;
+			}
+		}
+	}
+	
 }
 
 
@@ -437,7 +447,7 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 	struct fh_batch *batch;
 	struct fh_text_element *ele;
 	struct fh_font_glyph *glyph;
-	struct fh_restyle_text *style;
+	struct fh_style *tstyle;
 
 	s16 i;
 
@@ -465,15 +475,15 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 	while(run >= 0) {
 		ele = &tbuf->elements[run];
 		glyph = fh_GetGlyphByIndex(tbuf->info.font, ele->glyph);
-		style = tbuf->info.style;
+		tstyle = tbuf->info.style;
 
 		/* bottom left */
 #if TEXTFIELD_DEBUG
-		vtx[0].vertex_x = ele->position_x - tbuf->vtx_spread * style->size;
+		vtx[0].vertex_x = ele->position_x - tbuf->vtx_spread * tstyle->text_size;
 #else
 		vtx[0].vertex_x = ele->position_x;
 #endif
-		vtx[0].vertex_y = ele->position_y - tbuf->vtx_spread * style->size;
+		vtx[0].vertex_y = ele->position_y - tbuf->vtx_spread * tstyle->text_size;
 		vtx[0].vertex_z = 0.0f;
 		vtx[0].texture_u = glyph->tex_coord_x - tbuf->tex_spread;
 		vtx[0].texture_v = glyph->tex_coord_y + glyph->tex_height + tbuf->tex_spread;
@@ -481,11 +491,11 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 		/* bottom right */
 #if TEXTFIELD_DEBUG
 		vtx[1].vertex_x = ele->position_x +
-			(glyph->width + tbuf->vtx_spread) * style->size;
+			(glyph->width + tbuf->vtx_spread) * tstyle->text_size;
 #else
-		vtx[1].vertex_x = ele->position_x + glyph->width * style->size;
+		vtx[1].vertex_x = ele->position_x + glyph->width * tstyle->text_size;
 #endif
-		vtx[1].vertex_y = ele->position_y - tbuf->vtx_spread * style->size;
+		vtx[1].vertex_y = ele->position_y - tbuf->vtx_spread * tstyle->text_size;
 		vtx[1].vertex_z = 0.0f;
 		vtx[1].texture_u = glyph->tex_coord_x + glyph->tex_width + tbuf->tex_spread;
 		vtx[1].texture_v = glyph->tex_coord_y + glyph->tex_height + tbuf->tex_spread;
@@ -493,24 +503,24 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 		/* top right */
 #if TEXTFIELD_DEBUG
 		vtx[2].vertex_x = ele->position_x + 
-			(glyph->width + tbuf->vtx_spread) * style->size;
+			(glyph->width + tbuf->vtx_spread) * tstyle->text_size;
 #else
-		vtx[2].vertex_x = ele->position_x + glyph->width * style->size;
+		vtx[2].vertex_x = ele->position_x + glyph->width * tstyle->text_size;
 #endif
 		vtx[2].vertex_y = ele->position_y - 
-			(glyph->height + tbuf->vtx_spread) * style->size;
+			(glyph->height + tbuf->vtx_spread) * tstyle->text_size;
 		vtx[2].vertex_z = 0.0f;
 		vtx[2].texture_u = glyph->tex_coord_x + glyph->tex_width + tbuf->tex_spread;
 		vtx[2].texture_v = glyph->tex_coord_y - tbuf->tex_spread;
 
 		/* top left */
 #if TEXTFIELD_DEBUG
-		vtx[3].vertex_x = ele->position_x - tbuf->vtx_spread * style->size;
+		vtx[3].vertex_x = ele->position_x - tbuf->vtx_spread * tstyle->text_size;
 #else
 		vtx[3].vertex_x = ele->position_x;
 #endif
 		vtx[3].vertex_y = ele->position_y -
-			(glyph->height + tbuf->vtx_spread) * style->size;
+			(glyph->height + tbuf->vtx_spread) * tstyle->text_size;
 		vtx[3].vertex_z = 0.0f;
 		vtx[3].texture_u = glyph->tex_coord_x - tbuf->tex_spread;
 		vtx[3].texture_v = glyph->tex_coord_y - tbuf->tex_spread;
@@ -529,17 +539,8 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 		fh_batch_push_index(batch, idx[1]);
 		fh_batch_push_index(batch, idx[2]);
 
-		for(i = 0; i < 4; i++) {
-			printf("[%d] x: %f, y: %f\n",
-					i,
-					vtx[i].vertex_x,
-					vtx[i].vertex_y);
-		}
-
 		run = ele->next;
 	}
-
-	printf("Finished!\n");
 
 	return 0;
 }

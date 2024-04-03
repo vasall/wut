@@ -44,17 +44,17 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->element_rect);
 
 	/* Uniform: u_color */
-	fh_color_get_fv(ele->style.infill.color, color);
+	fh_color_get_fv(ele->style.infill_color, color);
 	v_index[2] = fh_batch_push_uniform(ren, 2, color);
 
 	/* Uniform: u_radius */
-	fh_batch_push_uniform(ren, 3, ele->style.radius.corner);
+	fh_batch_push_uniform(ren, 3, ele->style.radius_corner);
 
 	/* Uniform: u_bwidth */
-	fh_batch_push_uniform(ren, 4, &ele->style.border.width);
+	fh_batch_push_uniform(ren, 4, &ele->style.border_width);
 
 	/* Uniform: u_bcolor */
-	fh_color_get_fv(ele->style.border.color, color);
+	fh_color_get_fv(ele->style.border_color, color);
 	fh_batch_push_uniform(ren, 5, color);
 
 	/* Uniform: u_limit */
@@ -97,14 +97,15 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele)
 	fh_batch_push_index(ren, indices[1]);
 	fh_batch_push_index(ren, indices[2]);
 
+#if 0
 	printf("Render \"%s\": [%d, %d, %d, %d]\n", 
 			ele->name,
 			p0x, p0y,
 			p1x, p1y);
+#endif
 
 	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
-		printf("Render widget\n");
 		fh_RenderWidget(ele->widget);
 	}
 }
@@ -129,16 +130,16 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 
 	/* vertical */
 	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_V) {
-		s32 p0x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width - 10;
-		s32 p0y = ele->element_rect.y + ele->style.border.width;
-		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
-		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
+		s32 p0x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width - 10;
+		s32 p0y = ele->element_rect.y + ele->style.border_width;
+		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width;
+		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width;
 
 		fh_rect_set(&rect,
 				p0x,
 				p0y,
 				10,
-				ele->element_rect.h - (ele->style.border.width * 2));
+				ele->element_rect.h - (ele->style.border_width * 2));
 
 
 		/* Unioform: u_rect */
@@ -185,15 +186,15 @@ FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *e
 
 	/* horizontal */
 	if(ele->scrollbar_flags & FH_RESTYLE_SCROLL_H) {
-		s32 p0x = ele->element_rect.x + ele->style.border.width;
-		s32 p0y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width - 10;
-		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border.width;
-		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border.width;
+		s32 p0x = ele->element_rect.x + ele->style.border_width;
+		s32 p0y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width - 10;
+		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width;
+		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width;
 
 		fh_rect_set(&rect,
 				p0x,
 				p0y, 
-				ele->element_rect.w - (ele->style.border.width * 2),
+				ele->element_rect.w - (ele->style.border_width * 2),
 				10);
 
 

@@ -48,8 +48,8 @@ const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS] = {
 	{FH_SHEET_FLEX,       0,	144},	/* 26 text_size 	    */
 	{FH_SHEET_HEXCODE,    0,	152},	/* 27 text_color 	    */
 	{FH_SHEET_FLEX,       0,	156},	/* 28 text_mass 	    */
-	{FH_SHEET_KEYWORD,    1,	164},	/* 29 text_options 	    */
-	{FH_SHEET_KEYWORD,    8,	165},	/* 30 text_wrap_mode 	    */
+	{FH_SHEET_KEYWORD,    8,	164},	/* 29 text_options 	    */
+	{FH_SHEET_KEYWORD,    9,	165},	/* 30 text_wrap_mode 	    */
 	{FH_SHEET_FLEX,	      0,	166},	/* 31 text_spacing          */
 	{FH_SHEET_FLEX,	      0,	174}	/* 32 line_height 	    */
 };
