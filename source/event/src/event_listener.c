@@ -20,12 +20,12 @@
  */
 
 
-FH_XMOD struct fh_event_handler *fh_handler_create(void)
+WT_XMOD struct wt_event_handler *wt_handler_create(void)
 {
-	struct fh_event_handler *hdl;
+	struct wt_event_handler *hdl;
 
-	if(!(hdl = fh_malloc(sizeof(struct fh_event_handler)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for event handler");
+	if(!(hdl = wt_malloc(sizeof(struct wt_event_handler)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for event handler");
 		return NULL;
 	}
 
@@ -36,13 +36,13 @@ FH_XMOD struct fh_event_handler *fh_handler_create(void)
 }
 
 
-FH_XMOD void fh_handler_destroy(struct fh_event_handler *hdl)
+WT_XMOD void wt_handler_destroy(struct wt_event_handler *hdl)
 {
-	struct fh_event_listener *run;
-	struct fh_event_listener *along;
+	struct wt_event_listener *run;
+	struct wt_event_listener *along;
 
-	struct fh_event_listener *with;
-	struct fh_event_listener *me;
+	struct wt_event_listener *with;
+	struct wt_event_listener *me;
 
 	if(!hdl)
 		return;
@@ -55,7 +55,7 @@ FH_XMOD void fh_handler_destroy(struct fh_event_handler *hdl)
 		while(with) {
 			me = with->below;
 			
-			fh_free(with);	
+			wt_free(with);	
 
 			with = me;
 		}
@@ -63,15 +63,15 @@ FH_XMOD void fh_handler_destroy(struct fh_event_handler *hdl)
 		run = along;
 	}
 
-	fh_free(hdl);
+	wt_free(hdl);
 }
 
 
-FH_XMOD void fh_handler_add(struct fh_event_handler *hdl, 
-		struct fh_event_listener *lst)
+WT_XMOD void wt_handler_add(struct wt_event_handler *hdl, 
+		struct wt_event_listener *lst)
 {
-	struct fh_event_listener *run;
-	struct fh_event_listener *prev = NULL;
+	struct wt_event_listener *run;
+	struct wt_event_listener *prev = NULL;
 
 	/*
 	 * If the table is empty just add it to the beginning.
@@ -110,13 +110,13 @@ FH_XMOD void fh_handler_add(struct fh_event_handler *hdl,
 }
 
 
-FH_XMOD void fh_handler_remove(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name)
+WT_XMOD void wt_handler_remove(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name)
 {
-	struct fh_event_listener *prev_column = NULL;
-	struct fh_event_listener *run;
-	struct fh_event_listener *prev_entry = NULL;
-	struct fh_event_listener *run_down;
+	struct wt_event_listener *prev_column = NULL;
+	struct wt_event_listener *run;
+	struct wt_event_listener *prev_entry = NULL;
+	struct wt_event_listener *run_down;
 
 
 	run =  hdl->listener;
@@ -149,10 +149,10 @@ FH_XMOD void fh_handler_remove(struct fh_event_handler *hdl,
 }
 
 
-FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
-		struct fh_event *evt)
+WT_XMOD s8 wt_handler_rundow(struct wt_event_handler *hdl,
+		struct wt_event *evt)
 {
-	struct fh_event_listener *run;
+	struct wt_event_listener *run;
 
 	run = hdl->listener;
 	while(run) {
@@ -172,18 +172,18 @@ FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
 }
 
 
-FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr)
+WT_XMOD struct wt_event_handler *wt_handler_retrieve(void *ptr)
 {
 	if(!ptr)
 		return NULL;
 
 
 	switch(*(u8 *)ptr) {
-		case FH_IDT_WINDOW:
-			return ((struct fh_window *)ptr)->event_handler;
+		case WT_IDT_WINDOW:
+			return ((struct wt_window *)ptr)->event_handler;
 
-		case FH_IDT_ELEMENT:
-			return ((struct fh_element *)ptr)->event_handler;
+		case WT_IDT_ELEMENT:
+			return ((struct wt_element *)ptr)->event_handler;
 	}
 
 	return NULL;
@@ -199,19 +199,19 @@ FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr)
  */
 
 
-FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name, fh_evt_cfnc fnc,
+WT_API s8 wt_BindEventListener(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name, wt_evt_cfnc fnc,
 		void *data)
 {
-	struct fh_event_listener *lst;
+	struct wt_event_listener *lst;
 
 	if(!hdl) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
-	if(!(lst = fh_malloc(sizeof(struct fh_event_listener)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for listener");
+	if(!(lst = wt_malloc(sizeof(struct wt_event_listener)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for listener");
 		return -1;
 	}
 
@@ -223,14 +223,14 @@ FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
 	lst->next = NULL;
 	lst->below = NULL;
 
-	fh_handler_add(hdl, lst);
+	wt_handler_add(hdl, lst);
 
 	return 0;
 }
 
 
-FH_API void fh_UnbindEventListener(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name)
+WT_API void wt_UnbindEventListener(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name)
 {
-	fh_handler_remove(hdl, type, name);
+	wt_handler_remove(hdl, type, name);
 }

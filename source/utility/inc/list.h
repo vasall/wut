@@ -1,11 +1,11 @@
-#ifndef _FH_UTILITY_LIST_H
-#define _FH_UTILITY_LIST_H
+#ifndef _WT_UTILITY_LIST_H
+#define _WT_UTILITY_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct fh_list {
+struct wt_list {
 	s16 size;	/* The size of a single entry */
 
 	s16 count;	/* The number of entries */
@@ -24,7 +24,7 @@ struct fh_list {
  * Returns: Either a pointer to the newly created list or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_list *fh_list_create(s16 size, s16 alloc);
+WT_API struct wt_list *wt_list_create(s16 size, s16 alloc);
 
 
 /*
@@ -32,7 +32,7 @@ FH_API struct fh_list *fh_list_create(s16 size, s16 alloc);
  *
  * @lst: Pointer to the list
  */
-FH_API void fh_list_destroy(struct fh_list *lst);
+WT_API void wt_list_destroy(struct wt_list *lst);
 
 
 /*
@@ -44,7 +44,7 @@ FH_API void fh_list_destroy(struct fh_list *lst);
  * Returns: On success the number of elements in the list and if an error
  *          occurred -1
  */
-FH_API s16 fh_list_push(struct fh_list *lst, void *inp);
+WT_API s16 wt_list_push(struct wt_list *lst, void *inp);
 
 
 /*
@@ -56,7 +56,7 @@ FH_API s16 fh_list_push(struct fh_list *lst, void *inp);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-FH_API s16 fh_list_pop(struct fh_list *lst, void *out);
+WT_API s16 wt_list_pop(struct wt_list *lst, void *out);
 
 
 /*
@@ -67,7 +67,7 @@ FH_API s16 fh_list_pop(struct fh_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-FH_API s16 fh_list_shift(struct fh_list *lst, void *out);
+WT_API s16 wt_list_shift(struct wt_list *lst, void *out);
 
 
 /*
@@ -78,7 +78,7 @@ FH_API s16 fh_list_shift(struct fh_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-FH_API s16 fh_list_test_head(struct fh_list *lst, void *out);
+WT_API s16 wt_list_test_head(struct wt_list *lst, void *out);
 
 
 /*
@@ -89,7 +89,7 @@ FH_API s16 fh_list_test_head(struct fh_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out);
+WT_API s16 wt_list_test_tail(struct wt_list *lst, void *out);
 
 
 /*
@@ -105,10 +105,10 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out);
  * Returns: 1 if an element has been returned, 0 if empty or out of bounds and
  * 	    -1 if an error occurred
  */
-FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void **out);
+WT_API s8 wt_list_get(struct wt_list *lst, u16 idx, void **out);
 
 
-typedef s8 (*fh_list_fnc_t)(void *entry, s16 idx, void *data);
+typedef s8 (*wt_list_fnc_t)(void *entry, s16 idx, void *data);
 
 
 /*
@@ -121,6 +121,6 @@ typedef s8 (*fh_list_fnc_t)(void *entry, s16 idx, void *data);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data);
+WT_API s8 wt_list_apply(struct wt_list *lst, wt_list_fnc_t fnc, void *data);
 
-#endif /* _FH_UTILITY_LIST_H */
+#endif /* _WT_UTILITY_LIST_H */

@@ -11,17 +11,17 @@
 #include <stdlib.h>
 
 
-FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
+WT_INTERN struct wt_texture *tex_create(char *name, u16 w, u16 h,
 		GLenum format, u8 *px)
 {
-	struct fh_texture *tex;
+	struct wt_texture *tex;
 
 	if(!px) {
 		return NULL;
 	}
 
-	if(!(tex = fh_malloc(sizeof(struct fh_texture)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for texture");
+	if(!(tex = wt_malloc(sizeof(struct wt_texture)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for texture");
 		goto err_return;
 	}
 
@@ -58,18 +58,18 @@ FH_INTERN struct fh_texture *tex_create(char *name, u16 w, u16 h,
 	return tex;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new texture");
+	WT_ALARM(WT_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
 
-FH_INTERN struct fh_texture *tex_load(char *name, char *pth)
+WT_INTERN struct wt_texture *tex_load(char *name, char *pth)
 {
-	struct fh_fs_r_image img;
-	struct fh_texture *tex;
+	struct wt_fs_r_image img;
+	struct wt_texture *tex;
 
 	/* First load the raw pixel data from a PNG */
-	if((fh_fs_image(pth, &img)) < 0)
+	if((wt_fs_image(pth, &img)) < 0)
 		goto err_return;
 
 	/* Then create an OpenGL texture and past them */
@@ -77,58 +77,58 @@ FH_INTERN struct fh_texture *tex_load(char *name, char *pth)
 		goto err_cleanup_img;
 
 	/* Finally clean up the loading buffer */
-	fh_fs_image_cleanup(&img);
+	wt_fs_image_cleanup(&img);
 
 	return tex;
 
 err_cleanup_img:
-	fh_fs_image_cleanup(&img);
+	wt_fs_image_cleanup(&img);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to load texture");
+	WT_ALARM(WT_ERROR, "Failed to load texture");
 	return NULL;
 }
 
 
-FH_INTERN void tex_destroy(struct fh_texture *tex)
+WT_INTERN void tex_destroy(struct wt_texture *tex)
 {
 	glDeleteTextures(1, &tex->texture);
-	fh_free(tex);
+	wt_free(tex);
 }
 
 
-FH_INTERN void tex_batch_cfnc_push(struct fh_batch *ren, void *data)
+WT_INTERN void tex_batch_cfnc_push(struct wt_batch *ren, void *data)
 {
 	s32 frame[2];
-	struct fh_rect *ref = (struct fh_rect *)data;
+	struct wt_rect *ref = (struct wt_rect *)data;
 
 	frame[0] = ref->w;
 	frame[1] = ref->h;
-	fh_batch_push_uniform(ren, 0, frame);
+	wt_batch_push_uniform(ren, 0, frame);
 
 }
 
-FH_INTERN s8 tex_create_batch(struct fh_texture *tex)
+WT_INTERN s8 tex_create_batch(struct wt_texture *tex)
 {
-	struct fh_shader *shd;
-	struct fh_batch *ren;
+	struct wt_shader *shd;
+	struct wt_batch *ren;
 
-	struct fh_vertex_attrib v_attributes[] = {
+	struct wt_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{2, GL_FLOAT},		/* uv-coords */
 		{3, GL_INT}		/* 0: shape, 1: limits */
 	};
 
-	struct fh_uniform_temp uniforms[] = {
-		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_DEFAULT},	 /* 0 */
-		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT},	 /* 1 */
-		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}, /* 2 */
-		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 3 */
+	struct wt_uniform_temp uniforms[] = {
+		{"u_frame", WT_UNIFORM_2IV, 1, WT_UNIFORM_F_DEFAULT},	 /* 0 */
+		{"u_rect", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT},	 /* 1 */
+		{"u_radius", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}, /* 2 */
+		{"u_limit", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}	 /* 3 */
 	};
 
-	shd = fh_GetShader(tex->context, "__def_texture_shader");
+	shd = wt_GetShader(tex->context, "__def_texture_shader");
 
-	ren = fh_batch_create(
+	ren = wt_batch_create(
 			shd,		/* Pointer to the shader to use */
 			tex,		/* Pointer to the texture to use */
 			3,		/* Number of vertex attributes */
@@ -144,8 +144,8 @@ FH_INTERN s8 tex_create_batch(struct fh_texture *tex)
 	if(!ren)
 		return -1;
 
-	if((tex->batch_id = fh_ContextAddBatch(tex->context, &ren)) < 0) {
-		fh_batch_destroy(ren);
+	if((tex->batch_id = wt_ContextAddBatch(tex->context, &ren)) < 0) {
+		wt_batch_destroy(ren);
 		return -1;
 	}
 
@@ -153,9 +153,9 @@ FH_INTERN s8 tex_create_batch(struct fh_texture *tex)
 }
 
 
-FH_INTERN void tex_destroy_batch(struct fh_texture *tex)
+WT_INTERN void tex_destroy_batch(struct wt_texture *tex)
 {
-	fh_ContextRmvBatch(tex->context, tex->batch_id);
+	wt_ContextRmvBatch(tex->context, tex->batch_id);
 }
 
 
@@ -168,19 +168,19 @@ FH_INTERN void tex_destroy_batch(struct fh_texture *tex)
  */
 
 
-FH_API s8 fh_InitTextureTable(struct fh_context *ctx)
+WT_API s8 wt_InitTextureTable(struct wt_context *ctx)
 {
-	struct fh_statlist *lst;
+	struct wt_statlist *lst;
 	s16 size;		
 
 	if(!ctx) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	size = sizeof(struct fh_texture *);
-	if(!(lst = fh_statlist_create(size, FH_TEXTURE_SLOTS))) {
-		FH_ALARM(FH_ERROR, "Failed to create fh_table");
+	size = sizeof(struct wt_texture *);
+	if(!(lst = wt_statlist_create(size, WT_TEXTURE_SLOTS))) {
+		WT_ALARM(WT_ERROR, "Failed to create wt_table");
 		goto err_return;	
 	}
 
@@ -190,30 +190,30 @@ FH_API s8 fh_InitTextureTable(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to initialize the texture table");
+	WT_ALARM(WT_ERROR, "Failed to initialize the texture table");
 	return -1;
 }
 
 
-FH_API void fh_CloseTextureTable(struct fh_context *ctx)
+WT_API void wt_CloseTextureTable(struct wt_context *ctx)
 {
 	if(!ctx) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_statlist_destroy(ctx->textures);
+	wt_statlist_destroy(ctx->textures);
 	ctx->textures = NULL;
 }
 
 
-FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
+WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
 		u16 w, u16 h, GLenum format, u8 *px)
 {
-	struct fh_texture *tex;
+	struct wt_texture *tex;
 
 	if(!ctx || !name || w < 1 || h < 1 || !px) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -228,7 +228,7 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
 		goto err_destroy_tex;
 
 	/* Add the texture to the list  */
-	if((tex->texture_slot = fh_statlist_add(ctx->textures, &tex)) < 0) {
+	if((tex->texture_slot = wt_statlist_add(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
 	}
 
@@ -241,17 +241,17 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new texture");
+	WT_ALARM(WT_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
 
-FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, char *pth)
+WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name, char *pth)
 {
-	struct fh_texture *tex;
+	struct wt_texture *tex;
 
 	if(!ctx || !name || !pth) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -265,7 +265,7 @@ FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name, cha
 		goto err_destroy_tex;
 
 	/* Add the texture to the list  */
-	if((tex->texture_slot = fh_statlist_add(ctx->textures, &tex)) < 0) {
+	if((tex->texture_slot = wt_statlist_add(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
 	}
 
@@ -278,28 +278,28 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to load new texture");
+	WT_ALARM(WT_ERROR, "Failed to load new texture");
 	return NULL;
 }
 
 
-FH_API void fh_RemoveTexture(struct fh_texture *tex)
+WT_API void wt_RemoveTexture(struct wt_texture *tex)
 {
 	if(!tex) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_ContextRemove(tex->context, FH_CONTEXT_TEXTURES, tex->name);
+	wt_ContextRemove(tex->context, WT_CONTEXT_TEXTURES, tex->name);
 }
 
 
-FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
+WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px)
 {
 	u32 newTex;
 
 	if(!tex) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -331,16 +331,16 @@ FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to resize texture");
+	WT_ALARM(WT_ERROR, "Failed to resize texture");
 	return -1;
 }
 
 
-FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
+WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px)
 {
 	if(!tex || !px) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -354,21 +354,21 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
 	return 0;
 }
 
-struct fh_tex_filter {
+struct wt_tex_filter {
 	char name[128];
 
 	s8 found;
 
-	struct fh_texture *tex;
+	struct wt_texture *tex;
 };
 
 
-FH_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
+WT_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 {
-	struct fh_texture *tex = (struct fh_texture *)(*(long *)ptr);
-	struct fh_tex_filter *pass = (struct fh_tex_filter *)data;
+	struct wt_texture *tex = (struct wt_texture *)(*(long *)ptr);
+	struct wt_tex_filter *pass = (struct wt_tex_filter *)data;
 
-	fh_Ignore(idx);
+	wt_Ignore(idx);
 
 	if(pass->found)
 		return 1;
@@ -385,19 +385,19 @@ FH_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 }
 
 
-FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name)
+WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name)
 {
-	struct fh_tex_filter flt;
+	struct wt_tex_filter flt;
 
 	if(!ctx || !name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	flt.found = 0;
 	strcpy(flt.name, name);
 
-	fh_statlist_apply(ctx->textures, &tex_cfnc_find, &flt);
+	wt_statlist_apply(ctx->textures, &tex_cfnc_find, &flt);
 
 	if(flt.found) {
 		return flt.tex;
@@ -406,12 +406,12 @@ FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name)
 	return NULL;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to get texture from texture table");
+	WT_ALARM(WT_ERROR, "Failed to get texture from texture table");
 	return NULL;
 }
 
 
-FH_API void fh_UseTexture(struct fh_texture *tex)
+WT_API void wt_UseTexture(struct wt_texture *tex)
 {
 	if(!tex) {
 		return;
@@ -422,7 +422,7 @@ FH_API void fh_UseTexture(struct fh_texture *tex)
 }
 
 
-FH_API void fh_UnuseTexture(void)
+WT_API void wt_UnuseTexture(void)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

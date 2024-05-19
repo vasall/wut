@@ -1,5 +1,5 @@
-#ifndef _FH_WINDOW_SUBSYSTEMS_SDL_H
-#define _FH_WINDOW_SUBSYSTEMS_SDL_H
+#ifndef _WT_WINDOW_SUBSYSTEMS_SDL_H
+#define _WT_WINDOW_SUBSYSTEMS_SDL_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -23,19 +23,19 @@
  * Returns: 0 on success or -1 if an error occurred
  *
  */
-FH_API s8 fh_sdl_init(void); 
+WT_API s8 wt_sdl_init(void); 
 
 
 /*
  * Shutdown the SDL-API.
  */
-FH_API void fh_sdl_quit(void);
+WT_API void wt_sdl_quit(void);
 
 
 /*
  * Print relevant information about SDL and it parts in the console.
  */
-FH_API void fh_sdl_print_info(void);
+WT_API void wt_sdl_print_info(void);
 
 
-#endif /* _FH_WINDOW_SUBSYSTEMS_SDL_H */
+#endif /* _WT_WINDOW_SUBSYSTEMS_SDL_H */

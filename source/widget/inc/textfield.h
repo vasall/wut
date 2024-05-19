@@ -1,5 +1,5 @@
-#ifndef _FH_WIDGET_TEXTFIELD_H
-#define _FH_WIDGET_TEXTFIELD_H
+#ifndef _WT_WIDGET_TEXTFIELD_H
+#define _WT_WIDGET_TEXTFIELD_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -7,16 +7,16 @@
 #include "graphic/inc/font.h"
 #include "graphic/inc/text.h"
 
-struct fh_textfield {
+struct wt_textfield {
 	/* A pointer to the element */
-	struct fh_element *element;
+	struct wt_element *element;
 
 	/* The content of the textfield */
 	s16 length;
 	char content[256];
 
 	/* The underlying text buffer used for rendering */
-	struct fh_text_buffer *tbuffer;
+	struct wt_text_buffer *tbuffer;
 };
 
 
@@ -28,8 +28,8 @@ struct fh_textfield {
  *
  * Returns: Either a pointer to the new textfield or NULL if an error occurred
  */
-FH_API struct fh_textfield *fh_textfield_create(struct fh_element *ele,
-		struct fh_font *font);
+WT_API struct wt_textfield *wt_textfield_create(struct wt_element *ele,
+		struct wt_font *font);
 
 
 /*
@@ -37,7 +37,7 @@ FH_API struct fh_textfield *fh_textfield_create(struct fh_element *ele,
  *
  * @txt: Pointer to the textfield
  */
-FH_API void fh_textfield_destroy(struct fh_textfield *txt);
+WT_API void wt_textfield_destroy(struct wt_textfield *txt);
 
 
 /*
@@ -45,7 +45,7 @@ FH_API void fh_textfield_destroy(struct fh_textfield *txt);
  *
  * @txtf: Pointer to the textfield
  */
-FH_API void fh_textfield_update(struct fh_textfield *txtf);
+WT_API void wt_textfield_update(struct wt_textfield *txtf);
 
 
 /*
@@ -53,6 +53,6 @@ FH_API void fh_textfield_update(struct fh_textfield *txtf);
  *
  * @txtf: Pointer to the textfield
  */
-FH_API void fh_textfield_render(struct fh_textfield *txtf);
+WT_API void wt_textfield_render(struct wt_textfield *txtf);
 
-#endif /* _FH_WIDGET_TEXTFIELD_H */
+#endif /* _WT_WIDGET_TEXTFIELD_H */

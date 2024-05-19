@@ -1,5 +1,5 @@
-#ifndef _FH_EVENT_LISTENER_H
-#define _FH_EVENT_LISTENER_H
+#ifndef _WT_EVENT_LISTENER_H
+#define _WT_EVENT_LISTENER_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -7,28 +7,28 @@
 #include "event/inc/event.h"
 #include "event/inc/event_types.h"
 
-#define FH_EVENT_LISTENER_NAME_LIMIT	128
+#define WT_EVENT_LISTENER_NAME_LIMIT	128
 
 
-struct fh_event_listener;
-struct fh_event_listener {
-	char name[FH_EVENT_LISTENER_NAME_LIMIT];
+struct wt_event_listener;
+struct wt_event_listener {
+	char name[WT_EVENT_LISTENER_NAME_LIMIT];
 
-	enum fh_event_type type;
+	enum wt_event_type type;
 
-	struct fh_event_listener *next;
-	struct fh_event_listener *below;
+	struct wt_event_listener *next;
+	struct wt_event_listener *below;
 
-	fh_evt_cfnc fnc;
+	wt_evt_cfnc fnc;
 
 	void *data;
 };
 
 
-struct fh_event_handler {
+struct wt_event_handler {
 	s8 number;
 
-	struct fh_event_listener *listener;
+	struct wt_event_listener *listener;
 };
 
 
@@ -46,7 +46,7 @@ struct fh_event_handler {
  * Returns: Either a pointer to the newly created event handler or NULL if an
  *          error occurred
  */
-FH_XMOD struct fh_event_handler *fh_handler_create(void);
+WT_XMOD struct wt_event_handler *wt_handler_create(void);
 
 
 /*
@@ -54,7 +54,7 @@ FH_XMOD struct fh_event_handler *fh_handler_create(void);
  *
  * @hdl: Pointer to the event handler
  */
-FH_XMOD void fh_handler_destroy(struct fh_event_handler *hdl);
+WT_XMOD void wt_handler_destroy(struct wt_event_handler *hdl);
 
 
 /*
@@ -63,8 +63,8 @@ FH_XMOD void fh_handler_destroy(struct fh_event_handler *hdl);
  * @hdl: Pointer to the event handler
  * @lst: The new event listener to add
  */
-FH_XMOD void fh_handler_add(struct fh_event_handler *hdl, 
-		struct fh_event_listener *lst);
+WT_XMOD void wt_handler_add(struct wt_event_handler *hdl, 
+		struct wt_event_listener *lst);
 
 
 /*
@@ -74,8 +74,8 @@ FH_XMOD void fh_handler_add(struct fh_event_handler *hdl,
  * @type: The type of the event listener
  * @name: The name of the event listener
  */
-FH_XMOD void fh_handler_remove(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name);
+WT_XMOD void wt_handler_remove(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name);
 
 /*
  * Throw the event at the event handler and see if it sticks.
@@ -85,8 +85,8 @@ FH_XMOD void fh_handler_remove(struct fh_event_handler *hdl,
  *
  * Returns: 1 if the event has been handled, and 0 if not
  */
-FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
-		struct fh_event *evt);
+WT_XMOD s8 wt_handler_rundow(struct wt_event_handler *hdl,
+		struct wt_event *evt);
 
 
 /*
@@ -96,7 +96,7 @@ FH_XMOD s8 fh_handler_rundow(struct fh_event_handler *hdl,
  *
  * Returns: Either a pointer to the handler or NULL if an error occurred
  */
-FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr);
+WT_XMOD struct wt_event_handler *wt_handler_retrieve(void *ptr);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -118,8 +118,8 @@ FH_XMOD struct fh_event_handler *fh_handler_retrieve(void *ptr);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name, fh_evt_cfnc fnc,
+WT_API s8 wt_BindEventListener(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name, wt_evt_cfnc fnc,
 		void *data);
 
 
@@ -132,8 +132,8 @@ FH_API s8 fh_BindEventListener(struct fh_event_handler *hdl,
  * @type: The type of the event listener
  * @name: The name of the event listener
  */
-FH_API void fh_UnbindEventListener(struct fh_event_handler *hdl,
-		enum fh_event_type type, char *name);
+WT_API void wt_UnbindEventListener(struct wt_event_handler *hdl,
+		enum wt_event_type type, char *name);
 
 
-#endif /* _FH_EVENT_LISTENER_H */
+#endif /* _WT_EVENT_LISTENER_H */

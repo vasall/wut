@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_H
-#define _FH_GRAPHIC_H
+#ifndef _WT_GRAPHIC_H
+#define _WT_GRAPHIC_H
 
 #include "graphic/inc/camera.h"
 #include "utility/inc/color.h"
@@ -13,4 +13,4 @@
 #include "graphic/inc/surface.h"
 #include "graphic/inc/texture.h"
 
-#endif /* _FH_GRAPHIC_H */
+#endif /* _WT_GRAPHIC_H */

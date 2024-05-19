@@ -11,23 +11,23 @@
 #include <stdlib.h>
 
 
-FH_API s8 fh_sdl_init(void)
+WT_API s8 wt_sdl_init(void)
 {
 	s32 imgFlags = IMG_INIT_PNG;
 
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		FH_ALARM(FH_ERROR, "Failed to initialize SDL");
-		FH_ALARM(FH_ERROR, SDL_GetError());
+		WT_ALARM(WT_ERROR, "Failed to initialize SDL");
+		WT_ALARM(WT_ERROR, SDL_GetError());
 		goto err_return;
 	}
 
 	if(TTF_Init() < 0) {
-		FH_ALARM(FH_ERROR, "Failed to initialize SDL_TTF");
+		WT_ALARM(WT_ERROR, "Failed to initialize SDL_TTF");
 		goto err_quit_sdl;
 	}
 
 	if(!(IMG_Init(imgFlags) & imgFlags)) {
-		FH_ALARM(FH_ERROR, "Failed to initialize SDL_IMG");
+		WT_ALARM(WT_ERROR, "Failed to initialize SDL_IMG");
 		goto err_quit_sdl;
 	}
 	
@@ -37,12 +37,12 @@ err_quit_sdl:
 	SDL_Quit();
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to initialize SDL module");
+	WT_ALARM(WT_ERROR, "Failed to initialize SDL module");
 	return -1;
 }
 
 
-FH_API void fh_sdl_quit(void)
+WT_API void wt_sdl_quit(void)
 {
 	if(TTF_WasInit())
 		TTF_Quit();
@@ -51,7 +51,7 @@ FH_API void fh_sdl_quit(void)
 }
 
 
-FH_API void fh_sdl_print_info(void)
+WT_API void wt_sdl_print_info(void)
 {
 	SDL_version sdl_comp;
 	SDL_version sdl_link;

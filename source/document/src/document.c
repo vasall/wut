@@ -18,22 +18,22 @@
  *
  */
 
-FH_INTERN s8 doc_cfnc_remove(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_remove(struct wt_element *ele, void *data)
 {
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	/* First detach the element */
-	fh_DetachElement(ele);
+	wt_DetachElement(ele);
 
 	/* Then destroy it */
-	fh_DestroyElement(ele);
+	wt_DestroyElement(ele);
 
 	return 0;
 }
 
-FH_INTERN s8 doc_cfnc_find(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_find(struct wt_element *ele, void *data)
 {
-	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
+	struct wt_ele_selector *sel = (struct wt_ele_selector *)data;
 
 	if(sel->state == 1)
 		return 1;
@@ -47,12 +47,12 @@ FH_INTERN s8 doc_cfnc_find(struct fh_element *ele, void *data)
 	return 0;
 }
 
-FH_INTERN s8 doc_cfnc_findpos(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_findpos(struct wt_element *ele, void *data)
 {
-	struct fh_ele_selector *sel = (struct fh_ele_selector *)data;
-	struct fh_rect rect;
+	struct wt_ele_selector *sel = (struct wt_ele_selector *)data;
+	struct wt_rect rect;
 
-	rect = fh_GetElementBox(ele);
+	rect = wt_GetElementBox(ele);
 
 	if(sel->state == 1)
 		return 1;
@@ -70,55 +70,55 @@ FH_INTERN s8 doc_cfnc_findpos(struct fh_element *ele, void *data)
 }
 
 
-FH_INTERN s8 doc_cfnc_update_style(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_update_style(struct wt_element *ele, void *data)
 {
-	fh_Ignore(data);
+	wt_Ignore(data);
 
-	fh_UpdateElementStyle(ele);
+	wt_UpdateElementStyle(ele);
 
 	return 0;
 }
 
 
-FH_INTERN s8 doc_cfnc_update_shape(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_update_shape(struct wt_element *ele, void *data)
 {
-	fh_Ignore(data);
+	wt_Ignore(data);
 
-	fh_UpdateElementChildrenShape(ele);
+	wt_UpdateElementChildrenShape(ele);
 
 	return 0;
 }
 
 
-FH_INTERN s8 doc_cfnc_render_ui(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_render_ui(struct wt_element *ele, void *data)
 {
-	struct fh_batch *batch = (struct fh_batch *)data;
+	struct wt_batch *batch = (struct wt_batch *)data;
 
-	fh_element_render(batch, ele);
+	wt_element_render(batch, ele);
 
 	return 0;
 }
 
 
-FH_INTERN s8 doc_cfnc_render_ui_post(struct fh_element *ele, void *data)
+WT_INTERN s8 doc_cfnc_render_ui_post(struct wt_element *ele, void *data)
 {
-	struct fh_batch *batch = (struct fh_batch *)data;
+	struct wt_batch *batch = (struct wt_batch *)data;
 
-	fh_element_ren_scrollbar(batch, ele);
+	wt_element_ren_scrollbar(batch, ele);
 
 	return 0;
 }
 
 
-FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
+WT_INTERN s8 doc_cfnc_show(struct wt_element  *ele, void *data)
 {
 	u8 i;
 
 	s32 lim = 16;
 
-	struct fh_rect r;
+	struct wt_rect r;
 
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	for(i = 0; i < ele->layer; i++) {
 		printf("  ");
@@ -132,14 +132,14 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 		printf(" ");
 
 
-	r = fh_GetBoundingBox(ele);
-	fh_rect_dump(&r);
+	r = wt_GetBoundingBox(ele);
+	wt_rect_dump(&r);
 	printf("  --  ");
-	r = fh_GetElementBox(ele);
-	fh_rect_dump(&r);
+	r = wt_GetElementBox(ele);
+	wt_rect_dump(&r);
 	printf("  --  ");
-	r = fh_GetContentBox(ele);
-	fh_rect_dump(&r);
+	r = wt_GetContentBox(ele);
+	wt_rect_dump(&r);
 
 	printf("\n");
 
@@ -147,43 +147,43 @@ FH_INTERN s8 doc_cfnc_show(struct fh_element  *ele, void *data)
 
 }
 
-FH_INTERN void doc_batch_cfnc_push(struct fh_batch *ren, void *data)
+WT_INTERN void doc_batch_cfnc_push(struct wt_batch *ren, void *data)
 {
 	s32 frame[2];
-	struct fh_rect *ref = (struct fh_rect *)data;
+	struct wt_rect *ref = (struct wt_rect *)data;
 
 	frame[0] = ref->w;
 	frame[1] = ref->h;
-	fh_batch_push_uniform(ren, 0, frame);
+	wt_batch_push_uniform(ren, 0, frame);
 
 }
 
 
-FH_INTERN s8 doc_create_batch(struct fh_document *doc)
+WT_INTERN s8 doc_create_batch(struct wt_document *doc)
 {
-	struct fh_shader *shd;
-	struct fh_batch *ren;
+	struct wt_shader *shd;
+	struct wt_batch *ren;
 
-	struct fh_vertex_attrib v_attributes[] = {
+	struct wt_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
 		{1, GL_INT}		/* type */
 	};
 
-	struct fh_uniform_temp uniforms[] = {
-		{"u_frame", FH_UNIFORM_2IV, 1, FH_UNIFORM_F_DEFAULT},	 /* 0 */
-		{"u_rect", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT},	 /* 1 */
-		{"u_color", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT},	 /* 2 */
-		{"u_radius", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}, /* 3 */
-		{"u_bwidth", FH_UNIFORM_1IV, 200, FH_UNIFORM_F_DEFAULT}, /* 4 */
-		{"u_bcolor", FH_UNIFORM_4FV, 200, FH_UNIFORM_F_DEFAULT}, /* 5 */
-		{"u_scroll", FH_UNIFORM_2IV, 200, FH_UNIFORM_F_DEFAULT}, /* 6 */
-		{"u_limit", FH_UNIFORM_4IV, 200, FH_UNIFORM_F_DEFAULT}	 /* 7 */
+	struct wt_uniform_temp uniforms[] = {
+		{"u_frame", WT_UNIFORM_2IV, 1, WT_UNIFORM_F_DEFAULT},	 /* 0 */
+		{"u_rect", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT},	 /* 1 */
+		{"u_color", WT_UNIFORM_4FV, 200, WT_UNIFORM_F_DEFAULT},	 /* 2 */
+		{"u_radius", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}, /* 3 */
+		{"u_bwidth", WT_UNIFORM_1IV, 200, WT_UNIFORM_F_DEFAULT}, /* 4 */
+		{"u_bcolor", WT_UNIFORM_4FV, 200, WT_UNIFORM_F_DEFAULT}, /* 5 */
+		{"u_scroll", WT_UNIFORM_2IV, 200, WT_UNIFORM_F_DEFAULT}, /* 6 */
+		{"u_limit", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}	 /* 7 */
 	};
 
-	shd = fh_GetShader(doc->context, "__def_block_shader");
+	shd = wt_GetShader(doc->context, "__def_block_shader");
 
-	ren = fh_batch_create(
+	ren = wt_batch_create(
 			shd,		/* Pointer to the shader to use */
 			NULL,		/* Pointer to the texture to use */
 			3,		/* Number of vertex attributes */
@@ -199,8 +199,8 @@ FH_INTERN s8 doc_create_batch(struct fh_document *doc)
 	if(!ren)
 		return -1;
 
-	if((doc->batch_id = fh_ContextAddBatch(doc->context, &ren)) < 0) {
-		fh_batch_destroy(ren);
+	if((doc->batch_id = wt_ContextAddBatch(doc->context, &ren)) < 0) {
+		wt_batch_destroy(ren);
 		return -1;
 	}
 
@@ -217,13 +217,13 @@ FH_INTERN s8 doc_create_batch(struct fh_document *doc)
  */
 
 
-FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
+WT_API struct wt_document *wt_CreateDocument(struct wt_window *win)
 {
-	struct fh_document *doc;
+	struct wt_document *doc;
 
 	/* Allocate memory for the document */
-	if(!(doc = fh_zalloc(sizeof(struct fh_document)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for document");
+	if(!(doc = wt_zalloc(sizeof(struct wt_document)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for document");
 		goto err_return;
 	}
 
@@ -235,8 +235,8 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->shape_ref = &win->shape;
 
 	/* Create the body element */	
-	if(!(doc->body = fh_CreateElement(doc, "body", FH_BODY, NULL))) {
-		FH_ALARM(FH_ERROR, "Failed to create body for document");
+	if(!(doc->body = wt_CreateElement(doc, "body", WT_BODY, NULL))) {
+		WT_ALARM(WT_ERROR, "Failed to create body for document");
 		goto err_free_doc;
 	}
 
@@ -249,7 +249,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 	doc->hovered	= NULL;
 
 	/* Create the view list */
-	if(!(doc->views = fh_CreateViewList(doc->context)))
+	if(!(doc->views = wt_CreateViewList(doc->context)))
 		goto err_destroy_body;
 
 	/* Create the default batch renderer */
@@ -257,107 +257,107 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win)
 		goto err_destroy_views;
 
 	/* Update the body element */
-	fh_UpdateDocument(doc);
+	wt_UpdateDocument(doc);
 
 	return doc;
 
 
 err_destroy_views:
-	fh_DestroyViewList(doc->views);
+	wt_DestroyViewList(doc->views);
 
 err_destroy_body:
-	fh_DestroyElement(doc->body);
+	wt_DestroyElement(doc->body);
 
 err_free_doc:
-	fh_free(doc);
+	wt_free(doc);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new document");
+	WT_ALARM(WT_ERROR, "Failed to create new document");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyDocument(struct fh_document *doc)
+WT_API void wt_DestroyDocument(struct wt_document *doc)
 {
 	if(!doc)
 		return;
 
 	/* If the document contains a body, recursivly remove it */
-	fh_RemoveElement(doc, doc->body);	
+	wt_RemoveElement(doc, doc->body);	
 
 	/* Then destroy all left over views */
-	fh_DestroyViewList(doc->views);
+	wt_DestroyViewList(doc->views);
 
-	fh_free(doc);
+	wt_free(doc);
 }
 
 
-FH_API void fh_ResizeDocument(struct fh_document *doc)
+WT_API void wt_ResizeDocument(struct wt_document *doc)
 {
 	if(!doc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/* Then resize the elements */
-	fh_UpdateDocument(doc);
+	wt_UpdateDocument(doc);
 }
 
 
-FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
-		struct fh_element *parent, char *name,
-		enum fh_element_type type, void *data)
+WT_API struct wt_element *wt_AddElement(struct wt_document *doc,
+		struct wt_element *parent, char *name,
+		enum wt_element_type type, void *data)
 {
-	struct fh_element *ele;
+	struct wt_element *ele;
 
 	if(!doc || !parent || !name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* Create new element */
-	if(!(ele = fh_CreateElement(doc, name, type, data))) {
-		FH_ALARM(FH_ERROR, "Failed to create new element for document");
+	if(!(ele = wt_CreateElement(doc, name, type, data))) {
+		WT_ALARM(WT_ERROR, "Failed to create new element for document");
 		goto err_return;
 	}
 
 	/* Attach element to parent */
-	if(fh_AttachElement(parent, ele) < 0) {
-		FH_ALARM(FH_ERROR, "Failed to attach element to parent");
+	if(wt_AttachElement(parent, ele) < 0) {
+		WT_ALARM(WT_ERROR, "Failed to attach element to parent");
 		goto err_destroy_ele;
 	}
 
 	/* Update the new element */
-	fh_UpdateDocumentBranch(doc, ele);
+	wt_UpdateDocumentBranch(doc, ele);
 
 	return ele;
 
 err_destroy_ele:
-	fh_DestroyElement(ele);
+	wt_DestroyElement(ele);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to add element to document");
+	WT_ALARM(WT_ERROR, "Failed to add element to document");
 	return NULL;
 }
 
 
-FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele)
+WT_API void wt_RemoveElement(struct wt_document *doc, struct wt_element *ele)
 {
 	if(!doc || !ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_element_hlf(ele, &doc_cfnc_remove, NULL, NULL);
+	wt_element_hlf(ele, &doc_cfnc_remove, NULL, NULL);
 }
 
 
-FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
+WT_API struct wt_element *wt_GetElement(struct wt_document *doc, char *name)
 {
-	struct fh_ele_selector sel;
+	struct wt_ele_selector sel;
 
 	if(!doc || !name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -366,25 +366,25 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name)
 	sel.element = NULL;
 
 	/* Recursivly search for the element in the document */
-	fh_element_hlf(doc->body, NULL, &doc_cfnc_find, &sel);
+	wt_element_hlf(doc->body, NULL, &doc_cfnc_find, &sel);
 
 	if(sel.state == 1) {
 		return sel.element;
 	}
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to get element");
+	WT_ALARM(WT_ERROR, "Failed to get element");
 	return NULL;
 }
 
 
-FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
-		struct fh_sin2 *pos)
+WT_API struct wt_element *wt_GetHoveredElement(struct wt_document *doc,
+		struct wt_sin2 *pos)
 {
-	struct fh_ele_selector sel;
+	struct wt_ele_selector sel;
 
 	if(!doc) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -392,7 +392,7 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	sel.pos = pos;
 	sel.element = NULL;
 
-	fh_element_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
+	wt_element_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
 
 	if(sel.state == 1) {
 		printf("Found an element\n");
@@ -404,21 +404,21 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
 	return NULL;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to get hovered element");
+	WT_ALARM(WT_ERROR, "Failed to get hovered element");
 	return NULL;
 }
 
 
-FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
-		struct fh_element *ele)
+WT_API void wt_UpdateDocumentBranch(struct wt_document *doc,
+		struct wt_element *ele)
 {
 	if(!doc || !ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/* First update the style */
-	fh_element_hlf(ele, &doc_cfnc_update_style, NULL, NULL);
+	wt_element_hlf(ele, &doc_cfnc_update_style, NULL, NULL);
 
 	/* 
 	 * Then update the shape of the element. Note that this works in a very
@@ -428,85 +428,85 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
 	 * the wanted element.
 	 */
 	if(!ele->parent) {
-		fh_element_adjust_shape(ele);
+		wt_element_adjust_shape(ele);
 
-		fh_element_hlf(ele, &doc_cfnc_update_shape, NULL, NULL);
+		wt_element_hlf(ele, &doc_cfnc_update_shape, NULL, NULL);
 	}
 	else {
-		fh_element_hlf(ele->parent, &doc_cfnc_update_shape, NULL, NULL);
+		wt_element_hlf(ele->parent, &doc_cfnc_update_shape, NULL, NULL);
 	}
 }
 
 
-FH_API void fh_UpdateDocument(struct fh_document *doc)
+WT_API void wt_UpdateDocument(struct wt_document *doc)
 {
 	if(!doc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_UpdateDocumentBranch(doc, doc->body);
+	wt_UpdateDocumentBranch(doc, doc->body);
 }
 
 
-FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
-		struct fh_element *ele)
+WT_API void wt_RenderDocumentUIBranch(struct wt_document *doc,
+		struct wt_element *ele)
 {
-	struct fh_batch *ren;
+	struct wt_batch *ren;
 
 	if(!doc || !ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	ren = fh_ContextGetBatch(doc->context, doc->batch_id);
+	ren = wt_ContextGetBatch(doc->context, doc->batch_id);
 
-	fh_element_hlf(ele,
+	wt_element_hlf(ele,
 			&doc_cfnc_render_ui,
 			&doc_cfnc_render_ui_post,
 			ren);
 }
 
 
-FH_API void fh_RenderDocumentUI(struct fh_document *doc)
+WT_API void wt_RenderDocumentUI(struct wt_document *doc)
 {
 	if(!doc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_RenderDocumentUIBranch(doc, doc->body);
+	wt_RenderDocumentUIBranch(doc, doc->body);
 
 }
 
 
-FH_API void fh_RenderDocument(struct fh_document *doc)
+WT_API void wt_RenderDocument(struct wt_document *doc)
 {
-	struct fh_batch *ren;
+	struct wt_batch *ren;
 
 	if(!doc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	ren = fh_ContextGetBatch(doc->context, doc->batch_id);
+	ren = wt_ContextGetBatch(doc->context, doc->batch_id);
 
-	fh_RenderDocumentUI(doc);
+	wt_RenderDocumentUI(doc);
 }
 
 
-FH_API void fh_ShowDocumentTree(struct fh_document *doc,
-		struct fh_element *ele)
+WT_API void wt_ShowDocumentTree(struct wt_document *doc,
+		struct wt_element *ele)
 {
-	struct fh_element *start;
+	struct wt_element *start;
 
 	if(!doc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	if(ele) start = ele;
 	else start = doc->body;
 
-	fh_element_hlf(start, &doc_cfnc_show, NULL, NULL);
+	wt_element_hlf(start, &doc_cfnc_show, NULL, NULL);
 }

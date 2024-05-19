@@ -6,7 +6,7 @@
 #include <math.h>
 
 
-FH_API f32 clamp(f32 v)
+WT_API f32 clamp(f32 v)
 {
 	if(v < 0.0) return 0.0;
 	if(v > 1.0) return 1.0;
@@ -14,12 +14,12 @@ FH_API f32 clamp(f32 v)
 }
 
 
-FH_API f32 dist(f32 x, f32 y, f32 xp, f32 yp)
+WT_API f32 dist(f32 x, f32 y, f32 xp, f32 yp)
 {
 	return (sqrt((x - xp) * (x - xp) + (y - yp) * (y - yp)));
 }
 
-FH_INTERN f32 lineSlope(fh_vec2_t a)
+WT_INTERN f32 lineSlope(wt_vec2_t a)
 { 
 	if(a[0] == 0)
 		return 0;
@@ -27,7 +27,7 @@ FH_INTERN f32 lineSlope(fh_vec2_t a)
 	return a[1] / a[0]; 
 }
 
-FH_API s32 line_cross(fh_vec2_t p0, fh_vec2_t v0, fh_vec2_t p1, fh_vec2_t v1, fh_vec2_t out)
+WT_API s32 line_cross(wt_vec2_t p0, wt_vec2_t v0, wt_vec2_t p1, wt_vec2_t v1, wt_vec2_t out)
 {
 	f32 slope_a = lineSlope(v0);
 	f32 slope_b = lineSlope(v1);
@@ -52,26 +52,26 @@ FH_API s32 line_cross(fh_vec2_t p0, fh_vec2_t v0, fh_vec2_t p1, fh_vec2_t v1, fh
  *
  */
 
-FH_API void fh_vec2_set(fh_vec2_t out, f32 x, f32 y)
+WT_API void wt_vec2_set(wt_vec2_t out, f32 x, f32 y)
 {
 	out[0] = x;
 	out[1] = y;
 }
 
 
-FH_API void fh_vec2_clr(fh_vec2_t in)
+WT_API void wt_vec2_clr(wt_vec2_t in)
 {
-	memset(in, 0, FH_VEC2_SIZE);
+	memset(in, 0, WT_VEC2_SIZE);
 }
 
 
-FH_API void fh_vec2_cpy(fh_vec2_t out, fh_vec2_t in)
+WT_API void wt_vec2_cpy(wt_vec2_t out, wt_vec2_t in)
 {
-	memcpy(out, in, FH_VEC2_SIZE);
+	memcpy(out, in, WT_VEC2_SIZE);
 }
 
 
-FH_API s32 fh_vec2_cmp(fh_vec2_t in1, fh_vec2_t in2)
+WT_API s32 wt_vec2_cmp(wt_vec2_t in1, wt_vec2_t in2)
 {
 	if(in1[0] != in2[0] || in1[1] != in2[1])
 		return 0;
@@ -80,64 +80,64 @@ FH_API s32 fh_vec2_cmp(fh_vec2_t in1, fh_vec2_t in2)
 }
 
 
-FH_API void fh_vec2_add(fh_vec2_t in1, fh_vec2_t in2, fh_vec2_t out)
+WT_API void wt_vec2_add(wt_vec2_t in1, wt_vec2_t in2, wt_vec2_t out)
 {
 	out[0] = in1[0] + in2[0];
 	out[1] = in1[1] + in2[1];
 }
 
 
-FH_API void fh_vec2_sub(fh_vec2_t in1, fh_vec2_t in2, fh_vec2_t out)
+WT_API void wt_vec2_sub(wt_vec2_t in1, wt_vec2_t in2, wt_vec2_t out)
 {
 	out[0] = in1[0] - in2[0];
 	out[1] = in1[1] - in2[1];
 }
 
 
-FH_API void fh_vec2_scl(fh_vec2_t in, f32 f, fh_vec2_t out)
+WT_API void wt_vec2_scl(wt_vec2_t in, f32 f, wt_vec2_t out)
 {
 	out[0] = in[0] * f;
 	out[1] = in[1] * f;
 }
 
 
-FH_API void fh_vec2_inv_scl(fh_vec2_t in, f32 f, fh_vec2_t out)
+WT_API void wt_vec2_inv_scl(wt_vec2_t in, f32 f, wt_vec2_t out)
 {
 	out[0] = in[0] / f;
 	out[1] = in[1] / f;
 }
 
 
-FH_API void fh_vec2_mult(fh_vec2_t in1, fh_vec2_t in2, fh_vec2_t out)
+WT_API void wt_vec2_mult(wt_vec2_t in1, wt_vec2_t in2, wt_vec2_t out)
 {
 	out[0] = in1[0] * in2[0];
 	out[1] = in1[1] * in2[1];
 }
 
 
-FH_API void fh_vec2_div(fh_vec2_t in1, fh_vec2_t in2, fh_vec2_t out)
+WT_API void wt_vec2_div(wt_vec2_t in1, wt_vec2_t in2, wt_vec2_t out)
 {
 	out[0] = in1[0] / in2[0];
 	out[1] = in1[1] / in2[1];
 }
 
 
-FH_API f32 fh_vec2_len(fh_vec2_t in)
+WT_API f32 wt_vec2_len(wt_vec2_t in)
 {
 	f64 l = (in[0] * in[0]) + (in[1] * in[1]);
 	return (f32)sqrt(l);
 }
 
 
-FH_API f32 fh_vec2_sqrlen(fh_vec2_t in)
+WT_API f32 wt_vec2_sqrlen(wt_vec2_t in)
 {
 	return (in[0] * in[0]) + (in[1] * in[1]);
 }
 
 
-FH_API void fh_vec2_nrm(fh_vec2_t in, fh_vec2_t out)
+WT_API void wt_vec2_nrm(wt_vec2_t in, wt_vec2_t out)
 {
-	f32 len = fh_vec2_len(in);
+	f32 len = wt_vec2_len(in);
 	if(len == 0.0) {
 		out[0] = 0.0;
 		out[1] = 0.0;
@@ -149,13 +149,13 @@ FH_API void fh_vec2_nrm(fh_vec2_t in, fh_vec2_t out)
 }
 
 
-FH_API f32 fh_vec2_dot(fh_vec2_t v1, fh_vec2_t v2)
+WT_API f32 wt_vec2_dot(wt_vec2_t v1, wt_vec2_t v2)
 {
 	return (v1[0] * v2[0]) + (v1[1] * v2[1]);
 }
 
 
-FH_API void fh_vec2_print(fh_vec2_t v)
+WT_API void wt_vec2_print(wt_vec2_t v)
 {
 	printf("%.2f/%.2f", v[0], v[1]);
 }
@@ -167,7 +167,7 @@ FH_API void fh_vec2_print(fh_vec2_t v)
  *
  */
 
-FH_API void fh_vec3_set(fh_vec3_t out, f32 x, f32 y, f32 z)
+WT_API void wt_vec3_set(wt_vec3_t out, f32 x, f32 y, f32 z)
 {
 	out[0] = x;
 	out[1] = y;
@@ -175,19 +175,19 @@ FH_API void fh_vec3_set(fh_vec3_t out, f32 x, f32 y, f32 z)
 }
 
 
-FH_API void fh_vec3_clr(fh_vec3_t in)
+WT_API void wt_vec3_clr(wt_vec3_t in)
 {
-	memset(in, 0, FH_VEC3_SIZE);
+	memset(in, 0, WT_VEC3_SIZE);
 }
 
 
-FH_API void fh_vec3_cpy(fh_vec3_t out, fh_vec3_t in)
+WT_API void wt_vec3_cpy(wt_vec3_t out, wt_vec3_t in)
 {
-	memcpy(out, in, FH_VEC3_SIZE);
+	memcpy(out, in, WT_VEC3_SIZE);
 }
 
 
-FH_API void fh_vec3_cpy_v2(fh_vec3_t out, fh_vec2_t in)
+WT_API void wt_vec3_cpy_v2(wt_vec3_t out, wt_vec2_t in)
 {
 	out[0] = in[0];
 	out[1] = 0.0;
@@ -195,7 +195,7 @@ FH_API void fh_vec3_cpy_v2(fh_vec3_t out, fh_vec2_t in)
 }
 
 
-FH_API s32 fh_vec3_cmp(fh_vec3_t in1, fh_vec3_t in2)
+WT_API s32 wt_vec3_cmp(wt_vec3_t in1, wt_vec3_t in2)
 {
 	if(in1[0] != in2[0] || in1[1] != in2[1] || in1[2] != in2[2])
 		return 0;
@@ -204,7 +204,7 @@ FH_API s32 fh_vec3_cmp(fh_vec3_t in1, fh_vec3_t in2)
 }
 
 
-FH_API void fh_vec3_add(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
+WT_API void wt_vec3_add(wt_vec3_t in1, wt_vec3_t in2, wt_vec3_t out)
 {
 	out[0] = in1[0] + in2[0];
 	out[1] = in1[1] + in2[1];
@@ -212,7 +212,7 @@ FH_API void fh_vec3_add(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_sub(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
+WT_API void wt_vec3_sub(wt_vec3_t in1, wt_vec3_t in2, wt_vec3_t out)
 {
 	out[0] = in1[0] - in2[0];
 	out[1] = in1[1] - in2[1];
@@ -220,7 +220,7 @@ FH_API void fh_vec3_sub(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_scl(fh_vec3_t in, f32 f, fh_vec3_t out)
+WT_API void wt_vec3_scl(wt_vec3_t in, f32 f, wt_vec3_t out)
 {
 	out[0] = in[0] * f;
 	out[1] = in[1] * f;
@@ -228,7 +228,7 @@ FH_API void fh_vec3_scl(fh_vec3_t in, f32 f, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_inv_scl(fh_vec3_t in, f32 f, fh_vec3_t out)
+WT_API void wt_vec3_inv_scl(wt_vec3_t in, f32 f, wt_vec3_t out)
 {
 	out[0] = in[0] / f;
 	out[1] = in[1] / f;
@@ -236,7 +236,7 @@ FH_API void fh_vec3_inv_scl(fh_vec3_t in, f32 f, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_mult(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
+WT_API void wt_vec3_mult(wt_vec3_t in1, wt_vec3_t in2, wt_vec3_t out)
 {
 	out[0] = in1[0] * in2[0];
 	out[1] = in1[1] * in2[1];
@@ -244,7 +244,7 @@ FH_API void fh_vec3_mult(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_div(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
+WT_API void wt_vec3_div(wt_vec3_t in1, wt_vec3_t in2, wt_vec3_t out)
 {
 	out[0] = in1[0] / in2[0];
 	out[1] = in1[1] / in2[1];
@@ -252,22 +252,22 @@ FH_API void fh_vec3_div(fh_vec3_t in1, fh_vec3_t in2, fh_vec3_t out)
 }
 
 
-FH_API f32 fh_vec3_len(fh_vec3_t in)
+WT_API f32 wt_vec3_len(wt_vec3_t in)
 {
 	f64 l = (in[0] * in[0]) + (in[1] * in[1]) + (in[2] * in[2]);
 	return (f32)sqrt(l);
 }
 
 
-FH_API f32 fh_vec3_sqrlen(fh_vec3_t in)
+WT_API f32 wt_vec3_sqrlen(wt_vec3_t in)
 {
 	return ((in[0] * in[0]) + (in[1] * in[1]) + (in[2] * in[2]));
 }
 
 
-FH_API void fh_vec3_nrm(fh_vec3_t in, fh_vec3_t out)
+WT_API void wt_vec3_nrm(wt_vec3_t in, wt_vec3_t out)
 {
-	f32 len = fh_vec3_len(in);
+	f32 len = wt_vec3_len(in);
 	if(len == 0.0) {
 		out[0] = 0.0;
 		out[1] = 0.0;
@@ -281,22 +281,22 @@ FH_API void fh_vec3_nrm(fh_vec3_t in, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_setlen(fh_vec3_t in, f32 l, fh_vec3_t out)
+WT_API void wt_vec3_setlen(wt_vec3_t in, f32 l, wt_vec3_t out)
 {
-	fh_vec3_t v;
+	wt_vec3_t v;
 
-	fh_vec3_nrm(in, v);
-	fh_vec3_scl(v, l, out);
+	wt_vec3_nrm(in, v);
+	wt_vec3_scl(v, l, out);
 }
 
 
-FH_API f32 fh_vec3_dot(fh_vec3_t v1, fh_vec3_t v2)
+WT_API f32 wt_vec3_dot(wt_vec3_t v1, wt_vec3_t v2)
 {
 	return (v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]);
 }
 
 
-FH_API void fh_vec3_cross(fh_vec3_t v1, fh_vec3_t v2, fh_vec3_t out)
+WT_API void wt_vec3_cross(wt_vec3_t v1, wt_vec3_t v2, wt_vec3_t out)
 {
 	out[0] = (v1[1] * v2[2]) - (v1[2] * v2[1]);
 	out[1] = (v1[2] * v2[0]) - (v1[0] * v2[2]);
@@ -304,54 +304,54 @@ FH_API void fh_vec3_cross(fh_vec3_t v1, fh_vec3_t v2, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_rot_x(fh_vec3_t in, f32 angle, fh_vec3_t out)
+WT_API void wt_vec3_rot_x(wt_vec3_t in, f32 angle, wt_vec3_t out)
 {
-	fh_mat3_t rmat;
-	fh_mat3_idt(rmat);
+	wt_mat3_t rmat;
+	wt_mat3_idt(rmat);
 	rmat[0x0] =  1.0;
 	rmat[0x4] =  cos(angle);
 	rmat[0x5] = -sin(angle);
 	rmat[0x7] =  sin(angle);
 	rmat[0x8] =  cos(angle);
-	fh_vec3_trans(in, rmat, out);
+	wt_vec3_trans(in, rmat, out);
 }
 
 
-FH_API void fh_vec3_rot_y(fh_vec3_t in, f32 angle, fh_vec3_t out)
+WT_API void wt_vec3_rot_y(wt_vec3_t in, f32 angle, wt_vec3_t out)
 {
-	fh_mat3_t rmat;
-	fh_mat3_idt(rmat);
+	wt_mat3_t rmat;
+	wt_mat3_idt(rmat);
 	rmat[0x0] =  cos(angle);
 	rmat[0x2] =  sin(angle);
 	rmat[0x3] =  1.0;
 	rmat[0x6] = -sin(angle);
 	rmat[0x8] =  cos(angle);
-	fh_vec3_trans(in, rmat, out);
+	wt_vec3_trans(in, rmat, out);
 }
 
 
-FH_API void fh_vec3_rot_z(fh_vec3_t in, f32 angle, fh_vec3_t out)
+WT_API void wt_vec3_rot_z(wt_vec3_t in, f32 angle, wt_vec3_t out)
 {
-	fh_mat3_t rmat;
-	fh_mat3_idt(rmat);
+	wt_mat3_t rmat;
+	wt_mat3_idt(rmat);
 	rmat[0x0] =  cos(angle);
 	rmat[0x1] = -sin(angle);
 	rmat[0x3] =  sin(angle);
 	rmat[0x4] =  cos(angle);
 	rmat[0x8] =  1.0;
-	fh_vec3_trans(in, rmat, out);
+	wt_vec3_trans(in, rmat, out);
 }
 
 
-FH_API void fh_vec3_rot_axes(fh_vec3_t in, f32 angle, fh_vec3_t axis, fh_vec3_t out)
+WT_API void wt_vec3_rot_axes(wt_vec3_t in, f32 angle, wt_vec3_t axis, wt_vec3_t out)
 {
-	fh_mat3_t rmat;
+	wt_mat3_t rmat;
 	f32 q0;
 	f32 q1;
 	f32 q2;
 	f32 q3;
 
-	fh_vec3_nrm(axis, axis);
+	wt_vec3_nrm(axis, axis);
 	q0 = cos(angle / 2);
 	q1 = sin(angle / 2) * axis[0];
 	q2 = sin(angle / 2) * axis[1];
@@ -367,14 +367,14 @@ FH_API void fh_vec3_rot_axes(fh_vec3_t in, f32 angle, fh_vec3_t axis, fh_vec3_t 
 	rmat[0x7] = 2 * (q3 * q2 + q0 * q1);
 	rmat[0x8] = q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3;
 
-	fh_vec3_trans(in, rmat, out);
+	wt_vec3_trans(in, rmat, out);
 }
 
 
-FH_API void fh_vec3_trans(fh_vec3_t in, fh_mat3_t mat, fh_vec3_t out)
+WT_API void wt_vec3_trans(wt_vec3_t in, wt_mat3_t mat, wt_vec3_t out)
 {
-	fh_vec3_t tmp;
-	fh_vec3_cpy(tmp, in);
+	wt_vec3_t tmp;
+	wt_vec3_cpy(tmp, in);
 
 	out[0] = tmp[0] * mat[0x0] + tmp[1] * mat[0x3] + tmp[2] * mat[0x6];
 	out[1] = tmp[0] * mat[0x1] + tmp[1] * mat[0x4] + tmp[2] * mat[0x7];
@@ -382,20 +382,20 @@ FH_API void fh_vec3_trans(fh_vec3_t in, fh_mat3_t mat, fh_vec3_t out)
 }
 
 
-FH_API void fh_vec3_calc_nrm(fh_vec3_t p0, fh_vec3_t p1, fh_vec3_t p2, fh_vec3_t nrm)
+WT_API void wt_vec3_calc_nrm(wt_vec3_t p0, wt_vec3_t p1, wt_vec3_t p2, wt_vec3_t nrm)
 {
-	fh_vec3_t d1;
-	fh_vec3_t d2;
+	wt_vec3_t d1;
+	wt_vec3_t d2;
 
-	fh_vec3_sub(p1, p0, d1);
-	fh_vec3_sub(p2, p0, d2);
+	wt_vec3_sub(p1, p0, d1);
+	wt_vec3_sub(p2, p0, d2);
 
-	fh_vec3_cross(d1, d2, nrm);
-	fh_vec3_nrm(nrm, nrm);
+	wt_vec3_cross(d1, d2, nrm);
+	wt_vec3_nrm(nrm, nrm);
 }
 
 
-FH_API f32 fh_vec3_barry_centric(fh_vec3_t p0, fh_vec3_t p1, fh_vec3_t p2, fh_vec2_t pos)
+WT_API f32 wt_vec3_barry_centric(wt_vec3_t p0, wt_vec3_t p1, wt_vec3_t p2, wt_vec2_t pos)
 {
 	f32 det;
 	f32 l1;
@@ -411,7 +411,7 @@ FH_API f32 fh_vec3_barry_centric(fh_vec3_t p0, fh_vec3_t p1, fh_vec3_t p2, fh_ve
 }
 
 
-FH_API void fh_vec3_flip(fh_vec3_t in, fh_vec3_t out)
+WT_API void wt_vec3_flip(wt_vec3_t in, wt_vec3_t out)
 {
 	out[0] = -in[0];
 	out[1] = -in[1];
@@ -419,31 +419,31 @@ FH_API void fh_vec3_flip(fh_vec3_t in, fh_vec3_t out)
 }
 
 
-FH_API f32 fh_vec3_angle(fh_vec3_t v1, fh_vec3_t v2)
+WT_API f32 wt_vec3_angle(wt_vec3_t v1, wt_vec3_t v2)
 {
 	f32 a;
 	f32 b;
 
-	a = fh_vec3_dot(v1, v2);
-	b = ABS(fh_vec3_len(v1)) * ABS(fh_vec3_len(v2));
+	a = wt_vec3_dot(v1, v2);
+	b = ABS(wt_vec3_len(v1)) * ABS(wt_vec3_len(v2));
 
 	return acos(a / b);
 }
 
 
-FH_API void fh_vec3_interp(fh_vec3_t v1, fh_vec3_t v2, f32 p, fh_vec3_t out)
+WT_API void wt_vec3_interp(wt_vec3_t v1, wt_vec3_t v2, f32 p, wt_vec3_t out)
 {
-	fh_vec3_t conv;
+	wt_vec3_t conv;
 
 	conv[0] = v1[0] + (v2[0] - v1[0]) * p;
 	conv[1] = v1[1] + (v2[1] - v1[1]) * p;
 	conv[2] = v1[2] + (v2[2] - v1[2]) * p;
 
-	fh_vec3_cpy(out, conv);
+	wt_vec3_cpy(out, conv);
 }
 
 
-FH_API void fh_vec3_print(fh_vec3_t v)
+WT_API void wt_vec3_print(wt_vec3_t v)
 {
 	printf("%.2f/%.2f/%.2f", v[0], v[1], v[2]);
 }
@@ -456,7 +456,7 @@ FH_API void fh_vec3_print(fh_vec3_t v)
  */
 
 
-FH_API void fh_vec4_set(fh_vec4_t out, f32 x, f32 y, f32 z, f32 w)
+WT_API void wt_vec4_set(wt_vec4_t out, f32 x, f32 y, f32 z, f32 w)
 {
 	out[0] = x;
 	out[1] = y;
@@ -465,19 +465,19 @@ FH_API void fh_vec4_set(fh_vec4_t out, f32 x, f32 y, f32 z, f32 w)
 }
 
 
-FH_API void fh_vec4_clr(fh_vec4_t in)
+WT_API void wt_vec4_clr(wt_vec4_t in)
 {
-	memset(in, 0, FH_VEC4_SIZE);
+	memset(in, 0, WT_VEC4_SIZE);
 }
 
 
-FH_API void fh_vec4_cpy(fh_vec4_t out, fh_vec4_t in)
+WT_API void wt_vec4_cpy(wt_vec4_t out, wt_vec4_t in)
 {
-	memcpy(out, in, FH_VEC4_SIZE);
+	memcpy(out, in, WT_VEC4_SIZE);
 }
 
 
-FH_API s32 fh_vec4_cmp(fh_vec4_t in1, fh_vec4_t in2)
+WT_API s32 wt_vec4_cmp(wt_vec4_t in1, wt_vec4_t in2)
 {
 	if(in1[0] != in2[0] || in1[1] != in2[1] || in1[2] != in2[2] ||
 			in1[3] != in2[3])
@@ -487,7 +487,7 @@ FH_API s32 fh_vec4_cmp(fh_vec4_t in1, fh_vec4_t in2)
 }
 
 
-FH_API void fh_vec4_add(fh_vec4_t in1, fh_vec4_t in2, fh_vec4_t out)
+WT_API void wt_vec4_add(wt_vec4_t in1, wt_vec4_t in2, wt_vec4_t out)
 {
 	out[0] = in1[0] + in2[0];
 	out[1] = in1[1] + in2[1];
@@ -496,7 +496,7 @@ FH_API void fh_vec4_add(fh_vec4_t in1, fh_vec4_t in2, fh_vec4_t out)
 }
 
 
-FH_API void fh_vec4_sub(fh_vec4_t in1, fh_vec4_t in2, fh_vec4_t out)
+WT_API void wt_vec4_sub(wt_vec4_t in1, wt_vec4_t in2, wt_vec4_t out)
 {
 	out[0] = in1[0] - in2[0];
 	out[1] = in1[1] - in2[1];
@@ -505,7 +505,7 @@ FH_API void fh_vec4_sub(fh_vec4_t in1, fh_vec4_t in2, fh_vec4_t out)
 }
 
 
-FH_API void fh_vec4_scl(fh_vec4_t in, f32 f, fh_vec4_t out)
+WT_API void wt_vec4_scl(wt_vec4_t in, f32 f, wt_vec4_t out)
 {
 	out[0] = in[0] * f;
 	out[1] = in[1] * f;
@@ -514,7 +514,7 @@ FH_API void fh_vec4_scl(fh_vec4_t in, f32 f, fh_vec4_t out)
 }
 
 
-FH_API f32 fh_vec4_len(fh_vec4_t in)
+WT_API f32 wt_vec4_len(wt_vec4_t in)
 {
 	f64 l;
 	l = (in[0] * in[0]) + (in[1] * in[1]) + (in[2] * in[2]) + (in[3] * in[3]);
@@ -522,9 +522,9 @@ FH_API f32 fh_vec4_len(fh_vec4_t in)
 }
 
 
-FH_API void fh_vec4_nrm(fh_vec4_t in, fh_vec4_t out)
+WT_API void wt_vec4_nrm(wt_vec4_t in, wt_vec4_t out)
 {
-	f32 len = fh_vec4_len(in);
+	f32 len = wt_vec4_len(in);
 	if(len == 0.0) {
 		out[0] = 0.0;
 		out[1] = 0.0;
@@ -540,17 +540,17 @@ FH_API void fh_vec4_nrm(fh_vec4_t in, fh_vec4_t out)
 }
 
 
-FH_API f32 fh_vec4_dot(fh_vec4_t in1, fh_vec4_t in2)
+WT_API f32 wt_vec4_dot(wt_vec4_t in1, wt_vec4_t in2)
 {
 	return (in1[0] * in2[0]) + (in1[1] * in2[1]) + (in1[2] * in2[2]) +
 		(in1[3] * in2[3]);
 }
 
 
-FH_API void fh_vec4_trans(fh_vec4_t in, fh_mat4_t mat, fh_vec4_t out)
+WT_API void wt_vec4_trans(wt_vec4_t in, wt_mat4_t mat, wt_vec4_t out)
 {
-	fh_vec4_t tmp;
-	fh_vec4_cpy(tmp, in);
+	wt_vec4_t tmp;
+	wt_vec4_cpy(tmp, in);
 
 	out[0] = tmp[0] * mat[0x0] + tmp[1] * mat[0x4] + tmp[2] * mat[0x8] + tmp[3] * mat[0xc];
 	out[1] = tmp[0] * mat[0x1] + tmp[1] * mat[0x5] + tmp[2] * mat[0x9] + tmp[3] * mat[0xd];
@@ -559,7 +559,7 @@ FH_API void fh_vec4_trans(fh_vec4_t in, fh_mat4_t mat, fh_vec4_t out)
 }
 
 
-FH_API void fh_vec4_print(fh_vec4_t in)
+WT_API void wt_vec4_print(wt_vec4_t in)
 {
 	printf("%.2f/%.2f/%.2f/%.2f", in[0], in[1], in[2], in[3]);
 }
@@ -568,33 +568,33 @@ FH_API void fh_vec4_print(fh_vec4_t in)
 
 
 
-FH_API void fh_mat3_zero(fh_mat3_t m) 
+WT_API void wt_mat3_zero(wt_mat3_t m) 
 {
 	memset(m, 0, MAT3_SIZE);
 }
 
 
-FH_API void fh_mat3_idt(fh_mat3_t m) 
+WT_API void wt_mat3_idt(wt_mat3_t m) 
 {
-	fh_mat3_zero(m);
+	wt_mat3_zero(m);
 	m[0x0] = 1.0;
 	m[0x4] = 1.0;
 	m[0x8] = 1.0;
 }
 
 
-FH_API void fh_mat3_cpy(fh_mat3_t out, fh_mat3_t in) 
+WT_API void wt_mat3_cpy(wt_mat3_t out, wt_mat3_t in) 
 {
 	memcpy(out, in, MAT3_SIZE);
 }
 
 
-FH_API void fh_mat3_mult(fh_mat3_t m1, fh_mat3_t m2, fh_mat3_t res)
+WT_API void wt_mat3_mult(wt_mat3_t m1, wt_mat3_t m2, wt_mat3_t res)
 {
 	s32 i, j, k;
-	fh_mat3_t ret;
-	fh_mat3_zero(ret);
-	fh_mat3_zero(res);
+	wt_mat3_t ret;
+	wt_mat3_zero(ret);
+	wt_mat3_zero(res);
 
 	for(i = 0; i < 3; i++) {
 		for(j = 0; j < 3; j++) {
@@ -606,11 +606,11 @@ FH_API void fh_mat3_mult(fh_mat3_t m1, fh_mat3_t m2, fh_mat3_t res)
 		}
 	}
 
-	fh_mat3_cpy(res, ret);
+	wt_mat3_cpy(res, ret);
 }
 
 
-FH_API void fh_mat3_print(fh_mat3_t m)
+WT_API void wt_mat3_print(wt_mat3_t m)
 {
 	s32 r, c;
 
@@ -623,7 +623,7 @@ FH_API void fh_mat3_print(fh_mat3_t m)
 }
 
 
-FH_API void fh_mat4_zero(fh_mat4_t m)
+WT_API void wt_mat4_zero(wt_mat4_t m)
 {
 	s32 i;
 
@@ -632,9 +632,9 @@ FH_API void fh_mat4_zero(fh_mat4_t m)
 }
 
 
-FH_API void fh_mat4_idt(fh_mat4_t m)
+WT_API void wt_mat4_idt(wt_mat4_t m)
 {
-	fh_mat4_zero(m);
+	wt_mat4_zero(m);
 	m[0x00] = 1.0;
 	m[0x05] = 1.0;
 	m[0x0a] = 1.0;
@@ -642,19 +642,19 @@ FH_API void fh_mat4_idt(fh_mat4_t m)
 }
 
 
-FH_API void fh_mat4_cpy(fh_mat4_t out, fh_mat4_t in)
+WT_API void wt_mat4_cpy(wt_mat4_t out, wt_mat4_t in)
 {
 	if(in)
 		memcpy(out, in, MAT4_SIZE);
 }
 
 
-FH_API void fh_mat4_mult(fh_mat4_t m1, fh_mat4_t m2, fh_mat4_t out)
+WT_API void wt_mat4_mult(wt_mat4_t m1, wt_mat4_t m2, wt_mat4_t out)
 {
 	s32 i, j, k;
 	f32 a, b;
-	fh_mat4_t conv;
-	fh_mat4_zero(conv);
+	wt_mat4_t conv;
+	wt_mat4_zero(conv);
 
 	for(i = 0; i < 4; i++) {
 		for(j = 0; j < 4; j++) {
@@ -667,11 +667,11 @@ FH_API void fh_mat4_mult(fh_mat4_t m1, fh_mat4_t m2, fh_mat4_t out)
 		}
 	}
 
-	fh_mat4_cpy(out, conv);
+	wt_mat4_cpy(out, conv);
 }
 
 
-FH_API void fh_mat4_inv(fh_mat4_t out, fh_mat4_t in)
+WT_API void wt_mat4_inv(wt_mat4_t out, wt_mat4_t in)
 {
 	f64 inv[16], det;
 	s32 i;
@@ -800,9 +800,9 @@ FH_API void fh_mat4_inv(fh_mat4_t out, fh_mat4_t in)
 }
 
 
-FH_API void fh_mat4_transp(fh_mat4_t out, fh_mat4_t in)
+WT_API void wt_mat4_transp(wt_mat4_t out, wt_mat4_t in)
 {
-	fh_mat4_t tmp;
+	wt_mat4_t tmp;
 
 	tmp[0x0] = in[0x0];
 	tmp[0x1] = in[0x4];
@@ -821,11 +821,11 @@ FH_API void fh_mat4_transp(fh_mat4_t out, fh_mat4_t in)
 	tmp[0xe] = in[0xb];
 	tmp[0xf] = in[0xf];
 
-	fh_mat4_cpy(out, tmp);
+	wt_mat4_cpy(out, tmp);
 }
 
 
-FH_API void fh_mat4_print(fh_mat4_t m)
+WT_API void wt_mat4_print(wt_mat4_t m)
 {
 	s32 r, c;
 
@@ -838,7 +838,7 @@ FH_API void fh_mat4_print(fh_mat4_t m)
 }
 
 
-FH_API void fh_mat4_std(fh_mat4_t m)
+WT_API void wt_mat4_std(wt_mat4_t m)
 {
 	s32 i;
 
@@ -850,7 +850,7 @@ FH_API void fh_mat4_std(fh_mat4_t m)
 }
 
 
-FH_API void fh_mat4_pfpos(fh_mat4_t m, fh_vec3_t v)
+WT_API void wt_mat4_pfpos(wt_mat4_t m, wt_vec3_t v)
 {	
 	m[0xc] = v[0];
 	m[0xd] = v[1];
@@ -860,7 +860,7 @@ FH_API void fh_mat4_pfpos(fh_mat4_t m, fh_vec3_t v)
 }
 
 
-FH_API void fh_mat4_rfqat(fh_mat4_t m, fh_vec4_t v)
+WT_API void wt_mat4_rfqat(wt_mat4_t m, wt_vec4_t v)
 {
 	m[0x0] = 1.0 - 2.0 * (v[2] * v[2] + v[3] * v[3]);
 	m[0x1] = 2.0 * (v[1] * v[2]) + 2.0 * (v[3] * v[0]);
@@ -881,19 +881,19 @@ FH_API void fh_mat4_rfqat(fh_mat4_t m, fh_vec4_t v)
 }
 
 
-FH_API void fh_mat4_rfvec(fh_mat4_t m, fh_vec3_t v)
+WT_API void wt_mat4_rfvec(wt_mat4_t m, wt_vec3_t v)
 {
-	fh_vec3_t up = {0, 0, 1};
-	fh_vec3_t xaxis;
-	fh_vec3_t yaxis;
+	wt_vec3_t up = {0, 0, 1};
+	wt_vec3_t xaxis;
+	wt_vec3_t yaxis;
 
-	fh_vec3_cross(up, v, xaxis);
-	fh_vec3_nrm(xaxis, xaxis);
+	wt_vec3_cross(up, v, xaxis);
+	wt_vec3_nrm(xaxis, xaxis);
 
-	fh_vec3_cross(v, xaxis, yaxis);
-	fh_vec3_nrm(yaxis, yaxis);
+	wt_vec3_cross(v, xaxis, yaxis);
+	wt_vec3_nrm(yaxis, yaxis);
 
-	fh_mat4_idt(m);
+	wt_mat4_idt(m);
 
 	m[0x0] = xaxis[0];
 	m[0x1] = yaxis[0];
@@ -910,7 +910,7 @@ FH_API void fh_mat4_rfvec(fh_mat4_t m, fh_vec3_t v)
 
 
 /* x: pitch, y: roll, z: yaw; angles in euler */
-FH_API void fh_mat4_rfagl(fh_mat4_t m, fh_vec3_t v)
+WT_API void wt_mat4_rfagl(wt_mat4_t m, wt_vec3_t v)
 {
 	f32 x = DEG_TO_RAD(v[0]);
 	f32 y = DEG_TO_RAD(v[1]);
@@ -928,7 +928,7 @@ FH_API void fh_mat4_rfagl(fh_mat4_t m, fh_vec3_t v)
 	f32 cosR = cos(z);
 	f32 sinR = sin(z);
 
-	fh_mat4_idt(m);
+	wt_mat4_idt(m);
 	m[0x0] = cosY * cosR + sinY * sinP * sinR;
 	m[0x1] = cosR * sinY * sinP - sinR * cosY;
 	m[0x2] = cosP * sinY;
@@ -945,7 +945,7 @@ FH_API void fh_mat4_rfagl(fh_mat4_t m, fh_vec3_t v)
 }
 
 
-FH_API void fh_mat4_pfpos_s(fh_mat4_t m, f32 x, f32 y, f32 z)
+WT_API void wt_mat4_pfpos_s(wt_mat4_t m, f32 x, f32 y, f32 z)
 {	
 	m[0xc] = x;
 	m[0xd] = y;
@@ -955,7 +955,7 @@ FH_API void fh_mat4_pfpos_s(fh_mat4_t m, f32 x, f32 y, f32 z)
 }
 
 
-FH_API void fh_mat4_rfqat_s(fh_mat4_t m, f32 w, f32 x, f32 y, f32 z)
+WT_API void wt_mat4_rfqat_s(wt_mat4_t m, f32 w, f32 x, f32 y, f32 z)
 {
 	m[0x0] = 1.0 - 2.0 * (y * y + z * z);
 	m[0x1] = 2.0 * (x * y) + 2.0 * (z * w);
@@ -976,15 +976,15 @@ FH_API void fh_mat4_rfqat_s(fh_mat4_t m, f32 w, f32 x, f32 y, f32 z)
 }
 
 
-/* see fh_mat4_rfagl() for parameter info */
-FH_API void fh_mat4_rfagl_s(fh_mat4_t m, f32 x, f32 y, f32 z)
+/* see wt_mat4_rfagl() for parameter info */
+WT_API void wt_mat4_rfagl_s(wt_mat4_t m, f32 x, f32 y, f32 z)
 {
-	fh_vec3_t v;
-	fh_mat4_t c;
+	wt_vec3_t v;
+	wt_mat4_t c;
 
-	fh_vec3_set(v, x, y, z);
-	fh_mat4_rfagl(c, v);
-	fh_mat4_cpy(m, c);
+	wt_vec3_set(v, x, y, z);
+	wt_mat4_rfagl(c, v);
+	wt_mat4_cpy(m, c);
 }
 
 

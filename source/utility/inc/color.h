@@ -1,5 +1,5 @@
-#ifndef _FH_UTILITY_COLOR_H
-#define _FH_UTILITY_COLOR_H
+#ifndef _WT_UTILITY_COLOR_H
+#define _WT_UTILITY_COLOR_H
 
 
 #include "core/inc/define.h"
@@ -9,15 +9,15 @@
  * A pixel is defined by 4 attributes representing the RGBA-values.
  * Each value can be set in range of 0 t0 255.
  */
-#define FH_COLOR_SIZE	(4*sizeof(u8))
-struct fh_color {	
+#define WT_COLOR_SIZE	(4*sizeof(u8))
+struct wt_color {	
 	u8 a;
 	u8 b;
 	u8 g;
 	u8 r;
 };
 
-typedef struct fh_color fh_color_t;
+typedef struct wt_color wt_color_t;
 
 
 /*
@@ -30,7 +30,7 @@ typedef struct fh_color fh_color_t;
  *
  * Returns: A color object
  */
-FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha);
+WT_API struct wt_color wt_color_set(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -43,7 +43,7 @@ FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha);
  *
  * Returns: The color as an unsigned integer
  */
-FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
+WT_API u32 wt_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -53,7 +53,7 @@ FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
  *
  * Returns: The color code
  */
-FH_API u32 fh_color_get(struct fh_color color);
+WT_API u32 wt_color_get(struct wt_color color);
 
 
 /*
@@ -62,7 +62,7 @@ FH_API u32 fh_color_get(struct fh_color color);
  * @color: The color struct
  * @fv: A float array to write the output color to
  */
-FH_API void fh_color_get_fv(struct fh_color color, float *fv);
+WT_API void wt_color_get_fv(struct wt_color color, float *fv);
 
 
 /*
@@ -73,7 +73,7 @@ FH_API void fh_color_get_fv(struct fh_color color, float *fv);
  *
  * Returns: The blended color
  */
-FH_API struct fh_color fh_BlendColor(struct fh_color a, struct fh_color b);
+WT_API struct wt_color wt_BlendColor(struct wt_color a, struct wt_color b);
 
 
 /*
@@ -83,13 +83,13 @@ FH_API struct fh_color fh_BlendColor(struct fh_color a, struct fh_color b);
  *
  * Returns: The color struct
  */
-FH_API struct fh_color fh_col_conv_itos(u32 v);
+WT_API struct wt_color wt_col_conv_itos(u32 v);
 
 
 /*
  * Reverse the order of the bytes.
  */
-FH_API struct fh_color fh_col_invform(struct fh_color in);
-FH_API u32 fh_col_invform_s32(u32 in);
+WT_API struct wt_color wt_col_invform(struct wt_color in);
+WT_API u32 wt_col_invform_s32(u32 in);
 
-#endif /* FH_UTILITY_COLOR_H */
+#endif /* WT_UTILITY_COLOR_H */

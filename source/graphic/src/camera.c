@@ -14,13 +14,13 @@
 
 
 
-FH_INTERN fh_vec3_t FH_CAM_RIGHT =    {1.0, 0.0, 0.0};
-FH_INTERN fh_vec3_t FH_CAM_FORWARD =  {0.0, 1.0, 0.0};
-FH_INTERN fh_vec3_t FH_CAM_UP =       {0.0, 0.0, 1.0};
+WT_INTERN wt_vec3_t WT_CAM_RIGHT =    {1.0, 0.0, 0.0};
+WT_INTERN wt_vec3_t WT_CAM_FORWARD =  {0.0, 1.0, 0.0};
+WT_INTERN wt_vec3_t WT_CAM_UP =       {0.0, 0.0, 1.0};
 
 
 
-FH_INTERN void cam_update_proj(struct fh_camera *cam)
+WT_INTERN void cam_update_proj(struct wt_camera *cam)
 {
 	f32 aov;
 	f32 asp;
@@ -44,7 +44,7 @@ FH_INTERN void cam_update_proj(struct fh_camera *cam)
 	right = top * asp;
 	left = -right; 
 
-	fh_mat4_idt(cam->projection_m);
+	wt_mat4_idt(cam->projection_m);
 
 	cam->projection_m[0x0] = (2 * near) / (right - left);
 	cam->projection_m[0x5] = (2 * near) / (top - bottom); 	
@@ -57,16 +57,16 @@ FH_INTERN void cam_update_proj(struct fh_camera *cam)
 }
 
 
-FH_INTERN void cam_update_view(struct fh_camera *cam)
+WT_INTERN void cam_update_view(struct wt_camera *cam)
 {
-	fh_vec3_t f;
-	fh_vec3_t r;
-	fh_vec3_t u;
-	fh_vec3_t p;	
+	wt_vec3_t f;
+	wt_vec3_t r;
+	wt_vec3_t u;
+	wt_vec3_t p;	
 
-	fh_mat4_t m;
+	wt_mat4_t m;
 
-	fh_mat4_t conv = {
+	wt_mat4_t conv = {
 		1.0,  0.0,  0.0,  0.0,
    		0.0,  1.0,  0.0,  0.0,
    		0.0,  0.0, -1.0,  0.0,
@@ -74,26 +74,26 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	};
 
 	/* Copy the current position of the camera */
-	fh_vec3_cpy(p, cam->pos);
+	wt_vec3_cpy(p, cam->pos);
 
-	/* Calculate the forward, right and up fh_vector for the camera */
-	if(cam->mode == FH_CAM_FOCUS) {
-		fh_vec4_t tmp = {0, 1, 0};
-		fh_vec4_trans(tmp, cam->forw_m, tmp);
+	/* Calculate the forward, right and up wt_vector for the camera */
+	if(cam->mode == WT_CAM_FOCUS) {
+		wt_vec4_t tmp = {0, 1, 0};
+		wt_vec4_trans(tmp, cam->forw_m, tmp);
 
-		fh_vec3_cpy(f, tmp);
-		fh_vec3_nrm(f, f);
+		wt_vec3_cpy(f, tmp);
+		wt_vec3_nrm(f, f);
 
-		fh_vec3_cross(f, FH_CAM_UP, r);
-		fh_vec3_nrm(r, r);
+		wt_vec3_cross(f, WT_CAM_UP, r);
+		wt_vec3_nrm(r, r);
 	}
 	else {
-		fh_vec3_cpy(f, cam->v_forward);
-		fh_vec3_cpy(r, cam->v_right);
+		wt_vec3_cpy(f, cam->v_forward);
+		wt_vec3_cpy(r, cam->v_right);
 	}
 
-	fh_vec3_cross(r, f, u);
-	fh_vec3_nrm(u, u);
+	wt_vec3_cross(r, f, u);
+	wt_vec3_nrm(u, u);
 
 
 	/*
@@ -102,7 +102,7 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	 * https:/gamedev.stackexchange.com/a/181826
 	 */
 
-	fh_mat4_idt(m);
+	wt_mat4_idt(m);
 
 	m[0x0] = r[0];
 	m[0x4] = r[1];
@@ -116,23 +116,23 @@ FH_INTERN void cam_update_view(struct fh_camera *cam)
 	m[0x6] = f[1];
 	m[0xa] = f[2];
 
-	fh_mat4_mult(conv, m, m);
+	wt_mat4_mult(conv, m, m);
 
-	fh_mat4_idt(cam->view_m);
+	wt_mat4_idt(cam->view_m);
 	cam->view_m[0xc] = -p[0];
 	cam->view_m[0xd] = -p[1];
 	cam->view_m[0xe] = -p[2];
 
-	fh_mat4_mult(m, cam->view_m, cam->view_m);
+	wt_mat4_mult(m, cam->view_m, cam->view_m);
 }
 
 
-FH_INTERN void cam_reorder_pipe(struct fh_camera *cam)
+WT_INTERN void cam_reorder_pipe(struct wt_camera *cam)
 {
 	if(!cam->view)
 		return;
 
-	fh_UpdateViewPipe(cam->view);
+	wt_UpdateViewPipe(cam->view);
 }
 
 
@@ -145,34 +145,34 @@ FH_INTERN void cam_reorder_pipe(struct fh_camera *cam)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
-		struct fh_view *view)
+WT_API struct wt_camera *wt_CreateCamera(struct wt_camera_info info,
+		struct wt_view *view)
 {
-	struct fh_camera *cam;
+	struct wt_camera *cam;
 
-	if(!(cam = fh_malloc(sizeof(struct fh_camera)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for camera");
+	if(!(cam = wt_malloc(sizeof(struct wt_camera)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for camera");
 		goto err_return;
 	}
 
 	cam->view = view;
-	cam->mode = FH_CAM_FREE;
+	cam->mode = WT_CAM_FREE;
 	cam->info = info;
 
 	/* Set the default position of the camera */
-	fh_vec3_clr(cam->pos);
+	wt_vec3_clr(cam->pos);
 
-	/* Set the direction-fh_vector for the camera */	
-	fh_vec3_cpy(cam->v_forward, FH_CAM_FORWARD);
-	fh_vec3_cpy(cam->v_right,   FH_CAM_RIGHT);
+	/* Set the direction-wt_vector for the camera */	
+	wt_vec3_cpy(cam->v_forward, WT_CAM_FORWARD);
+	wt_vec3_cpy(cam->v_right,   WT_CAM_RIGHT);
 
 	/* Set the sensitivity of the mouse */
 	cam->sens = 0.01;
 
 	/* Calculate the initial distance */
-	cam->dist = fh_vec3_len(cam->pos);
+	cam->dist = wt_vec3_len(cam->pos);
 
-	fh_mat4_idt(cam->forw_m);
+	wt_mat4_idt(cam->forw_m);
 
 	/* Calculate the projection- and view-matrix */
 	cam_update_proj(cam);
@@ -181,66 +181,66 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
 	return cam;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new camera");
+	WT_ALARM(WT_ERROR, "Failed to create new camera");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyCamera(struct fh_camera *cam)
+WT_API void wt_DestroyCamera(struct wt_camera *cam)
 {	
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_free(cam);
+	wt_free(cam);
 }
 
 
-FH_API void fh_GetViewMat(struct fh_camera *cam, fh_mat4_t out)
+WT_API void wt_GetViewMat(struct wt_camera *cam, wt_mat4_t out)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
-		fh_mat4_idt(out);
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		wt_mat4_idt(out);
 		return;
 	}
 
-	fh_mat4_cpy(out, cam->view_m);
+	wt_mat4_cpy(out, cam->view_m);
 }
 
 
-FH_API void fh_GetProjectionMat(struct fh_camera *cam, fh_mat4_t out)
+WT_API void wt_GetProjectionMat(struct wt_camera *cam, wt_mat4_t out)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
-		fh_mat4_idt(out);
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		wt_mat4_idt(out);
 		return;
 	}
 
-	fh_mat4_cpy(out, cam->projection_m);
+	wt_mat4_cpy(out, cam->projection_m);
 }
 
 
-FH_API void fh_GetCameraPosition(struct fh_camera *cam, fh_vec3_t out)
+WT_API void wt_GetCameraPosition(struct wt_camera *cam, wt_vec3_t out)
 {
 	if(!cam) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
-		fh_vec3_clr(out);
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		wt_vec3_clr(out);
 		return;
 	}
 
-	fh_vec3_cpy(out, cam->pos);
+	wt_vec3_cpy(out, cam->pos);
 }
 
 
-FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos)
+WT_API void wt_SetCameraPosition(struct wt_camera *cam, wt_vec3_t pos)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_vec3_cpy(cam->pos, pos);
+	wt_vec3_cpy(cam->pos, pos);
 
 	cam_update_view(cam);
 
@@ -248,14 +248,14 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos)
 }
 
 
-FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del)
+WT_API void wt_MoveCamera(struct wt_camera *cam, wt_vec3_t del)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_vec3_add(cam->pos, del, cam->pos);
+	wt_vec3_add(cam->pos, del, cam->pos);
 
 	cam_update_view(cam);
 
@@ -263,37 +263,37 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del)
 }
 
 
-FH_API void fh_GetCameraDirection(struct fh_camera *cam, fh_vec3_t out)
+WT_API void wt_GetCameraDirection(struct wt_camera *cam, wt_vec3_t out)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_vec3_cpy(out, cam->v_forward);
+	wt_vec3_cpy(out, cam->v_forward);
 }
 
 
-FH_API void fh_SetCameraDirection(struct fh_camera *cam, fh_vec3_t dir)
+WT_API void wt_SetCameraDirection(struct wt_camera *cam, wt_vec3_t dir)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 	
-	fh_vec3_cpy(cam->v_forward, dir);
-	fh_vec3_nrm(cam->v_forward, cam->v_forward);
+	wt_vec3_cpy(cam->v_forward, dir);
+	wt_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
+	wt_vec3_cross(cam->v_forward, WT_CAM_UP, cam->v_right);
 
 	cam_update_view(cam);
 }
 
 
-FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam)
+WT_API enum wt_cam_mode wt_GetCameraMode(struct wt_camera *cam)
 {
 	if(!cam) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return 0;
 	}
 
@@ -301,10 +301,10 @@ FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam)
 }
 
 
-FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode)
+WT_API void wt_SetCameraMode(struct wt_camera *cam, enum wt_cam_mode mode)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -312,105 +312,105 @@ FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode)
 }
 
 
-FH_API void fh_ToggleCameraMode(struct fh_camera *cam)
+WT_API void wt_ToggleCameraMode(struct wt_camera *cam)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	cam->mode = cam->mode == FH_CAM_FOCUS ? FH_CAM_FREE : FH_CAM_FOCUS;
+	cam->mode = cam->mode == WT_CAM_FOCUS ? WT_CAM_FREE : WT_CAM_FOCUS;
 }
 
 
-FH_API void fh_CameraLookAt(struct fh_camera *cam, fh_vec3_t pnt)
+WT_API void wt_CameraLookAt(struct wt_camera *cam, wt_vec3_t pnt)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_vec3_sub(pnt, cam->pos, cam->v_forward);
-	fh_vec3_nrm(cam->v_forward, cam->v_forward);
+	wt_vec3_sub(pnt, cam->pos, cam->v_forward);
+	wt_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	fh_vec3_nrm(cam->v_right, cam->v_right);
+	wt_vec3_cross(cam->v_forward, WT_CAM_UP, cam->v_right);
+	wt_vec3_nrm(cam->v_right, cam->v_right);
 }
 
 
-FH_API void fh_FocusCamera(struct fh_camera *cam, fh_vec3_t trg)
+WT_API void wt_FocusCamera(struct wt_camera *cam, wt_vec3_t trg)
 {
 	if(cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	cam->mode = FH_CAM_FOCUS;
+	cam->mode = WT_CAM_FOCUS;
 
-	fh_vec3_cpy(cam->target, trg);
+	wt_vec3_cpy(cam->target, trg);
 
-	fh_vec3_sub(trg, cam->pos, cam->v_forward);
-	fh_vec3_nrm(cam->v_forward, cam->v_forward);
+	wt_vec3_sub(trg, cam->pos, cam->v_forward);
+	wt_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	fh_vec3_nrm(cam->v_right, cam->v_right);
+	wt_vec3_cross(cam->v_forward, WT_CAM_UP, cam->v_right);
+	wt_vec3_nrm(cam->v_right, cam->v_right);
 
 	cam_update_view(cam);
 
 }
 
 
-FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f)
+WT_API void wt_CameraZoom(struct wt_camera *cam, f32 f)
 {
-	fh_vec3_t del;
+	wt_vec3_t del;
 
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	if(cam->mode == FH_CAM_FOCUS) {
+	if(cam->mode == WT_CAM_FOCUS) {
 		cam->dist += f;
 		if(cam->dist < 0.5)
 			cam->dist = 0.5;
 	}
 	else {
-		fh_vec3_scl(cam->v_forward, f, del);
-		fh_vec3_add(cam->pos, del, cam->pos);
+		wt_vec3_scl(cam->v_forward, f, del);
+		wt_vec3_add(cam->pos, del, cam->pos);
 	}
 
-	fh_UpdateCamera(cam);
+	wt_UpdateCamera(cam);
 
 	cam_reorder_pipe(cam);
 }
 
 
-FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
+WT_API void wt_CameraRotate(struct wt_camera *cam, f32 d_yaw, f32 d_pitch)
 {
 	d_yaw *= cam->sens;
 	d_pitch *= cam->sens;
 
 	if(d_yaw != 0.0) {
-		fh_vec3_rot_z(cam->v_forward, d_yaw, cam->v_forward);
+		wt_vec3_rot_z(cam->v_forward, d_yaw, cam->v_forward);
 	}
 
 	if(d_pitch != 0.0) {
-		fh_vec3_rot_axes(cam->v_forward, d_pitch,
+		wt_vec3_rot_axes(cam->v_forward, d_pitch,
 				cam->v_right, cam->v_forward);
 	}
 
 	/*
 	 * Verify the pitch of the camera is in limits in FPV.
 	 */
-	if(cam->mode == FH_CAM_FOCUS) {
+	if(cam->mode == WT_CAM_FOCUS) {
 		f32 agl;
 
 		if(cam->v_forward[2] > 0) {	
 			agl = asin(cam->v_forward[2]);
 			agl = RAD_TO_DEG(agl);
 
-			if(agl > FH_CAM_PITCH_LIM)
-				agl = FH_CAM_PITCH_LIM;
+			if(agl > WT_CAM_PITCH_LIM)
+				agl = WT_CAM_PITCH_LIM;
 
 			agl = DEG_TO_RAD(agl);
 			cam->v_forward[2] = sin(agl);
@@ -419,28 +419,28 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 			agl = asin(cam->v_forward[2]);
 			agl = RAD_TO_DEG(agl);
 
-			if(agl < -FH_CAM_PITCH_LIM)
-				agl = -FH_CAM_PITCH_LIM;
+			if(agl < -WT_CAM_PITCH_LIM)
+				agl = -WT_CAM_PITCH_LIM;
 
 			agl = DEG_TO_RAD(agl);
 			cam->v_forward[2] = sin(agl);
 		}
 	}
 
-	fh_vec3_nrm(cam->v_forward, cam->v_forward);
+	wt_vec3_nrm(cam->v_forward, cam->v_forward);
 
-	fh_vec3_cross(cam->v_forward, FH_CAM_UP, cam->v_right);
-	fh_vec3_nrm(cam->v_right, cam->v_right);
+	wt_vec3_cross(cam->v_forward, WT_CAM_UP, cam->v_right);
+	wt_vec3_nrm(cam->v_right, cam->v_right);
 
 	/*
 	 * Calculate the forward-rotation-matrix.
 	 */
-	if(cam->mode == FH_CAM_FOCUS) {
+	if(cam->mode == WT_CAM_FOCUS) {
 		f32 yaw;
 		f32 pitch;
-		fh_vec3_t f;
+		wt_vec3_t f;
 
-		fh_vec3_cpy(f, cam->v_forward);
+		wt_vec3_cpy(f, cam->v_forward);
 
 		yaw = atan2(f[0], f[1]);
 		pitch = -asin(f[2]);
@@ -448,16 +448,16 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch)
 		yaw = RAD_TO_DEG(yaw);
 		pitch = RAD_TO_DEG(pitch);
 
-		fh_mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
+		wt_mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
 	}
 }
 
 
-FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam)
+WT_API struct wt_camera_info wt_GetCameraInfo(struct wt_camera *cam)
 {
 	if(!cam) {
-		struct fh_camera_info info = {0, 0, 0, 0};
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		struct wt_camera_info info = {0, 0, 0, 0};
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return info;
 	}
 
@@ -465,10 +465,10 @@ FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam)
 }
 
 
-FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info)
+WT_API void wt_SetCameraInfo(struct wt_camera *cam, struct wt_camera_info info)
 {
 	if(!cam) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -480,7 +480,7 @@ FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info)
 }
 
 
-FH_API void fh_UpdateCamera(struct fh_camera *cam)
+WT_API void wt_UpdateCamera(struct wt_camera *cam)
 {
 	if(!cam)
 		return;

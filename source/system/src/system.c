@@ -11,17 +11,17 @@
 #include <ctype.h>
 
 
-FH_API void *fh_malloc(s32 len)
+WT_API void *wt_malloc(s32 len)
 {
 	void *p;
 
 	if(len < 1) {
-		FH_ALARM(FH_WARNING, "len invalid");
+		WT_ALARM(WT_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = malloc(len))) {
-		FH_ALARM(FH_ERROR, "failed to allocate memory");
+		WT_ALARM(WT_ERROR, "failed to allocate memory");
 		return NULL;
 	}
 
@@ -29,17 +29,17 @@ FH_API void *fh_malloc(s32 len)
 }
 
 
-FH_API void *fh_calloc(s32 len)
+WT_API void *wt_calloc(s32 len)
 {
 	void *p;
 
 	if(len < 1) {
-		FH_ALARM(FH_WARNING, "len invalid");
+		WT_ALARM(WT_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = calloc(1, len))) {
-		FH_ALARM(FH_ERROR, "failed to callocate memory");
+		WT_ALARM(WT_ERROR, "failed to callocate memory");
 		return NULL;
 	}
 
@@ -47,17 +47,17 @@ FH_API void *fh_calloc(s32 len)
 }
 
 
-FH_API void *fh_zalloc(s32 len)
+WT_API void *wt_zalloc(s32 len)
 {
 	void *p;
 
 	if(len < 1) {
-		FH_ALARM(FH_WARNING, "len invalid");
+		WT_ALARM(WT_WARNING, "len invalid");
 		return NULL;
 	}
 
 	if(!(p = malloc(len))) {
-		FH_ALARM(FH_ERROR, "failed to allocate memory");
+		WT_ALARM(WT_ERROR, "failed to allocate memory");
 		return NULL;
 	}
 
@@ -66,12 +66,12 @@ FH_API void *fh_zalloc(s32 len)
 }
 
 
-FH_API void *fh_realloc(void *old, s32 newlen)
+WT_API void *wt_realloc(void *old, s32 newlen)
 {
 	void *p;
 
 	if(newlen < 1) {
-		FH_ALARM(FH_WARNING, "old undefined or newlen invalid");
+		WT_ALARM(WT_WARNING, "old undefined or newlen invalid");
 		return NULL;
 	}
 
@@ -82,7 +82,7 @@ FH_API void *fh_realloc(void *old, s32 newlen)
 		}
 	}
 	else if(!(p = realloc(old, newlen))) {
-		FH_ALARM(FH_ERROR, "failed to reallocate memory");
+		WT_ALARM(WT_ERROR, "failed to reallocate memory");
 		return NULL;
 	}
 
@@ -90,7 +90,7 @@ FH_API void *fh_realloc(void *old, s32 newlen)
 }
 
 
-FH_API void fh_free(void *p)
+WT_API void wt_free(void *p)
 {
 	if(!p) {
 		return;
@@ -100,13 +100,13 @@ FH_API void fh_free(void *p)
 }
 
 
-FH_API void fh_zeros(void *p, s32 len)
+WT_API void wt_zeros(void *p, s32 len)
 {
 	memset(p, 0, len);
 }
 
 
-FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
+WT_API s8 wt_strtoint(s32 *out, char *s, s32 base)
 {
 	char *end;
 	s64 l;
@@ -119,15 +119,15 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 
 	/* Both checks are needed because INT_MAX == LONG_MAX is possible. */
 	if(l > INT_MAX || (errno == ERANGE && l == LONG_MAX)) {
-		FH_ALARM(FH_ERROR, "integer overflow");
+		WT_ALARM(WT_ERROR, "integer overflow");
 		goto err_return;
 	}
 	if(l < INT_MIN || (errno == ERANGE && l == LONG_MIN)) {
-		FH_ALARM(FH_ERROR, "integer undeflow");
+		WT_ALARM(WT_ERROR, "integer undeflow");
 		goto err_return;
 	}
 	if(*end != '\0') {
-		FH_ALARM(FH_ERROR, "inconvertible");
+		WT_ALARM(WT_ERROR, "inconvertible");
 		goto err_return;
 	}
 
@@ -135,19 +135,19 @@ FH_API s8 fh_strtoint(s32 *out, char *s, s32 base)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to convert string to integer");
+	WT_ALARM(WT_ERROR, "Failed to convert string to integer");
 	return -1;
 }
 
 
-FH_API void fh_bindump(void *p, s32 len)
+WT_API void wt_bindump(void *p, s32 len)
 {
 	char buf[17];
 	char *pc;
 	s32 i;
 
 	if(!p || len < 1) {
-		FH_ALARM(FH_WARNING, "p undefined or len invalid");
+		WT_ALARM(WT_WARNING, "p undefined or len invalid");
 		return;
 	}
 
@@ -180,7 +180,7 @@ FH_API void fh_bindump(void *p, s32 len)
 }
 
 
-FH_API void fh_rand_string(char *out, u16 size)
+WT_API void wt_rand_string(char *out, u16 size)
 {
 	const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK...";
 	u16 i;

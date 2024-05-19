@@ -1,5 +1,5 @@
-#ifndef _FH_WINDOW_SUBSYSTEMS_OPENGL_H
-#define _FH_WINDOW_SUBSYSTEMS_OPENGL_H
+#ifndef _WT_WINDOW_SUBSYSTEMS_OPENGL_H
+#define _WT_WINDOW_SUBSYSTEMS_OPENGL_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -12,12 +12,12 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_gl_init(void);
+WT_API s8 wt_gl_init(void);
 
 
 /*
  * Print info about OpenGL in the console.
  */
-FH_API void fh_gl_print_info(void);
+WT_API void wt_gl_print_info(void);
 
-#endif /* _FH_WINDOW_SUBSYSTEMS_OPENGL_H */
+#endif /* _WT_WINDOW_SUBSYSTEMS_OPENGL_H */

@@ -15,9 +15,9 @@
 #include <stdlib.h>
 
 
-FH_INTERN void element_calc_offset(struct fh_element *ele)
+WT_INTERN void element_update_offset(struct wt_element *ele)
 {
-	struct fh_element *par = ele->parent;
+	struct wt_element *par = ele->parent;
 
 
 	ele->relative_offset.x = 0;
@@ -54,72 +54,72 @@ FH_INTERN void element_calc_offset(struct fh_element *ele)
 
 
 
-FH_INTERN void element_calc_bounding_rect(struct fh_element *ele)
+WT_INTERN void element_calc_bounding_rect(struct wt_element *ele)
 {
-	struct fh_rect rect;
+	struct wt_rect rect;
 
-	fh_rect_mov(&rect, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wt_rect_mov(&rect, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
-	fh_rect_cpy(&ele->bounding_rect, &rect);
+	wt_rect_cpy(&ele->bounding_rect, &rect);
 }
 
 
-FH_INTERN void element_calc_element_rect(struct fh_element *ele)
+WT_INTERN void element_calc_element_rect(struct wt_element *ele)
 {
-	struct fh_rect rect;
+	struct wt_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_element_delta);
+	wt_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_element_delta);
 
-	fh_rect_cpy(&ele->element_rect, &rect);
+	wt_rect_cpy(&ele->element_rect, &rect);
 
 }
 
 
-FH_INTERN void element_calc_inner_rect(struct fh_element *ele)
+WT_INTERN void element_calc_inner_rect(struct wt_element *ele)
 {
-	struct fh_rect rect;
+	struct wt_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_inner_delta);
+	wt_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_inner_delta);
 
-	fh_rect_cpy(&ele->inner_rect, &rect);
+	wt_rect_cpy(&ele->inner_rect, &rect);
 }
 
 
-FH_INTERN void element_calc_content_rect(struct fh_element *ele)
+WT_INTERN void element_calc_content_rect(struct wt_element *ele)
 {
-	struct fh_rect rect;
+	struct wt_rect rect;
 
-	fh_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_content_delta);
+	wt_rect_add(&rect, &ele->bounding_rect, &ele->style.shape_content_delta);
 
-	fh_rect_cpy(&ele->content_rect, &rect);
+	wt_rect_cpy(&ele->content_rect, &rect);
 }
 
 
-FH_INTERN void element_calc_visible(struct fh_element *ele)
+WT_INTERN void element_calc_visible(struct wt_element *ele)
 {
-	struct fh_rect out;
-	struct fh_rect dif;
+	struct wt_rect out;
+	struct wt_rect dif;
 
 	/*
 	 * First calculate the absolute position of the reference-area of the 
 	 * bounding box in the window.
 	 */
-	fh_rect_mov(&out, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wt_rect_mov(&out, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
 	/*
 	 * Finally convert from the bounding box to the element box.
 	 */
-	fh_rect_add(&out, &out, &ele->style.shape_element_delta);
+	wt_rect_add(&out, &out, &ele->style.shape_element_delta);
 
-	fh_rect_cpy(&dif, &out);	/* Will be used later */
+	wt_rect_cpy(&dif, &out);	/* Will be used later */
 
 	/*
 	 * Check intersecting area with the parent.
 	 */
 	if(ele->parent) {
-		if(!fh_rect_intersect(&dif, &out, &ele->parent->output_rect)) {
+		if(!wt_rect_intersect(&dif, &out, &ele->parent->output_rect)) {
 			/* If the element is not inside the parent */
-			ele->info_flags &= ~FH_ELEMENT_F_VISIBLE;
+			ele->info_flags &= ~WT_ELEMENT_F_VISIBLE;
 			return;
 		}
 	}
@@ -129,29 +129,29 @@ FH_INTERN void element_calc_visible(struct fh_element *ele)
 	 * Now we have to validate the intersecting area with the window.
 	 * This will also check if the element even is inside the window.
 	 */
-	if(!fh_rect_intersect(&dif, &dif, ele->document->shape_ref)) {
+	if(!wt_rect_intersect(&dif, &dif, ele->document->shape_ref)) {
 		/* Element is not inside the window */
-		ele->info_flags &= ~FH_ELEMENT_F_VISIBLE;
+		ele->info_flags &= ~WT_ELEMENT_F_VISIBLE;
 		return;
 	}
 
 	/*
 	 * Copy the visible area into the according rectangle.
 	 */
-	fh_rect_cpy(&ele->visible_out_rect, &dif);
+	wt_rect_cpy(&ele->visible_out_rect, &dif);
 
 	/*
 	 * Now we can copy the resulting rectangle to the element.
 	 */
-	fh_rect_cpy(&ele->output_rect, &out);
-	ele->info_flags |= FH_ELEMENT_F_VISIBLE;
+	wt_rect_cpy(&ele->output_rect, &out);
+	ele->info_flags |= WT_ELEMENT_F_VISIBLE;
 }
 
 
-FH_INTERN void element_calc_shape(struct fh_element *ele)
+WT_INTERN void element_calc_shape(struct wt_element *ele)
 {
 	/* First calculate the relative and absolute offset */
-	element_calc_offset(ele);
+	element_update_offset(ele);
 
 	/* Then calculate the different shape rectangles */
 	element_calc_bounding_rect(ele);
@@ -164,12 +164,12 @@ FH_INTERN void element_calc_shape(struct fh_element *ele)
 }
 
 
-FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val)
+WT_XMOD s8 wt_element_scroll(struct wt_element *ele, s32 *val)
 {
 	s32 limits[2];
 	u8 ret = 0;
 
-	if(val[0] != 0 && (ele->scrollbar_flags & FH_RESTYLE_SCROLL_H)) {
+	if(val[0] != 0 && (ele->scrollbar_flags & WT_RESTYLE_SCROLL_H)) {
 		limits[0] = 0;
 		limits[1] = ele->content_size.x - ele->content_rect.w; 
 
@@ -180,7 +180,7 @@ FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val)
 
 		ret = 1;
 	}
-	if(val[1] != 0 && (ele->scrollbar_flags & FH_RESTYLE_SCROLL_V)) {
+	if(val[1] != 0 && (ele->scrollbar_flags & WT_RESTYLE_SCROLL_V)) {
 		limits[0] = 0;
 		limits[1] = ele->content_size.y - ele->content_rect.h; 
 
@@ -194,7 +194,7 @@ FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val)
 
 	if(ret) {
 		/* Update after scrolling */
-		fh_UpdateDocumentBranch(ele->document, ele);
+		wt_UpdateDocumentBranch(ele->document, ele);
 	}
 
 	return ret;
@@ -210,31 +210,31 @@ FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val)
  */
 
 
-FH_XMOD void fh_element_adjust_shape(struct fh_element *ele)
+WT_XMOD void wt_element_adjust_shape(struct wt_element *ele)
 {
 	element_calc_shape(ele);
 }
 
 
-FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele)
+WT_XMOD void wt_element_hdl_scrollbar(struct wt_element *ele)
 {
 	u8 flag = 0;
-	struct fh_rect inner_rect;
+	struct wt_rect inner_rect;
 
-	inner_rect = fh_GetContentBox(ele); 
+	inner_rect = wt_GetContentBox(ele); 
 
 	if(inner_rect.h < ele->content_size.y)
-		flag |= FH_RESTYLE_SCROLL_V;
+		flag |= WT_RESTYLE_SCROLL_V;
 
 	if(inner_rect.w < ele->content_size.x)
-		flag |= FH_RESTYLE_SCROLL_H;
+		flag |= WT_RESTYLE_SCROLL_H;
 
 
 	ele->scrollbar_flags = flag & ele->style.scrollbar_flags;
 }
 
 
-FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2)
+WT_XMOD s8 wt_element_compare(struct wt_element *in1, struct wt_element *in2)
 {
 	if(in1 == in2) {
 		return 1;
@@ -244,11 +244,11 @@ FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2)
 
 
 
-FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
-		fh_ele_cfnc postfnc, void *data)
+WT_XMOD s8 wt_element_hlf(struct wt_element *ele, wt_ele_cfnc prefnc,
+		wt_ele_cfnc postfnc, void *data)
 {
-	struct fh_element *run;
-	struct fh_element *next;
+	struct wt_element *run;
+	struct wt_element *next;
 
 	if(!ele)
 		return 0;
@@ -263,7 +263,7 @@ FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
 	while(run) {
 		next = run->younger_sibling;
 
-		if(fh_element_hlf(run, prefnc, postfnc, data))
+		if(wt_element_hlf(run, prefnc, postfnc, data))
 			return 1;
 
 		run = next;
@@ -277,7 +277,7 @@ FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
 }
 
 
-FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val)
+WT_XMOD void wt_element_mod_info(struct wt_element *ele, u8 flag, u8 val)
 {
 	if(!ele)
 		return;
@@ -297,31 +297,31 @@ FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
-		enum fh_element_type type, void *data)
+WT_API struct wt_element *wt_CreateElement(struct wt_document *doc, char *name,
+		enum wt_element_type type, void *data)
 {
-	struct fh_element *ele;
+	struct wt_element *ele;
 	s8 name_len;
 
 	if(!name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	name_len = strlen(name);
-	if(name_len < 1 || name_len > FH_ELEMENT_NAME_LIM) {
-		FH_ALARM(FH_ERROR, "Element name is invalid");
+	if(name_len < 1 || name_len > WT_ELEMENT_NAME_LIM) {
+		WT_ALARM(WT_ERROR, "Element name is invalid");
 		goto err_return;
 	}
 
 
-	if(!(ele = fh_zalloc(sizeof(struct fh_element)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for new element");
+	if(!(ele = wt_zalloc(sizeof(struct wt_element)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for new element");
 		goto err_return;
 	}
 
 	/* Set the identifier */
-	ele->identity = FH_IDT_ELEMENT;
+	ele->identity = WT_IDT_ELEMENT;
 
 	/* Set the basic attributes for the element */
 	strcpy(ele->name, name);
@@ -341,62 +341,62 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
 	ele->firstborn = NULL;
 
 	/* Create the event handler */
-	if(!(ele->event_handler = fh_handler_create())) {
-		FH_ALARM(FH_ERROR, "Failed to create event handler");
+	if(!(ele->event_handler = wt_handler_create())) {
+		WT_ALARM(WT_ERROR, "Failed to create event handler");
 		goto err_free_ele;
 	}
 
 	/* Initialize the style structure */
-	if(fh_style_init(&ele->style, NULL) < 0) {
-		FH_ALARM(FH_ERROR, "Failed to initialize style for element");
+	if(wt_style_init(&ele->style, NULL) < 0) {
+		WT_ALARM(WT_ERROR, "Failed to initialize style for element");
 		goto err_destroy_handler;
 	}
 
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
 	printf("Create widget with %p\n", data);
-	if(fh_eletemp_load(ele, data) < 0) {
-		FH_ALARM(FH_ERROR, "Failed to load the template for the element");
+	if(wt_eletemp_load(ele, data) < 0) {
+		WT_ALARM(WT_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
 	}
 
 	return ele;
 
 err_destroy_handler:
-	fh_handler_destroy(ele->event_handler);
+	wt_handler_destroy(ele->event_handler);
 
 err_free_ele:
-	fh_free(ele);
+	wt_free(ele);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new element");
+	WT_ALARM(WT_ERROR, "Failed to create new element");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyElement(struct fh_element *ele)
+WT_API void wt_DestroyElement(struct wt_element *ele)
 {
 	if(!ele) {
 		return;
 	}
 
-	fh_handler_destroy(ele->event_handler);
+	wt_handler_destroy(ele->event_handler);
 
 	/* If the element has a widget attached to it, destroy that aswell */
 	if(ele->widget) {
-		fh_DestroyWidget(ele->widget);
+		wt_DestroyWidget(ele->widget);
 	}
 
-	fh_free(ele);
+	wt_free(ele);
 }
 
 
-FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
+WT_API s8 wt_AttachElement(struct wt_element *parent, struct wt_element *ele)
 {
-	struct fh_element *run;
+	struct wt_element *run;
 
 	if(!parent || !ele) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -420,22 +420,22 @@ FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele)
 	ele->layer = parent->layer + 1;
 
 	/* Link the stylesheet */
-	fh_style_link(&ele->style, &parent->style);
+	wt_style_link(&ele->style, &parent->style);
 
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to attach element to parent");
+	WT_ALARM(WT_ERROR, "Failed to attach element to parent");
 	return -1;
 }
 
 
-FH_API void fh_DetachElement(struct fh_element *ele)
+WT_API void wt_DetachElement(struct wt_element *ele)
 {
-	struct fh_element *par;
+	struct wt_element *par;
 
 	if(!ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -444,7 +444,6 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 	if(!par) {
 		return;
 	}
-
 
 	if(!ele->older_sibling)
 		par->firstborn = ele->younger_sibling;
@@ -462,14 +461,14 @@ FH_API void fh_DetachElement(struct fh_element *ele)
 }
 
 
-FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
+WT_API void wt_ApplyElementRise(struct wt_element *ele, wt_ele_cfnc fnc,
 		void *data)
 {
-	struct fh_element *run;
-	struct fh_element *next;
+	struct wt_element *run;
+	struct wt_element *next;
 
 	if(!ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -485,47 +484,47 @@ FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
 }
 
 
-FH_API void fh_UpdateElementStyle(struct fh_element *ele)
+WT_API void wt_UpdateElementStyle(struct wt_element *ele)
 {
-	struct fh_style_pass pass;
+	struct wt_style_pass pass;
 
 	if(!ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/* First process the style for this element */
 	pass.document_shape = ele->document->shape_ref;
-	fh_style_process(&ele->style, &pass);
+	wt_style_process(&ele->style, &pass);
 
 
 	/* Then if the element has a widget, update that aswell */
 	if(ele->widget) {
-		fh_UpdateWidget(ele->widget, NULL);
+		wt_UpdateWidget(ele->widget, NULL);
 	}
 }
 
 
-FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele)
+WT_API void wt_UpdateElementChildrenShape(struct wt_element *ele)
 {
 	if(!ele) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(ele->style.layout_mode) {
-		case FH_KW_LAYOUT_BLOCK:	fh_layout_block(ele);	break;
-		case FH_KW_LAYOUT_ROW: 		fh_layout_row(ele); 	break;
-		case FH_KW_LAYOUT_COLUMN: 	fh_layout_column(ele);  break;
+		case WT_KW_LAYOUT_BLOCK:	wt_layout_block(ele);	break;
+		case WT_KW_LAYOUT_ROW: 		wt_layout_row(ele); 	break;
+		case WT_KW_LAYOUT_COLUMN: 	wt_layout_column(ele);  break;
 		default: break;
 	}
 }
 
 
-FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
+WT_API struct wt_context *wt_GetElementContext(struct wt_element *ele)
 {
 	if(!ele) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -533,54 +532,54 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele)
 }
 
 
-FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele)
+WT_API struct wt_rect wt_GetBoundingBox(struct wt_element *ele)
 {
-	struct fh_rect r;
+	struct wt_rect r;
 
 	if(!ele) {
-		fh_rect_rst(&r);
+		wt_rect_rst(&r);
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wt_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
 
 	return r;
 }
 
 
-FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele)
+WT_API struct wt_rect wt_GetElementBox(struct wt_element *ele)
 {
-	struct fh_rect r;
+	struct wt_rect r;
 
 	if(!ele) {
-		fh_rect_rst(&r);
+		wt_rect_rst(&r);
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
-	fh_rect_add(&r, &r, &ele->style.shape_element_delta);
+	wt_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wt_rect_add(&r, &r, &ele->style.shape_element_delta);
 
 	return r;
 }
 
 
-FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele)
+WT_API struct wt_rect wt_GetContentBox(struct wt_element *ele)
 {
-	struct fh_rect r;
+	struct wt_rect r;
 
 	if(!ele) {
-		fh_rect_rst(&r);
+		wt_rect_rst(&r);
 		return r;
 	}
 
-	fh_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
-	fh_rect_add(&r, &r, &ele->style.shape_content_delta);
+	wt_rect_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wt_rect_add(&r, &r, &ele->style.shape_content_delta);
 
 	return r;
 }
 
 
-FH_API struct fh_rect *fh_GetContextBoxRef(struct fh_element *ele)
+WT_API struct wt_rect *wt_GetContextBoxRef(struct wt_element *ele)
 {
 	if(!ele) {
 		return NULL;
@@ -590,40 +589,40 @@ FH_API struct fh_rect *fh_GetContextBoxRef(struct fh_element *ele)
 }
 
 
-FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str)
+WT_API s8 wt_ModifyElementStyle(struct wt_element *ele, char *str)
 {
 	if(!ele || !str) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	fh_ModifyStyle(&ele->style, str);
+	wt_ModifyStyle(&ele->style, str);
 
-	fh_UpdateDocumentBranch(ele->document, ele);
+	wt_UpdateDocumentBranch(ele->document, ele);
 
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to set attribute");
+	WT_ALARM(WT_ERROR, "Failed to set attribute");
 	return -1;
 }
 
 
-FH_API struct fh_view *fh_GetView(struct fh_element *ele)
+WT_API struct wt_view *wt_GetView(struct wt_element *ele)
 {
 	if(!ele) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(ele->type != FH_VIEW || !ele->widget) {
-		FH_ALARM(FH_ERROR, "Wrong element type");
+	if(ele->type != WT_VIEW || !ele->widget) {
+		WT_ALARM(WT_ERROR, "Wrong element type");
 		goto err_return;
 	}
 
-	return (struct fh_view *)ele->widget->ref;
+	return (struct wt_view *)ele->widget->ref;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to get view");
+	WT_ALARM(WT_ERROR, "Failed to get view");
 	return NULL;
 }

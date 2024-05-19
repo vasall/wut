@@ -1,5 +1,5 @@
-#ifndef _FH_DOCUMENT_ELEMENT_TEMPLATE_H
-#define _FH_DOCUMENT_ELEMENT_TEMPLATE_H
+#ifndef _WT_DOCUMENT_ELEMENT_TEMPLATE_H
+#define _WT_DOCUMENT_ELEMENT_TEMPLATE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -15,8 +15,8 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_eletemp_load(struct fh_element *ele, void *data);
+WT_API s8 wt_eletemp_load(struct wt_element *ele, void *data);
 
 
-#endif /* _FH_DOCUMENT_ELEMENT_TEMPLATE_H */
+#endif /* _WT_DOCUMENT_ELEMENT_TEMPLATE_H */
 

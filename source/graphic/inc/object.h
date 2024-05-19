@@ -1,13 +1,13 @@
-#ifndef _FH_GRAPHIC_OBJECT_H
-#define _FH_GRAPHIC_OBJECT_H
+#ifndef _WT_GRAPHIC_OBJECT_H
+#define _WT_GRAPHIC_OBJECT_H
 
-struct fh_object;
+struct wt_object;
 
-#define FH_OBJECT_NAME_LIM			128
-#define FH_OBJECT_ATTRIB_LIM			12
-#define FH_OBJECT_UNIFORM_LIM		6
-#define FH_OBJECT_ATTRIB_NAME_LIM	128
-#define FH_OBJECT_UNIFORM_NAME_LIM	128
+#define WT_OBJECT_NAME_LIM			128
+#define WT_OBJECT_ATTRIB_LIM			12
+#define WT_OBJECT_UNIFORM_LIM		6
+#define WT_OBJECT_ATTRIB_NAME_LIM	128
+#define WT_OBJECT_UNIFORM_NAME_LIM	128
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -20,9 +20,9 @@ struct fh_object;
 #include "widget/inc/view.h"
 
 
-struct fh_object_uniform {
+struct wt_object_uniform {
 	/* The name of the uniform buffer */
-	char name[FH_OBJECT_UNIFORM_NAME_LIM];
+	char name[WT_OBJECT_UNIFORM_NAME_LIM];
 
 	/* The size of the uniform buffer in bytes */
 	u32 size;
@@ -36,9 +36,9 @@ struct fh_object_uniform {
 };
 
 
-struct fh_object {
+struct wt_object {
 	/* The name of the object */
-	char name[FH_OBJECT_NAME_LIM];
+	char name[WT_OBJECT_NAME_LIM];
 
 	/* The vertex data */
 	u32 vertex_number;
@@ -55,21 +55,21 @@ struct fh_object {
 	u32 ebo;
 
 	/* References to both the shader and texture */
-	struct fh_shader *shader;
-	struct fh_texture *texture;
+	struct wt_shader *shader;
+	struct wt_texture *texture;
 
 	/* The uniform buffers for this object */
 	u8 uniform_number;
-	struct fh_object_uniform uniforms[FH_OBJECT_UNIFORM_LIM];
+	struct wt_object_uniform uniforms[WT_OBJECT_UNIFORM_LIM];
 
 	/* Pointer to the context this object belongs to */
-	struct fh_context *context;
+	struct wt_context *context;
 
 	/* Pointer to the view, if object is attached */
-	struct fh_view *view;
+	struct wt_view *view;
 
-	fh_vec3_t position;
-	fh_vec3_t rotation;
+	wt_vec3_t position;
+	wt_vec3_t rotation;
 };
 
 
@@ -80,12 +80,12 @@ struct fh_object {
  * @name: The name of the uniform
  * @ptr: A pointer to copy the data from
  */
-FH_API void fh_obj_set_uniform(struct fh_object *mdl, char *name, void *ptr);
+WT_API void wt_obj_set_uniform(struct wt_object *mdl, char *name, void *ptr);
 
 
 
 /* The callback function to call when removing an entry from the objects table */
-FH_API void fh_obj_rmv_fnc(u32 size, void *ptr);
+WT_API void wt_obj_rmv_fnc(u32 size, void *ptr);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -103,7 +103,7 @@ FH_API void fh_obj_rmv_fnc(u32 size, void *ptr);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_InitObjectTable(struct fh_context *ctx);
+WT_API s8 wt_InitObjectTable(struct wt_context *ctx);
 
 
 /*
@@ -111,7 +111,7 @@ FH_API s8 fh_InitObjectTable(struct fh_context *ctx);
  * 
  * @ctx: Pointer to the context
  */
-FH_API void fh_CloseObjectTable(struct fh_context *ctx);
+WT_API void wt_CloseObjectTable(struct wt_context *ctx);
 
 
 /*
@@ -119,7 +119,7 @@ FH_API void fh_CloseObjectTable(struct fh_context *ctx);
  *
  * @mdl: Pointer to the object
  */
-FH_API void fh_RemoveObject(struct fh_object *mdl);
+WT_API void wt_RemoveObject(struct wt_object *mdl);
 
 
 /*
@@ -131,7 +131,7 @@ FH_API void fh_RemoveObject(struct fh_object *mdl);
  * Returns: A pointer to the object or NULL if either an error occurred or the
  * 	    object could not be found
  */
-FH_API struct fh_object *fh_GetObject(struct fh_context *ctx, char *name);
+WT_API struct wt_object *wt_GetObject(struct wt_context *ctx, char *name);
 
 
 /*
@@ -141,7 +141,7 @@ FH_API struct fh_object *fh_GetObject(struct fh_context *ctx, char *name);
  * @name: The name of the uniform buffer
  * @ptr: A pointer with the new data
  */
-FH_API void fh_SetObjectUniform(struct fh_object *mdl, char *name, void *ptr);
+WT_API void wt_SetObjectUniform(struct wt_object *mdl, char *name, void *ptr);
 
 
 /*
@@ -151,8 +151,8 @@ FH_API void fh_SetObjectUniform(struct fh_object *mdl, char *name, void *ptr);
  * @[shd]: The shader to be used
  * @[tex]: The texture to be used
  */
-FH_API void fh_RenderObject(struct fh_object *mdl, struct fh_shader *shd,
-		struct fh_texture *tex);
+WT_API void wt_RenderObject(struct wt_object *mdl, struct wt_shader *shd,
+		struct wt_texture *tex);
 
 
-#endif /* _FH_GRAPHIC_OBJECT_H */
+#endif /* _WT_GRAPHIC_OBJECT_H */

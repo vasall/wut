@@ -1,5 +1,5 @@
-#ifndef _FH_UTILITY_FLEX_H
-#define _FH_UTILITY_FLEX_H
+#ifndef _WT_UTILITY_FLEX_H
+#define _WT_UTILITY_FLEX_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -28,20 +28,20 @@
  *
  * ----------------------
  */
-struct fh_flex_token {
+struct wt_flex_token {
 	u8 	code;
 	f32 	value;
 };
 
 
-struct fh_flex {
-	struct fh_list *list;
+struct wt_flex {
+	struct wt_list *list;
 };
 
 
-typedef struct fh_flex *fh_flex_t;
+typedef struct wt_flex *wt_flex_t;
 
-#define FH_FLEX_UNDEF	NULL
+#define WT_FLEX_UNDEF	NULL
 
 
 /*
@@ -54,7 +54,7 @@ typedef struct fh_flex *fh_flex_t;
  *
  * Returns: The updated or newly created flex expression
  */
-FH_XMOD fh_flex_t fh_flex_parse(fh_flex_t flx, char *inp);
+WT_XMOD wt_flex_t wt_flex_parse(wt_flex_t flx, char *inp);
 
 
 /*
@@ -62,7 +62,7 @@ FH_XMOD fh_flex_t fh_flex_parse(fh_flex_t flx, char *inp);
  *
  * @flx: Pointer to the flex struct
  */
-FH_XMOD void fh_flex_destroy(fh_flex_t flx);
+WT_XMOD void wt_flex_destroy(wt_flex_t flx);
 
 
 /*
@@ -79,7 +79,7 @@ FH_XMOD void fh_flex_destroy(fh_flex_t flx);
  *
  * Returns: The result of the expression and 0 if an error occurred
  */
-FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref);
+WT_XMOD s32 wt_flex_process(wt_flex_t flx, u16 *ref);
 
 
 /*
@@ -87,7 +87,7 @@ FH_XMOD s32 fh_flex_process(fh_flex_t flx, u16 *ref);
  *
  * @flx: Pointer to the flex struct
  */
-FH_XMOD void fh_flex_print(fh_flex_t flx);
+WT_XMOD void wt_flex_print(wt_flex_t flx);
 
 
-#endif /* _FH_UTILITY_FLEX_H */
+#endif /* _WT_UTILITY_FLEX_H */

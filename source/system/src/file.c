@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 
-#define FH_FS_DEBUG 1
+#define WT_FS_DEBUG 1
 
 
-FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
+WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out)
 {
 	FILE *fd;
 	char *buf;
@@ -18,12 +18,12 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		FH_ALARM(FH_ERROR, "Failed to open file");
+		WT_ALARM(WT_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -32,13 +32,13 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 	fseek(fd, 0, SEEK_SET);
 
 
-	if(!(buf = fh_malloc(file_size + 1))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for file buffer");
+	if(!(buf = wt_malloc(file_size + 1))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		FH_ALARM(FH_ERROR, "Failed to read file");
+		WT_ALARM(WT_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -47,18 +47,18 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out)
 	return 0;
 
 err_free_buf:
-	fh_free(buf);
+	wt_free(buf);
 
 err_close_fd:
 	fclose(fd);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to load file");
+	WT_ALARM(WT_ERROR, "Failed to load file");
 	return -1;
 }
 
 
-FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
+WT_API s8 wt_fs_text(const char *pth, u64 *size, char **out)
 {
 	FILE *fd;
 	char *buf;
@@ -66,12 +66,12 @@ FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		FH_ALARM(FH_ERROR, "Failed to open file");
+		WT_ALARM(WT_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -80,13 +80,13 @@ FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
 	fseek(fd, 0, SEEK_SET);
 
 
-	if(!(buf = fh_malloc(file_size + 1))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for file buffer");
+	if(!(buf = wt_malloc(file_size + 1))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		FH_ALARM(FH_ERROR, "Failed to read file");
+		WT_ALARM(WT_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -97,13 +97,13 @@ FH_API s8 fh_fs_text(const char *pth, u64 *size, char **out)
 	return 0;
 
 err_free_buf:
-	fh_free(buf);
+	wt_free(buf);
 
 err_close_fd:
 	fclose(fd);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to load file");
+	WT_ALARM(WT_ERROR, "Failed to load file");
 	return -1;
 }
 
@@ -112,7 +112,7 @@ err_return:
  * This function will map the SDL_PixelFormatEnum to the OpenGL pixel format
  * enum.
  */
-FH_INTERN GLenum fh_fs_map_format(SDL_PixelFormatEnum pixelFormat)
+WT_INTERN GLenum wt_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 {
     switch (pixelFormat)
     {
@@ -185,27 +185,27 @@ FH_INTERN GLenum fh_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 #endif
 
 
-FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out)
+WT_API s8 wt_fs_image(const char *pth, struct wt_fs_r_image *out)
 {
 	SDL_Surface *surf;
 	u8 *buf;
 	u64 size;
 	
 	if(!pth || !out) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 
 	if(!(surf = IMG_Load(pth))) {
-		FH_ALARM(FH_ERROR, "Failed to open and read file");
+		WT_ALARM(WT_ERROR, "Failed to open and read file");
 		goto err_return;
 	}
 
 
 	size = surf->pitch * surf->h;
-	if(!(buf = fh_malloc(size))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for image");
+	if(!(buf = wt_malloc(size))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for image");
 		goto err_free_surface;
 	}
 
@@ -224,15 +224,15 @@ err_free_surface:
 	SDL_FreeSurface(surf);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to load PNG file");
+	WT_ALARM(WT_ERROR, "Failed to load PNG file");
 	return -1;
 }
 
 
-FH_API void fh_fs_image_cleanup(struct fh_fs_r_image *img)
+WT_API void wt_fs_image_cleanup(struct wt_fs_r_image *img)
 {
 	if(!img)
 		return;
 
-	fh_free(img->data);
+	wt_free(img->data);
 }

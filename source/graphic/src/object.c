@@ -9,40 +9,40 @@
 
 #include <stdlib.h>
 
-#define FH_MDL_DEBUG 1
+#define WT_MDL_DEBUG 1
 
 
 
 
-FH_INTERN void obj_destroy(struct fh_object *obj)
+WT_INTERN void obj_destroy(struct wt_object *obj)
 {
 	u32 i;
-	struct fh_object_uniform *uniform;
+	struct wt_object_uniform *uniform;
 
 	glBindVertexArray(obj->vao);
 
 	for(i = 0; i < obj->uniform_number; i++) {
 		uniform =  &obj->uniforms[i];
 		glDeleteBuffers(1, &uniform->bao);
-		fh_free(uniform->data);	
+		wt_free(uniform->data);	
 	}
 
 	glDeleteBuffers(1, &obj->ebo);
 	glDeleteBuffers(1, &obj->bao);
 	glDeleteVertexArrays(1, &obj->vao);
 
-	fh_free(obj->vertex_buffer);
-	fh_free(obj->index_buffer);
+	wt_free(obj->vertex_buffer);
+	wt_free(obj->index_buffer);
 
-	fh_free(obj);
+	wt_free(obj);
 
 }
 
 
-FH_INTERN void obj_activate_uniforms(struct fh_object *obj)
+WT_INTERN void obj_activate_uniforms(struct wt_object *obj)
 {
 	u32 i;
-	struct fh_object_uniform *uniform;
+	struct wt_object_uniform *uniform;
 
 	for(i = 0; i < obj->uniform_number; i++) {
 		uniform = &obj->uniforms[i];
@@ -54,16 +54,16 @@ FH_INTERN void obj_activate_uniforms(struct fh_object *obj)
 }
 
 
-FH_INTERN void obj_rmv_fnc(u32 size, void *ptr)
+WT_INTERN void obj_rmv_fnc(u32 size, void *ptr)
 {
-	struct fh_object *obj;
+	struct wt_object *obj;
 
-	fh_Ignore(size);
+	wt_Ignore(size);
 
 	if(!ptr)
 		return;
 
-	obj = (struct fh_object *)ptr;
+	obj = (struct wt_object *)ptr;
 
 	obj_destroy(obj);
 }
@@ -77,17 +77,17 @@ FH_INTERN void obj_rmv_fnc(u32 size, void *ptr)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API s8 fh_InitObjectTable(struct fh_context *ctx)
+WT_API s8 wt_InitObjectTable(struct wt_context *ctx)
 {
-	struct fh_table *tbl;
+	struct wt_table *tbl;
 
 	if(!ctx) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(tbl = fh_tbl_create(&obj_rmv_fnc))) {
-		FH_ALARM(FH_ERROR, "Failed to create new table");
+	if(!(tbl = wt_tbl_create(&obj_rmv_fnc))) {
+		WT_ALARM(WT_ERROR, "Failed to create new table");
 		goto err_return;
 	}
 
@@ -97,61 +97,61 @@ FH_API s8 fh_InitObjectTable(struct fh_context *ctx)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new object table.");
+	WT_ALARM(WT_ERROR, "Failed to create new object table.");
 	return -1;
 }
 
 
-FH_API void fh_CloseObjectTable(struct fh_context *ctx)
+WT_API void wt_CloseObjectTable(struct wt_context *ctx)
 {
 	if(!ctx)
 		return;
 
-	fh_tbl_destroy(ctx->objects);
+	wt_tbl_destroy(ctx->objects);
 	ctx->objects = NULL;
 }
 
 
-FH_API void fh_RemoveObject(struct fh_object *obj)
+WT_API void wt_RemoveObject(struct wt_object *obj)
 {
 	if(!obj)
 		return;
 
-	fh_ContextRemove(obj->context, FH_CONTEXT_OBJECTS, obj->name);
+	wt_ContextRemove(obj->context, WT_CONTEXT_OBJECTS, obj->name);
 }
 
 
-FH_API struct fh_object *fh_GetObject(struct fh_context *ctx, char *name)
+WT_API struct wt_object *wt_GetObject(struct wt_context *ctx, char *name)
 {
-	struct fh_object *obj;
+	struct wt_object *obj;
 
 	if(!ctx || !name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(fh_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
-		FH_ALARM(FH_ERROR, "Object could not be found in fh_table");
+	if(wt_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
+		WT_ALARM(WT_ERROR, "Object could not be found in wt_table");
 		goto err_return;
 	}
 
 	return obj;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to get object from object table");
+	WT_ALARM(WT_ERROR, "Failed to get object from object table");
 	return NULL;
 
 
 }
 
 
-FH_API void fh_SetObjectUniform(struct fh_object *obj, char *name, void *ptr)
+WT_API void wt_SetObjectUniform(struct wt_object *obj, char *name, void *ptr)
 {
 	u32 i;
-	struct fh_object_uniform *uniform;
+	struct wt_object_uniform *uniform;
 
 	if(!obj || !name || !ptr) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -164,12 +164,12 @@ FH_API void fh_SetObjectUniform(struct fh_object *obj, char *name, void *ptr)
 		}
 	}
 
-	FH_ALARM(FH_ERROR, "Uniform buffer not found");
+	WT_ALARM(WT_ERROR, "Uniform buffer not found");
 }
 
 
-FH_API void fh_RenderObject(struct fh_object *obj, struct fh_shader *shd,
-		struct fh_texture *tex)
+WT_API void wt_RenderObject(struct wt_object *obj, struct wt_shader *shd,
+		struct wt_texture *tex)
 {
 	if(!obj)
 		return;
@@ -179,25 +179,25 @@ FH_API void fh_RenderObject(struct fh_object *obj, struct fh_shader *shd,
 
 	/* Activate shader */
 	if(shd)
-		fh_UseShader(shd);
+		wt_UseShader(shd);
 	else
-		fh_UseShader(obj->shader);
+		wt_UseShader(obj->shader);
 
 	/* Activate the uniform buffers */
 	obj_activate_uniforms(obj);
 
 	/* Activate texture */
 	if(tex)
-		fh_UseTexture(tex);
+		wt_UseTexture(tex);
 	else
-		fh_UseTexture(obj->texture);
+		wt_UseTexture(obj->texture);
 
 	/* Finally render the object */
 	glDrawElements(GL_TRIANGLES, obj->index_number, GL_UNSIGNED_INT, NULL);
 
 	/* Unuse the active texture and shader */
-	fh_UnuseTexture();
-	fh_UnuseShader();
+	wt_UnuseTexture();
+	wt_UnuseShader();
 
 	/* Unbind the vertex-array-object */
 	glBindVertexArray(0);

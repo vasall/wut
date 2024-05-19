@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_RESOURCES_FONT_H
-#define _FH_GRAPHIC_RESOURCES_FONT_H
+#ifndef _WT_GRAPHIC_RESOURCES_FONT_H
+#define _WT_GRAPHIC_RESOURCES_FONT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -10,9 +10,9 @@
 
 #include "graphic/inc/context.h"
 
-#define FH_FONT_NAME_LIM	128
+#define WT_FONT_NAME_LIM	128
 
-struct fh_font_glyph {
+struct wt_font_glyph {
 	s16 codepoint;
 
 	f32 width;
@@ -33,23 +33,23 @@ struct fh_font_glyph {
 	f32 tex_height;
 };
 
-struct fh_font_data {
+struct wt_font_data {
 	f32 spread_in_tex;	/* Spread in texture */
 	f32 spread_in_font;	/* Spread in font metrics */
 
 	/*
 	 * A list with all loaded glyphs.
 	 */
-	struct fh_list *glyphs;
+	struct wt_list *glyphs;
 
 };
 
-struct fh_font {
+struct wt_font {
 	/* The name of the font */
-	char name[FH_FONT_NAME_LIM];	
+	char name[WT_FONT_NAME_LIM];	
 
 	/* Pointer to the context this font is attached to */
-	struct fh_context *context;
+	struct wt_context *context;
 
 	/* The attached batch renderer */
 	s16 batch_id;	
@@ -57,7 +57,7 @@ struct fh_font {
 	/*
 	 * Font-Data
 	 */
-	struct fh_font_data data;
+	struct wt_font_data data;
 };
 
 
@@ -68,7 +68,7 @@ struct fh_font {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_InitFontTable(struct fh_context *ctx);
+WT_API s8 wt_InitFontTable(struct wt_context *ctx);
 
 
 /*
@@ -76,7 +76,7 @@ FH_API s8 fh_InitFontTable(struct fh_context *ctx);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_CloseFontTable(struct fh_context *ctx);
+WT_API void wt_CloseFontTable(struct wt_context *ctx);
 
 
 /*
@@ -90,7 +90,7 @@ FH_API void fh_CloseFontTable(struct fh_context *ctx);
  * Returns: Either a pointer to the newly created font or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_font *fh_LoadFont(struct fh_context *ctx,
+WT_API struct wt_font *wt_LoadFont(struct wt_context *ctx,
 		char *name, char *img_pth, char *meta_pth);
 
 
@@ -99,7 +99,7 @@ FH_API struct fh_font *fh_LoadFont(struct fh_context *ctx,
  *
  * @font: Pointer to the font
  */
-FH_API void fh_RemoveFont(struct fh_font *font);
+WT_API void wt_RemoveFont(struct wt_font *font);
 
 
 /*
@@ -111,7 +111,7 @@ FH_API void fh_RemoveFont(struct fh_font *font);
  * Returns: Eithr a pointer to the font or NULL if either an error occurred or
  * 	    the font could not be found
  */
-FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name);
+WT_API struct wt_font *wt_GetFont(struct wt_context *ctx, char *name);
 
 
 /*
@@ -123,7 +123,7 @@ FH_API struct fh_font *fh_GetFont(struct fh_context *ctx, char *name);
  * Returns: Either a pointer to the glyph or NULL if its missing or an error
  * 	    occurred
  */
-FH_API struct fh_font_glyph *fh_GetGlyph(struct fh_font *font, s16 cpnt);
+WT_API struct wt_font_glyph *wt_GetGlyph(struct wt_font *font, s16 cpnt);
 
 
 /*
@@ -134,7 +134,7 @@ FH_API struct fh_font_glyph *fh_GetGlyph(struct fh_font *font, s16 cpnt);
  *
  * Returns: Either the index or -1 if an error occurred
  */
-FH_API s16 fh_GetGlyphIndex(struct fh_font *font, s16 cpnt);
+WT_API s16 wt_GetGlyphIndex(struct wt_font *font, s16 cpnt);
 
 
 /*
@@ -145,7 +145,7 @@ FH_API s16 fh_GetGlyphIndex(struct fh_font *font, s16 cpnt);
  *
  * Returns: Either a pointer to the glyph or NULL if an error occurred
  */
-FH_API struct fh_font_glyph *fh_GetGlyphByIndex(struct fh_font *font,
+WT_API struct wt_font_glyph *wt_GetGlyphByIndex(struct wt_font *font,
 		s16 idx);
 
-#endif /* _FH_GRAPHIC_RESOURCES_FONT_H */
+#endif /* _WT_GRAPHIC_RESOURCES_FONT_H */

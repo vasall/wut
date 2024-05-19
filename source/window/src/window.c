@@ -13,38 +13,38 @@
 
 
 
-FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
+WT_INTERN struct wt_window *win_create(char *name, s16 w, s16 h)
 {
-	struct fh_window *win;
+	struct wt_window *win;
 	SDL_Window *hdl;
 	s8 name_len;
 
 	name_len = strlen(name);
-	if(name_len < 1 || name_len > FH_WIN_NAME_LIM) {
-		FH_ALARM(FH_ERROR, "Window name is invalid");
+	if(name_len < 1 || name_len > WT_WIN_NAME_LIM) {
+		WT_ALARM(WT_ERROR, "Window name is invalid");
 		goto err_return;
 	}
 
 	/* Allocate the memory for the window struct */
-	if(!(win = fh_malloc(sizeof(struct fh_window)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate the window struct");
+	if(!(win = wt_malloc(sizeof(struct wt_window)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate the window struct");
 		goto err_return;
 	}
 
 	/* Create the SDL window */
 	if(!(hdl = SDL_CreateWindow(name, 0, 0, w, h, SDL_WINDOW_OPENGL))) {
-		FH_ALARM(FH_ERROR, "Failed to create SDL window");
+		WT_ALARM(WT_ERROR, "Failed to create SDL window");
 		goto err_free_win;
 	}
 
 	/* Set the identifier byte */
-	win->identity = FH_IDT_WINDOW;
+	win->identity = WT_IDT_WINDOW;
 		
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
-	fh_rect_set(&win->shape, 0, 0, w, h);
-	win->info = FH_WIN_INFO_VISIBLE;
+	wt_rect_set(&win->shape, 0, 0, w, h);
+	win->info = WT_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
 
 	win->parent = NULL;
@@ -59,65 +59,65 @@ FH_INTERN struct fh_window *win_create(char *name, s16 w, s16 h)
 	win->selected = NULL;
 
 	/* Create the rendering context used by the window */
-	if(!(win->context = fh_CreateContext(win))) {
-		FH_ALARM(FH_ERROR, "Failed to create rendering context");
+	if(!(win->context = wt_CreateContext(win))) {
+		WT_ALARM(WT_ERROR, "Failed to create rendering context");
 		goto err_destroy_hdl;
 	}
 
 	/* Create the document contained in the window */
-	if(!(win->document = fh_CreateDocument(win))) {
-		FH_ALARM(FH_ERROR, "Failed to create document for window");
+	if(!(win->document = wt_CreateDocument(win))) {
+		WT_ALARM(WT_ERROR, "Failed to create document for window");
 		goto err_destroy_ctx;
 	}
 
 	/* Create the event handler */
-	if(!(win->event_handler = fh_handler_create()))
+	if(!(win->event_handler = wt_handler_create()))
 		goto err_destroy_document;
 
 	return win;
 
 err_destroy_document:
-	fh_DestroyDocument(win->document);
+	wt_DestroyDocument(win->document);
 
 err_destroy_ctx:
-	fh_DestroyContext(win->context);
+	wt_DestroyContext(win->context);
 
 err_destroy_hdl:
 	SDL_DestroyWindow(win->handle);
 
 err_free_win:
-	fh_free(win);
+	wt_free(win);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create window");
+	WT_ALARM(WT_ERROR, "Failed to create window");
 	return NULL;
 }
 
 
-FH_INTERN void win_destroy(struct fh_window *win)
+WT_INTERN void win_destroy(struct wt_window *win)
 {
-	struct fh_window *mwin;
+	struct wt_window *mwin;
 
-	mwin = fh_core_get_main_window();
+	mwin = wt_core_get_main_window();
 	if(strcmp(mwin->name, win->name) == 0) {
-		fh_core_set_main_window(NULL);
+		wt_core_set_main_window(NULL);
 	}
 
-	fh_handler_destroy(win->event_handler);
+	wt_handler_destroy(win->event_handler);
 
-	fh_DestroyDocument(win->document);
+	wt_DestroyDocument(win->document);
 
-	fh_DestroyContext(win->context);
+	wt_DestroyContext(win->context);
 
 	SDL_DestroyWindow(win->handle);
 
-	fh_free(win);
+	wt_free(win);
 }
 
 
-FH_INTERN s8 win_attach(struct fh_window *par, struct fh_window *win)
+WT_INTERN s8 win_attach(struct wt_window *par, struct wt_window *win)
 {
-	struct fh_window *run;
+	struct wt_window *run;
 
 	if(!par->firstborn) {
 		par->firstborn = win;
@@ -143,9 +143,9 @@ FH_INTERN s8 win_attach(struct fh_window *par, struct fh_window *win)
 }
 
 
-FH_INTERN void win_detach(struct fh_window *win)
+WT_INTERN void win_detach(struct wt_window *win)
 {
-	struct fh_window *par;
+	struct wt_window *par;
 
 	if(!win->parent) {
 		return;
@@ -170,16 +170,16 @@ FH_INTERN void win_detach(struct fh_window *win)
 }
 
 
-FH_INTERN s8 win_cfnc_close(struct fh_window *w, void *data)
+WT_INTERN s8 win_cfnc_close(struct wt_window *w, void *data)
 {
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	/* First detach the window... */
 	win_detach(w);
 
 	/* Then check if this window is the active one */
-	if(fh_core_is_active_window(w))
-		fh_core_set_active_window(NULL);
+	if(wt_core_is_active_window(w))
+		wt_core_set_active_window(NULL);
 
 	/* ...finally destroy it */
 	win_destroy(w);
@@ -187,9 +187,9 @@ FH_INTERN s8 win_cfnc_close(struct fh_window *w, void *data)
 	return 0;
 }
 
-FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
+WT_INTERN s8 win_cfnc_redraw(struct wt_window *win, void *data)
 {
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	/* Select the current context */
 	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);
@@ -198,10 +198,10 @@ FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* Render the Document-UI and views */
-	fh_RenderDocument(win->document);
+	wt_RenderDocument(win->document);
 
 	/* Flush all batches */
-	fh_ContextRenderBatches(win->context);
+	wt_ContextRenderBatches(win->context);
 
 	/* Swap buffer */
 	SDL_GL_SwapWindow(win->handle);
@@ -210,9 +210,9 @@ FH_INTERN s8 win_cfnc_redraw(struct fh_window *win, void *data)
 }
 
 
-FH_INTERN s8 win_cfnc_find(struct fh_window *w, void *data)
+WT_INTERN s8 win_cfnc_find(struct wt_window *w, void *data)
 {
-	struct fh_win_selector *sel = (struct fh_win_selector *)data;
+	struct wt_win_selector *sel = (struct wt_win_selector *)data;
 
 	/* Check if the window has already been found */
 	if(sel->state == 1) {
@@ -231,11 +231,11 @@ FH_INTERN s8 win_cfnc_find(struct fh_window *w, void *data)
 }
 
 
-FH_INTERN s8 win_cfnc_show(struct fh_window *w, void *data)
+WT_INTERN s8 win_cfnc_show(struct wt_window *w, void *data)
 {
 	s32 i;
 
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	for(i = 0; i < w->level; i++)
 		printf("  ");
@@ -256,11 +256,11 @@ FH_INTERN s8 win_cfnc_show(struct fh_window *w, void *data)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
-		fh_win_cfnc post_fnc, void *data)
+WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
+		wt_win_cfnc post_fnc, void *data)
 {
-	struct fh_window *run;
-	struct fh_window *next;
+	struct wt_window *run;
+	struct wt_window *next;
 
 	if(!str)
 		return;
@@ -276,7 +276,7 @@ FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
 	while(run) {
 		next = run->younger_sibling;
 
-		fh_window_hlf(run, pre_fnc, post_fnc, data);
+		wt_window_hlf(run, pre_fnc, post_fnc, data);
 
 		run = next;
 	}
@@ -287,46 +287,46 @@ FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
 }
 
 
-FH_XMOD void fh_window_redraw(struct fh_window *win)
+WT_XMOD void wt_window_redraw(struct wt_window *win)
 {
 	win_cfnc_redraw(win, NULL);
 }
 
 
-FH_XMOD void fh_window_redraw_all(void)
+WT_XMOD void wt_window_redraw_all(void)
 {
-	fh_window_hlf(fh_core_get_main_window(), &win_cfnc_redraw, NULL, NULL);
+	wt_window_hlf(wt_core_get_main_window(), &win_cfnc_redraw, NULL, NULL);
 }
 
 
-FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele)
+WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele)
 {
-	struct fh_element *old_hovered;
+	struct wt_element *old_hovered;
 
 	/*
 	 * Check if the hovered element has changed.
 	 */
-	if(!(fh_element_compare(win->hovered, ele))) {
+	if(!(wt_element_compare(win->hovered, ele))) {
 		old_hovered = win->hovered;
 
 		/* If that is the case, first modify the element flags */
-		fh_element_mod_info(win->hovered, FH_ELEMENT_F_HOVERED, 0);
-		fh_element_mod_info(ele, FH_ELEMENT_F_HOVERED, 1);
+		wt_element_mod_info(win->hovered, WT_ELEMENT_F_HOVERED, 0);
+		wt_element_mod_info(ele, WT_ELEMENT_F_HOVERED, 1);
 
 		/* Then link the new element */
 		win->hovered = ele;
 
 		/* Lastly trigger the events */
 		if(old_hovered) {
-			fh_event_trigger_raw(
-					FH_EVT_ELEMENTLEAVE,
+			wt_event_trigger_raw(
+					WT_EVT_ELEMENTLEAVE,
 					win,
 					old_hovered
 					);
 		}
 
-		fh_event_trigger_raw(
-				FH_EVT_ELEMENTENTER,
+		wt_event_trigger_raw(
+				WT_EVT_ELEMENTENTER,
 				win,
 				ele
 				);
@@ -337,34 +337,34 @@ FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele)
 }
 
 
-FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele)
+WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele)
 {
-	struct fh_element *old_selected;
+	struct wt_element *old_selected;
 
 	/*
 	 * Check if the selected element has changed.
 	 */
-	if(!(fh_element_compare(win->selected, ele))) {
+	if(!(wt_element_compare(win->selected, ele))) {
 		old_selected = win->selected;
 
 		/* If that is the case, first modify the element flags */
-		fh_element_mod_info(win->selected, FH_ELEMENT_F_SELECTED, 0);
-		fh_element_mod_info(ele, FH_ELEMENT_F_SELECTED, 1);
+		wt_element_mod_info(win->selected, WT_ELEMENT_F_SELECTED, 0);
+		wt_element_mod_info(ele, WT_ELEMENT_F_SELECTED, 1);
 
 		/* Then link the new element */
 		win->selected = ele;
 
 		/* Lastly trigger the events */
 		if(old_selected) {
-			fh_event_trigger_raw(
-					FH_EVT_ELEMENTUNSELECT,
+			wt_event_trigger_raw(
+					WT_EVT_ELEMENTUNSELECT,
 					win,
 					old_selected
 					);
 		}
 
-		fh_event_trigger_raw(
-				FH_EVT_ELEMENTSELECT,
+		wt_event_trigger_raw(
+				WT_EVT_ELEMENTSELECT,
 				win,
 				ele
 				);
@@ -384,13 +384,13 @@ FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
+WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
 		s32 width, s32 height)
 {
-	struct fh_window *win;
+	struct wt_window *win;
 
 	if(name == NULL || width < 0 || height < 0) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -405,49 +405,49 @@ FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
 	/* Otherwise... */
 	else {
 		/* Mark this window as the main window */
-		win->info = win->info | FH_WIN_INFO_MAIN;
+		win->info = win->info | WT_WIN_INFO_MAIN;
 
 		/* Set this window as the main window */
-		fh_core_set_main_window(win);
+		wt_core_set_main_window(win);
 	}
 
 	return win;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create add new window");
+	WT_ALARM(WT_ERROR, "Failed to create add new window");
 	return NULL;
 }
 
 
-FH_API void fh_CloseWindow(struct fh_window *win)
+WT_API void wt_CloseWindow(struct wt_window *win)
 {
 	if(!win) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	fh_window_hlf(win, NULL, &win_cfnc_close, NULL);
+	wt_window_hlf(win, NULL, &win_cfnc_close, NULL);
 
 	return;
 
 err_return:
-	FH_ALARM(FH_WARNING, "Failed to close window");
+	WT_ALARM(WT_WARNING, "Failed to close window");
 }
 
 
-FH_API struct fh_window *fh_GetWindow(s32 wd)
+WT_API struct wt_window *wt_GetWindow(s32 wd)
 {
-	struct fh_win_selector sel;
-	struct fh_window *mwin;
+	struct wt_win_selector sel;
+	struct wt_window *mwin;
 
 	sel.state = 0;
 	sel.id = wd;
 	sel.win = NULL;
 
 	/* Recursifly search for the window... */
-	mwin = fh_core_get_main_window();
-	fh_window_hlf(mwin, &win_cfnc_find, NULL, &sel);
+	mwin = wt_core_get_main_window();
+	wt_window_hlf(mwin, &win_cfnc_find, NULL, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -458,29 +458,29 @@ FH_API struct fh_window *fh_GetWindow(s32 wd)
 }
 
 
-FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h)
+WT_API void wt_ResizeWindow(struct wt_window *win, u16 w, u16 h)
 {
 	if(!win) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/*
 	 * Update the shape.
 	 */
-	fh_rect_set(&win->shape, 0, 0, w, h);
+	wt_rect_set(&win->shape, 0, 0, w, h);
 
 	/*
 	 * Update the document.
 	 */
-	fh_ResizeDocument(win->document);
+	wt_ResizeDocument(win->document);
 }
 
 
-FH_API void fh_ActivateWindow(struct fh_window *win)
+WT_API void wt_ActivateWindow(struct wt_window *win)
 {
 	if(!win) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -488,10 +488,10 @@ FH_API void fh_ActivateWindow(struct fh_window *win)
 }
 
 
-FH_API struct fh_context *fh_GetContext(struct fh_window *win)
+WT_API struct wt_context *wt_GetContext(struct wt_window *win)
 {
 	if(!win) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -499,10 +499,10 @@ FH_API struct fh_context *fh_GetContext(struct fh_window *win)
 }
 
 
-FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
+WT_API struct wt_document *wt_GetDocument(struct wt_window *win)
 {
 	if(!win) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -511,9 +511,9 @@ FH_API struct fh_document *fh_GetDocument(struct fh_window *win)
 
 
 
-FH_API void fh_DumpWindowTree(void)
+WT_API void wt_DumpWindowTree(void)
 {
-	struct fh_window *mwin = fh_core_get_main_window();
+	struct wt_window *mwin = wt_core_get_main_window();
 
-	fh_window_hlf(mwin, &win_cfnc_show, NULL, NULL);
+	wt_window_hlf(mwin, &win_cfnc_show, NULL, NULL);
 }

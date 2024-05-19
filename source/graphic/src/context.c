@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 
-FH_INTERN void GLAPIENTRY gl_callback(GLenum source,
+WT_INTERN void GLAPIENTRY gl_callback(GLenum source,
 				GLenum type,
 				GLuint id,
 				GLenum severity,
@@ -91,43 +91,43 @@ FH_INTERN void GLAPIENTRY gl_callback(GLenum source,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_INTERN s8 ctx_load_predef(struct fh_context *ctx)
+WT_INTERN s8 ctx_load_predef(struct wt_context *ctx)
 {
 
-	ctx->def_block_shader = fh_CreateShader(
+	ctx->def_block_shader = wt_CreateShader(
 			ctx, 
 			"__def_block_shader", 
-			(const char *)fh_ps_shd_def_block_v,
-			(const char *)fh_ps_shd_def_block_f
+			(const char *)wt_ps_shd_def_block_v,
+			(const char *)wt_ps_shd_def_block_f
 			);
 
-	ctx->def_texture_shader = fh_CreateShader(
+	ctx->def_texture_shader = wt_CreateShader(
 			ctx,
 			"__def_texture_shader",
-			(const char *)fh_ps_shd_def_texture_v,
-			(const char *)fh_ps_shd_def_texture_f
+			(const char *)wt_ps_shd_def_texture_v,
+			(const char *)wt_ps_shd_def_texture_f
 			);
 
 	printf("Load font shader...\n");
-	ctx->def_text_shader = fh_CreateShader(
+	ctx->def_text_shader = wt_CreateShader(
 			ctx,
 			"__def_text_shader",
-			(const char *)fh_ps_shd_def_text_v,
-			(const char *)fh_ps_shd_def_text_f
+			(const char *)wt_ps_shd_def_text_v,
+			(const char *)wt_ps_shd_def_text_f
 			);
 	printf("done\n");
 	return 0;
 }
 
 
-FH_INTERN s8 ctx_cfnc_render_batch(void *ptr,  s16 idx, void *p)
+WT_INTERN s8 ctx_cfnc_render_batch(void *ptr,  s16 idx, void *p)
 {
-	struct fh_batch *ren = (struct fh_batch *)(*(long *)ptr);
+	struct wt_batch *ren = (struct wt_batch *)(*(long *)ptr);
 
-	fh_Ignore(idx);
-	fh_Ignore(p);
+	wt_Ignore(idx);
+	wt_Ignore(p);
 
-	fh_batch_flush(ren);
+	wt_batch_flush(ren);
 
 	return 0;
 }
@@ -142,11 +142,11 @@ FH_INTERN s8 ctx_cfnc_render_batch(void *ptr,  s16 idx, void *p)
  */
 
 
-FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
+WT_API struct wt_context *wt_CreateContext(struct wt_window *win)
 {
-	struct fh_context *ctx;
+	struct wt_context *ctx;
 
-	if(!(ctx = fh_malloc(sizeof(struct fh_context))))
+	if(!(ctx = wt_malloc(sizeof(struct wt_context))))
 		goto err_return;
 
 	/* Copy the window reference */
@@ -158,22 +158,22 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win)
 	/*
 	 * Create and initialize the resource tables.
 	 */
-	if(fh_InitShaderTable(ctx) < 0) goto err_free_ctx;
-	if(fh_InitTextureTable(ctx) < 0) goto err_close_shd;
-	if(fh_InitFontTable(ctx) < 0) goto err_close_tex;
-	if(fh_InitObjectTable(ctx) < 0) goto err_close_font;
+	if(wt_InitShaderTable(ctx) < 0) goto err_free_ctx;
+	if(wt_InitTextureTable(ctx) < 0) goto err_close_shd;
+	if(wt_InitFontTable(ctx) < 0) goto err_close_tex;
+	if(wt_InitObjectTable(ctx) < 0) goto err_close_font;
 
 	/*
 	 * Initialize the batch list.
 	 */
-	if(!(ctx->batches = fh_statlist_create(sizeof(struct fh_batch *), 10)))
+	if(!(ctx->batches = wt_statlist_create(sizeof(struct wt_batch *), 10)))
 		goto err_close_obj;
 
 	/*
 	 * Create the underlying OpenGL-context.
 	 */
 	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
-		FH_ALARM(FH_ERROR, "Failed to create GL context");
+		WT_ALARM(WT_ERROR, "Failed to create GL context");
 		goto err_destroy_batches;
 	}
 
@@ -197,71 +197,71 @@ err_delete_context:
 	SDL_GL_DeleteContext(ctx->gl_context);
 
 err_destroy_batches:
-	fh_statlist_destroy(ctx->batches);
+	wt_statlist_destroy(ctx->batches);
 
 err_close_obj:
-	fh_CloseObjectTable(ctx);
+	wt_CloseObjectTable(ctx);
 
 err_close_font:
-	fh_CloseFontTable(ctx);
+	wt_CloseFontTable(ctx);
 
 err_close_tex:
-	fh_CloseTextureTable(ctx);
+	wt_CloseTextureTable(ctx);
 
 err_close_shd:
-	fh_CloseShaderTable(ctx);
+	wt_CloseShaderTable(ctx);
 
 err_free_ctx:
-	fh_free(ctx);
+	wt_free(ctx);
 	
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create context");
+	WT_ALARM(WT_ERROR, "Failed to create context");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyContext(struct fh_context *ctx)
+WT_API void wt_DestroyContext(struct wt_context *ctx)
 {
 	if(!ctx) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/*
 	 * Destroy the batch list.
 	 */
-	fh_statlist_destroy(ctx->batches);
+	wt_statlist_destroy(ctx->batches);
 
 	/* 
 	 * Second, close the resource tables.
 	 */
-	fh_CloseObjectTable(ctx);
-	fh_CloseFontTable(ctx);
-	fh_CloseTextureTable(ctx);
-	fh_CloseShaderTable(ctx);
+	wt_CloseObjectTable(ctx);
+	wt_CloseFontTable(ctx);
+	wt_CloseTextureTable(ctx);
+	wt_CloseShaderTable(ctx);
 
-	fh_free(ctx);
+	wt_free(ctx);
 }
 
 
-FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt, 
+WT_API s8 wt_ContextAdd(struct wt_context *ctx, enum wt_context_table opt, 
 		char *name, u32 size, void **p)
 {
-	struct fh_table *tbl;
+	struct wt_table *tbl;
 
 	if(!ctx || !name || !p) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 	switch(opt) {
-		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
-		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
-		default: FH_ALARM(FH_ERROR, "Table not found"); goto err_return;
+		case WT_CONTEXT_SHADERS: tbl = ctx->shaders; break;
+		case WT_CONTEXT_OBJECTS: tbl = ctx->objects; break;
+		default: WT_ALARM(WT_ERROR, "Table not found"); goto err_return;
 	}
 
-	if(fh_tbl_add(tbl, name, size, p) < 0) {
-		FH_ALARM(FH_ERROR, "Failed to insert element into table");
+	if(wt_tbl_add(tbl, name, size, p) < 0) {
+		WT_ALARM(WT_ERROR, "Failed to insert element into table");
 		goto err_return;
 	}
 
@@ -272,56 +272,56 @@ err_return:
 }
 
 
-FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
+WT_API void wt_ContextRemove(struct wt_context *ctx, enum wt_context_table opt,
 		char *name)
 {
-	struct fh_table *tbl;
+	struct wt_table *tbl;
 
 	if(!ctx || !name) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(opt) {
-		case FH_CONTEXT_SHADERS: tbl = ctx->shaders; break;
-		case FH_CONTEXT_OBJECTS: tbl = ctx->objects; break;
-		default: FH_ALARM(FH_WARNING, "Table not found"); return;
+		case WT_CONTEXT_SHADERS: tbl = ctx->shaders; break;
+		case WT_CONTEXT_OBJECTS: tbl = ctx->objects; break;
+		default: WT_ALARM(WT_WARNING, "Table not found"); return;
 	}
 
-	fh_tbl_rmv(tbl, name);
+	wt_tbl_rmv(tbl, name);
 }
 
 
-FH_API s16 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren)
+WT_API s16 wt_ContextAddBatch(struct wt_context *ctx, struct wt_batch **ren)
 {
 	if(!ctx || !ren) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
-	return fh_statlist_add(ctx->batches, ren);
+	return wt_statlist_add(ctx->batches, ren);
 }
 
 
-FH_API void fh_ContextRmvBatch(struct fh_context *ctx, s16 idx)
+WT_API void wt_ContextRmvBatch(struct wt_context *ctx, s16 idx)
 {
 	if(!ctx)
 		return;
 
-	fh_statlist_rmv(ctx->batches, idx);
+	wt_statlist_rmv(ctx->batches, idx);
 }
 
 
-FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id)
+WT_API struct wt_batch *wt_ContextGetBatch(struct wt_context *ctx, s16 id)
 {
-	struct fh_batch *ren;
+	struct wt_batch *ren;
 
 	if(!ctx) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
-	if(fh_statlist_get(ctx->batches, id, &ren) != 1) {
+	if(wt_statlist_get(ctx->batches, id, &ren) != 1) {
 		printf("Failed to get render batch\n");
 		return NULL;
 	}
@@ -330,19 +330,19 @@ FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id)
 }
 
 
-FH_API void fh_ContextRenderBatches(struct fh_context *ctx)
+WT_API void wt_ContextRenderBatches(struct wt_context *ctx)
 {
 	if(!ctx)
 		return;
 
-	fh_statlist_apply(ctx->batches, &ctx_cfnc_render_batch, NULL);		
+	wt_statlist_apply(ctx->batches, &ctx_cfnc_render_batch, NULL);		
 }
 
 
-FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect)
+WT_API void wt_SetViewport(struct wt_context *ctx, struct wt_rect *rect)
 {
 	if(!ctx) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -350,10 +350,10 @@ FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect)
 }
 
 
-FH_API void fh_ResetViewport(struct fh_context *ctx)
+WT_API void wt_ResetViewport(struct wt_context *ctx)
 {
 	if(!ctx) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -366,7 +366,7 @@ FH_API void fh_ResetViewport(struct fh_context *ctx)
 }
 
 
-FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect)
+WT_API void wt_ContextEnableScissor(struct wt_context *ctx, struct wt_rect *rect)
 {
 	if(!ctx)
 		return;
@@ -377,7 +377,7 @@ FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect
 }
 
 
-FH_API void fh_ContextDisableScissor(struct fh_context *ctx)
+WT_API void wt_ContextDisableScissor(struct wt_context *ctx)
 {
 	if(!ctx)
 		return;

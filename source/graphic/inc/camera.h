@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_CAMERA_H
-#define _FH_GRAPHIC_CAMERA_H
+#ifndef _WT_GRAPHIC_CAMERA_H
+#define _WT_GRAPHIC_CAMERA_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -8,40 +8,40 @@
 
 #include "utility/inc/extended_math.h"
 
-#define FH_CAM_NAME_LIM		128
-#define FH_CAM_PITCH_LIM	50.0
+#define WT_CAM_NAME_LIM		128
+#define WT_CAM_PITCH_LIM	50.0
 
-enum fh_cam_mode {
-	FH_CAM_FREE,
-	FH_CAM_FOCUS
+enum wt_cam_mode {
+	WT_CAM_FREE,
+	WT_CAM_FOCUS
 };
 
 
-struct fh_camera_info {
+struct wt_camera_info {
 	f32 area_of_view;
 	f32 aspect_ratio;
 	f32 near;
 	f32 far;	
 };
 
-struct fh_camera {
-	struct fh_view *view;
+struct wt_camera {
+	struct wt_view *view;
 
-	enum fh_cam_mode mode;
+	enum wt_cam_mode mode;
 
-	fh_vec3_t pos;
+	wt_vec3_t pos;
 
-	fh_vec3_t v_forward;
-	fh_vec3_t v_right;
+	wt_vec3_t v_forward;
+	wt_vec3_t v_right;
 
-	struct fh_camera_info info;
+	struct wt_camera_info info;
 
-	fh_vec3_t aim;
+	wt_vec3_t aim;
 	f32 dist;
-	fh_mat4_t forw_m;
+	wt_mat4_t forw_m;
 
-	fh_mat4_t view_m;
-	fh_mat4_t projection_m;
+	wt_mat4_t view_m;
+	wt_mat4_t projection_m;
 
 	f32 sens;
 
@@ -51,7 +51,7 @@ struct fh_camera {
 	 * With this mode, the camera will focus on a given target.
 	 */
 
-	fh_vec3_t target;		/* The point to focus on */
+	wt_vec3_t target;		/* The point to focus on */
 	f32 distance;		/* The distance from the target point */
 };
 
@@ -64,8 +64,8 @@ struct fh_camera {
  *
  * Returns: Either a pointer to the camera or NULL if an error occurred
  */
-FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
-		struct fh_view *view);
+WT_API struct wt_camera *wt_CreateCamera(struct wt_camera_info info,
+		struct wt_view *view);
 
 
 /*
@@ -73,7 +73,7 @@ FH_API struct fh_camera *fh_CreateCamera(struct fh_camera_info info,
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_DestroyCamera(struct fh_camera *cam);
+WT_API void wt_DestroyCamera(struct wt_camera *cam);
 
 
 /*
@@ -84,7 +84,7 @@ FH_API void fh_DestroyCamera(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @out: A matrix to write the view matrix to
  */
-FH_API void fh_GetViewMat(struct fh_camera *cam, fh_mat4_t out);
+WT_API void wt_GetViewMat(struct wt_camera *cam, wt_mat4_t out);
 
 
 /*
@@ -95,7 +95,7 @@ FH_API void fh_GetViewMat(struct fh_camera *cam, fh_mat4_t out);
  * @cam: Pointer to the camera
  * @out: A matrix to write the projection matrix to
  */
-FH_API void fh_GetProjectionMat(struct fh_camera *cam, fh_mat4_t out);
+WT_API void wt_GetProjectionMat(struct wt_camera *cam, wt_mat4_t out);
 
 
 /*
@@ -103,9 +103,9 @@ FH_API void fh_GetProjectionMat(struct fh_camera *cam, fh_mat4_t out);
  * If the camera is NULL, a Null-Vector will be returned.
  *
  * @cam: Pointer to the camera
- * @out: A fh_vector to write the position to
+ * @out: A wt_vector to write the position to
  */
-FH_API void fh_GetCameraPosition(struct fh_camera *cam, fh_vec3_t out);
+WT_API void wt_GetCameraPosition(struct wt_camera *cam, wt_vec3_t out);
 
 /*
  * Set the position of a camera.
@@ -113,7 +113,7 @@ FH_API void fh_GetCameraPosition(struct fh_camera *cam, fh_vec3_t out);
  * @cam: Pointer to the camera
  * @pos: The new position of the camera
  */
-FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos);
+WT_API void wt_SetCameraPosition(struct wt_camera *cam, wt_vec3_t pos);
 
 
 /*
@@ -122,7 +122,7 @@ FH_API void fh_SetCameraPosition(struct fh_camera *cam, fh_vec3_t pos);
  * @cam: Pointer to the camera
  * @del: The position difference to move the camera by
  */
-FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del);
+WT_API void wt_MoveCamera(struct wt_camera *cam, wt_vec3_t del);
 
 
 /*
@@ -130,9 +130,9 @@ FH_API void fh_MoveCamera(struct fh_camera *cam, fh_vec3_t del);
  * If the camera is NULL, a Null-Vector will be returned.
  *
  * @cam: Pointer to the camera
- * @out: A fh_vector to write the direction to
+ * @out: A wt_vector to write the direction to
  */
-FH_API void fh_GetCameraDirection(struct fh_camera *cam, fh_vec3_t out);
+WT_API void wt_GetCameraDirection(struct wt_camera *cam, wt_vec3_t out);
 
 
 /*
@@ -142,7 +142,7 @@ FH_API void fh_GetCameraDirection(struct fh_camera *cam, fh_vec3_t out);
  * @cam: Pointer to the camera
  * @dir: The new direction of the camera
  */
-FH_API void fh_SetCameraDirection(struct fh_camera *cam, fh_vec3_t dir);
+WT_API void wt_SetCameraDirection(struct wt_camera *cam, wt_vec3_t dir);
 
 
 /*
@@ -152,7 +152,7 @@ FH_API void fh_SetCameraDirection(struct fh_camera *cam, fh_vec3_t dir);
  *
  * Returns: The current mode of the camera
  */
-FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam); 
+WT_API enum wt_cam_mode wt_GetCameraMode(struct wt_camera *cam); 
 
 
 /*
@@ -161,7 +161,7 @@ FH_API enum fh_cam_mode fh_GetCameraMode(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @mode: The new mode of the camera
  */
-FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode);
+WT_API void wt_SetCameraMode(struct wt_camera *cam, enum wt_cam_mode mode);
 
 
 /*
@@ -169,7 +169,7 @@ FH_API void fh_SetCameraMode(struct fh_camera *cam, enum fh_cam_mode mode);
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_ToggleCameraMode(struct fh_camera *cam);
+WT_API void wt_ToggleCameraMode(struct wt_camera *cam);
 
 
 /*
@@ -179,7 +179,7 @@ FH_API void fh_ToggleCameraMode(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @pnt: The point to look at
  */
-FH_API void fh_CameraLookAt(struct fh_camera *cam, fh_vec3_t pnt);
+WT_API void wt_CameraLookAt(struct wt_camera *cam, wt_vec3_t pnt);
 
 
 /*
@@ -188,7 +188,7 @@ FH_API void fh_CameraLookAt(struct fh_camera *cam, fh_vec3_t pnt);
  * @cam: Pointer to the camera
  * @trg: The target point to focus on
  */
-FH_API void fh_FocusCamera(struct fh_camera *cam, fh_vec3_t trg);
+WT_API void wt_FocusCamera(struct wt_camera *cam, wt_vec3_t trg);
 
 
 /*
@@ -197,11 +197,11 @@ FH_API void fh_FocusCamera(struct fh_camera *cam, fh_vec3_t trg);
  * @cam: Pointer to the camera
  * @f: The value to zoom by
  */
-FH_API void fh_CameraZoom(struct fh_camera *cam, f32 f);
+WT_API void wt_CameraZoom(struct wt_camera *cam, f32 f);
 
 
 
-FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch);
+WT_API void wt_CameraRotate(struct wt_camera *cam, f32 d_yaw, f32 d_pitch);
 
 
 /*
@@ -211,7 +211,7 @@ FH_API void fh_CameraRotate(struct fh_camera *cam, f32 d_yaw, f32 d_pitch);
  *
  * Returns: The info struct
  */
-FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam);
+WT_API struct wt_camera_info wt_GetCameraInfo(struct wt_camera *cam);
 
 
 /*
@@ -220,13 +220,13 @@ FH_API struct fh_camera_info fh_GetCameraInfo(struct fh_camera *cam);
  * @cam: Pointer to the camera
  * @info: The information struct
  */
-FH_API void fh_SetCameraInfo(struct fh_camera *cam, struct fh_camera_info info);
+WT_API void wt_SetCameraInfo(struct wt_camera *cam, struct wt_camera_info info);
 
 /*
  * Update the camera and recalculate the view matrix.
  *
  * @cam: Pointer to the camera
  */
-FH_API void fh_UpdateCamera(struct fh_camera *cam);
+WT_API void wt_UpdateCamera(struct wt_camera *cam);
 
-#endif /* _FH_GRAPHIC_CAMERA_H */
+#endif /* _WT_GRAPHIC_CAMERA_H */

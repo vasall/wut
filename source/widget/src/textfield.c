@@ -11,20 +11,20 @@
 
 #define TEXTFIELD_DEBUG 1
 
-FH_INTERN struct fh_rect *textfield_get_limit(struct fh_textfield *txtf)
+WT_INTERN struct wt_rect *textfield_get_limit(struct wt_textfield *txtf)
 {	
 	return &txtf->element->content_rect;
 }
 
 
-FH_API struct fh_textfield *fh_textfield_create(struct fh_element *ele,
-		struct fh_font *font)
+WT_API struct wt_textfield *wt_textfield_create(struct wt_element *ele,
+		struct wt_font *font)
 {
-	struct fh_textfield *txtf;
-	struct fh_text_info info;
+	struct wt_textfield *txtf;
+	struct wt_text_info info;
 	char *teststring = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut l";
 
-	if(!(txtf = fh_malloc(sizeof(struct fh_textfield)))) {
+	if(!(txtf = wt_malloc(sizeof(struct wt_textfield)))) {
 		return NULL;
 	}
 
@@ -34,40 +34,40 @@ FH_API struct fh_textfield *fh_textfield_create(struct fh_element *ele,
 	txtf->length = strlen(txtf->content);
 
 	/* Configure the text information */
-	info.batch = fh_ContextGetBatch(ele->document->context, font->batch_id);
+	info.batch = wt_ContextGetBatch(ele->document->context, font->batch_id);
 	info.font = font;
 	info.limits = textfield_get_limit(txtf);
 	info.style = &ele->style;
 
-	if(!(txtf->tbuffer = fh_text_create(info))) {
-		FH_ALARM(FH_ERROR, "Failed to create text buffer");
+	if(!(txtf->tbuffer = wt_text_create(info))) {
+		WT_ALARM(WT_ERROR, "Failed to create text buffer");
 		goto err_free_txtf;
 	}
 
-	fh_text_push(txtf->tbuffer, 0, txtf->length, txtf->content);
+	wt_text_push(txtf->tbuffer, 0, txtf->length, txtf->content);
 
 	return txtf;
 
 err_free_txtf:
-	fh_free(txtf);
+	wt_free(txtf);
 	return NULL;
 }
 
 
-FH_API void fh_textfield_destroy(struct fh_textfield *txtf)
+WT_API void wt_textfield_destroy(struct wt_textfield *txtf)
 {
-	fh_text_destroy(txtf->tbuffer);
-	fh_free(txtf);
+	wt_text_destroy(txtf->tbuffer);
+	wt_free(txtf);
 }
 
 
-FH_API void fh_textfield_update(struct fh_textfield *txtf)
+WT_API void wt_textfield_update(struct wt_textfield *txtf)
 {
-	fh_text_process(txtf->tbuffer);
+	wt_text_process(txtf->tbuffer);
 }
 
 
-FH_API void fh_textfield_render(struct fh_textfield *txtf)
+WT_API void wt_textfield_render(struct wt_textfield *txtf)
 {
-	fh_text_send(txtf->tbuffer);
+	wt_text_send(txtf->tbuffer);
 }

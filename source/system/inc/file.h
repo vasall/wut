@@ -1,5 +1,5 @@
-#ifndef _FH_SYSTEM_FILE_H
-#define _FH_SYSTEM_FILE_H
+#ifndef _WT_SYSTEM_FILE_H
+#define _WT_SYSTEM_FILE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -17,7 +17,7 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out);
+WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out);
 
 
 /*
@@ -32,11 +32,11 @@ FH_API s8 fh_fs_raw(const char *pth, u64 *size, u8 **out);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_fs_text(const char *pth, u64 *len, char **out);
+WT_API s8 wt_fs_text(const char *pth, u64 *len, char **out);
 
 
 
-struct fh_fs_r_image {
+struct wt_fs_r_image {
 	u32 w;
 	u32 h;
 
@@ -47,7 +47,7 @@ struct fh_fs_r_image {
 
 /*
  * Load the pixel data from an image file, preferable a PNG.
- * Note that after using the image, please call fh_hs_image_cleanup() to prevent
+ * Note that after using the image, please call wt_hs_image_cleanup() to prevent
  * memory leakage.
  *
  * @pth: The path to the file
@@ -55,7 +55,7 @@ struct fh_fs_r_image {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out);
+WT_API s8 wt_fs_image(const char *pth, struct wt_fs_r_image *out);
 
 
 /*
@@ -63,7 +63,7 @@ FH_API s8 fh_fs_image(const char *pth, struct fh_fs_r_image *out);
  *
  * @img: Pointer to the image read buffer
  */
-FH_API void fh_fs_image_cleanup(struct fh_fs_r_image *img);
+WT_API void wt_fs_image_cleanup(struct wt_fs_r_image *img);
 
 
-#endif /* _FH_SYSTEM_FILE_H */
+#endif /* _WT_SYSTEM_FILE_H */

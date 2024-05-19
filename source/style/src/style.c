@@ -19,18 +19,18 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
+WT_XMOD s8 wt_style_init(struct wt_style *style, struct wt_style *ref)
 {
 	if(!style) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* First of all: Wipe everything */
-	memset(style, 0, sizeof(struct fh_stylesheet));
+	memset(style, 0, sizeof(struct wt_stylesheet));
 		
 	/* Then reset the stylesheet */
-	fh_ResetStyle(style);	
+	wt_ResetStyle(style);	
 
 	/* And set the reference */
 	style->ref = ref;
@@ -38,12 +38,12 @@ FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to initialize style structure");
+	WT_ALARM(WT_ERROR, "Failed to initialize style structure");
 	return -1;
 }
 
 
-FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
+WT_XMOD s8 wt_style_link(struct wt_style *style, struct wt_style *ref)
 {
 	style->ref = ref;
 
@@ -51,10 +51,10 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref)
 }
 
 
-FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
-		struct fh_sheet_ret *ret)
+WT_XMOD s8 wt_style_get(struct wt_style *style, enum wt_sheet_id id,
+		struct wt_sheet_ret *ret)
 {
-	struct fh_style *run;
+	struct wt_style *run;
 
 	if(!style) {
 		return -1;
@@ -69,15 +69,15 @@ FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
 		run = run->ref;
 	}
 
-	return fh_sheet_get(&run->sheet, id, ret);
+	return wt_sheet_get(&run->sheet, id, ret);
 }
 
 
-FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
+WT_XMOD s8 wt_style_process(struct wt_style *style, struct wt_style_pass *pass)
 {
 	u32 uref;
 
-	struct fh_sheet_ret ret;
+	struct wt_sheet_ret ret;
 	u16 refv[2];
 
 	u16 ref_height;
@@ -90,9 +90,9 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	u32 spacing[4];
 	u32 padding[4];
 
-	struct fh_style *ref;
-	struct fh_style *out;
-	struct fh_stylesheet *sheet;
+	struct wt_style *ref;
+	struct wt_style *out;
+	struct wt_stylesheet *sheet;
 
 	ref = style->ref;
 	out = style;
@@ -124,13 +124,13 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	refv[0] = ref_width;
-	fh_style_get(style, FH_SHEET_WIDTH, &ret);
-	width = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_WIDTH, &ret);
+	width = wt_flex_process(ret.flex, refv);
 
 
 	refv[0] = ref_height;
-	fh_style_get(style, FH_SHEET_HEIGHT, &ret);
-	height = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_HEIGHT, &ret);
+	height = wt_flex_process(ret.flex, refv);
 
 	/*
 	 * *********************************************************************
@@ -142,16 +142,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 
 
 	refv[0] = ref_height;
-	fh_style_get(style, FH_SHEET_SPACING_TOP, &ret);
-	spacing[0] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_SPACING_BOTTOM, &ret);
-	spacing[2] = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_SPACING_TOP, &ret);
+	spacing[0] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_SPACING_BOTTOM, &ret);
+	spacing[2] = wt_flex_process(ret.flex, refv);
 
 	refv[0] = ref_width;
-	fh_style_get(style, FH_SHEET_SPACING_RIGHT, &ret);
-	spacing[1] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_SPACING_LEFT, &ret);
-	spacing[3] = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_SPACING_RIGHT, &ret);
+	spacing[1] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_SPACING_LEFT, &ret);
+	spacing[3] = wt_flex_process(ret.flex, refv);
 
 
 	/*
@@ -163,16 +163,16 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	refv[0] = ref_height;
-	fh_style_get(style, FH_SHEET_PADDING_TOP, &ret);
-	padding[0] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_PADDING_BOTTOM, &ret);
-	padding[2] = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_PADDING_TOP, &ret);
+	padding[0] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_PADDING_BOTTOM, &ret);
+	padding[2] = wt_flex_process(ret.flex, refv);
 
 	refv[0] = ref_width;
-	fh_style_get(style, FH_SHEET_PADDING_RIGHT, &ret);
-	padding[1] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_PADDING_LEFT, &ret);
-	padding[3] = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_PADDING_RIGHT, &ret);
+	padding[1] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_PADDING_LEFT, &ret);
+	padding[3] = wt_flex_process(ret.flex, refv);
 
 
 	/*
@@ -183,15 +183,15 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_BORDER_MODE, &ret);
+	wt_style_get(style, WT_SHEET_BORDER_MODE, &ret);
 	out->border_mode = ret.keyword;
 
 	refv[0] = ref_width;
-	fh_style_get(style, FH_SHEET_BORDER_WIDTH, &ret);
-	out->border_width = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_BORDER_WIDTH, &ret);
+	out->border_width = wt_flex_process(ret.flex, refv);
 
-	fh_style_get(style, FH_SHEET_BORDER_COLOR, &ret);
-	out->border_color = fh_col_conv_itos(ret.hexcode);
+	wt_style_get(style, WT_SHEET_BORDER_COLOR, &ret);
+	out->border_color = wt_col_conv_itos(ret.hexcode);
 
 	/*
 	 * *********************************************************************
@@ -262,7 +262,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_DISPLAY_MODE, &ret);
+	wt_style_get(style, WT_SHEET_DISPLAY_MODE, &ret);
 	out->display_mode = ret.keyword;
 
 	/*
@@ -273,7 +273,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_REFERENCE_MODE, &ret);
+	wt_style_get(style, WT_SHEET_REFERENCE_MODE, &ret);
 	out->reference_mode = ret.keyword;
 
 	/*
@@ -285,14 +285,14 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 */
 
 	refv[0] = ref_width;
-	fh_style_get(style, FH_SHEET_RADIUS_TOP_LEFT, &ret);
-	out->radius_corner[0] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_RADIUS_TOP_RIGHT, &ret);
-	out->radius_corner[1] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_RADIUS_BOTTOM_RIGHT, &ret);
-	out->radius_corner[2] = fh_flex_process(ret.flex, refv);
-	fh_style_get(style, FH_SHEET_RADIUS_BOTTOM_LEFT, &ret);
-	out->radius_corner[3] = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_RADIUS_TOP_LEFT, &ret);
+	out->radius_corner[0] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_RADIUS_TOP_RIGHT, &ret);
+	out->radius_corner[1] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_RADIUS_BOTTOM_RIGHT, &ret);
+	out->radius_corner[2] = wt_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_RADIUS_BOTTOM_LEFT, &ret);
+	out->radius_corner[3] = wt_flex_process(ret.flex, refv);
 
 
 	/*
@@ -303,11 +303,11 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_INFILL_MODE, &ret);
+	wt_style_get(style, WT_SHEET_INFILL_MODE, &ret);
 	out->infill_mode = ret.keyword;
 
-	fh_style_get(style, FH_SHEET_INFILL_COLOR, &ret);
-	out->infill_color = fh_col_conv_itos(ret.hexcode);
+	wt_style_get(style, WT_SHEET_INFILL_COLOR, &ret);
+	out->infill_color = wt_col_conv_itos(ret.hexcode);
 
 
 	/*
@@ -318,7 +318,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_LAYOUT_MODE, &ret);
+	wt_style_get(style, WT_SHEET_LAYOUT_MODE, &ret);
 	out->layout_mode = ret.keyword;
 
 	/*
@@ -329,21 +329,21 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_SCROLLBAR_MODE, &ret);
+	wt_style_get(style, WT_SHEET_SCROLLBAR_MODE, &ret);
 
 	out->scrollbar_flags = 0;
 	switch(ret.keyword) {
-		case FH_KW_SCROLLBAR_AUTO:
-			out->scrollbar_flags |= FH_RESTYLE_SCROLL_V;
-			out->scrollbar_flags |= FH_RESTYLE_SCROLL_H;
+		case WT_KW_SCROLLBAR_AUTO:
+			out->scrollbar_flags |= WT_RESTYLE_SCROLL_V;
+			out->scrollbar_flags |= WT_RESTYLE_SCROLL_H;
 			break;
-		case FH_KW_SCROLLBAR_NONE:
+		case WT_KW_SCROLLBAR_NONE:
 			break;
-		case FH_KW_SCROLLBAR_VERTICAL:
-			out->scrollbar_flags |= FH_RESTYLE_SCROLL_V;
+		case WT_KW_SCROLLBAR_VERTICAL:
+			out->scrollbar_flags |= WT_RESTYLE_SCROLL_V;
 			break;
-		case FH_KW_SCROLLBAR_HORIZONTAL:
-			out->scrollbar_flags |= FH_RESTYLE_SCROLL_H;
+		case WT_KW_SCROLLBAR_HORIZONTAL:
+			out->scrollbar_flags |= WT_RESTYLE_SCROLL_H;
 			break;
 	}
 
@@ -355,27 +355,27 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
 	 * *********************************************************************
 	 */
 
-	fh_style_get(style, FH_SHEET_TEXT_SIZE, &ret);
-	out->text_size = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_TEXT_SIZE, &ret);
+	out->text_size = wt_flex_process(ret.flex, refv);
 	
-	fh_style_get(style, FH_SHEET_TEXT_COLOR, &ret);
-	out->text_color = fh_col_conv_itos(ret.hexcode);
+	wt_style_get(style, WT_SHEET_TEXT_COLOR, &ret);
+	out->text_color = wt_col_conv_itos(ret.hexcode);
 
-	fh_style_get(style, FH_SHEET_TEXT_MASS, &ret);
-	out->text_mass = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_TEXT_MASS, &ret);
+	out->text_mass = wt_flex_process(ret.flex, refv);
 
-	fh_style_get(style, FH_SHEET_TEXT_OPTIONS, &ret);
+	wt_style_get(style, WT_SHEET_TEXT_OPTIONS, &ret);
 	out->text_options = ret.keyword;
 
-	fh_style_get(style, FH_SHEET_TEXT_WRAP_MODE, &ret);
+	wt_style_get(style, WT_SHEET_TEXT_WRAP_MODE, &ret);
 	out->text_wrap_mode = ret.keyword;
 
-	fh_style_get(style, FH_SHEET_TEXT_SPACING, &ret);
+	wt_style_get(style, WT_SHEET_TEXT_SPACING, &ret);
 	out->text_spacing = 1;
-	/* out->text_spacing = fh_flex_process(ret.flex, refv); */
+	/* out->text_spacing = wt_flex_process(ret.flex, refv); */
 
-	fh_style_get(style, FH_SHEET_LINE_HEIGHT, &ret);
-	out->text_line_height = fh_flex_process(ret.flex, refv);
+	wt_style_get(style, WT_SHEET_LINE_HEIGHT, &ret);
+	out->text_line_height = wt_flex_process(ret.flex, refv);
 
 	return 0;
 }
@@ -389,34 +389,34 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API void fh_ResetStyle(struct fh_style *style)
+WT_API void wt_ResetStyle(struct wt_style *style)
 {
 	if(!style) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	style->ref = NULL;
 
-	fh_sheet_reset(&style->sheet);
+	wt_sheet_reset(&style->sheet);
 }
 
 
-FH_API void fh_ModifyStyle(struct fh_style *style, char *in)
+WT_API void wt_ModifyStyle(struct wt_style *style, char *in)
 {
 	if(!style || !in) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return;
 	}
 
 	/*
 	 * Parse the input expressions and modify the stylesheet accordingly.
 	 */
-	fh_sheet_parse(&style->sheet, in);
+	wt_sheet_parse(&style->sheet, in);
 }
 
 
-FH_API void fh_DumpStyle(struct fh_style *style)
+WT_API void wt_DumpStyle(struct wt_style *style)
 {
 	/*
 	 * DISPLAY
@@ -464,7 +464,7 @@ FH_API void fh_DumpStyle(struct fh_style *style)
 	printf("%22s:\tmode=%d, width=%d, color=%08X\n", "border", 
 			style->border_mode,
 			style->border_width,
-			fh_color_get(style->border_color));
+			wt_color_get(style->border_color));
 
 	/*
 	 * RADIUS
@@ -480,7 +480,7 @@ FH_API void fh_DumpStyle(struct fh_style *style)
 	 */
 	printf("%22s:\tmode=%d, color=%08X\n", "infill",
 			style->infill_mode,
-			fh_color_get(style->infill_color));
+			wt_color_get(style->infill_color));
 
 	/*
 	 * LAYOUT
@@ -493,7 +493,7 @@ FH_API void fh_DumpStyle(struct fh_style *style)
 	 */
 	printf("%22s:\tsize=%d, color=%08x, mass=%d, options=%02x\n", "text1",
 			style->text_size,
-			fh_color_get(style->text_color),
+			wt_color_get(style->text_color),
 			style->text_mass,
 			style->text_options);
 

@@ -5,9 +5,9 @@
 #include <stdlib.h>
 
 
-FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha)
+WT_API struct wt_color wt_color_set(u8 red, u8 green, u8 blue, u8 alpha)
 {
-	struct fh_color col;
+	struct wt_color col;
 	col.r = red;
 	col.g = green;
 	col.b = blue;
@@ -16,9 +16,9 @@ FH_API struct fh_color fh_color_set(u8 red, u8 green, u8 blue, u8 alpha)
 }
 
 
-FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
+WT_API u32 wt_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
 {
-	struct fh_color col;
+	struct wt_color col;
 	col.r = red;
 	col.g = green;
 	col.b = blue;
@@ -28,16 +28,16 @@ FH_API u32 fh_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha)
 }
 
 
-FH_API u32 fh_color_get(struct fh_color color)
+WT_API u32 wt_color_get(struct wt_color color)
 {
 	return *((u32 *)&color);
 }
 
 
-FH_API void fh_color_get_fv(struct fh_color color, float *fv)
+WT_API void wt_color_get_fv(struct wt_color color, float *fv)
 {
 	if(!fv) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -48,9 +48,9 @@ FH_API void fh_color_get_fv(struct fh_color color, float *fv)
 }
 
 
-FH_API struct fh_color fh_BlendColor(struct fh_color px, struct fh_color col)
+WT_API struct wt_color wt_BlendColor(struct wt_color px, struct wt_color col)
 {
-	struct fh_color c;
+	struct wt_color c;
 	/* Convert alpha values to the range [0, 1] */
 	f32 alphaF = col.a / 255.0f;
 	f32  oneMinusAlphaF = 1.0f - alphaF;
@@ -71,15 +71,15 @@ FH_API struct fh_color fh_BlendColor(struct fh_color px, struct fh_color col)
 }
 
 
-FH_API struct fh_color fh_col_conv_itos(u32 v)
+WT_API struct wt_color wt_col_conv_itos(u32 v)
 {
-	return *(struct fh_color *)&v;
+	return *(struct wt_color *)&v;
 }
 
 
-FH_API struct fh_color fh_col_invform(struct fh_color in)
+WT_API struct wt_color wt_col_invform(struct wt_color in)
 {
-	struct fh_color out;
+	struct wt_color out;
 
 	out.r = in.a;
 	out.g = in.b;
@@ -90,7 +90,7 @@ FH_API struct fh_color fh_col_invform(struct fh_color in)
 }
 
 
-FH_API u32 fh_col_invform_s32(u32 in)
+WT_API u32 wt_col_invform_s32(u32 in)
 {
 	u8 b[4];
 

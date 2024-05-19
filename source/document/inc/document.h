@@ -1,5 +1,5 @@
-#ifndef _FH_DOCUMENT_H
-#define _FH_DOCUMENT_H
+#ifndef _WT_DOCUMENT_H
+#define _WT_DOCUMENT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -15,39 +15,39 @@
 #include "graphic/inc/flat.h"
 
 
-struct fh_document {
+struct wt_document {
 	/* A pointer to the window this document belongs to */
-	struct fh_window 		*window;
+	struct wt_window 		*window;
 
 	/* A pointer to the context */
-	struct fh_context 		*context;
+	struct wt_context 		*context;
 
 	/* The body element, to which all future elements will be attached */
-	struct fh_element 		*body;
+	struct wt_element 		*body;
 
-	struct fh_element		*selected;
-	struct fh_element		*hovered;
+	struct wt_element		*selected;
+	struct wt_element		*hovered;
 	
 	/* A reference to the window size */
-	struct fh_rect 			*shape_ref;
+	struct wt_rect 			*shape_ref;
 
 	/* A list of all views */
-	struct fh_view_list 		*views;
+	struct wt_view_list 		*views;
 
 	/* The main batch render */
 	s16 				batch_id;
 
 #if 0
 	/* A list of all canvas widgets */
-	struct fh_canvas_list *canvases
+	struct wt_canvas_list *canvases
 #endif
 };
 
-struct fh_ele_selector {
+struct wt_ele_selector {
 	s8 					state;
 	char 				*name;
-	struct fh_sin2 		*pos;
-	struct fh_element 	*element;
+	struct wt_sin2 		*pos;
+	struct wt_element 	*element;
 };
 
 
@@ -67,7 +67,7 @@ struct fh_ele_selector {
  *
  * Returns: Either a pointer to a new document or NULL if an error occurred
  */
-FH_API struct fh_document *fh_CreateDocument(struct fh_window *win);
+WT_API struct wt_document *wt_CreateDocument(struct wt_window *win);
 
 
 /*
@@ -76,7 +76,7 @@ FH_API struct fh_document *fh_CreateDocument(struct fh_window *win);
  *
  * @doc: Pointer to the document
  */
-FH_API void fh_DestroyDocument(struct fh_document *doc);
+WT_API void wt_DestroyDocument(struct wt_document *doc);
 
 
 /*
@@ -84,7 +84,7 @@ FH_API void fh_DestroyDocument(struct fh_document *doc);
  *
  * @doc: Pointer to the document
  */
-FH_API void fh_ResizeDocument(struct fh_document *doc);
+WT_API void wt_ResizeDocument(struct wt_document *doc);
 
 
 /*
@@ -98,9 +98,9 @@ FH_API void fh_ResizeDocument(struct fh_document *doc);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
-		struct fh_element *parent, char *name,
-		enum fh_element_type type, void *data);
+WT_API struct wt_element *wt_AddElement(struct wt_document *doc,
+		struct wt_element *parent, char *name,
+		enum wt_element_type type, void *data);
 
 
 /*
@@ -109,7 +109,7 @@ FH_API struct fh_element *fh_AddElement(struct fh_document *doc,
  * @doc: Pointer to the document
  * @ele: Pointer to the element
  */
-FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele);
+WT_API void wt_RemoveElement(struct wt_document *doc, struct wt_element *ele);
 
 
 /*
@@ -121,7 +121,7 @@ FH_API void fh_RemoveElement(struct fh_document *doc, struct fh_element *ele);
  * Returns: Either a pointer to the element or NULL if an error occurred or no
  * 	    element could be found
  */
-FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name);
+WT_API struct wt_element *wt_GetElement(struct wt_document *doc, char *name);
 
 
 /*
@@ -133,8 +133,8 @@ FH_API struct fh_element *fh_GetElement(struct fh_document *doc, char *name);
  * Returns: Either a pointer to the most relevant element or NULL if an error
  * 	    occurred or no element could be found
  */
-FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
-		struct fh_sin2 *pos);
+WT_API struct wt_element *wt_GetHoveredElement(struct wt_document *doc,
+		struct wt_sin2 *pos);
 
 
 /*
@@ -143,8 +143,8 @@ FH_API struct fh_element *fh_GetHoveredElement(struct fh_document *doc,
  * @doc: Pointer to the document
  * @ele: The starting element of the branch
  */
-FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
-		struct fh_element *ele);
+WT_API void wt_UpdateDocumentBranch(struct wt_document *doc,
+		struct wt_element *ele);
 
 
 /*
@@ -152,7 +152,7 @@ FH_API void fh_UpdateDocumentBranch(struct fh_document *doc,
  *
  * @doc: Pointer to the document
  */
-FH_API void fh_UpdateDocument(struct fh_document *doc);
+WT_API void wt_UpdateDocument(struct wt_document *doc);
 
 
 /*
@@ -162,8 +162,8 @@ FH_API void fh_UpdateDocument(struct fh_document *doc);
  * @doc: Pointer to the document
  * @ele: The starting element of the branch
  */
-FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
-		struct fh_element *ele);
+WT_API void wt_RenderDocumentUIBranch(struct wt_document *doc,
+		struct wt_element *ele);
 
 
 /*
@@ -171,7 +171,7 @@ FH_API void fh_RenderDocumentUIBranch(struct fh_document *doc,
  *
  * @doc: Pointer to the document
  */
-FH_API void fh_RenderDocumentUI(struct fh_document *doc);
+WT_API void wt_RenderDocumentUI(struct wt_document *doc);
 
 
 /*
@@ -179,7 +179,7 @@ FH_API void fh_RenderDocumentUI(struct fh_document *doc);
  *
  * @doc: Pointer to the document
  */
-FH_API void fh_RenderDocument(struct fh_document *doc);
+WT_API void wt_RenderDocument(struct wt_document *doc);
 
 
 /*
@@ -189,7 +189,7 @@ FH_API void fh_RenderDocument(struct fh_document *doc);
  * @doc: Pointer to the document
  * @ele: Pointer to the starting element or NULL
  */
-FH_API void fh_ShowDocumentTree(struct fh_document *doc,
-		struct fh_element *ele);
+WT_API void wt_ShowDocumentTree(struct wt_document *doc,
+		struct wt_element *ele);
 
-#endif /* _FH_DOCUMENT_H */
+#endif /* _WT_DOCUMENT_H */

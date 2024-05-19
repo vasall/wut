@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_PIPE_H
-#define _FH_GRAPHIC_PIPE_H
+#ifndef _WT_GRAPHIC_PIPE_H
+#define _WT_GRAPHIC_PIPE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -9,28 +9,28 @@
 
 #include "utility/inc/extended_math.h"
 
-#define FH_PIPE_MIN		32
+#define WT_PIPE_MIN		32
 
-#define FH_PIPE_F_USED		(1<<0)
+#define WT_PIPE_F_USED		(1<<0)
 
-#define FH_PIPE_F_HANDELD	(1<<7)
+#define WT_PIPE_F_HANDELD	(1<<7)
 
 
-struct fh_pipe {
+struct wt_pipe {
 	s32 number;
 	s32 alloc;
 
-	struct fh_pipe_entry *entries;
+	struct wt_pipe_entry *entries;
 	s32 start;
-	fh_vec3_t ref_point;
+	wt_vec3_t ref_point;
 };
 
-struct fh_pipe_entry {
+struct wt_pipe_entry {
 	/* Flags indicating certain states of the entry  */
 	u8 			flags;
 
 	/* A pointer to the underlying object */
-	struct fh_object 	*object;
+	struct wt_object 	*object;
 
 	/* The evaluation criteria */
 	f32 			crit;
@@ -48,13 +48,13 @@ struct fh_pipe_entry {
  *
  * Returns: Either a pointer to the pipe or NULL if an error occurred
  */
-FH_API struct fh_pipe *fh_CreatePipe(fh_vec3_t ref);
+WT_API struct wt_pipe *wt_CreatePipe(wt_vec3_t ref);
 
 
 /*
  * Destroy a rendering pipe and free the allocated memory.
  */
-FH_API void fh_DestroyPipe(struct fh_pipe *pip);
+WT_API void wt_DestroyPipe(struct wt_pipe *pip);
 
 
 /*
@@ -65,7 +65,7 @@ FH_API void fh_DestroyPipe(struct fh_pipe *pip);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *object);
+WT_API s8 wt_PipeAddObject(struct wt_pipe *pip, struct wt_object *object);
 
 
 /*
@@ -74,7 +74,7 @@ FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *object);
  * @pip: Pointer to the pipe
  * @slot: The slot of the object
  */
-FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot);
+WT_API void wt_PipeRemoveObject(struct wt_pipe *pip, s32 slot);
 
 
 /*
@@ -83,7 +83,7 @@ FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot);
  * @pip: Pointer to the pipe
  * @name: The name of the object to search for
  */
-FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name);
+WT_API s32 wt_PipeGetSlot(struct wt_pipe *pip, char *name);
 
 
 /*
@@ -92,7 +92,7 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name);
  * @pip: Pointer to the pipe
  * @ref: The new reference point
  */
-FH_API void fh_PipeSetReference(struct fh_pipe *pip, fh_vec3_t ref);
+WT_API void wt_PipeSetReference(struct wt_pipe *pip, wt_vec3_t ref);
 
 
 /*
@@ -102,7 +102,7 @@ FH_API void fh_PipeSetReference(struct fh_pipe *pip, fh_vec3_t ref);
  * @pip: Pointer to the pipe
  * @fnc: The callback function to call on every object
  */
-FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *o));
+WT_API void wt_PipeApply(struct wt_pipe *pip, void (*fnc)(struct wt_object *o));
 
 
 /*
@@ -110,6 +110,6 @@ FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *o));
  *
  * @pip: Pointer to the pipe
  */
-FH_API void fh_PipeShow(struct fh_pipe *pip);
+WT_API void wt_PipeShow(struct wt_pipe *pip);
 
-#endif /* _FH_GRAPHIC_PIPE_H */
+#endif /* _WT_GRAPHIC_PIPE_H */

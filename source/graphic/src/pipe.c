@@ -5,7 +5,7 @@
 #include "system/inc/system.h"
 
 
-FH_INTERN s32 pip_get_slot(struct fh_pipe *pip)
+WT_INTERN s32 pip_get_slot(struct wt_pipe *pip)
 {
 	s32 i;
 
@@ -23,20 +23,20 @@ FH_INTERN s32 pip_get_slot(struct fh_pipe *pip)
  *
  * @pip: Pointer to the pipe
  */
-FH_INTERN void pip_calculate(struct fh_pipe *pip)
+WT_INTERN void pip_calculate(struct wt_pipe *pip)
 {
 	u8 i;
-	struct fh_pipe_entry *ent;
-	struct fh_object *obj;
-	fh_vec3_t del;
+	struct wt_pipe_entry *ent;
+	struct wt_object *obj;
+	wt_vec3_t del;
 
 	for(i = 0; i < pip->number; i++) {
 		ent = &pip->entries[i];
 		obj = ent->object;
 
-		fh_vec3_sub(obj->position, pip->ref_point, del);
+		wt_vec3_sub(obj->position, pip->ref_point, del);
 		
-		ent->crit = fh_vec2_len(del);
+		ent->crit = wt_vec2_len(del);
 	}
 }
 
@@ -48,20 +48,20 @@ FH_INTERN void pip_calculate(struct fh_pipe *pip)
  * @num: The number of objects to update
  * @slt: The slots of the objects in the pipe
  */
-FH_INTERN void pip_calculate_select(struct fh_pipe *pip, u8 num, s32 *slt)
+WT_INTERN void pip_calculate_select(struct wt_pipe *pip, u8 num, s32 *slt)
 {
 	u8 i;
-	struct fh_pipe_entry *ent;
-	struct fh_object *obj;
-	fh_vec3_t del;
+	struct wt_pipe_entry *ent;
+	struct wt_object *obj;
+	wt_vec3_t del;
 
 	for(i = 0; i < num; i++) {
 		ent = &pip->entries[slt[i]];
 		obj = ent->object;
 
-		fh_vec3_sub(obj->position, pip->ref_point, del);
+		wt_vec3_sub(obj->position, pip->ref_point, del);
 		
-		ent->crit = fh_vec2_len(del);
+		ent->crit = wt_vec2_len(del);
 	}
 }
 
@@ -71,12 +71,12 @@ FH_INTERN void pip_calculate_select(struct fh_pipe *pip, u8 num, s32 *slt)
  *
  * @pip: Pointer to the pipe
  */
-FH_INTERN void pip_order(struct fh_pipe *pip)
+WT_INTERN void pip_order(struct wt_pipe *pip)
 {
 	s32 i;
 	s32 j;
-	struct fh_pipe_entry *ent;
-	struct fh_pipe_entry *run;
+	struct wt_pipe_entry *ent;
+	struct wt_pipe_entry *run;
 
 	if(pip->number < 1)
 		return;
@@ -87,12 +87,12 @@ FH_INTERN void pip_order(struct fh_pipe *pip)
 		ent->previous = -1;
 		ent->next = -1;
 
-		ent->flags &= ~FH_PIPE_F_HANDELD;
+		ent->flags &= ~WT_PIPE_F_HANDELD;
 	}
 
 
 	pip->start = 0;
-	pip->entries[i].flags |= FH_PIPE_F_HANDELD;
+	pip->entries[i].flags |= WT_PIPE_F_HANDELD;
 
 
 	for(i = 1; i < pip->number; i++) {
@@ -136,12 +136,12 @@ FH_INTERN void pip_order(struct fh_pipe *pip)
  * @pip: Pointer to the pipe
  * @slot: The slot of the new entry
  */
-FH_INTERN void pip_order_single(struct fh_pipe *pip, u8 slot)
+WT_INTERN void pip_order_single(struct wt_pipe *pip, u8 slot)
 {
 	u32 c;
 	u32 i;
-	struct fh_pipe_entry *ent;
-	struct fh_pipe_entry *run;
+	struct wt_pipe_entry *ent;
+	struct wt_pipe_entry *run;
 
 	ent = &pip->entries[slot];
 
@@ -200,27 +200,27 @@ FH_INTERN void pip_order_single(struct fh_pipe *pip, u8 slot)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_pipe *fh_CreatePipe(fh_vec3_t ref)
+WT_API struct wt_pipe *wt_CreatePipe(wt_vec3_t ref)
 {
-	struct fh_pipe *pip;
+	struct wt_pipe *pip;
 	u32 size;
 	s32 i;
 
-	if(!(pip = fh_malloc(sizeof(struct fh_pipe)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for pipe");
+	if(!(pip = wt_malloc(sizeof(struct wt_pipe)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for pipe");
 		goto err_return;
 	}
 
 	/* Set the attributes */
 	pip->number = 0;
-	pip->alloc = FH_PIPE_MIN;
+	pip->alloc = WT_PIPE_MIN;
 	pip->start = -1;
-	fh_vec3_cpy(pip->ref_point, ref);
+	wt_vec3_cpy(pip->ref_point, ref);
 
 	/* Preallocate slots for the objects */
-	size = sizeof(struct fh_pipe_entry) * pip->alloc;
-	if(!(pip->entries = fh_malloc(size))) {
-		FH_ALARM(FH_ERROR, "Failed to preallocate memory for entries");
+	size = sizeof(struct wt_pipe_entry) * pip->alloc;
+	if(!(pip->entries = wt_malloc(size))) {
+		WT_ALARM(WT_ERROR, "Failed to preallocate memory for entries");
 		goto err_free_pip;
 	}
 
@@ -234,45 +234,45 @@ FH_API struct fh_pipe *fh_CreatePipe(fh_vec3_t ref)
 	return pip;
 
 err_free_pip:
-	fh_free(pip);
+	wt_free(pip);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create new pipe");
+	WT_ALARM(WT_ERROR, "Failed to create new pipe");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyPipe(struct fh_pipe *pip)
+WT_API void wt_DestroyPipe(struct wt_pipe *pip)
 {
 	if(!pip) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_free(pip->entries);
-	fh_free(pip);
+	wt_free(pip->entries);
+	wt_free(pip);
 }
 
 
-FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *obj)
+WT_API s8 wt_PipeAddObject(struct wt_pipe *pip, struct wt_object *obj)
 {
 	s32 slot;
-	struct fh_pipe_entry *ent;
+	struct wt_pipe_entry *ent;
 
 	if(!pip || !obj) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if((slot = pip_get_slot(pip)) < 0) {
-		FH_ALARM(FH_ERROR, "No more free slots");
+		WT_ALARM(WT_ERROR, "No more free slots");
 		goto err_return;
 	}
 
 
 	ent = &pip->entries[slot];
 
-	ent->flags = FH_PIPE_F_USED;
+	ent->flags = WT_PIPE_F_USED;
 	ent->object = obj;
 
 	pip_calculate_select(pip, 1, &slot);
@@ -284,18 +284,18 @@ FH_API s8 fh_PipeAddObject(struct fh_pipe *pip, struct fh_object *obj)
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to insert object into pipe");
+	WT_ALARM(WT_ERROR, "Failed to insert object into pipe");
 	return -1;
 }
 
 
-FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot)
+WT_API void wt_PipeRemoveObject(struct wt_pipe *pip, s32 slot)
 {
-	struct fh_pipe_entry *ent;
-	struct fh_pipe_entry *hdl;
+	struct wt_pipe_entry *ent;
+	struct wt_pipe_entry *hdl;
 
 	if(!pip || slot < 0) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -322,18 +322,18 @@ FH_API void fh_PipeRemoveObject(struct fh_pipe *pip, s32 slot)
 }
 
 
-FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
+WT_API s32 wt_PipeGetSlot(struct wt_pipe *pip, char *name)
 {
 	s32 i;
-	struct fh_pipe_entry *run;
+	struct wt_pipe_entry *run;
 
 	if(!pip || !name) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
 	if(pip->number < 1) {
-		FH_ALARM(FH_ERROR, "The pipe is empty");
+		WT_ALARM(WT_ERROR, "The pipe is empty");
 		return -1;
 	}
 
@@ -347,32 +347,32 @@ FH_API s32 fh_PipeGetSlot(struct fh_pipe *pip, char *name)
 		i = run->next;
 	}
 	
-	FH_ALARM(FH_ERROR, "Object could not be found in the pipe");
+	WT_ALARM(WT_ERROR, "Object could not be found in the pipe");
 	return -1;
 }
 
 
-FH_API void fh_PipeSetReference(struct fh_pipe *pip, fh_vec3_t ref)
+WT_API void wt_PipeSetReference(struct wt_pipe *pip, wt_vec3_t ref)
 {
 	if(!pip) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	fh_vec3_cpy(pip->ref_point, ref);
+	wt_vec3_cpy(pip->ref_point, ref);
 
 	pip_calculate(pip);
 	pip_order(pip);
 }
 
 
-FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *m))
+WT_API void wt_PipeApply(struct wt_pipe *pip, void (*fnc)(struct wt_object *m))
 {
 	s32 itr;
-	struct fh_pipe_entry *ent;
+	struct wt_pipe_entry *ent;
 
 	if(!pip || !fnc) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -380,14 +380,14 @@ FH_API void fh_PipeApply(struct fh_pipe *pip, void (*fnc)(struct fh_object *m))
 	while(itr != -1) {
 		ent = &pip->entries[itr];
 
-		fh_RenderObject(ent->object, NULL, NULL);
+		wt_RenderObject(ent->object, NULL, NULL);
 
 		itr = ent->next;
 	}
 }
 
 
-FH_API void fh_PipeShow(struct fh_pipe *pip)
+WT_API void wt_PipeShow(struct wt_pipe *pip)
 {
 	s32 itr;
 	s32 c;

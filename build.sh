@@ -21,6 +21,6 @@ for i in ${SUBMODULES_LIBS};
 do
 	$(ar --output objdir x $i);
 done
-$(ar r lfreihand.a objdir/*.o)
-$(ranlib lfreihand.a)
+$(ar r lwut.a objdir/*.o)
+$(ranlib lwut.a)
 rm -rf objdir

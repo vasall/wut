@@ -1,10 +1,10 @@
-#ifndef _FH_DOCUMENT_ELEMENT_EVENT_H
-#define _FH_DOCUMENT_ELEMENT_EVENT_H
+#ifndef _WT_DOCUMENT_ELEMENT_EVENT_H
+#define _WT_DOCUMENT_ELEMENT_EVENT_H
 
 
-struct fh_element_event {
+struct wt_element_event {
 
 };
 
 
-#endif /* _FH_DOCUMENT_ELEMENT_EVENT_H */
+#endif /* _WT_DOCUMENT_ELEMENT_EVENT_H */

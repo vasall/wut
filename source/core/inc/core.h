@@ -1,5 +1,5 @@
-#ifndef _FH_CORE_H
-#define _FH_CORE_H
+#ifndef _WT_CORE_H
+#define _WT_CORE_H
 
 /* ---- Catch-all ---- */
 #include "core/inc/define.h"
@@ -17,23 +17,23 @@
 #include "window/inc/window.h"
 
 
-struct fh_core_container {
+struct wt_core_container {
 	/* The main window and by that all windows attached to it */
-	struct fh_window *main_window;
+	struct wt_window *main_window;
 
 	/* 
-	 * If this var is set to 1, fh_update() will return 0, promting the
+	 * If this var is set to 1, wt_update() will return 0, promting the
 	 * programm to exit.
 	 */
 	s8 quit;
 
 	/* Pointer to the active window, or NULL if none is active */
-	struct fh_window *active_window;
+	struct wt_window *active_window;
 };
 
 
 
-FH_API struct fh_core_container g_fh_core;
+WT_API struct wt_core_container g_wt_core;
 
 
 
@@ -41,14 +41,14 @@ FH_API struct fh_core_container g_fh_core;
  * Reset everything in the core. This will not free any memory, but just
  * overwrite everything with zeros.
  */
-FH_API void fh_core_reset(void);
+WT_API void wt_core_reset(void);
 
 
 /*
- * This will set the quit flag to 1, which will prompt the fh_update() function
+ * This will set the quit flag to 1, which will prompt the wt_update() function
  * to return 0 and by doing so exit the program.
  */
-FH_API void fh_core_quit(void);
+WT_API void wt_core_quit(void);
 
 
 /*
@@ -56,7 +56,7 @@ FH_API void fh_core_quit(void);
  *
  * Returns: The value of the quit flag
  */
-FH_API s8 fh_core_check_quit(void);
+WT_API s8 wt_core_check_quit(void);
 
 
 /*
@@ -64,7 +64,7 @@ FH_API s8 fh_core_check_quit(void);
  *
  * @win: Pointer to the main window
  */
-FH_API void fh_core_set_main_window(struct fh_window *win);
+WT_API void wt_core_set_main_window(struct wt_window *win);
 
 
 /*
@@ -72,7 +72,7 @@ FH_API void fh_core_set_main_window(struct fh_window *win);
  *
  * Returns: Pointer to the main window
  */
-FH_API struct fh_window *fh_core_get_main_window(void);
+WT_API struct wt_window *wt_core_get_main_window(void);
 
 
 /*
@@ -80,7 +80,7 @@ FH_API struct fh_window *fh_core_get_main_window(void);
  *
  * @win: Pointer to the active window
  */
-FH_API void fh_core_set_active_window(struct fh_window *win);
+WT_API void wt_core_set_active_window(struct wt_window *win);
 
 
 /*
@@ -88,7 +88,7 @@ FH_API void fh_core_set_active_window(struct fh_window *win);
  *
  * Returns: Pointer to the active window
  */
-FH_API struct fh_window *fh_core_get_active_window(void);
+WT_API struct wt_window *wt_core_get_active_window(void);
 
 
 /*
@@ -98,7 +98,7 @@ FH_API struct fh_window *fh_core_get_active_window(void);
  *
  * Returns: 1 if the given window is the active one and 0 if not
  */
-FH_API s8 fh_core_is_active_window(struct fh_window *win);
+WT_API s8 wt_core_is_active_window(struct wt_window *win);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -113,13 +113,13 @@ FH_API s8 fh_core_is_active_window(struct fh_window *win);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_Init(void);
+WT_API s8 wt_Init(void);
 
 
 /*
  * Shutdown the FH-framework and clear the allocated memory.
  */
-FH_API void fh_Quit(void);
+WT_API void wt_Quit(void);
 
 
 /*
@@ -128,6 +128,6 @@ FH_API void fh_Quit(void);
  * Returns: 1 if everything is normal, and 0 if either a fatal error occurred or
  * 	    the user requested to close the program
  */
-FH_API s8 fh_Update(void);
+WT_API s8 wt_Update(void);
 
-#endif /* _FH_CORE_H */
+#endif /* _WT_CORE_H */

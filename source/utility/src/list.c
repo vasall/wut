@@ -7,22 +7,22 @@
 #include <string.h>
 
 
-FH_API struct fh_list *fh_list_create(s16 size, s16 alloc)
+WT_API struct wt_list *wt_list_create(s16 size, s16 alloc)
 {
-	struct fh_list *lst;
+	struct wt_list *lst;
 
 	if(size < 1 || alloc < 1) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
-	if(!(lst = malloc(sizeof(struct fh_list)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for list");
+	if(!(lst = malloc(sizeof(struct wt_list)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for list");
 		return NULL;
 	}
 
 	if(!(lst->data = malloc(size * alloc))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for list data");
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for list data");
 		free(lst);
 		return NULL;
 	}
@@ -35,7 +35,7 @@ FH_API struct fh_list *fh_list_create(s16 size, s16 alloc)
 }
 
 
-FH_API void fh_list_destroy(struct fh_list *lst)
+WT_API void wt_list_destroy(struct wt_list *lst)
 {
 	if(!lst) return;
 
@@ -44,14 +44,14 @@ FH_API void fh_list_destroy(struct fh_list *lst)
 }
 
 
-FH_API s16 fh_list_push(struct fh_list *lst, void *inp)
+WT_API s16 wt_list_push(struct wt_list *lst, void *inp)
 {
 	void *ptr;
 	s32 nalloc;
 	s32 off;
 
 	if(!lst || !inp) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -61,7 +61,7 @@ FH_API s16 fh_list_push(struct fh_list *lst, void *inp)
 	if(lst->count + 1 >= lst->alloc) {
 		nalloc = lst->alloc * 1.5;
 		if(!(ptr = realloc(lst->data, nalloc * lst->size))) {
-			FH_ALARM(FH_ERROR, "Failed to resize list data buffer");
+			WT_ALARM(WT_ERROR, "Failed to resize list data buffer");
 			return -1;
 		}
 		lst->data = ptr;
@@ -74,12 +74,12 @@ FH_API s16 fh_list_push(struct fh_list *lst, void *inp)
 }
 
 
-FH_API s16 fh_list_pop(struct fh_list *lst, void *out)
+WT_API s16 wt_list_pop(struct wt_list *lst, void *out)
 {
 	s32 off;
 
 	if(!lst) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -97,10 +97,10 @@ FH_API s16 fh_list_pop(struct fh_list *lst, void *out)
 }
 
 
-FH_API s16 fh_list_shift(struct fh_list *lst, void *out)
+WT_API s16 wt_list_shift(struct wt_list *lst, void *out)
 {
 	if(!lst) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -118,10 +118,10 @@ FH_API s16 fh_list_shift(struct fh_list *lst, void *out)
 }
 
 
-FH_API s16 fh_list_test_head(struct fh_list *lst, void *out)
+WT_API s16 wt_list_test_head(struct wt_list *lst, void *out)
 {
 	if(!lst || !out) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -133,12 +133,12 @@ FH_API s16 fh_list_test_head(struct fh_list *lst, void *out)
 }
 
 
-FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out)
+WT_API s16 wt_list_test_tail(struct wt_list *lst, void *out)
 {
 	s32 off;
 
 	if(!lst || !out) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -152,12 +152,12 @@ FH_API s16 fh_list_test_tail(struct fh_list *lst, void *out)
 }
 
 
-FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
+WT_API s8 wt_list_apply(struct wt_list *lst, wt_list_fnc_t fnc, void *data)
 {
 	s16 i;
 
 	if(!lst || !fnc) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -171,12 +171,12 @@ FH_API s8 fh_list_apply(struct fh_list *lst, fh_list_fnc_t fnc, void *data)
 }
 
 
-FH_API s8 fh_list_get(struct fh_list *lst, u16 idx, void **out)
+WT_API s8 wt_list_get(struct wt_list *lst, u16 idx, void **out)
 {
 	s32 off;
 
 	if(!lst || !out) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 

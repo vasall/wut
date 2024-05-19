@@ -1,10 +1,10 @@
-#ifndef _FH_UTILITY_STATIC_LIST_H
-#define _FH_UTILITY_STATIC_LIST_H
+#ifndef _WT_UTILITY_STATIC_LIST_H
+#define _WT_UTILITY_STATIC_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-struct fh_statlist {
+struct wt_statlist {
 	s16 size;	/* The size of a single entry */
 
 	s16 count;	/* The number of entries */
@@ -24,7 +24,7 @@ struct fh_statlist {
  * Returns: Either a pointer to the newly created list or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_statlist *fh_statlist_create(s16 size, s16 alloc);
+WT_API struct wt_statlist *wt_statlist_create(s16 size, s16 alloc);
 
 
 /*
@@ -32,7 +32,7 @@ FH_API struct fh_statlist *fh_statlist_create(s16 size, s16 alloc);
  *
  * @lst: Pointer to the list
  */
-FH_API void fh_statlist_destroy(struct fh_statlist *lst);
+WT_API void wt_statlist_destroy(struct wt_statlist *lst);
 
 
 /*
@@ -43,7 +43,7 @@ FH_API void fh_statlist_destroy(struct fh_statlist *lst);
  *
  * Returns: The index of the slot in the list or -1 if an error occurred
  */
-FH_API s16 fh_statlist_add(struct fh_statlist *lst, void *inp);
+WT_API s16 wt_statlist_add(struct wt_statlist *lst, void *inp);
 
 
 /*
@@ -52,7 +52,7 @@ FH_API s16 fh_statlist_add(struct fh_statlist *lst, void *inp);
  * @lst: Pointer to the list
  * @idx: The index of the slot to clear
  */
-FH_API void fh_statlist_rmv(struct fh_statlist *lst, s16 idx);
+WT_API void wt_statlist_rmv(struct wt_statlist *lst, s16 idx);
 
 
 /*
@@ -65,10 +65,10 @@ FH_API void fh_statlist_rmv(struct fh_statlist *lst, s16 idx);
  * Returns: 1 if entry was returned and 0 if slot is empty and -1 if an error
  * 	    occurred
  */
-FH_API s8 fh_statlist_get(struct fh_statlist *lst, s16 idx, void *out);
+WT_API s8 wt_statlist_get(struct wt_statlist *lst, s16 idx, void *out);
 
 
-typedef s8 (*fh_statlist_fnc_t)(void *entry, s16 idx, void *data);
+typedef s8 (*wt_statlist_fnc_t)(void *entry, s16 idx, void *data);
 
 
 /*
@@ -81,8 +81,8 @@ typedef s8 (*fh_statlist_fnc_t)(void *entry, s16 idx, void *data);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_statlist_apply(struct fh_statlist *lst, fh_statlist_fnc_t fnc, void *data);
+WT_API s8 wt_statlist_apply(struct wt_statlist *lst, wt_statlist_fnc_t fnc, void *data);
 
 
 
-#endif /* _FH_UTILITY_STATIC_LIST_H */
+#endif /* _WT_UTILITY_STATIC_LIST_H */

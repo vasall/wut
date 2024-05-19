@@ -1,5 +1,5 @@
-#ifndef _FH_DOCUMENT_ELEMENT_RENDERING_H
-#define _FH_DOCUMENT_ELEMENT_RENDERING_H
+#ifndef _WT_DOCUMENT_ELEMENT_RENDERING_H
+#define _WT_DOCUMENT_ELEMENT_RENDERING_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -22,7 +22,7 @@
  * @ren: Pointer to the batch renderer
  * @ele: Pointer to the element
  */
-FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele);
+WT_API void wt_element_render(struct wt_batch *ren, struct wt_element *ele);
 
 
 /*
@@ -32,8 +32,8 @@ FH_API void fh_element_render(struct fh_batch *ren, struct fh_element *ele);
  * @ren: Pointer to the batch renderer
  * @ele: Pointer to the element
  */
-FH_XMOD void fh_element_ren_scrollbar(struct fh_batch *ren, struct fh_element *ele);
+WT_XMOD void wt_element_ren_scrollbar(struct wt_batch *ren, struct wt_element *ele);
 
 
 
-#endif /* _FH_DOCUMENT_ELEMENT_RENDERING_H */
+#endif /* _WT_DOCUMENT_ELEMENT_RENDERING_H */

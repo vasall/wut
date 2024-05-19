@@ -19,12 +19,12 @@
  *
  */
 
-FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
+WT_INTERN s8 widget_create_text(struct wt_widget *w, void *data)
 {
-	struct fh_textfield *txt;
+	struct wt_textfield *txt;
 
-	if(!(txt = fh_textfield_create(w->element, data))) {
-		FH_ALARM(FH_ERROR, "Failed to create textfield");
+	if(!(txt = wt_textfield_create(w->element, data))) {
+		WT_ALARM(WT_ERROR, "Failed to create textfield");
 		return -1;
 	}
 
@@ -34,9 +34,9 @@ FH_INTERN s8 widget_create_text(struct fh_widget *w, void *data)
 }
 
 
-FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
+WT_INTERN s8 widget_create_image(struct wt_widget *w, void *data)
 {
-	fh_Ignore(w);
+	wt_Ignore(w);
 
 	w->ref = data;
 
@@ -44,22 +44,22 @@ FH_INTERN s8 widget_create_image(struct fh_widget *w, void *data)
 }
 
 
-FH_INTERN s8 widget_create_view(struct fh_widget *w, void *data)
+WT_INTERN s8 widget_create_view(struct wt_widget *w, void *data)
 {
-	struct fh_rect rect = fh_GetElementBox(w->element);
-	struct fh_view_list *lst;
+	struct wt_rect rect = wt_GetElementBox(w->element);
+	struct wt_view_list *lst;
 
-	fh_Ignore(data);
+	wt_Ignore(data);
 
 	lst = w->element->document->views;
 
-	if(!(w->ref = fh_CreateView(lst, &rect)))
+	if(!(w->ref = wt_CreateView(lst, &rect)))
 		goto err_return;
 
 	return 0;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create view widget");
+	WT_ALARM(WT_ERROR, "Failed to create view widget");
 	return -1;
 }
 
@@ -70,21 +70,21 @@ err_return:
  *
  */
 
-FH_INTERN void widget_destroy_text(struct fh_widget *w)
+WT_INTERN void widget_destroy_text(struct wt_widget *w)
 {
-	fh_textfield_destroy(w->ref);
+	wt_textfield_destroy(w->ref);
 }
 
 
-FH_INTERN void widget_destroy_image(struct fh_widget *w)
+WT_INTERN void widget_destroy_image(struct wt_widget *w)
 {
-	fh_Ignore(w);
+	wt_Ignore(w);
 }
 
 
-FH_INTERN void widget_destroy_view(struct fh_widget *w)
+WT_INTERN void widget_destroy_view(struct wt_widget *w)
 {
-	fh_DestroyView(w->ref);
+	wt_DestroyView(w->ref);
 }
 
 
@@ -94,30 +94,30 @@ FH_INTERN void widget_destroy_view(struct fh_widget *w)
  *
  */
 
-FH_INTERN void widget_update_text(struct fh_widget *w, void *data)
+WT_INTERN void widget_update_text(struct wt_widget *w, void *data)
 {
-	fh_Ignore(w);
-	fh_Ignore(data);
+	wt_Ignore(w);
+	wt_Ignore(data);
 
-	fh_textfield_update(w->ref);
+	wt_textfield_update(w->ref);
 }
 
 
-FH_INTERN void widget_update_image(struct fh_widget *w, void *data)
+WT_INTERN void widget_update_image(struct wt_widget *w, void *data)
 {
-	fh_Ignore(w);
-	fh_Ignore(data);
+	wt_Ignore(w);
+	wt_Ignore(data);
 
 }
 
 
-FH_INTERN void widget_update_view(struct fh_widget *w, void *data)
+WT_INTERN void widget_update_view(struct wt_widget *w, void *data)
 {
-	struct fh_rect rect = fh_GetElementBox(w->element);
+	struct wt_rect rect = wt_GetElementBox(w->element);
 
-	fh_Ignore(data);
+	wt_Ignore(data);
 
-	fh_ResizeView(w->ref, &rect);
+	wt_ResizeView(w->ref, &rect);
 }
 
 
@@ -127,17 +127,17 @@ FH_INTERN void widget_update_view(struct fh_widget *w, void *data)
  *
  */
 
-FH_INTERN void widget_render_text(struct fh_widget *w)
+WT_INTERN void widget_render_text(struct wt_widget *w)
 {
-	fh_textfield_render(w->ref);
+	wt_textfield_render(w->ref);
 }
 
 
-FH_INTERN void widget_render_image(struct fh_widget *w)
+WT_INTERN void widget_render_image(struct wt_widget *w)
 {
-	struct fh_element *ele;
-	struct fh_texture *tex;
-	struct fh_batch *ren;
+	struct wt_element *ele;
+	struct wt_texture *tex;
+	struct wt_batch *ren;
 
 	s32 indices[4];
 	s32 v_index[3];
@@ -159,7 +159,7 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 
 	ele = w->element;
 	tex = w->ref;
-	ren = fh_ContextGetBatch(ele->document->context, tex->batch_id);
+	ren = wt_ContextGetBatch(ele->document->context, tex->batch_id);
 		
 	p0x = ele->inner_rect.x;
 	p0y = ele->inner_rect.y;
@@ -167,14 +167,14 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 	p1y = ele->inner_rect.y + ele->inner_rect.h;
 
 	/* Uniform: u_rect */
-	v_index[0] = fh_batch_push_uniform(ren, 1, &ele->inner_rect);
+	v_index[0] = wt_batch_push_uniform(ren, 1, &ele->inner_rect);
 
 	/* Uniform: u_radius */
-	v_index[2] = fh_batch_push_uniform(ren, 2, ele->style.radius_corner);
+	v_index[2] = wt_batch_push_uniform(ren, 2, ele->style.radius_corner);
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = fh_batch_push_uniform(ren, 3, &ele->parent->inner_rect);
+		v_index[1] = wt_batch_push_uniform(ren, 3, &ele->parent->inner_rect);
 	}
 	else {
 		v_index[1] = -1;
@@ -189,41 +189,41 @@ FH_INTERN void widget_render_image(struct fh_widget *w)
 	vdata.y = (f32)p0y;
 	vdata.u = 0;
 	vdata.v = 1;
-	indices[0] = fh_batch_push_vertex(ren, (void *)&vdata);
+	indices[0] = wt_batch_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
 	vdata.u = 1;
 	vdata.v = 1;
-	indices[1] = fh_batch_push_vertex(ren, (void *)&vdata);
+	indices[1] = wt_batch_push_vertex(ren, (void *)&vdata);
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
 	vdata.u = 1;
 	vdata.v = 0;
-	indices[2] = fh_batch_push_vertex(ren, (void *)&vdata);
+	indices[2] = wt_batch_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
 	vdata.u = 0;
 	vdata.v = 0;
-	indices[3] = fh_batch_push_vertex(ren, (void *)&vdata);
+	indices[3] = wt_batch_push_vertex(ren, (void *)&vdata);
 
-	fh_batch_push_index(ren, indices[0]);
-	fh_batch_push_index(ren, indices[2]);
-	fh_batch_push_index(ren, indices[3]);
+	wt_batch_push_index(ren, indices[0]);
+	wt_batch_push_index(ren, indices[2]);
+	wt_batch_push_index(ren, indices[3]);
 
-	fh_batch_push_index(ren, indices[0]);
-	fh_batch_push_index(ren, indices[1]);
-	fh_batch_push_index(ren, indices[2]);
+	wt_batch_push_index(ren, indices[0]);
+	wt_batch_push_index(ren, indices[1]);
+	wt_batch_push_index(ren, indices[2]);
 }
 
 
-FH_INTERN void widget_render_view(struct fh_widget *w)
+WT_INTERN void widget_render_view(struct wt_widget *w)
 {
-	fh_RenderView(w->ref);
+	wt_RenderView(w->ref);
 }
 
 
@@ -235,19 +235,19 @@ FH_INTERN void widget_render_view(struct fh_widget *w)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
-		enum fh_widget_type type, void *data)
+WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
+		enum wt_widget_type type, void *data)
 {
-	struct fh_widget *w;
+	struct wt_widget *w;
 	s8 r = -1;
 
 	if(!ele) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(w = fh_malloc(sizeof(struct fh_widget)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for widget");
+	if(!(w = wt_malloc(sizeof(struct wt_widget)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for widget");
 		goto err_return;
 	}
 
@@ -258,16 +258,16 @@ FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
 	printf("Create widget\n");
 
 	switch(type) {
-		case FH_WIDGET_TEXT: 
+		case WT_WIDGET_TEXT: 
 			r = widget_create_text(w, data);
 			break;
-		case FH_WIDGET_IMAGE: 
+		case WT_WIDGET_IMAGE: 
 			r = widget_create_image(w, data); 
 			break;
-		case FH_WIDGET_VIEW: 
+		case WT_WIDGET_VIEW: 
 			r = widget_create_view(w, data); 
 			break;
-		default: FH_ALARM(FH_ERROR, "Type not found"); break;
+		default: WT_ALARM(WT_ERROR, "Type not found"); break;
 	}
 
 	if(r < 0) goto err_free_comp;
@@ -275,73 +275,73 @@ FH_API struct fh_widget *fh_CreateWidget(struct fh_element *ele,
 	return w;
 
 err_free_comp:
-	fh_free(w);
+	wt_free(w);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create widget");
+	WT_ALARM(WT_ERROR, "Failed to create widget");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyWidget(struct fh_widget *w)
+WT_API void wt_DestroyWidget(struct wt_widget *w)
 {
 	if(!w) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case FH_WIDGET_TEXT:
+		case WT_WIDGET_TEXT:
 			widget_destroy_text(w);
 			break;
-		case FH_WIDGET_IMAGE:
+		case WT_WIDGET_IMAGE:
 			widget_destroy_image(w);
 			break;
-		case FH_WIDGET_VIEW: 
+		case WT_WIDGET_VIEW: 
 			widget_destroy_view(w);
 			break;	
 	}
 
-	fh_free(w);
+	wt_free(w);
 }
 
 
-FH_API void fh_UpdateWidget(struct fh_widget *w, void *data)
+WT_API void wt_UpdateWidget(struct wt_widget *w, void *data)
 {
 	if(!w) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case FH_WIDGET_TEXT:
+		case WT_WIDGET_TEXT:
 			widget_update_text(w, data);
 			break;
-		case FH_WIDGET_IMAGE:
+		case WT_WIDGET_IMAGE:
 			widget_update_image(w, data);
 			break;
-		case FH_WIDGET_VIEW:
+		case WT_WIDGET_VIEW:
 			widget_update_view(w, data);
 			break;
 	}
 }
 
 
-FH_API void fh_RenderWidget(struct fh_widget *w)
+WT_API void wt_RenderWidget(struct wt_widget *w)
 {
 	if(!w) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case FH_WIDGET_TEXT:
+		case WT_WIDGET_TEXT:
 			widget_render_text(w);
 			break;
-		case FH_WIDGET_IMAGE:
+		case WT_WIDGET_IMAGE:
 			widget_render_image(w);
 			break;
-		case FH_WIDGET_VIEW:
+		case WT_WIDGET_VIEW:
 			widget_render_view(w);
 			break;
 	}

@@ -1,5 +1,5 @@
-#ifndef _FH_DOCUMENT_ELEMENT_MANAGER_H
-#define _FH_DOCUMENT_ELEMENT_MANAGER_H
+#ifndef _WT_DOCUMENT_ELEMENT_MANAGER_H
+#define _WT_DOCUMENT_ELEMENT_MANAGER_H
 
 #include "document/inc/element.h"
 
@@ -13,7 +13,7 @@
  */
 
 
-FH_XMOD void fh_element_adjust_shape(struct fh_element *ele);
+WT_XMOD void wt_element_adjust_shape(struct wt_element *ele);
 
 
 /*
@@ -21,7 +21,7 @@ FH_XMOD void fh_element_adjust_shape(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele);
+WT_XMOD void wt_element_hdl_scrollbar(struct wt_element *ele);
 
 
 /*
@@ -32,7 +32,7 @@ FH_XMOD void fh_element_hdl_scrollbar(struct fh_element *ele);
  *
  * Returns: 1 if they are equal, 0 if not
  */
-FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2);
+WT_XMOD s8 wt_element_compare(struct wt_element *in1, struct wt_element *in2);
 
 
 /*
@@ -45,8 +45,8 @@ FH_XMOD s8 fh_element_compare(struct fh_element *in1, struct fh_element *in2);
  *
  * Returns: 1 to stop the recursion, 0 to continue
  */
-FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
-		fh_ele_cfnc postfnc, void *data);
+WT_XMOD s8 wt_element_hlf(struct wt_element *ele, wt_ele_cfnc prefnc,
+		wt_ele_cfnc postfnc, void *data);
 
 
 /*
@@ -56,7 +56,7 @@ FH_XMOD s8 fh_element_hlf(struct fh_element *ele, fh_ele_cfnc prefnc,
  * @flag: The flag to modify
  * @val: The new value of the flag
  */
-FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val);
+WT_XMOD void wt_element_mod_info(struct wt_element *ele, u8 flag, u8 val);
 
 
 /*
@@ -68,7 +68,7 @@ FH_XMOD void fh_element_mod_info(struct fh_element *ele, u8 flag, u8 val);
  *
  * Returns: 1 if scrolling was successfull or 0 if not
  */
-FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val);
+WT_XMOD s8 wt_element_scroll(struct wt_element *ele, s32 *val);
 
 
 /*
@@ -92,8 +92,8 @@ FH_XMOD s8 fh_element_scroll(struct fh_element *ele, s32 *val);
  * Returns: Either a pointer to the newly created element or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
-		enum fh_element_type type, void *data);
+WT_API struct wt_element *wt_CreateElement(struct wt_document *doc, char *name,
+		enum wt_element_type type, void *data);
 
 
 /*
@@ -101,7 +101,7 @@ FH_API struct fh_element *fh_CreateElement(struct fh_document *doc, char *name,
  *
  * @ele: Pointer to the element to destroy
  */
-FH_API void fh_DestroyElement(struct fh_element *ele);
+WT_API void wt_DestroyElement(struct wt_element *ele);
 
 
 /*
@@ -112,14 +112,14 @@ FH_API void fh_DestroyElement(struct fh_element *ele);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_AttachElement(struct fh_element *parent, struct fh_element *ele);
+WT_API s8 wt_AttachElement(struct wt_element *parent, struct wt_element *ele);
 
 
 /*
  * Detach the given element from its parent. This function is save to call even
  * if the element doesn't have a parent.
  */
-FH_API void fh_DetachElement(struct fh_element *ele);
+WT_API void wt_DetachElement(struct wt_element *ele);
 
 
 /*
@@ -130,7 +130,7 @@ FH_API void fh_DetachElement(struct fh_element *ele);
  * @fnc: The function to apply to the elements
  * @void: A datapointer to be passed to every function pass
  */
-FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
+WT_API void wt_ApplyElementRise(struct wt_element *ele, wt_ele_cfnc fnc,
 		void *data);
 
 
@@ -139,7 +139,7 @@ FH_API void fh_ApplyElementRise(struct fh_element *ele, fh_ele_cfnc fnc,
  *
  * @ele: Pointer to the element
  */
-FH_API void fh_UpdateElementStyle(struct fh_element *ele);
+WT_API void wt_UpdateElementStyle(struct wt_element *ele);
 
 
 /*
@@ -148,7 +148,7 @@ FH_API void fh_UpdateElementStyle(struct fh_element *ele);
  *
  * @ele: Pointer to the element
  */
-FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele);
+WT_API void wt_UpdateElementChildrenShape(struct wt_element *ele);
 
 
 /*
@@ -158,7 +158,7 @@ FH_API void fh_UpdateElementChildrenShape(struct fh_element *ele);
  *
  * Returns: Pointer to the context
  */
-FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
+WT_API struct wt_context *wt_GetElementContext(struct wt_element *ele);
 
 
 /*
@@ -168,7 +168,7 @@ FH_API struct fh_context *fh_GetElementContext(struct fh_element *ele);
  *
  * Returns: The absolute shape of the bounding box
  */
-FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele);
+WT_API struct wt_rect wt_GetBoundingBox(struct wt_element *ele);
 
 
 /*
@@ -179,7 +179,7 @@ FH_API struct fh_rect fh_GetBoundingBox(struct fh_element *ele);
  *
  * Returns: The absolute shape of the element box
  */
-FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele);
+WT_API struct wt_rect wt_GetElementBox(struct wt_element *ele);
 
 
 /*
@@ -190,7 +190,7 @@ FH_API struct fh_rect fh_GetElementBox(struct fh_element *ele);
  *
  * Returns: The absolute shape of the content box
  */
-FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele);
+WT_API struct wt_rect wt_GetContentBox(struct wt_element *ele);
 
 
 /*
@@ -201,7 +201,7 @@ FH_API struct fh_rect fh_GetContentBox(struct fh_element *ele);
  * Returns: A pointer to the content ractangle struct or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_rect *fh_GetContextBoxRef(struct fh_element *ele);
+WT_API struct wt_rect *wt_GetContextBoxRef(struct wt_element *ele);
 
 /*
  * Modify the stylesheet of an element.
@@ -215,7 +215,7 @@ FH_API struct fh_rect *fh_GetContextBoxRef(struct fh_element *ele);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str);
+WT_API s8 wt_ModifyElementStyle(struct wt_element *ele, char *str);
 
 
 /*
@@ -225,7 +225,7 @@ FH_API s8 fh_ModifyElementStyle(struct fh_element *ele, char *str);
  *
  * Returns: Either a pointer to the view struct or NULL if an error occurred
  */
-FH_API struct fh_view *fh_GetView(struct fh_element *ele);
+WT_API struct wt_view *wt_GetView(struct wt_element *ele);
 
 
-#endif /* _FH_DOCUMENT_ELEMENT_MANAGER_H */
+#endif /* _WT_DOCUMENT_ELEMENT_MANAGER_H */

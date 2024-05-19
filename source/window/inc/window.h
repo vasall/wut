@@ -1,7 +1,7 @@
-#ifndef _FH_WINDOW_H
-#define _FH_WINDOW_H
+#ifndef _WT_WINDOW_H
+#define _WT_WINDOW_H
 
-struct fh_window;
+struct wt_window;
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -19,28 +19,28 @@ struct fh_window;
 
 #include "utility/inc/shape.h"
 
-#define FH_WIN_NAME_LIM  	126
-#define FH_WIN_CHILDREN_LIM     6
+#define WT_WIN_NAME_LIM  	126
+#define WT_WIN_CHILDREN_LIM     6
 
 
 /*
  * INFO-FLAGS
  */
-#define FH_WIN_INFO_MAIN	(1<<0)
-#define FH_WIN_INFO_VISIBLE	(1<<1)
+#define WT_WIN_INFO_MAIN	(1<<0)
+#define WT_WIN_INFO_VISIBLE	(1<<1)
 
 
-struct fh_window {
-	fh_identity_t identity;
+struct wt_window {
+	wt_identity_t identity;
 
 	/* The unique identifier for this window */
 	u16 id;
 
 	/* The name of the window */
-	char name[FH_WIN_NAME_LIM];
+	char name[WT_WIN_NAME_LIM];
 
 	/* The size of the window in pixels */
-	struct fh_rect shape;
+	struct wt_rect shape;
 
 	/* 
 	 * The state flags of this window (from lowest to highest):
@@ -54,40 +54,40 @@ struct fh_window {
 	SDL_Window *handle;
 
 	/* References to both the parent and children windows */
-	struct fh_window *parent;
+	struct wt_window *parent;
 	s32 level;
 
 	u8 children_num;
-	struct fh_window *firstborn;
+	struct wt_window *firstborn;
 
-	struct fh_window *older_sibling;
-	struct fh_window *younger_sibling;
+	struct wt_window *older_sibling;
+	struct wt_window *younger_sibling;
 
 
 	/* The document contained in this window */
-	struct fh_document *document;
+	struct wt_document *document;
 
 	/* The rendering context */
-	struct fh_context *context;
+	struct wt_context *context;
 
 
-	struct fh_element *hovered;
-	struct fh_element *selected;
+	struct wt_element *hovered;
+	struct wt_element *selected;
 
-	struct fh_event_handler *event_handler;
+	struct wt_event_handler *event_handler;
 };
 
 
 /* The default callback function higher-level-functions for windows */
-typedef s8 (*fh_win_cfnc)(struct fh_window *, void *);
+typedef s8 (*wt_win_cfnc)(struct wt_window *, void *);
 
 
-struct fh_win_selector {
+struct wt_win_selector {
 	s8 state;
 
 	s32 id;
 
-	struct fh_window *win;
+	struct wt_window *win;
 };
 
 
@@ -111,8 +111,8 @@ struct fh_win_selector {
  * @post_fnc: The post-function
  * @data: A data pointer which will be passed to every function call
  */
-FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
-		fh_win_cfnc post_fnc, void *data);
+WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
+		wt_win_cfnc post_fnc, void *data);
 
 
 /*
@@ -120,13 +120,13 @@ FH_XMOD void fh_window_hlf(struct fh_window *str, fh_win_cfnc pre_fnc,
  *
  * @win: Pointer to the window to redraw.
  */
-FH_XMOD void fh_window_redraw(struct fh_window *win);
+WT_XMOD void wt_window_redraw(struct wt_window *win);
 
 
 /*
- * This function will call the fh_win_redraw() function on all visible windows.
+ * This function will call the wt_win_redraw() function on all visible windows.
  */
-FH_XMOD void fh_window_redraw_all(void);
+WT_XMOD void wt_window_redraw_all(void);
 
 
 /*
@@ -137,7 +137,7 @@ FH_XMOD void fh_window_redraw_all(void);
  *
  * Returns: 1 if the element has been selected, 0 if nothing has been done
  */
-FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele);
+WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele);
 
 
 
@@ -149,7 +149,7 @@ FH_XMOD s8 fh_window_hover(struct fh_window *win, struct fh_element *ele);
  *
  * Returns: 1 if the element has been selected, 0 if nothing has been done
  */
-FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele);
+WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele);
 
 
 
@@ -172,7 +172,7 @@ FH_XMOD s8 fh_window_select(struct fh_window *win, struct fh_element *ele);
  *
  * Returns: Either a pointer to the created window or NULL if an error occurred
  */
-FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
+WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
 		s32 width, s32 height);
 
 
@@ -181,7 +181,7 @@ FH_API struct fh_window *fh_CreateWindow(struct fh_window *parent, char *name,
  *
  * @win: Pointer to the window to close
  */
-FH_API void fh_CloseWindow(struct fh_window *win);
+WT_API void wt_CloseWindow(struct wt_window *win);
 
 
 /*
@@ -193,7 +193,7 @@ FH_API void fh_CloseWindow(struct fh_window *win);
  * Returns: A pointer to the window or NULL if either an error occurred or the
  * 	    window could not be found
  */
-FH_API struct fh_window *fh_GetWindow(s32 wd);
+WT_API struct wt_window *wt_GetWindow(s32 wd);
 
 
 /*
@@ -203,7 +203,7 @@ FH_API struct fh_window *fh_GetWindow(s32 wd);
  * @w: The new width
  * @h: The new height
  */
-FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h);
+WT_API void wt_ResizeWindow(struct wt_window *win, u16 w, u16 h);
 
 
 /*
@@ -211,7 +211,7 @@ FH_API void fh_ResizeWindow(struct fh_window *win, u16 w, u16 h);
  *
  * @win: Pointer to the window
  */
-FH_API void fh_ActivateWindow(struct fh_window *win);
+WT_API void wt_ActivateWindow(struct wt_window *win);
 
 
 /*
@@ -221,7 +221,7 @@ FH_API void fh_ActivateWindow(struct fh_window *win);
  *
  * Returns: A pointer to the context
  */
-FH_API struct fh_context *fh_GetContext(struct fh_window *win);
+WT_API struct wt_context *wt_GetContext(struct wt_window *win);
 
 
 /*
@@ -231,13 +231,13 @@ FH_API struct fh_context *fh_GetContext(struct fh_window *win);
  *
  * Returns: A pointer to the document of a window
  */
-FH_API struct fh_document *fh_GetDocument(struct fh_window *win);
+WT_API struct wt_document *wt_GetDocument(struct wt_window *win);
 
 
 /*
  * Show all windows in the console.
  */
-FH_API void fh_DumpWindowTree(void);
+WT_API void wt_DumpWindowTree(void);
 
 
-#endif /* _FH_WINDOW_H */
+#endif /* _WT_WINDOW_H */

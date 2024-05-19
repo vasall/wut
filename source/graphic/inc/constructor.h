@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_CONSTRUCTOR_H
-#define _FH_GRAPHIC_CONSTRUCTOR_H
+#ifndef _WT_GRAPHIC_CONSTRUCTOR_H
+#define _WT_GRAPHIC_CONSTRUCTOR_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -8,13 +8,13 @@
 
 #include "window/inc/window.h"
 
-struct fh_object_c;
+struct wt_object_c;
 
 
 #include "graphic/inc/object.h"
 
 
-struct fh_object_c_attrib {
+struct wt_object_c_attrib {
 	/* The name of the attribute */
 	char name[128];
 
@@ -33,7 +33,7 @@ struct fh_object_c_attrib {
 	u8 *data;
 };
 
-struct fh_object_c_unibuf {
+struct wt_object_c_unibuf {
 	/* The name of the new uniform buffer */
 	char name[128];
 
@@ -41,24 +41,24 @@ struct fh_object_c_unibuf {
 	u32 size;
 };
 
-enum fh_object_c_type {
-	FH_OBJECTC_DEFAULT,
-	FH_OBJECTC_RIGGED,
-	FH_OBJECTC_CUSTOM
+enum wt_object_c_type {
+	WT_OBJECTC_DEFAULT,
+	WT_OBJECTC_RIGGED,
+	WT_OBJECTC_CUSTOM
 };
 
-struct fh_object_c {
+struct wt_object_c {
 	/* The name of the new object */
-	char name[FH_OBJECT_NAME_LIM];
+	char name[WT_OBJECT_NAME_LIM];
 
 	/* The construction process to utilize */
-	enum fh_object_c_type type;
+	enum wt_object_c_type type;
 
 	/* The shader to use for the object */
-	struct fh_shader *shader;
+	struct wt_shader *shader;
 
 	/* The texture to use for the object */
-	struct fh_texture *texture;
+	struct wt_texture *texture;
 
 	/* The number of vertices */
 	u32 vtx_num;
@@ -69,11 +69,11 @@ struct fh_object_c {
 
 	/* The attributes of the new object */
 	u32 attrib_num;
-	struct fh_object_c_attrib attribs[FH_OBJECT_ATTRIB_LIM];
+	struct wt_object_c_attrib attribs[WT_OBJECT_ATTRIB_LIM];
 
 	/* The uniform buffers for the new object */
 	u32 unibuf_num;
-	struct fh_object_c_unibuf unibufs[FH_OBJECT_UNIFORM_LIM]; 
+	struct wt_object_c_unibuf unibufs[WT_OBJECT_UNIFORM_LIM]; 
 };
 
 
@@ -87,7 +87,7 @@ struct fh_object_c {
  *
  * Returns: A new constructor or NULL if an error occurred
  */
-FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
+WT_API struct wt_object_c *wt_BeginObjectConstr(char *name,
 		u32 vnum, u32 inum, u32 *idx);
 
 
@@ -102,8 +102,8 @@ FH_API struct fh_object_c *fh_BeginObjectConstr(char *name,
  *
  * Returns: Either a pointer to the finished object or NULL if an error occurred
  */
-FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
-		struct fh_context *ctx, fh_vec3_t pos, fh_vec3_t rot);
+WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
+		struct wt_context *ctx, wt_vec3_t pos, wt_vec3_t rot);
 
 
 /*
@@ -114,7 +114,7 @@ FH_API struct fh_object *fh_EndObjectConstr(struct fh_object_c *c,
  *
  * @c: Pointer to the constructor
  */
-FH_API void fh_ObjectConstrCleanup(struct fh_object_c *c);
+WT_API void wt_ObjectConstrCleanup(struct wt_object_c *c);
 
 
 /*
@@ -123,7 +123,7 @@ FH_API void fh_ObjectConstrCleanup(struct fh_object_c *c);
  * @c: Pointer to the object constructor
  * @tex: Pointer to the texture
  */
-FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex);
+WT_API void wt_ObjectConstrTexture(struct wt_object_c *c, struct wt_texture *tex);
 
 
 /*
@@ -132,13 +132,13 @@ FH_API void fh_ObjectConstrTexture(struct fh_object_c *c, struct fh_texture *tex
  * @c: Pointer to the object constructor
  * @shd: Pointer to the shader
  */
-FH_API void fh_ObjectConstrShader(struct fh_object_c *c, struct fh_shader *shd);
+WT_API void wt_ObjectConstrShader(struct wt_object_c *c, struct wt_shader *shd);
 
 
 /*
  * Attach a new attribute to the object.
  *
- * Use like: fh_ObjectConstrAttrib(c, "v_pos", 3, GL_FLOAT, vtx);
+ * Use like: wt_ObjectConstrAttrib(c, "v_pos", 3, GL_FLOAT, vtx);
  *
  * @c: Pointer to the object constructor
  * @name: The name of the new attribute(has to match the shader input)
@@ -146,21 +146,21 @@ FH_API void fh_ObjectConstrShader(struct fh_object_c *c, struct fh_shader *shd);
  * @type: The data type of an element
  * @data: The buffer containing the data
  */
-FH_API void fh_ObjectConstrAttrib(struct fh_object_c *c, char *name, u8 size,
+WT_API void wt_ObjectConstrAttrib(struct wt_object_c *c, char *name, u8 size,
 		GLenum type, void *data);
 
 
 /*
  * Add a new uniform buffer to the object.
  *
- * Use like: fh_ObjectConstrUniform(c, "camera", sizeof(struct uniform_buffer));
+ * Use like: wt_ObjectConstrUniform(c, "camera", sizeof(struct uniform_buffer));
  *
  * @c: Pointer to the object constructor
  * @name: The name of the uniform buffer
  * @size: The size of the uniform buffer in bytes
  */
-FH_API void fh_ObjectConstrUniform(struct fh_object_c *c, char *name, u32 size);
+WT_API void wt_ObjectConstrUniform(struct wt_object_c *c, char *name, u32 size);
 
 
 
-#endif /* _FH_GRAPHIC_CONSTRUCTOR_H */
+#endif /* _WT_GRAPHIC_CONSTRUCTOR_H */

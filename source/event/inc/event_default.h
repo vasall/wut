@@ -1,5 +1,5 @@
-#ifndef _FH_EVENT_DEFAULT_H
-#define _FH_EVENT_DEFAULT_H
+#ifndef _WT_EVENT_DEFAULT_H
+#define _WT_EVENT_DEFAULT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -22,7 +22,7 @@
  *
  * Returns: 1 if the event has been handled, 0 if not
  */
-FH_XMOD s8 fh_evtdef_rundown(struct fh_event *evt);
+WT_XMOD s8 wt_evtdef_rundown(struct wt_event *evt);
 
 
 /*
@@ -34,4 +34,4 @@ FH_XMOD s8 fh_evtdef_rundown(struct fh_event *evt);
  */
 
 
-#endif /* _FH_EVENT_DEFAULT_H */
+#endif /* _WT_EVENT_DEFAULT_H */

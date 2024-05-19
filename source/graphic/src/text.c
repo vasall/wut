@@ -7,15 +7,15 @@
 #include "utility/inc/alarm.h"
 
 
-FH_INTERN s8 text_resize(struct fh_text_buffer *tbuf, s16 len)
+WT_INTERN s8 text_resize(struct wt_text_buffer *tbuf, s16 len)
 {
 	s16 nalloc = (tbuf->alloc + len) * 1.5;
-	s32 size = nalloc * sizeof(struct fh_text_element);
+	s32 size = nalloc * sizeof(struct wt_text_element);
 	void *pswap;
 	s16 i;
 
-	if(!(pswap = fh_realloc(tbuf->elements, size))) {
-		FH_ALARM(FH_ERROR, "Failed to resize text buffer");
+	if(!(pswap = wt_realloc(tbuf->elements, size))) {
+		WT_ALARM(WT_ERROR, "Failed to resize text buffer");
 		return -1;
 	}
 
@@ -31,7 +31,7 @@ FH_INTERN s8 text_resize(struct fh_text_buffer *tbuf, s16 len)
 }
 
 
-FH_INTERN s16 text_get_slots(struct fh_text_buffer *tbuf, s16 num, s16 *out)
+WT_INTERN s16 text_get_slots(struct wt_text_buffer *tbuf, s16 num, s16 *out)
 {
 	s16 i;
 	s16 j = 0;
@@ -48,7 +48,7 @@ FH_INTERN s16 text_get_slots(struct fh_text_buffer *tbuf, s16 num, s16 *out)
 }
 
 
-FH_INTERN s16 text_find(struct fh_text_buffer *tbuf, s16 idx)
+WT_INTERN s16 text_find(struct wt_text_buffer *tbuf, s16 idx)
 {
 	s16 i = 0;
 	s16 run;
@@ -89,28 +89,28 @@ FH_INTERN s16 text_find(struct fh_text_buffer *tbuf, s16 idx)
 
 
 
-FH_API struct fh_text_buffer *fh_text_create(struct fh_text_info info)
+WT_API struct wt_text_buffer *wt_text_create(struct wt_text_info info)
 {
-	struct fh_text_buffer *tbuf;
+	struct wt_text_buffer *tbuf;
 	s16 size;
 	s16 i;
 
-	if(!(tbuf = fh_malloc(sizeof(struct fh_text_buffer)))) {
-		FH_ALARM(FH_ERROR, "Failed to create text buffer");
+	if(!(tbuf = wt_malloc(sizeof(struct wt_text_buffer)))) {
+		WT_ALARM(WT_ERROR, "Failed to create text buffer");
 		goto err_return;
 	}
 
 	tbuf->info = info;
 	tbuf->head = -1;
 	tbuf->tail = -1;
-	tbuf->alloc = FH_TEXT_ALLOC;
+	tbuf->alloc = WT_TEXT_ALLOC;
 	tbuf->count = 0;
 
 	tbuf->tex_spread = tbuf->info.font->data.spread_in_tex * 0.4;
 	tbuf->vtx_spread = tbuf->info.font->data.spread_in_font * 0.4;
 
-	size = tbuf->alloc * sizeof(struct fh_text_element);
-	if(!(tbuf->elements = fh_malloc(size))) {
+	size = tbuf->alloc * sizeof(struct wt_text_element);
+	if(!(tbuf->elements = wt_malloc(size))) {
 		goto err_free_tbuf;
 	}
 
@@ -121,24 +121,24 @@ FH_API struct fh_text_buffer *fh_text_create(struct fh_text_info info)
 	return tbuf;
 
 err_free_tbuf:
-	fh_free(tbuf);
+	wt_free(tbuf);
 
 err_return:
 	return NULL;
 }
 
 
-FH_API void fh_text_destroy(struct fh_text_buffer *tbuf)
+WT_API void wt_text_destroy(struct wt_text_buffer *tbuf)
 {
 	if(!tbuf)
 		return;
 
-	fh_free(tbuf->elements);
-	fh_free(tbuf);
+	wt_free(tbuf->elements);
+	wt_free(tbuf);
 }
 
 
-FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
+WT_API s8 wt_text_push(struct wt_text_buffer *tbuf, s16 off, s16 len,
 		char *text)
 {
 	s16 cut_prev;
@@ -149,17 +149,17 @@ FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 	char c;
 	s16 slots[128];
 	s16 left;
-	struct fh_text_element *ele;
+	struct wt_text_element *ele;
 
 	if(!tbuf || off < 0 || len < 0 || !text) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return -1;
 	}
 
 	/* Resize element array if necessary */
 	if(tbuf->count + len > tbuf->alloc) {
 		if(text_resize(tbuf, len) < 0) {
-			FH_ALARM(FH_ERROR, "Failed to resize text buffer");
+			WT_ALARM(WT_ERROR, "Failed to resize text buffer");
 			goto err_return;
 		}
 	}
@@ -182,7 +182,7 @@ FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 
 			/* Aquire the character and glyph */
 			ele->character = c;
-			ele->glyph = fh_GetGlyphIndex(tbuf->info.font, c);
+			ele->glyph = wt_GetGlyphIndex(tbuf->info.font, c);
 
 			/* If no previous elements, this will become the head */
 			if(rlast < 0) {
@@ -211,7 +211,7 @@ FH_API s8 fh_text_push(struct fh_text_buffer *tbuf, s16 off, s16 len,
 	/* Update size of buffer and mark as changed */
 	tbuf->count += len;
 
-	fh_text_dump(tbuf);
+	wt_text_dump(tbuf);
 
 	return 0;
 
@@ -220,7 +220,7 @@ err_return:
 }
 
 
-FH_API void fh_text_remove(struct fh_text_buffer *tbuf, s16 off, s16 len)
+WT_API void wt_text_remove(struct wt_text_buffer *tbuf, s16 off, s16 len)
 {
 	s16 cut_prev;
 	s16 left;
@@ -228,7 +228,7 @@ FH_API void fh_text_remove(struct fh_text_buffer *tbuf, s16 off, s16 len)
 	s16 i;
 
 	if(!tbuf || off < 0 || off > tbuf->count || len < 1) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -275,22 +275,22 @@ FH_API void fh_text_remove(struct fh_text_buffer *tbuf, s16 off, s16 len)
 }
 
 
-FH_API void fh_text_process(struct fh_text_buffer *tbuf)
+WT_API void wt_text_process(struct wt_text_buffer *tbuf)
 {
-	struct fh_style *tstyle;
-	struct fh_rect *limits;
-	struct fh_font *font;
+	struct wt_style *tstyle;
+	struct wt_rect *limits;
+	struct wt_font *font;
 	s16 tmp;
 		
 	/* The curbatcht offset for placement */
 	s16 line[2] = {0, 0};
 
 	s16 run;
-	struct fh_text_element *tele;
-	struct fh_text_element *tele_last = NULL;
+	struct wt_text_element *tele;
+	struct wt_text_element *tele_last = NULL;
 
-	struct fh_font_glyph *glyph;
-	struct fh_font_glyph *glyph_last = NULL;
+	struct wt_font_glyph *glyph;
+	struct wt_font_glyph *glyph_last = NULL;
 
 	/*
 	 * This var remembers the index of the last space char or the start of
@@ -324,7 +324,7 @@ FH_API void fh_text_process(struct fh_text_buffer *tbuf)
 		 * First gather all refebatchces for the character.
 		 */
 		tele = &tbuf->elements[run];
-		glyph = fh_GetGlyphByIndex(font, tele->glyph);	
+		glyph = wt_GetGlyphByIndex(font, tele->glyph);	
 
 
 		/*
@@ -365,7 +365,7 @@ FH_API void fh_text_process(struct fh_text_buffer *tbuf)
 			printf("Width: %d\n", limits->w);
 
 			switch(tstyle->text_wrap_mode) {
-				case FH_TEXT_WORDWRAP:
+				case WT_TEXT_WORDWRAP:
 					printf("Wordwrap\n");
 
 					if(fsol) {
@@ -389,11 +389,11 @@ FH_API void fh_text_process(struct fh_text_buffer *tbuf)
 					run = tbuf->elements[lbreak].next;
 					break;
 
-				case FH_TEXT_NOWRAP:
+				case WT_TEXT_NOWRAP:
 					/* Do absolutelly nothing! */
 					break;
 				
-				case FH_TEXT_LETTERWRAP:
+				case WT_TEXT_LETTERWRAP:
 					printf("Letterwrap!\n");
 
 					ladv = 1;
@@ -442,12 +442,12 @@ FH_API void fh_text_process(struct fh_text_buffer *tbuf)
 }
 
 
-FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
+WT_API s8 wt_text_send(struct wt_text_buffer *tbuf)
 {
-	struct fh_batch *batch;
-	struct fh_text_element *ele;
-	struct fh_font_glyph *glyph;
-	struct fh_style *tstyle;
+	struct wt_batch *batch;
+	struct wt_text_element *ele;
+	struct wt_font_glyph *glyph;
+	struct wt_style *tstyle;
 
 	s16 i;
 
@@ -474,7 +474,7 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 
 	while(run >= 0) {
 		ele = &tbuf->elements[run];
-		glyph = fh_GetGlyphByIndex(tbuf->info.font, ele->glyph);
+		glyph = wt_GetGlyphByIndex(tbuf->info.font, ele->glyph);
 		tstyle = tbuf->info.style;
 
 		/* bottom left */
@@ -526,18 +526,18 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 		vtx[3].texture_v = glyph->tex_coord_y - tbuf->tex_spread;
 
 
-		idx[0] = fh_batch_push_vertex(batch, (void *)&vtx[0]);
-		idx[1] = fh_batch_push_vertex(batch, (void *)&vtx[1]);
-		idx[2] = fh_batch_push_vertex(batch, (void *)&vtx[2]);
-		idx[3] = fh_batch_push_vertex(batch, (void *)&vtx[3]);
+		idx[0] = wt_batch_push_vertex(batch, (void *)&vtx[0]);
+		idx[1] = wt_batch_push_vertex(batch, (void *)&vtx[1]);
+		idx[2] = wt_batch_push_vertex(batch, (void *)&vtx[2]);
+		idx[3] = wt_batch_push_vertex(batch, (void *)&vtx[3]);
 
-		fh_batch_push_index(batch, idx[0]);
-		fh_batch_push_index(batch, idx[2]);
-		fh_batch_push_index(batch, idx[3]);
+		wt_batch_push_index(batch, idx[0]);
+		wt_batch_push_index(batch, idx[2]);
+		wt_batch_push_index(batch, idx[3]);
 
-		fh_batch_push_index(batch, idx[0]);
-		fh_batch_push_index(batch, idx[1]);
-		fh_batch_push_index(batch, idx[2]);
+		wt_batch_push_index(batch, idx[0]);
+		wt_batch_push_index(batch, idx[1]);
+		wt_batch_push_index(batch, idx[2]);
 
 		run = ele->next;
 	}
@@ -546,7 +546,7 @@ FH_API s8 fh_text_send(struct fh_text_buffer *tbuf)
 }
 
 
-FH_API void fh_text_dump(struct fh_text_buffer *tbuf)
+WT_API void wt_text_dump(struct wt_text_buffer *tbuf)
 {
 	s16 run;
 	s16 i;

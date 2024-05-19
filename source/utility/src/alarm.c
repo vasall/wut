@@ -5,24 +5,24 @@
 #include <stdarg.h>
 
 
-FH_API int fh_alarm_log(enum fh_alarm_prio prio, const char *format, ...)
+WT_API int wt_alarm_log(enum wt_alarm_prio prio, const char *format, ...)
 {
 	FILE *file;
 	va_list args;
 	char *prio_str;
 
-	file = fopen(FH_ALARM_FILE, "a");
+	file = fopen(WT_ALARM_FILE, "a");
 	if(!file)
 		return -1;
 
 	switch (prio) {
-		case FH_NOTICE:
+		case WT_NOTICE:
 			prio_str = "NOTICE";
 			break;
-		case FH_WARNING:
+		case WT_WARNING:
 			prio_str = "WARNING";
 			break;
-		case FH_ERROR:
+		case WT_ERROR:
 			prio_str = "ERROR";
 			break;
 		default:

@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_CONTEXT_H
-#define _FH_GRAPHIC_CONTEXT_H
+#ifndef _WT_GRAPHIC_CONTEXT_H
+#define _WT_GRAPHIC_CONTEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -13,43 +13,43 @@
 
 #include "utility/inc/static_list.h"
 
-struct fh_context {
+struct wt_context {
 	/* Pointer to the window this context belongs to */
-	struct fh_window *window;
+	struct wt_window *window;
 
 	/* Pointer to the underlying OpenGL-context */
 	void *gl_context;	
 	
 	/* A reference to the size of the window */
-	struct fh_rect *shape_ref;
+	struct wt_rect *shape_ref;
 
 	/*
 	 * RESOURCE-TABLES
 	 */
-	struct fh_table *shaders;
-	struct fh_statlist *textures;
-	struct fh_statlist *fonts;
-	struct fh_table *objects;
+	struct wt_table *shaders;
+	struct wt_statlist *textures;
+	struct wt_statlist *fonts;
+	struct wt_table *objects;
 
 	/*
 	 * A list of all active batch renderers.
 	 */
-	struct fh_statlist 	*batches;
+	struct wt_statlist 	*batches;
 
 	/*
 	 * Predefined resources.
 	 */
-	struct fh_shader	*def_block_shader;
-	struct fh_shader	*def_texture_shader;
-	struct fh_shader	*def_text_shader;
+	struct wt_shader	*def_block_shader;
+	struct wt_shader	*def_texture_shader;
+	struct wt_shader	*def_text_shader;
 };
 
 
-enum fh_context_table {
-	FH_CONTEXT_SHADERS,
-	FH_CONTEXT_TEXTURES,
-	FH_CONTEXT_FONTS,
-	FH_CONTEXT_OBJECTS
+enum wt_context_table {
+	WT_CONTEXT_SHADERS,
+	WT_CONTEXT_TEXTURES,
+	WT_CONTEXT_FONTS,
+	WT_CONTEXT_OBJECTS
 };
 
 
@@ -60,7 +60,7 @@ enum fh_context_table {
  *
  * Returns: A pointer to the newly created context or NULL if an error occurred
  */
-FH_API struct fh_context *fh_CreateContext(struct fh_window *win);
+WT_API struct wt_context *wt_CreateContext(struct wt_window *win);
 
 
 /*
@@ -68,7 +68,7 @@ FH_API struct fh_context *fh_CreateContext(struct fh_window *win);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_DestroyContext(struct fh_context *ctx);
+WT_API void wt_DestroyContext(struct wt_context *ctx);
 
 
 /*
@@ -82,7 +82,7 @@ FH_API void fh_DestroyContext(struct fh_context *ctx);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt, 
+WT_API s8 wt_ContextAdd(struct wt_context *ctx, enum wt_context_table opt, 
 		char *name, u32 size, void **p);
 
 
@@ -93,7 +93,7 @@ FH_API s8 fh_ContextAdd(struct fh_context *ctx, enum fh_context_table opt,
  * @opt: A flag indicating the table to select
  * @name: The name of the entry to remove
  */
-FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
+WT_API void wt_ContextRemove(struct wt_context *ctx, enum wt_context_table opt,
 		char *name);
 
 
@@ -105,7 +105,7 @@ FH_API void fh_ContextRemove(struct fh_context *ctx, enum fh_context_table opt,
  *
  * Returns: The id of the batch in the context or -1 if an error occurred
  */
-FH_API s16 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren);
+WT_API s16 wt_ContextAddBatch(struct wt_context *ctx, struct wt_batch **ren);
 
 
 /*
@@ -114,7 +114,7 @@ FH_API s16 fh_ContextAddBatch(struct fh_context *ctx, struct fh_batch **ren);
  * @ctx: Pointer to the context
  * @id: The id of the batch renderer
  */
-FH_API void fh_ContextRmvBatch(struct fh_context *ctx, s16 id);
+WT_API void wt_ContextRmvBatch(struct wt_context *ctx, s16 id);
 
 
 /*
@@ -125,7 +125,7 @@ FH_API void fh_ContextRmvBatch(struct fh_context *ctx, s16 id);
  *
  * Returns: Either a pointer to the batch renderer or NULL if an error occurred
  */
-FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id);
+WT_API struct wt_batch *wt_ContextGetBatch(struct wt_context *ctx, s16 id);
 
 
 /*
@@ -133,7 +133,7 @@ FH_API struct fh_batch *fh_ContextGetBatch(struct fh_context *ctx, s16 id);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_ContextRenderBatches(struct fh_context *ctx);
+WT_API void wt_ContextRenderBatches(struct wt_context *ctx);
 
 
 /*
@@ -142,7 +142,7 @@ FH_API void fh_ContextRenderBatches(struct fh_context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rendering area
  */
-FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect);
+WT_API void wt_SetViewport(struct wt_context *ctx, struct wt_rect *rect);
 
 
 /*
@@ -150,7 +150,7 @@ FH_API void fh_SetViewport(struct fh_context *ctx, struct fh_rect *rect);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_ResetViewport(struct fh_context *ctx);
+WT_API void wt_ResetViewport(struct wt_context *ctx);
 
 
 /*
@@ -160,7 +160,7 @@ FH_API void fh_ResetViewport(struct fh_context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rectangle in pixels
  */
-FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect);
+WT_API void wt_ContextEnableScissor(struct wt_context *ctx, struct wt_rect *rect);
 
 
 /*
@@ -168,8 +168,8 @@ FH_API void fh_ContextEnableScissor(struct fh_context *ctx, struct fh_rect *rect
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_ContextDisableScissor(struct fh_context *ctx);
+WT_API void wt_ContextDisableScissor(struct wt_context *ctx);
 
 
 
-#endif /* _FH_DOCUMENT_CONTEXT_H */
+#endif /* _WT_DOCUMENT_CONTEXT_H */

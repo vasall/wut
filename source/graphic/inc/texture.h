@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_RESOURCES_TEXTURE_H
-#define _FH_GRAPHIC_RESOURCES_TEXTURE_H
+#ifndef _WT_GRAPHIC_RESOURCES_TEXTURE_H
+#define _WT_GRAPHIC_RESOURCES_TEXTURE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -9,14 +9,14 @@
 
 #include "graphic/inc/context.h"
 
-#define FH_TEXTURE_SLOTS		16
+#define WT_TEXTURE_SLOTS		16
 
-#define FH_TEXTURE_NAME_LIM		128
+#define WT_TEXTURE_NAME_LIM		128
 
 
-struct fh_texture {
+struct wt_texture {
 	/* The name of the texture */
-	char name[FH_TEXTURE_NAME_LIM];
+	char name[WT_TEXTURE_NAME_LIM];
 	
 	/* The format used for the pixel data */
 	GLenum format;
@@ -29,7 +29,7 @@ struct fh_texture {
 	u32 texture;
 
 	/* Reference to the context */
-	struct fh_context *context;
+	struct wt_context *context;
 
 	/* The batch id */
 	s16 batch_id;
@@ -46,7 +46,7 @@ struct fh_texture {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_InitTextureTable(struct fh_context *ctx);
+WT_API s8 wt_InitTextureTable(struct wt_context *ctx);
 
 
 /*
@@ -54,7 +54,7 @@ FH_API s8 fh_InitTextureTable(struct fh_context *ctx);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_CloseTextureTable(struct fh_context *ctx);
+WT_API void wt_CloseTextureTable(struct wt_context *ctx);
 
 
 /*
@@ -71,7 +71,7 @@ FH_API void fh_CloseTextureTable(struct fh_context *ctx);
  *
  * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
+WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
 		u16 w, u16 h, GLenum format, u8 *px);
 
 
@@ -84,7 +84,7 @@ FH_API struct fh_texture *fh_CreateTexture(struct fh_context *ctx, char *name,
  *
  * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name,
+WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name,
 		char *pth);
 
 
@@ -93,7 +93,7 @@ FH_API struct fh_texture *fh_LoadTexture(struct fh_context *ctx, char *name,
  *
  * @tex: Pointer to the texture
  */
-FH_API void fh_RemoveTexture(struct fh_texture *tex);
+WT_API void wt_RemoveTexture(struct wt_texture *tex);
 
 
 /*
@@ -106,7 +106,7 @@ FH_API void fh_RemoveTexture(struct fh_texture *tex);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px);
+WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px);
 
 
 /*
@@ -123,7 +123,7 @@ FH_API s8 fh_ResizeTexture(struct fh_texture *tex, u16 w, u16 h, u8 *px);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
+WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px);
 
 
@@ -135,7 +135,7 @@ FH_API s8 fh_SetTexture(struct fh_texture *tex, u16 x, u16 y, u16 w, u16 h,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name);
+WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name);
 
 
 /*
@@ -143,14 +143,14 @@ FH_API struct fh_texture *fh_GetTexture(struct fh_context *ctx, char *name);
  *
  * @tex: Pointer to the texture
  */
-FH_API void fh_UseTexture(struct fh_texture *tex);
+WT_API void wt_UseTexture(struct wt_texture *tex);
 
 
 /*
  * Unuse the currently active texture.
  */
-FH_API void fh_UnuseTexture(void);
+WT_API void wt_UnuseTexture(void);
 
 
 
-#endif /* _FH_GRAPHIC_RESOURCES_TEXTURE_H */
+#endif /* _WT_GRAPHIC_RESOURCES_TEXTURE_H */

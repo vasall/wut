@@ -1,5 +1,5 @@
-#ifndef _FH_STYLE_LAYOUT_H
-#define _FH_STYLE_LAYOUT_H
+#ifndef _WT_STYLE_LAYOUT_H
+#define _WT_STYLE_LAYOUT_H
 
 #include "document/inc/element.h"
 
@@ -18,7 +18,7 @@
  *
  * @ele: Pointer to the parent element
  */
-FH_XMOD void fh_layout_block(struct fh_element *ele);
+WT_XMOD void wt_layout_block(struct wt_element *ele);
 
 
 /*
@@ -27,7 +27,7 @@ FH_XMOD void fh_layout_block(struct fh_element *ele);
  *
  * @ele: Pointer to the parent element
  */
-FH_XMOD void fh_layout_row(struct fh_element *ele);
+WT_XMOD void wt_layout_row(struct wt_element *ele);
 
 
 /*
@@ -36,7 +36,7 @@ FH_XMOD void fh_layout_row(struct fh_element *ele);
  *
  * @ele: Pointer to the parent element
  */
-FH_XMOD void fh_layout_column(struct fh_element *ele);
+WT_XMOD void wt_layout_column(struct wt_element *ele);
 
 
-#endif /* _FH_STYLE_LAYOUT_H */
+#endif /* _WT_STYLE_LAYOUT_H */

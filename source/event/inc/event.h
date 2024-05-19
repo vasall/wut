@@ -1,15 +1,15 @@
-#ifndef _FH_EVENT_H
-#define _FH_EVENT_H
+#ifndef _WT_EVENT_H
+#define _WT_EVENT_H
 
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct fh_event;
+struct wt_event;
 
 /* The default event callback functions */
-typedef s8 (*fh_evt_cfnc)(struct fh_event *, void *);
+typedef s8 (*wt_evt_cfnc)(struct wt_event *, void *);
 
 #include "window/inc/window.h"
 
@@ -20,38 +20,38 @@ typedef s8 (*fh_evt_cfnc)(struct fh_event *, void *);
 #include "event/inc/trigger.h"
 
 
-#define FH_EVT_PIPE_LIM	64
+#define WT_EVT_PIPE_LIM	64
 
-#define FH_EVT_DATA_LIM	128
+#define WT_EVT_DATA_LIM	128
 
-#define FH_EVT_QUIT		1
+#define WT_EVT_QUIT		1
 
 
 /*
  * EVENT-FLAGS
  */
-#define FH_EVT_F_PDEF		(1<<0)	/* Prevent-Default */
+#define WT_EVT_F_PDEF		(1<<0)	/* Prevent-Default */
 
 
 
 
-struct fh_event_data {
+struct wt_event_data {
 	u8			buffer[128];
 };
 
-struct fh_event_context {
-	struct fh_window 	*window;
-	struct fh_element 	*element;
+struct wt_event_context {
+	struct wt_window 	*window;
+	struct wt_element 	*element;
 };
 
-struct fh_event {
-	enum fh_event_type 	type;
+struct wt_event {
+	enum wt_event_type 	type;
 
 	SDL_Event 		raw;
 
-	struct fh_event_context	context;
+	struct wt_event_context	context;
 
-	struct fh_event_data	data;
+	struct wt_event_data	data;
 
 	u8 			flags;
 };
@@ -72,13 +72,13 @@ struct fh_event {
 /*
  * Process all event in the SDL event queue and handle them.
  */
-FH_XMOD void fh_event_update(void);
+WT_XMOD void wt_event_update(void);
 
 
 /*
  * Trigger a new event so it can be handled.
  */
-FH_XMOD void fh_event_trigger(struct fh_event *evt);
+WT_XMOD void wt_event_trigger(struct wt_event *evt);
 
 
 /*
@@ -88,8 +88,8 @@ FH_XMOD void fh_event_trigger(struct fh_event *evt);
  * @win: Pointer to the window context
  * @ele: Pointer to the element context
  */
-FH_XMOD void fh_event_trigger_raw(enum fh_event_type type,
-		struct fh_window *win, struct fh_element *ele);
+WT_XMOD void wt_event_trigger_raw(enum wt_event_type type,
+		struct wt_window *win, struct wt_element *ele);
 
 
 /*
@@ -106,7 +106,7 @@ FH_XMOD void fh_event_trigger_raw(enum fh_event_type type,
  *
  * @evt: Pointer to the event
  */
-FH_API void fh_PreventDefault(struct fh_event *evt);
+WT_API void wt_PreventDefault(struct wt_event *evt);
 
 
-#endif /* _FH_EVENT_H */
+#endif /* _WT_EVENT_H */

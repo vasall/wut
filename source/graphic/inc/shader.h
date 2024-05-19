@@ -1,5 +1,5 @@
-#ifndef _FH_GRAPHIC_RESOURCES_SHADER_H
-#define _FH_GRAPHIC_RESOURCES_SHADER_H
+#ifndef _WT_GRAPHIC_RESOURCES_SHADER_H
+#define _WT_GRAPHIC_RESOURCES_SHADER_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -8,46 +8,46 @@
 
 #include "graphic/inc/context.h"
 
-#define FH_SHADER_LIM		128
-#define FH_SHADER_VAR_LIM	16
-#define FH_SHADER_UNIFORM_LIM	8
+#define WT_SHADER_LIM		128
+#define WT_SHADER_VAR_LIM	16
+#define WT_SHADER_UNIFORM_LIM	8
 
 /*
  * The following types are used to use different rendering options in the
  * shader.
  */
-#define FH_RENTYPE_DEFAULT	1	/* Block with border and color */
-#define FH_RENTYPE_SCROLL_V	2	/* Vertical scrollbar */
-#define FH_RENTYPE_SCROLL_H	3	/* Horizontal scrollbar */
+#define WT_RENTYPE_DEFAULT	1	/* Block with border and color */
+#define WT_RENTYPE_SCROLL_V	2	/* Vertical scrollbar */
+#define WT_RENTYPE_SCROLL_H	3	/* Horizontal scrollbar */
 
 
-struct fh_shader_var {
+struct wt_shader_var {
 	char name[64];
 	char type[16];
 	u16 location;
 };
 
-struct fh_shader_inputs {
+struct wt_shader_inputs {
 	u8 num;
-	struct fh_shader_var vars[FH_SHADER_VAR_LIM];
+	struct wt_shader_var vars[WT_SHADER_VAR_LIM];
 };
 
 
 
-struct fh_shader_uniform {
+struct wt_shader_uniform {
 	char name[64];
 	s16 location;
 };
 
 
-struct fh_shader_uniforms {
+struct wt_shader_uniforms {
 	u8 num;
-	struct fh_shader_uniform uniform[8];
+	struct wt_shader_uniform uniform[8];
 };
 
 
 
-struct fh_shader {
+struct wt_shader {
 	/* The name of the shader */
 	char name[128];
 
@@ -55,13 +55,13 @@ struct fh_shader {
 	u32 program;
 
 	/* The inputs for the shader */
-	struct fh_shader_inputs inputs;
+	struct wt_shader_inputs inputs;
 
 	/* The uniforms for the shader */
-	struct fh_shader_uniforms uniforms;
+	struct wt_shader_uniforms uniforms;
 
 	/* A reference to the context */
-	struct fh_context *context;
+	struct wt_context *context;
 };
 
 
@@ -72,7 +72,7 @@ struct fh_shader {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_InitShaderTable(struct fh_context *ctx);
+WT_API s8 wt_InitShaderTable(struct wt_context *ctx);
 
 
 /*
@@ -80,7 +80,7 @@ FH_API s8 fh_InitShaderTable(struct fh_context *ctx);
  *
  * @ctx: Pointer to the context
  */
-FH_API void fh_CloseShaderTable(struct fh_context *ctx);
+WT_API void wt_CloseShaderTable(struct wt_context *ctx);
 
 
 /*
@@ -95,7 +95,7 @@ FH_API void fh_CloseShaderTable(struct fh_context *ctx);
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
+WT_API struct wt_shader *wt_CreateShader(struct wt_context *ctx, char *name,
 		const char *v_src, const char *f_src);
 
 
@@ -110,7 +110,7 @@ FH_API struct fh_shader *fh_CreateShader(struct fh_context *ctx, char *name,
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_LoadShader(struct fh_context *ctx, char *name,
+WT_API struct wt_shader *wt_LoadShader(struct wt_context *ctx, char *name,
 		char *v_pth, char *f_pth);
 
 
@@ -119,7 +119,7 @@ FH_API struct fh_shader *fh_LoadShader(struct fh_context *ctx, char *name,
  *
  * @shd: Pointer to the shader
  */
-FH_API void fh_RemoveShader(struct fh_shader *shd);
+WT_API void wt_RemoveShader(struct wt_shader *shd);
 
 
 /*
@@ -130,7 +130,7 @@ FH_API void fh_RemoveShader(struct fh_shader *shd);
  *
  * Returns: Either a pointer to the shader or NULL if an error occurred
  */
-FH_API struct fh_shader *fh_GetShader(struct fh_context *ctx, char *name);
+WT_API struct wt_shader *wt_GetShader(struct wt_context *ctx, char *name);
 
 
 /*
@@ -138,13 +138,13 @@ FH_API struct fh_shader *fh_GetShader(struct fh_context *ctx, char *name);
  *
  * @shd: Pointer to the shader
  */
-FH_API void fh_UseShader(struct fh_shader *shd); 
+WT_API void wt_UseShader(struct wt_shader *shd); 
 
 
 /*
  * Unuse the active shader.
  */
-FH_API void fh_UnuseShader(void);
+WT_API void wt_UnuseShader(void);
 
 /*
  * Get the location of a input variable in the shader.
@@ -154,7 +154,7 @@ FH_API void fh_UnuseShader(void);
  *
  * Returns: The location or -1 if an error occurred
  */
-FH_API s8 fh_ShaderGetInputLoc(struct fh_shader *shd, char *var);
+WT_API s8 wt_ShaderGetInputLoc(struct wt_shader *shd, char *var);
 
 
 /*
@@ -165,7 +165,7 @@ FH_API s8 fh_ShaderGetInputLoc(struct fh_shader *shd, char *var);
  *
  * Returns: The location or -1 if an error occurred
  */
-FH_API s8 fh_ShaderGetUniformLoc(struct fh_shader *shd, char *uni);
+WT_API s8 wt_ShaderGetUniformLoc(struct wt_shader *shd, char *uni);
 
 
 #if 0
@@ -175,7 +175,7 @@ FH_API s8 fh_ShaderGetUniformLoc(struct fh_shader *shd, char *uni);
  *
  * @shd: Pointer to the shader
  */
-FH_API void fh_shd_show_attrib(struct fh_shader *shd);
+WT_API void wt_shd_show_attrib(struct wt_shader *shd);
 #endif
 
-#endif /* _FH_GRAPHIC_RESOURCES_SHADER_H */
+#endif /* _WT_GRAPHIC_RESOURCES_SHADER_H */

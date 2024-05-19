@@ -1,9 +1,9 @@
-#ifndef _FH_CORE_DEFINE_H
-#define _FH_CORE_DEFINE_H
+#ifndef _WT_CORE_DEFINE_H
+#define _WT_CORE_DEFINE_H
 
-#define FH_API 			extern
-#define FH_INTERN		static
-#define FH_XMOD			extern
+#define WT_API 			extern
+#define WT_INTERN		static
+#define WT_XMOD			extern
 
 #ifndef __SHORT_DATATYPES
 #define __SHORT_DATATYPES
@@ -65,4 +65,4 @@ typedef double                 f64;
 
 #endif /* __SHORT_DATATYPES */
 
-#endif /* _FH_CORE_DEFINE_H */
+#endif /* _WT_CORE_DEFINE_H */

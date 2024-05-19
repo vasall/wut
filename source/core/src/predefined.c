@@ -1,8 +1,8 @@
 #include "core/inc/predefined.h"
 
 
-const u8 fh_ps_num = 3;
-char *fh_ps_lst[3][3] = {
+const u8 wt_ps_num = 3;
+char *wt_ps_lst[3][3] = {
 	{"flat", "res/predef/shaders/flat.vert", "res/predef/shaders/flat.frag"},
 	{"ui", "res/predef/shaders/ui.vert", "res/predef/shaders/ui.frag"},
 	{"model", "res/predef/shaders/model.vert", "res/predef/shaders/model.frag"}
@@ -17,7 +17,7 @@ char *fh_ps_lst[3][3] = {
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
-char *fh_ps_shd_def_block_v = 
+char *wt_ps_shd_def_block_v = 
 "#version 420 core\n"
 "layout(location=0) in vec3 in_position;"
 "layout(location=1) in ivec3 in_index;"
@@ -102,7 +102,7 @@ char *fh_ps_shd_def_block_v =
 "	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
 "}";
 
-char *fh_ps_shd_def_block_f = 
+char *wt_ps_shd_def_block_f = 
 "#version 420 core\n"
 ""
 "flat in vec2    fs_frame;"
@@ -191,7 +191,7 @@ char *fh_ps_shd_def_block_f =
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
-char *fh_ps_shd_def_texture_v = 
+char *wt_ps_shd_def_texture_v = 
 "#version 420 core\n"
 "layout(location=0) in vec3 in_position;"
 "layout(location=1) in vec2 in_uv;"
@@ -236,7 +236,7 @@ char *fh_ps_shd_def_texture_v =
 "	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
 "}";
 
-char *fh_ps_shd_def_texture_f = 
+char *wt_ps_shd_def_texture_f = 
 "#version 420 core\n"
 ""
 "flat in vec2   fs_frame;"
@@ -288,7 +288,7 @@ char *fh_ps_shd_def_texture_f =
 */
 
 
-char *fh_ps_shd_def_text_v = "#version 420 core\n\
+char *wt_ps_shd_def_text_v = "#version 420 core\n\
 \n\
 layout(location=0) in vec3 in_pos;\n\
 layout(location=1) in vec2 in_uv;\n\
@@ -311,7 +311,7 @@ void main() {\n\
 }\n";
 
 
-char *fh_ps_shd_def_text_f = "#version 420 core\n\
+char *wt_ps_shd_def_text_f = "#version 420 core\n\
 \n\
 precision mediump float;\n\
 \n\
@@ -325,7 +325,7 @@ out vec4 color;\n\
 void main() {\n\
     float signed_distance = texture( ourTexture, fs_uv ).r;\
 \n\
-    if(signed_distance >= 0.50) {\
+    if(signed_distance >= 0.492) {\
         color.rgb = vec3(0, 0, 0);\
         color.a   = 1.0;\
     }\

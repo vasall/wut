@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-FH_API s8 fh_gl_init(void)
+WT_API s8 wt_gl_init(void)
 {
 	/* 
 	 * Request opengl 4.6 context.
@@ -27,7 +27,7 @@ FH_API s8 fh_gl_init(void)
 }
 
 
-FH_API void fh_gl_print_info(void)
+WT_API void wt_gl_print_info(void)
 {
 	const unsigned char *ver;
 	const unsigned char *vendor;

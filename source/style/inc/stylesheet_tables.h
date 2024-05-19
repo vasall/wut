@@ -1,5 +1,5 @@
-#ifndef _FH_STYLE_STYLESHEET_TABLES_H
-#define _FH_STYLE_STYLESHEET_TABLES_H
+#ifndef _WT_STYLE_STYLESHEET_TABLES_H
+#define _WT_STYLE_STYLESHEET_TABLES_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -11,47 +11,47 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-#define FH_SHEET_ATTRIBS	33
+#define WT_SHEET_ATTRIBS	33
 
-FH_XMOD const struct fh_sheet_attr fh_c_sheet_attribs[FH_SHEET_ATTRIBS];
+WT_XMOD const struct wt_sheet_attr wt_c_sheet_attribs[WT_SHEET_ATTRIBS];
 
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-struct fh_sheet_id_entry {
+struct wt_sheet_id_entry {
 	u8 				hash;
-	enum fh_sheet_id 		id;
+	enum wt_sheet_id 		id;
 };
 
 
-struct fh_sheet_id_table {
-	struct fh_sheet_id_entry 	*entries;
+struct wt_sheet_id_table {
+	struct wt_sheet_id_entry 	*entries;
 	u8 				number;
 };
 
-#define FH_SHEET_ROWS		8
+#define WT_SHEET_ROWS		8
 
-FH_XMOD const struct fh_sheet_id_table fh_c_sheet_ids[FH_SHEET_ROWS];
+WT_XMOD const struct wt_sheet_id_table wt_c_sheet_ids[WT_SHEET_ROWS];
 
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-struct fh_sheet_kw {
+struct wt_sheet_kw {
 	char 	*string;
 	u8 	value;
 };
 
-struct fh_sheet_kw_table {
-	struct fh_sheet_kw 	*entries;
+struct wt_sheet_kw_table {
+	struct wt_sheet_kw 	*entries;
 	u8 			number;
 };
 
-#define FH_SHEET_KW_ROWS	10
+#define WT_SHEET_KW_ROWS	10
 
-FH_XMOD const struct fh_sheet_kw_table fh_c_sheet_keywords[FH_SHEET_KW_ROWS];
+WT_XMOD const struct wt_sheet_kw_table wt_c_sheet_keywords[WT_SHEET_KW_ROWS];
 
-#endif /* _FH_STYLE_STYLESHEET_TABLES_H */
+#endif /* _WT_STYLE_STYLESHEET_TABLES_H */

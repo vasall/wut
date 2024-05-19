@@ -1,7 +1,7 @@
-#ifndef _FH_DOCUMENT_ELEMENT_H
-#define _FH_DOCUMENT_ELEMENT_H
+#ifndef _WT_DOCUMENT_ELEMENT_H
+#define _WT_DOCUMENT_ELEMENT_H
 
-struct fh_element;
+struct wt_element;
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -14,32 +14,32 @@ struct fh_element;
 #include "event/inc/event_listener.h"
 
 
-#define FH_ELEMENT_NAME_LIM	126
-#define FH_ELEMENT_CHILDREN_LIM	126
+#define WT_ELEMENT_NAME_LIM	126
+#define WT_ELEMENT_CHILDREN_LIM	126
 
-#define FH_ELEMENT_F_VISIBLE	(1<<0)
-#define FH_ELEMENT_F_HOVERED	(1<<1)
-#define FH_ELEMENT_F_SELECTED	(1<<2)
+#define WT_ELEMENT_F_VISIBLE	(1<<0)
+#define WT_ELEMENT_F_HOVERED	(1<<1)
+#define WT_ELEMENT_F_SELECTED	(1<<2)
 
 
 
-enum fh_element_type {
-	FH_BODY		= 0,
-	FH_BLOCK	= 1,
-	FH_TEXT		= 2,
-	FH_BUTTON	= 3,
-	FH_INPUT	= 4,
-	FH_IMAGE	= 5,
-	FH_VIEW		= 6,
-	FH_CUSTOM	= 7
+enum wt_element_type {
+	WT_BODY		= 0,
+	WT_BLOCK	= 1,
+	WT_TEXT		= 2,
+	WT_BUTTON	= 3,
+	WT_INPUT	= 4,
+	WT_IMAGE	= 5,
+	WT_VIEW		= 6,
+	WT_CUSTOM	= 7
 };
 
 
-struct fh_element {
-	fh_identity_t identity;
+struct wt_element {
+	wt_identity_t identity;
 
 	/* The name of the element */
-	char name[FH_ELEMENT_NAME_LIM];
+	char name[WT_ELEMENT_NAME_LIM];
 
 	/* The unique identifier for this element */
 	u32 id;
@@ -48,33 +48,33 @@ struct fh_element {
 	u32 layer;
 
 	/* A pointer to the document this element is part of */
-	struct fh_document *document;
+	struct wt_document *document;
 
 	/* A pointer to the body element */
-	struct fh_element *body;
+	struct wt_element *body;
 
 	/* The parent element, this element is attached to */
-	struct fh_element *parent;
+	struct wt_element *parent;
 
 	/* A pointer to the next child in the elements children list */
-	struct fh_element *older_sibling;
-	struct fh_element *younger_sibling;
+	struct wt_element *older_sibling;
+	struct wt_element *younger_sibling;
 
 	/* The slot of the element in the parent children list */
 	s8 slot;
 
 	/* The children that are attached to this element */
 	u8 children_num;
-	struct fh_element *firstborn;
+	struct wt_element *firstborn;
 
 	/* The type of element */
-	enum fh_element_type type;
+	enum wt_element_type type;
 
 	/* The style structure for this element */
-	struct fh_style style;
+	struct wt_style style;
 
 	/* The widget used by the element */
-	struct fh_widget *widget;
+	struct wt_widget *widget;
 
 	/*
 	 * General info flags for this element, like visiblity and scrollbars.
@@ -85,7 +85,7 @@ struct fh_element {
 	 * The relative position in the reference-area dictated by the
 	 * layout mode of the parent.
 	 */
-	struct fh_sin2	layout_offset;
+	struct wt_sin2	layout_offset;
 
 	/* 
 	 * The relative offset of the upper-left corner of the parents bounding
@@ -93,7 +93,7 @@ struct fh_element {
 	 * bounding box will be located in. This includes the parents padding,
 	 * parent scrolling and this elements layout offset. 
 	 */
-	struct fh_sin2	relative_offset;
+	struct wt_sin2	relative_offset;
 
 	/*
 	 * The absolute offset from the upper-left corner of the window to the
@@ -101,16 +101,16 @@ struct fh_element {
 	 * will be located in. This is calculated by the absolute offset of the
 	 * parent element plus the relative offset of this element.
 	 */
-	struct fh_sin2	absolute_offset;
+	struct wt_sin2	absolute_offset;
 
 
 	/*
 	 * The absolute rectangles of the element in the window.
 	 */
-	struct fh_rect	bounding_rect;
-	struct fh_rect	element_rect;	/* -Spacing */
-	struct fh_rect  inner_rect;	/* -Spacing, -Border */
-	struct fh_rect	content_rect;	/* -Spacing, -Border, -Padding */
+	struct wt_rect	bounding_rect;
+	struct wt_rect	element_rect;	/* -Spacing */
+	struct wt_rect  inner_rect;	/* -Spacing, -Border */
+	struct wt_rect	content_rect;	/* -Spacing, -Border, -Padding */
 
 	
 
@@ -119,37 +119,37 @@ struct fh_element {
 	 * and size of the element in the window and specifies how the element
 	 * will be drawn on the screen.
 	 */
-	struct fh_rect	output_rect;
+	struct wt_rect	output_rect;
 
 	/*
 	 * This rectangle defines the size and offset of the visible part of
 	 * this element for input. This will be used to calculate the UV-coords
 	 * for input images.
 	 */
-	struct fh_rect visible_in_rect;
+	struct wt_rect visible_in_rect;
 
 	/*
 	 * This rectangle defines the absolute position and size of the visible
 	 * part of this element in the window.
 	 */
-	struct fh_rect	visible_out_rect;
+	struct wt_rect	visible_out_rect;
 
 
 	/* These properties are used for scrolling */
-	struct fh_sin2 	content_size;
-	struct fh_sin2	content_offset;
+	struct wt_sin2 	content_size;
+	struct wt_sin2	content_offset;
 
 	/* This flag indicates which scrollbars to render */
 	s32 scrollbar_flags;
 
 
-	struct fh_event_handler *event_handler;
+	struct wt_event_handler *event_handler;
 };
 
 /*
  * The default callback function for all higher-level-function in relation with
  * elements.
  */
-typedef s8 (*fh_ele_cfnc)(struct fh_element *, void *);
+typedef s8 (*wt_ele_cfnc)(struct wt_element *, void *);
 
-#endif /* _FH_DOCUMENT_ELEMENT_H */
+#endif /* _WT_DOCUMENT_ELEMENT_H */

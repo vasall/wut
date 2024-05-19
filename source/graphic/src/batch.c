@@ -9,7 +9,7 @@
 #include "core/inc/predefined.h"
 
 
-FH_INTERN size_t batch_sizeof_GLenum(GLenum type)
+WT_INTERN size_t batch_sizeof_GLenum(GLenum type)
 {
 	switch(type) {
 		case GL_BYTE:
@@ -37,52 +37,52 @@ FH_INTERN size_t batch_sizeof_GLenum(GLenum type)
 }
 
 
-FH_INTERN size_t batch_sizeof_UniformType(enum fh_uniform_type type)
+WT_INTERN size_t batch_sizeof_UniformType(enum wt_uniform_type type)
 {
 	switch(type) {
-		case FH_UNIFORM_1F: return sizeof(GLfloat);
-		case FH_UNIFORM_2F: return 2*sizeof(GLfloat);
-		case FH_UNIFORM_3F: return 3*sizeof(GLfloat);
-		case FH_UNIFORM_4F: return 4*sizeof(GLfloat);
+		case WT_UNIFORM_1F: return sizeof(GLfloat);
+		case WT_UNIFORM_2F: return 2*sizeof(GLfloat);
+		case WT_UNIFORM_3F: return 3*sizeof(GLfloat);
+		case WT_UNIFORM_4F: return 4*sizeof(GLfloat);
 
-		case FH_UNIFORM_1I: return sizeof(GLint);
-		case FH_UNIFORM_2I: return 2*sizeof(GLint);
-		case FH_UNIFORM_3I: return 3*sizeof(GLint);
-		case FH_UNIFORM_4I: return 4*sizeof(GLint);
+		case WT_UNIFORM_1I: return sizeof(GLint);
+		case WT_UNIFORM_2I: return 2*sizeof(GLint);
+		case WT_UNIFORM_3I: return 3*sizeof(GLint);
+		case WT_UNIFORM_4I: return 4*sizeof(GLint);
 
-		case FH_UNIFORM_1UI: return sizeof(GLuint);
-		case FH_UNIFORM_2UI: return 2*sizeof(GLuint);
-		case FH_UNIFORM_3UI: return 3*sizeof(GLuint);
-		case FH_UNIFORM_4UI: return 4*sizeof(GLuint);
+		case WT_UNIFORM_1UI: return sizeof(GLuint);
+		case WT_UNIFORM_2UI: return 2*sizeof(GLuint);
+		case WT_UNIFORM_3UI: return 3*sizeof(GLuint);
+		case WT_UNIFORM_4UI: return 4*sizeof(GLuint);
 
-		case FH_UNIFORM_1FV: return sizeof(GLfloat);
-		case FH_UNIFORM_2FV: return 2*sizeof(GLfloat);
-		case FH_UNIFORM_3FV: return 3*sizeof(GLfloat);
-		case FH_UNIFORM_4FV: return 4*sizeof(GLfloat);
+		case WT_UNIFORM_1FV: return sizeof(GLfloat);
+		case WT_UNIFORM_2FV: return 2*sizeof(GLfloat);
+		case WT_UNIFORM_3FV: return 3*sizeof(GLfloat);
+		case WT_UNIFORM_4FV: return 4*sizeof(GLfloat);
 
-		case FH_UNIFORM_1IV: return sizeof(GLint);
-		case FH_UNIFORM_2IV: return 2*sizeof(GLint);
-		case FH_UNIFORM_3IV: return 3*sizeof(GLint);
-		case FH_UNIFORM_4IV: return 4*sizeof(GLint);
+		case WT_UNIFORM_1IV: return sizeof(GLint);
+		case WT_UNIFORM_2IV: return 2*sizeof(GLint);
+		case WT_UNIFORM_3IV: return 3*sizeof(GLint);
+		case WT_UNIFORM_4IV: return 4*sizeof(GLint);
 
-		case FH_UNIFORM_1UIV: return sizeof(GLuint);
-		case FH_UNIFORM_2UIV: return 2*sizeof(GLuint);
-		case FH_UNIFORM_3UIV: return 3*sizeof(GLuint);
-		case FH_UNIFORM_4UIV: return 4*sizeof(GLuint);
+		case WT_UNIFORM_1UIV: return sizeof(GLuint);
+		case WT_UNIFORM_2UIV: return 2*sizeof(GLuint);
+		case WT_UNIFORM_3UIV: return 3*sizeof(GLuint);
+		case WT_UNIFORM_4UIV: return 4*sizeof(GLuint);
 
-		case FH_UNIFORM_M2FV: return 4*sizeof(GLfloat);
-		case FH_UNIFORM_M3FV: return 9*sizeof(GLfloat);
-		case FH_UNIFORM_M4FV: return 16*sizeof(GLfloat);
+		case WT_UNIFORM_M2FV: return 4*sizeof(GLfloat);
+		case WT_UNIFORM_M3FV: return 9*sizeof(GLfloat);
+		case WT_UNIFORM_M4FV: return 16*sizeof(GLfloat);
 	}
 
 	return 0;
 }
 
-FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
+WT_INTERN void batch_write_uniform(struct wt_uniform *uniform)
 {
 	u32 count;
 
-	if(uniform->flags & FH_UNIFORM_F_ALL) {
+	if(uniform->flags & WT_UNIFORM_F_ALL) {
 		count = uniform->limit;
 	}
 	else {
@@ -91,22 +91,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 
 
 	switch(uniform->type) {
-		case FH_UNIFORM_1F:
+		case WT_UNIFORM_1F:
 			glUniform1f(uniform->slot, 
 					((GLfloat *)uniform->data)[0]);
 			return;
-		case FH_UNIFORM_2F:
+		case WT_UNIFORM_2F:
 			glUniform2f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1]);
 			return;
-		case FH_UNIFORM_3F:
+		case WT_UNIFORM_3F:
 			glUniform3f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1],
 					((GLfloat *)uniform->data)[2]);
 			return;
-		case FH_UNIFORM_4F:
+		case WT_UNIFORM_4F:
 			glUniform4f(uniform->slot, 
 					((GLfloat *)uniform->data)[0],
 					((GLfloat *)uniform->data)[1],
@@ -114,22 +114,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 					((GLfloat *)uniform->data)[3]);
 			return;
 
-		case FH_UNIFORM_1I:
+		case WT_UNIFORM_1I:
 			glUniform1i(uniform->slot, 
 					((GLint *)uniform->data)[0]);
 			return;
-		case FH_UNIFORM_2I:
+		case WT_UNIFORM_2I:
 			glUniform2i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1]);
 			return;
-		case FH_UNIFORM_3I:
+		case WT_UNIFORM_3I:
 			glUniform3i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1],
 					((GLint *)uniform->data)[2]);
 			return;
-		case FH_UNIFORM_4I:
+		case WT_UNIFORM_4I:
 			glUniform4i(uniform->slot, 
 					((GLint *)uniform->data)[0],
 					((GLint *)uniform->data)[1],
@@ -137,22 +137,22 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 					((GLint *)uniform->data)[3]);
 			return;
 
-		case FH_UNIFORM_1UI:
+		case WT_UNIFORM_1UI:
 			glUniform1ui(uniform->slot, 
 					((GLuint *)uniform->data)[0]);
 			return;
-		case FH_UNIFORM_2UI:
+		case WT_UNIFORM_2UI:
 			glUniform2ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1]);
 			return;
-		case FH_UNIFORM_3UI:
+		case WT_UNIFORM_3UI:
 			glUniform3ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1],
 					((GLuint *)uniform->data)[2]);
 			return;
-		case FH_UNIFORM_4UI:
+		case WT_UNIFORM_4UI:
 			glUniform4ui(uniform->slot, 
 					((GLuint *)uniform->data)[0],
 					((GLuint *)uniform->data)[1],
@@ -160,66 +160,66 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
 					((GLuint *)uniform->data)[3]);
 			return;
 
-		case FH_UNIFORM_1FV:
+		case WT_UNIFORM_1FV:
 			glUniform1fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
-		case FH_UNIFORM_2FV:
+		case WT_UNIFORM_2FV:
 			glUniform2fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
-		case FH_UNIFORM_3FV:
+		case WT_UNIFORM_3FV:
 			glUniform3fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
-		case FH_UNIFORM_4FV:
+		case WT_UNIFORM_4FV:
 			glUniform4fv(uniform->slot,
 					count, (GLfloat *)uniform->data);
 			return;
 
-		case FH_UNIFORM_1IV:
+		case WT_UNIFORM_1IV:
 			glUniform1iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
-		case FH_UNIFORM_2IV:
+		case WT_UNIFORM_2IV:
 			glUniform2iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
-		case FH_UNIFORM_3IV:
+		case WT_UNIFORM_3IV:
 			glUniform3iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
-		case FH_UNIFORM_4IV:
+		case WT_UNIFORM_4IV:
 			glUniform4iv(uniform->slot,
 					count, (GLint *)uniform->data);
 			return;
 
-		case FH_UNIFORM_1UIV:
+		case WT_UNIFORM_1UIV:
 			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
-		case FH_UNIFORM_2UIV:
+		case WT_UNIFORM_2UIV:
 			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
-		case FH_UNIFORM_3UIV:
+		case WT_UNIFORM_3UIV:
 			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
-		case FH_UNIFORM_4UIV:
+		case WT_UNIFORM_4UIV:
 			glUniform1uiv(uniform->slot,
 					count, (GLuint *)uniform->data);
 			return;
 
-		case FH_UNIFORM_M2FV:
+		case WT_UNIFORM_M2FV:
 			glUniformMatrix2fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
-		case FH_UNIFORM_M3FV:
+		case WT_UNIFORM_M3FV:
 			glUniformMatrix3fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
-		case FH_UNIFORM_M4FV:
+		case WT_UNIFORM_M4FV:
 			glUniformMatrix4fv(uniform->slot, count,
 					GL_FALSE, (GLfloat *)uniform->data);
 			return;
@@ -235,20 +235,20 @@ FH_INTERN void batch_write_uniform(struct fh_uniform *uniform)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
-		struct fh_texture *tex, s32 attribnum,
-		struct fh_vertex_attrib *attribs, s32 vtx_cap,
-		s32 idx_cap, s32 uninum, struct fh_uniform_temp *unis,
-		fh_batch_cfnc pre, void *pre_data)
+WT_API struct wt_batch *wt_batch_create(struct wt_shader *shd,
+		struct wt_texture *tex, s32 attribnum,
+		struct wt_vertex_attrib *attribs, s32 vtx_cap,
+		s32 idx_cap, s32 uninum, struct wt_uniform_temp *unis,
+		wt_batch_cfnc pre, void *pre_data)
 {
-	struct fh_batch *ren;
+	struct wt_batch *ren;
 
 	s32 vsize;
 	s32 i;
 
 	s32 offset;
 
-	ren = malloc(sizeof(struct fh_batch));
+	ren = malloc(sizeof(struct wt_batch));
 
 	/* calculate the size of a single vertex */
 	vsize = 0;
@@ -308,8 +308,8 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 	ren->vertex_size = vsize;
 	ren->vertex_count = 0;
 	ren->vertex_capacity = vtx_cap;
-	if(!(ren->vertices = fh_malloc(vsize * vtx_cap))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for vertices");
+	if(!(ren->vertices = wt_malloc(vsize * vtx_cap))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for vertices");
 		goto err_delete_buffers;
 	}
 
@@ -317,8 +317,8 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 	/* Initialize and configure index data */
 	ren->index_capacity = idx_cap;
 	ren->index_count = 0;
-	if(!(ren->indices = fh_malloc(U32_S * idx_cap))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for indices");
+	if(!(ren->indices = wt_malloc(U32_S * idx_cap))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for indices");
 		goto err_free_vertices;
 	}
 
@@ -327,8 +327,8 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 	ren->texture = tex;
 
 	if(uninum > 0) {
-		if(!(ren->uniforms = fh_malloc(uninum * sizeof(struct fh_uniform)))) {
-			FH_ALARM(FH_ERROR, "Failed to allocate mem for uniforms");
+		if(!(ren->uniforms = wt_malloc(uninum * sizeof(struct wt_uniform)))) {
+			WT_ALARM(WT_ERROR, "Failed to allocate mem for uniforms");
 			goto err_free_indices;
 		}
 
@@ -339,7 +339,7 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 			ren->uniforms[i].size = batch_sizeof_UniformType(unis[i].type);
 			ren->uniforms[i].number = 0;
 			ren->uniforms[i].limit = unis[i].limit;
-			if(!(ren->uniforms[i].data = fh_malloc(ren->uniforms[i].size * unis[i].limit))) {
+			if(!(ren->uniforms[i].data = wt_malloc(ren->uniforms[i].size * unis[i].limit))) {
 				goto err_free_uniforms;
 			}
 			ren->uniforms[i].flags = unis[i].flags;
@@ -355,15 +355,15 @@ FH_API struct fh_batch *fh_batch_create(struct fh_shader *shd,
 
 err_free_uniforms:
 	for(i = i - 1; i >= 0; i--) {
-		fh_free(ren->uniforms[i].data);
+		wt_free(ren->uniforms[i].data);
 	}
-	fh_free(ren->uniforms);
+	wt_free(ren->uniforms);
 
 err_free_indices:
-	fh_free(ren->indices);
+	wt_free(ren->indices);
 
 err_free_vertices:
-	fh_free(ren->vertices);
+	wt_free(ren->vertices);
 
 err_delete_buffers:
 	glDeleteBuffers(1, &ren->ibo);
@@ -374,7 +374,7 @@ err_delete_buffers:
 }
 
 
-FH_API void fh_batch_destroy(struct fh_batch *ren)
+WT_API void wt_batch_destroy(struct wt_batch *ren)
 {
 	s32 i;
 
@@ -382,13 +382,13 @@ FH_API void fh_batch_destroy(struct fh_batch *ren)
 
 	if(ren->uniform_count > 0) {
 		for(i = ren->uniform_count - 1; i >= 0; i--) {
-			fh_free(ren->uniforms[i].data);
+			wt_free(ren->uniforms[i].data);
 		}
-		fh_free(ren->uniforms);
+		wt_free(ren->uniforms);
 	}
 
-	fh_free(ren->indices);
-	fh_free(ren->vertices);
+	wt_free(ren->indices);
+	wt_free(ren->vertices);
 
 	glDeleteBuffers(1, &ren->ibo);
 	glDeleteBuffers(1, &ren->vbo);
@@ -396,7 +396,7 @@ FH_API void fh_batch_destroy(struct fh_batch *ren)
 }
 
 
-FH_API s32 fh_batch_push_vertex(struct fh_batch *ren, void *ptr)
+WT_API s32 wt_batch_push_vertex(struct wt_batch *ren, void *ptr)
 {
 	s32 offset = ren->vertex_size * ren->vertex_count;
 
@@ -410,7 +410,7 @@ FH_API s32 fh_batch_push_vertex(struct fh_batch *ren, void *ptr)
 	return (ren->vertex_count-1);
 }
 
-FH_API s32 fh_batch_push_index(struct fh_batch *ren, u32 idx)
+WT_API s32 wt_batch_push_index(struct wt_batch *ren, u32 idx)
 {
 	if(ren->index_count >= ren->index_capacity) {
 		return -1;
@@ -422,7 +422,7 @@ FH_API s32 fh_batch_push_index(struct fh_batch *ren, u32 idx)
 	return (ren->index_count - 1);
 }
 
-FH_API s32 fh_batch_push_uniform(struct fh_batch *ren, s32 index, void *ptr)
+WT_API s32 wt_batch_push_uniform(struct wt_batch *ren, s32 index, void *ptr)
 {
 	s32 offset = ren->uniforms[index].size * ren->uniforms[index].number;
 
@@ -432,13 +432,13 @@ FH_API s32 fh_batch_push_uniform(struct fh_batch *ren, s32 index, void *ptr)
 	return (ren->uniforms[index].number - 1);
 }
 
-FH_API void fh_batch_reset_uniform(struct fh_batch *ren, s32 index)
+WT_API void wt_batch_reset_uniform(struct wt_batch *ren, s32 index)
 {
 	ren->uniforms[index].number = 0;
 }
 
 
-FH_API void fh_batch_flush(struct fh_batch *ren)
+WT_API void wt_batch_flush(struct wt_batch *ren)
 {
 	s32 i;
 
@@ -451,10 +451,10 @@ FH_API void fh_batch_flush(struct fh_batch *ren)
 	}
 
 	/* Activate the relevant shader */
-	fh_UseShader(ren->shader);
+	wt_UseShader(ren->shader);
 
 	/* Activate the relevant shader */
-	fh_UseTexture(ren->texture);
+	wt_UseTexture(ren->texture);
 
 	/* Pass the uniform view matrix onto the shader */
 	for(i = 0; i < ren->uniform_count; i++) {
@@ -481,8 +481,8 @@ FH_API void fh_batch_flush(struct fh_batch *ren)
 	ren->index_count = 0;
 
 	for(i = 0; i < ren->uniform_count; i++) {
-		if(ren->uniforms[i].flags & FH_UNIFORM_F_CLEANUP) {
-			fh_batch_reset_uniform(ren, i);
+		if(ren->uniforms[i].flags & WT_UNIFORM_F_CLEANUP) {
+			wt_batch_reset_uniform(ren, i);
 		}
 	}
 }

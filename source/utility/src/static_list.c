@@ -9,26 +9,26 @@
 #include <string.h>
 
 
-FH_API struct fh_statlist *fh_statlist_create(s16 size, s16 alloc)
+WT_API struct wt_statlist *wt_statlist_create(s16 size, s16 alloc)
 {
-	struct fh_statlist *lst;
+	struct wt_statlist *lst;
 
 	if(size < 1 || alloc < 1) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
-	if(!(lst = malloc(sizeof(struct fh_statlist)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for list");
+	if(!(lst = malloc(sizeof(struct wt_statlist)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for list");
 		return NULL;
 	}
 
-	if(!(lst->mask = fh_calloc(alloc))) {
+	if(!(lst->mask = wt_calloc(alloc))) {
 		goto err_free_lst;
 	}
 
-	if(!(lst->data = fh_malloc(size * alloc))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for list data");
+	if(!(lst->data = wt_malloc(size * alloc))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for list data");
 		goto err_free_mask;
 	}
 
@@ -39,32 +39,32 @@ FH_API struct fh_statlist *fh_statlist_create(s16 size, s16 alloc)
 	return lst;
 
 err_free_lst:
-	fh_free(lst);
+	wt_free(lst);
 
 err_free_mask:
-	fh_free(lst->mask);
+	wt_free(lst->mask);
 
 	return NULL;
 }
 
 
-FH_API void fh_statlist_destroy(struct fh_statlist *lst)
+WT_API void wt_statlist_destroy(struct wt_statlist *lst)
 {
 	if(!lst) return;
 
-	fh_free(lst->data);
-	fh_free(lst->mask);
-	fh_free(lst);
+	wt_free(lst->data);
+	wt_free(lst->mask);
+	wt_free(lst);
 }
 
 
-FH_API s16 fh_statlist_add(struct fh_statlist *lst, void *inp)
+WT_API s16 wt_statlist_add(struct wt_statlist *lst, void *inp)
 {
 	s32 off;
 	s16 i;
 
 	if(!lst || !inp) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -87,7 +87,7 @@ FH_API s16 fh_statlist_add(struct fh_statlist *lst, void *inp)
 }
 
 
-FH_API void fh_statlist_rmv(struct fh_statlist *lst, s16 idx)
+WT_API void wt_statlist_rmv(struct wt_statlist *lst, s16 idx)
 {
 	if(!lst || idx < 0 || idx >= lst->alloc)
 		return;
@@ -97,12 +97,12 @@ FH_API void fh_statlist_rmv(struct fh_statlist *lst, s16 idx)
 }
 
 
-FH_API s8 fh_statlist_get(struct fh_statlist *lst, s16 idx, void *out)
+WT_API s8 wt_statlist_get(struct wt_statlist *lst, s16 idx, void *out)
 {
 	s32 off;
 
 	if(!lst || !out) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -119,12 +119,12 @@ FH_API s8 fh_statlist_get(struct fh_statlist *lst, s16 idx, void *out)
 }
 
 
-FH_API s8 fh_statlist_apply(struct fh_statlist *lst, fh_statlist_fnc_t fnc, void *p)
+WT_API s8 wt_statlist_apply(struct wt_statlist *lst, wt_statlist_fnc_t fnc, void *p)
 {
 	u16 i;
 
 	if(!lst || !fnc) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 

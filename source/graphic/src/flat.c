@@ -4,11 +4,11 @@
 
 #include "system/inc/system.h"
 
-FH_INTERN void flat_mod(struct fh_flat *f, s32 x, s32 y,
-		struct fh_color col)
+WT_INTERN void flat_mod(struct wt_flat *f, s32 x, s32 y,
+		struct wt_color col)
 {
-	struct fh_color px;
-	struct fh_color swap;
+	struct wt_color px;
+	struct wt_color swap;
 	u32 off;
 
 
@@ -19,16 +19,16 @@ FH_INTERN void flat_mod(struct fh_flat *f, s32 x, s32 y,
 	off = ((f->height - 1 - y) * f->width) + x;
 
 	px = f->pixels[off];
-	swap = fh_BlendColor(px, col);
-	f->pixels[off] = fh_col_invform(swap);
+	swap = wt_BlendColor(px, col);
+	f->pixels[off] = wt_col_invform(swap);
 
 }
 
 
-FH_INTERN void flat_set(struct fh_flat *f, s32 x, s32 y,
-		struct fh_color col)
+WT_INTERN void flat_set(struct wt_flat *f, s32 x, s32 y,
+		struct wt_color col)
 {
-	struct fh_color *px;
+	struct wt_color *px;
 	u32 off;
 
 	if(y > f->height) {
@@ -38,7 +38,7 @@ FH_INTERN void flat_set(struct fh_flat *f, s32 x, s32 y,
 	off = ((f->height - 1 - y) * f->width) + x;
 
 	px = &f->pixels[off];
-	*px = fh_col_invform(col);
+	*px = wt_col_invform(col);
 
 }
 
@@ -51,22 +51,22 @@ FH_INTERN void flat_set(struct fh_flat *f, s32 x, s32 y,
  */
 
 
-FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, s16 h)
+WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name, s16 w, s16 h)
 {
 	u32 i;
 
-	struct fh_flat *f;
+	struct wt_flat *f;
 	u32 size;
 
-	struct fh_color *px;
+	struct wt_color *px;
 		
 	if(!ctx || !name || w < 1 || h < 1) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(f = fh_malloc(sizeof(struct fh_flat)))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for flat struct");
+	if(!(f = wt_malloc(sizeof(struct wt_flat)))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for flat struct");
 		goto err_return;
 	}
 
@@ -77,9 +77,9 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 	f->context = ctx;
 
 	/* Allocate memory for pixels */
-	size = w * h * sizeof(struct fh_color);
-	if(!(f->pixels = fh_malloc(size))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate pixel data buffer");
+	size = w * h * sizeof(struct wt_color);
+	if(!(f->pixels = wt_malloc(size))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate pixel data buffer");
 		goto err_free_f;
 	}
 
@@ -95,8 +95,8 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 	}
 
 	/* Create a texture to put the flat struct onto */
-	if(!(f->texture = fh_CreateTexture(ctx, name, w, h, GL_RGBA, (u8 *)f->pixels))) {
-		FH_ALARM(FH_ERROR, "Failed to create tetxure for flat");
+	if(!(f->texture = wt_CreateTexture(ctx, name, w, h, GL_RGBA, (u8 *)f->pixels))) {
+		WT_ALARM(WT_ERROR, "Failed to create tetxure for flat");
 		goto err_free_pixels;
 	}
 
@@ -104,45 +104,45 @@ FH_API struct fh_flat *fh_CreateFlat(struct fh_context *ctx, char *name, s16 w, 
 
 
 err_free_pixels:
-	fh_free(f->pixels);
+	wt_free(f->pixels);
 
 err_free_f:
-	fh_free(f);
+	wt_free(f);
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to create flat structure");
+	WT_ALARM(WT_ERROR, "Failed to create flat structure");
 	return NULL;
 }
 
 
-FH_API void fh_DestroyFlat(struct fh_flat *f)
+WT_API void wt_DestroyFlat(struct wt_flat *f)
 {
 	if(!f)
 		return;
 
-	fh_RemoveTexture(f->texture);
-	fh_free(f->pixels);
-	fh_free(f);
+	wt_RemoveTexture(f->texture);
+	wt_free(f->pixels);
+	wt_free(f);
 }
 
 
-FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
+WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h)
 {
 	void *p;
 	u32 size;
 	u32 i;
 
 	if(!f) {
-		FH_ALARM(FH_ERROR, "Input parameters invalid");
+		WT_ALARM(WT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/*
 	 * Reallocate memory for new pixel data.
 	 */
-	size = w * h * sizeof(struct fh_color); 
-	if(!(p = fh_realloc(f->pixels, size))) {
-		FH_ALARM(FH_ERROR, "Failed to reallocate memory");
+	size = w * h * sizeof(struct wt_color); 
+	if(!(p = wt_realloc(f->pixels, size))) {
+		WT_ALARM(WT_ERROR, "Failed to reallocate memory");
 		goto err_return;
 	}
 
@@ -150,7 +150,7 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 
 	size = w * h;
 	for(i = 0; i < size; i++) {
-		struct fh_color *px = &f->pixels[i];
+		struct wt_color *px = &f->pixels[i];
 
 		px->r = 0xff;
 		px->g = 0xff;
@@ -162,7 +162,7 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 	/*
 	 * Update the OpenGL texture.
 	 */
-	if(fh_ResizeTexture(f->texture, w, h, (u8 *)f->pixels) < 0) 
+	if(wt_ResizeTexture(f->texture, w, h, (u8 *)f->pixels) < 0) 
 		goto err_return;
 
 	/*
@@ -172,14 +172,14 @@ FH_API s8 fh_ResizeFlat(struct fh_flat *f, s16 w, s16 h)
 	f->height = h;
 
 err_return:
-	FH_ALARM(FH_ERROR, "Failed to resize flat struct");
+	WT_ALARM(WT_ERROR, "Failed to resize flat struct");
 	return -1;
 }
 
 
-FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
+WT_API void wt_UpdateFlat(struct wt_flat *f, struct wt_rect *r)
 {
-	struct fh_color *swap;	
+	struct wt_color *swap;	
 	u32 size;
 	s16 x;
 	s16 y;
@@ -192,7 +192,7 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 	s32 off_y;
 
 	if(!f || !r) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -200,9 +200,9 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 	lim_x = (r->x + r->w > f->width) ? f->width - r->x : r->w;
 	lim_y = (r->y + r->h > f->height) ? f->height - r->y : r->h;
 
-	size = lim_x * lim_y * FH_COLOR_SIZE; 
-	if(!(swap = fh_malloc(size))) {
-		FH_ALARM(FH_ERROR, "Failed to allocate memory for swap buffer");
+	size = lim_x * lim_y * WT_COLOR_SIZE; 
+	if(!(swap = wt_malloc(size))) {
+		WT_ALARM(WT_ERROR, "Failed to allocate memory for swap buffer");
 		return;
 	}
 
@@ -218,19 +218,19 @@ FH_API void fh_UpdateFlat(struct fh_flat *f, struct fh_rect *r)
 		}
 	}
 
-	fh_SetTexture(f->texture, r->x, r->y, lim_x, lim_y, (u8 *)swap);
+	wt_SetTexture(f->texture, r->x, r->y, lim_x, lim_y, (u8 *)swap);
 
-	fh_free(swap);
+	wt_free(swap);
 }
 
 
-FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
+WT_API void wt_FlatRect(struct wt_flat *f, struct wt_rect *r, struct wt_color c)
 {
 	s32 x;
 	s32 y;
 
 	if(!f) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -242,14 +242,14 @@ FH_API void fh_FlatRect(struct fh_flat *f, struct fh_rect *r, struct fh_color c)
 }
 
 
-FH_API void fh_FlatRectSet(struct fh_flat *f, struct fh_rect *r,
-		struct fh_color c)
+WT_API void wt_FlatRectSet(struct wt_flat *f, struct wt_rect *r,
+		struct wt_color c)
 {
 	s32 x;
 	s32 y;
 
 	if(!f) {
-		FH_ALARM(FH_WARNING, "Input parameters invalid");
+		WT_ALARM(WT_WARNING, "Input parameters invalid");
 		return;
 	}
 

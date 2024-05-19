@@ -1,16 +1,16 @@
-#ifndef _FH_UTILITY_TABLE_H
-#define _FH_UTILITY_TABLE_H
+#ifndef _WT_UTILITY_TABLE_H
+#define _WT_UTILITY_TABLE_H
 
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#define FH_TABLE_NAME_LIM	128
-#define FH_TABLE_ROWS		128
+#define WT_TABLE_NAME_LIM	128
+#define WT_TABLE_ROWS		128
 
-struct fh_table_entry {
+struct wt_table_entry {
 	/* The name of the entry */
-	char name[FH_TABLE_NAME_LIM];
+	char name[WT_TABLE_NAME_LIM];
 
 	/* The hash-value for this entry */
 	u64 hash;
@@ -22,17 +22,17 @@ struct fh_table_entry {
 	void *ptr;
 
 	/* References to the previous and next entry in the list */
-	struct fh_table_entry *next;
-	struct fh_table_entry *prev;
+	struct wt_table_entry *next;
+	struct wt_table_entry *prev;
 };
 
 
-struct fh_table {
+struct wt_table {
 	/* The total number of entries in the table */
 	u32 number;
 
 	/* The rows in the table */
-	struct fh_table_entry *rows[FH_TABLE_ROWS];
+	struct wt_table_entry *rows[WT_TABLE_ROWS];
 
 	/* The remove callback function */
 	void (*fnc)(u32 size, void *data);
@@ -40,9 +40,9 @@ struct fh_table {
 
 
 
-FH_API u64 fh_table_hash(char *str);
-FH_API s8 fh_table_find(struct fh_table *tbl, char *name,
-		struct fh_table_entry **ent);
+WT_API u64 wt_table_hash(char *str);
+WT_API s8 wt_table_find(struct wt_table *tbl, char *name,
+		struct wt_table_entry **ent);
 
 
 /*
@@ -54,7 +54,7 @@ FH_API s8 fh_table_find(struct fh_table *tbl, char *name,
  * Returns: Either a pointer to the newly created table or NULL if an error
  * 	    occurred
  */
-FH_API struct fh_table *fh_tbl_create(void (*fnc)(u32 size, void *ptr));
+WT_API struct wt_table *wt_tbl_create(void (*fnc)(u32 size, void *ptr));
 
 
 /*
@@ -63,7 +63,7 @@ FH_API struct fh_table *fh_tbl_create(void (*fnc)(u32 size, void *ptr));
  *
  * @tbl: Pointer to the table
  */
-FH_API void fh_tbl_destroy(struct fh_table *tbl);
+WT_API void wt_tbl_destroy(struct wt_table *tbl);
 
 
 /*
@@ -77,7 +77,7 @@ FH_API void fh_tbl_destroy(struct fh_table *tbl);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr);
+WT_API s8 wt_tbl_add(struct wt_table *tbl, char *name, u32 size, void **ptr);
 
 
 /*
@@ -86,7 +86,7 @@ FH_API s8 fh_tbl_add(struct fh_table *tbl, char *name, u32 size, void **ptr);
  * @tbl: Pointer to the table
  * @name: The name of the entry
  */
-FH_API void fh_tbl_rmv(struct fh_table *tbl, char *name);
+WT_API void wt_tbl_rmv(struct wt_table *tbl, char *name);
 
 
 /*
@@ -99,7 +99,7 @@ FH_API void fh_tbl_rmv(struct fh_table *tbl, char *name);
  *
  * Returns: 1 if entry has been found, 0 if not and -1 if an error occurred
  */
-FH_API s8 fh_tbl_get(struct fh_table *tbl, char *name, u32 *size, void **ptr);
+WT_API s8 wt_tbl_get(struct wt_table *tbl, char *name, u32 *size, void **ptr);
 
 
 /*
@@ -107,6 +107,6 @@ FH_API s8 fh_tbl_get(struct fh_table *tbl, char *name, u32 *size, void **ptr);
  *
  * @tbl: Pointer to the table
  */
-FH_API void fh_tbl_dump(struct fh_table *tbl);
+WT_API void wt_tbl_dump(struct wt_table *tbl);
 
-#endif /* _FH_UTILITY_TABLE_H */
+#endif /* _WT_UTILITY_TABLE_H */

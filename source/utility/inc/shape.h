@@ -1,27 +1,27 @@
-#ifndef _FH_UTILITY_SHAPE_H
-#define _FH_UTILITY_SHAPE_H
+#ifndef _WT_UTILITY_SHAPE_H
+#define _WT_UTILITY_SHAPE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct fh_sin2 {
+struct wt_sin2 {
 	s32 x;
 	s32 y;
 };
 
 
 
-#define FH_RECT_SIZE	(4*sizeof(s32))
+#define WT_RECT_SIZE	(4*sizeof(s32))
 
-struct fh_rect {
+struct wt_rect {
 	s32 x;
 	s32 y;
 	s32 w;
 	s32 h;
 };
 
-struct fh_rect_lim {
+struct wt_rect_lim {
 	s32 top;
 	s32 right;
 	s32 bottom;
@@ -29,16 +29,16 @@ struct fh_rect_lim {
 };
 
 
-FH_API void fh_rect_rst(struct fh_rect *r);
-FH_API void fh_rect_set(struct fh_rect *r, s32 x, s32 y, s32 w, s32 h);
-FH_API void fh_rect_cpy(struct fh_rect *out, struct fh_rect *in);
-FH_API void fh_rect_add(struct fh_rect *out, struct fh_rect *in1,
-		struct fh_rect *in2);
+WT_API void wt_rect_rst(struct wt_rect *r);
+WT_API void wt_rect_set(struct wt_rect *r, s32 x, s32 y, s32 w, s32 h);
+WT_API void wt_rect_cpy(struct wt_rect *out, struct wt_rect *in);
+WT_API void wt_rect_add(struct wt_rect *out, struct wt_rect *in1,
+		struct wt_rect *in2);
 
 
 
-FH_API void fh_rect_tolim(struct fh_rect_lim *out, struct fh_rect *rect);
-FH_API void fh_rect_fromlim(struct fh_rect *out, struct fh_rect_lim *lim);
+WT_API void wt_rect_tolim(struct wt_rect_lim *out, struct wt_rect *rect);
+WT_API void wt_rect_fromlim(struct wt_rect *out, struct wt_rect_lim *lim);
 
 
 /*
@@ -49,7 +49,7 @@ FH_API void fh_rect_fromlim(struct fh_rect *out, struct fh_rect_lim *lim);
  *
  * Returns: 1 if they intersect and 0 if not
  */
-FH_API s8 fh_rect_intersecting(struct fh_rect *in1, struct fh_rect *in2);
+WT_API s8 wt_rect_intersecting(struct wt_rect *in1, struct wt_rect *in2);
 
 /*
  * Check if the two given rectangles intersect and then return the intersection
@@ -61,17 +61,17 @@ FH_API s8 fh_rect_intersecting(struct fh_rect *in1, struct fh_rect *in2);
  *
  * Returns: 1 if they intersect and 0 if not
  */
-FH_API s8 fh_rect_intersect(struct fh_rect *out, struct fh_rect *in1,
-		struct fh_rect *in2);
+WT_API s8 wt_rect_intersect(struct wt_rect *out, struct wt_rect *in1,
+		struct wt_rect *in2);
 
 
-FH_API void fh_rect_mov(struct fh_rect *out, struct fh_rect *in,
-		struct fh_sin2 *del);
+WT_API void wt_rect_mov(struct wt_rect *out, struct wt_rect *in,
+		struct wt_sin2 *del);
 
 
 
 
-FH_API void fh_rect_dump(struct fh_rect *r);
-FH_API void fh_rect_lim_dump(struct fh_rect_lim *lim);
+WT_API void wt_rect_dump(struct wt_rect *r);
+WT_API void wt_rect_lim_dump(struct wt_rect_lim *lim);
 
-#endif /* _FH_UTILITY_SHAPE_H */
+#endif /* _WT_UTILITY_SHAPE_H */

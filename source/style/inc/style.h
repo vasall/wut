@@ -1,5 +1,5 @@
-#ifndef _FH_STYLE_H
-#define _FH_STYLE_H
+#ifndef _WT_STYLE_H
+#define _WT_STYLE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -9,36 +9,36 @@
 #include "utility/inc/color.h"
 #include "utility/inc/shape.h"
 
-enum fh_style_attrib {
-	FH_STYLE_DISPLAY_MODE,
+enum wt_style_attrib {
+	WT_STYLE_DISPLAY_MODE,
 
-	FH_STYLE_SIZE_V,
-	FH_STYLE_SIZE_V_MIN,
-	FH_STYLE_SIZE_V_MAX,
-	FH_STYLE_SIZE_H,
-	FH_STYLE_SIZE_H_MIN,
-	FH_STYLE_SIZE_H_MAX,
+	WT_STYLE_SIZE_V,
+	WT_STYLE_SIZE_V_MIN,
+	WT_STYLE_SIZE_V_MAX,
+	WT_STYLE_SIZE_H,
+	WT_STYLE_SIZE_H_MIN,
+	WT_STYLE_SIZE_H_MAX,
 	
-	FH_POSITION_V_ORIENT,
-	FH_POSITION_V,
-	FH_POSITION_H_ORIENT,
-	FH_POSITION_H,
+	WT_POSITION_V_ORIENT,
+	WT_POSITION_V,
+	WT_POSITION_H_ORIENT,
+	WT_POSITION_H,
 
-	FH_STYLE_PADDING_TOP,
-	FH_STYLE_PADDING_RIGHT,
-	FH_STYLE_PADDING_BOTTOM,
-	FH_STYLE_PADDING_LEFT,
+	WT_STYLE_PADDING_TOP,
+	WT_STYLE_PADDING_RIGHT,
+	WT_STYLE_PADDING_BOTTOM,
+	WT_STYLE_PADDING_LEFT,
 
-	FH_STYLE_INFILL_MODE,
-	FH_STYLE_INFILL_COLOR,
+	WT_STYLE_INFILL_MODE,
+	WT_STYLE_INFILL_COLOR,
 
-	FH_STYLE_BORDER_MODE,
-	FH_STYLE_BORDER_WIDTH,
-	FH_STYLE_BORDER_COLOR,
+	WT_STYLE_BORDER_MODE,
+	WT_STYLE_BORDER_WIDTH,
+	WT_STYLE_BORDER_COLOR,
 
-	FH_STYLE_TEXT_COLOR,
-	FH_STYLE_TEXT_SIZE,
-	FH_STYLE_TEXT_OPTIONS
+	WT_STYLE_TEXT_COLOR,
+	WT_STYLE_TEXT_SIZE,
+	WT_STYLE_TEXT_OPTIONS
 };
 
 
@@ -50,27 +50,27 @@ enum fh_style_attrib {
  * They are used when handling with active styling.
  */
 
-enum fh_restyle_type {
-	FH_STYLE_DISPLAY,
-	FH_STYLE_REFERENCE,
-	FH_STYLE_SHAPE,
-	FH_STYLE_BORDER,
-	FH_STYLE_RADIUS,
-	FH_STYLE_INFILL,
-	FH_STYLE_LAYOUT,
-	FH_STYLE_TEXT
+enum wt_restyle_type {
+	WT_STYLE_DISPLAY,
+	WT_STYLE_REFERENCE,
+	WT_STYLE_SHAPE,
+	WT_STYLE_BORDER,
+	WT_STYLE_RADIUS,
+	WT_STYLE_INFILL,
+	WT_STYLE_LAYOUT,
+	WT_STYLE_TEXT
 };
 
 
 
-#define FH_RESTYLE_SCROLL_V	(1<<1)
-#define FH_RESTYLE_SCROLL_H	(1<<2)
+#define WT_RESTYLE_SCROLL_V	(1<<1)
+#define WT_RESTYLE_SCROLL_H	(1<<2)
 
 
 
-struct fh_style {
-	struct fh_style			*ref;
-	struct fh_stylesheet		sheet;
+struct wt_style {
+	struct wt_style			*ref;
+	struct wt_stylesheet		sheet;
 
 	/*
 	 * DISPLAY
@@ -85,17 +85,17 @@ struct fh_style {
 	/*
 	 * SHAPE
 	 */
-	struct fh_rect	shape_bounding_box;	
-	struct fh_rect	shape_element_delta; /* -Spacing */
-	struct fh_rect	shape_inner_delta;   /* -Spacing, -Border */
-	struct fh_rect	shape_content_delta; /* -Spacing, -Border, -Padding */
+	struct wt_rect	shape_bounding_box;	
+	struct wt_rect	shape_element_delta; /* -Spacing */
+	struct wt_rect	shape_inner_delta;   /* -Spacing, -Border */
+	struct wt_rect	shape_content_delta; /* -Spacing, -Border, -Padding */
 
 	/*
 	 * BORDER
 	 */
 	u8		border_mode;
 	s32		border_width;
-	struct fh_color	border_color;
+	struct wt_color	border_color;
 
 	/*
 	 * RADIUS
@@ -106,7 +106,7 @@ struct fh_style {
 	 * INFILL
 	 */
 	u8		infill_mode;
-	struct fh_color	infill_color;
+	struct wt_color	infill_color;
 
 	/*
 	 * LAYOUT
@@ -122,7 +122,7 @@ struct fh_style {
 	 * TEXT
 	 */
 	u16 		text_size;
-	struct fh_color	text_color;
+	struct wt_color	text_color;
 	u16		text_mass;
 	u8		text_options;
 	u8		text_wrap_mode;
@@ -131,8 +131,8 @@ struct fh_style {
 };
 
 
-struct fh_style_pass {
-	struct fh_rect *document_shape;
+struct wt_style_pass {
+	struct wt_rect *document_shape;
 };
 
 
@@ -152,7 +152,7 @@ struct fh_style_pass {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
+WT_XMOD s8 wt_style_init(struct wt_style *style, struct wt_style *ref);
 
 
 /*
@@ -164,7 +164,7 @@ FH_XMOD s8 fh_style_init(struct fh_style *style, struct fh_style *ref);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref);
+WT_XMOD s8 wt_style_link(struct wt_style *style, struct wt_style *ref);
 
 
 /*
@@ -180,8 +180,8 @@ FH_XMOD s8 fh_style_link(struct fh_style *style, struct fh_style *ref);
  * Returns: 1 if the attribute has been found, 0 if not and -1 if an error
  * 	    occurred
  */
-FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
-		struct fh_sheet_ret *ret);
+WT_XMOD s8 wt_style_get(struct wt_style *style, enum wt_sheet_id id,
+		struct wt_sheet_ret *ret);
 
 
 /*
@@ -193,7 +193,7 @@ FH_XMOD s8 fh_style_get(struct fh_style *style, enum fh_sheet_id id,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
+WT_XMOD s8 wt_style_process(struct wt_style *style, struct wt_style_pass *pass);
 
 
 /*
@@ -209,7 +209,7 @@ FH_XMOD s8 fh_style_process(struct fh_style *style, struct fh_style_pass *pass);
  *
  * @style: Pointer to the style struct
  */
-FH_API void fh_ResetStyle(struct fh_style *style);
+WT_API void wt_ResetStyle(struct wt_style *style);
 
 
 /*
@@ -218,7 +218,7 @@ FH_API void fh_ResetStyle(struct fh_style *style);
  * @style: Pointer to the style struct
  * @in: A string containing the requested modifications
  */
-FH_API void fh_ModifyStyle(struct fh_style *style, char *in);
+WT_API void wt_ModifyStyle(struct wt_style *style, char *in);
 
 
 /*
@@ -229,7 +229,7 @@ FH_API void fh_ModifyStyle(struct fh_style *style, char *in);
  *
  * Returns: Either a pointer to the restyle wrapper or NULL
  */
-FH_API void *fh_GetReStyle(struct fh_style *style, enum fh_restyle_type type);
+WT_API void *wt_GetReStyle(struct wt_style *style, enum wt_restyle_type type);
 
 
 /*
@@ -237,7 +237,7 @@ FH_API void *fh_GetReStyle(struct fh_style *style, enum fh_restyle_type type);
  *
  * @style: Pointer to the style struct
  */
-FH_API void fh_DumpStylesheet(struct fh_style *style);
+WT_API void wt_DumpStylesheet(struct wt_style *style);
 
 
 /*
@@ -245,6 +245,6 @@ FH_API void fh_DumpStylesheet(struct fh_style *style);
  *
  * @style: Pointer to the style struct
  */
-FH_API void fh_DumpStyle(struct fh_style *style);
+WT_API void wt_DumpStyle(struct wt_style *style);
 
-#endif /* _FH_STYLE_H */
+#endif /* _WT_STYLE_H */

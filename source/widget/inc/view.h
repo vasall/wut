@@ -1,5 +1,5 @@
-#ifndef _FH_WIDGET_VIEW_H
-#define _FH_WIDGET_VIEW_H
+#ifndef _WT_WIDGET_VIEW_H
+#define _WT_WIDGET_VIEW_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -13,27 +13,27 @@
 
 
 
-#define FH_VIEW_LIST_LIM	8
+#define WT_VIEW_LIST_LIM	8
 
-struct fh_view_list;
+struct wt_view_list;
 
-struct fh_view {
+struct wt_view {
 	s8 slot;
-	struct fh_view_list *list;
+	struct wt_view_list *list;
 
-	struct fh_pipe *pipe;
+	struct wt_pipe *pipe;
 
-	struct fh_camera *camera;
+	struct wt_camera *camera;
 
-	struct fh_rect shape;
+	struct wt_rect shape;
 };
 
 
-struct fh_view_list {
-	struct fh_context *context;
+struct wt_view_list {
+	struct wt_context *context;
 
 	u8 number;
-	struct fh_view *views[FH_VIEW_LIST_LIM];
+	struct wt_view *views[WT_VIEW_LIST_LIM];
 };
 
 
@@ -45,7 +45,7 @@ struct fh_view_list {
  *
  * Returns: Either a pointer to the view list or NULL if an error occurred
  */
-FH_API struct fh_view_list *fh_CreateViewList(struct fh_context *ctx);
+WT_API struct wt_view_list *wt_CreateViewList(struct wt_context *ctx);
 
 
 /*
@@ -53,7 +53,7 @@ FH_API struct fh_view_list *fh_CreateViewList(struct fh_context *ctx);
  *
  * @lst: Pointer to the view list.
  */
-FH_API void fh_DestroyViewList(struct fh_view_list *lst);
+WT_API void wt_DestroyViewList(struct wt_view_list *lst);
 
 
 /*
@@ -61,7 +61,7 @@ FH_API void fh_DestroyViewList(struct fh_view_list *lst);
  *
  * @lst: Pointer to the view list
  */
-FH_API void fh_RenderViewList(struct fh_view_list *lst);
+WT_API void wt_RenderViewList(struct wt_view_list *lst);
 
 
 /*
@@ -72,8 +72,8 @@ FH_API void fh_RenderViewList(struct fh_view_list *lst);
  *
  * Returns: Either a new view or NULL if an error occurred
  */
-FH_API struct fh_view *fh_CreateView(struct fh_view_list *lst,
-		struct fh_rect *rect);
+WT_API struct wt_view *wt_CreateView(struct wt_view_list *lst,
+		struct wt_rect *rect);
 
 
 /*
@@ -81,7 +81,7 @@ FH_API struct fh_view *fh_CreateView(struct fh_view_list *lst,
  *
  * @v: Pointer to the view struct
  */
-FH_API void fh_DestroyView(struct fh_view *v);
+WT_API void wt_DestroyView(struct wt_view *v);
 
 
 /*
@@ -89,7 +89,7 @@ FH_API void fh_DestroyView(struct fh_view *v);
  *
  * @v: Pointer to the view struct
  */
-FH_API void fh_RenderView(struct fh_view *v);
+WT_API void wt_RenderView(struct wt_view *v);
 
 
 /*
@@ -98,7 +98,7 @@ FH_API void fh_RenderView(struct fh_view *v);
  * @v: Pointer to the view
  * @rect: The new shape of the view
  */
-FH_API void fh_ResizeView(struct fh_view *v, struct fh_rect *rect);
+WT_API void wt_ResizeView(struct wt_view *v, struct wt_rect *rect);
 
 
 /*
@@ -108,7 +108,7 @@ FH_API void fh_ResizeView(struct fh_view *v, struct fh_rect *rect);
  *
  * Returns: A pointer to the camera
  */
-FH_API struct fh_camera *fh_GetViewCamera(struct fh_view *v);
+WT_API struct wt_camera *wt_GetViewCamera(struct wt_view *v);
 
 
 /*
@@ -117,7 +117,7 @@ FH_API struct fh_camera *fh_GetViewCamera(struct fh_view *v);
  *
  * @v: Pointer to the view
  */
-FH_API void fh_UpdateViewPipe(struct fh_view *v);
+WT_API void wt_UpdateViewPipe(struct wt_view *v);
 
 
 /*
@@ -126,7 +126,7 @@ FH_API void fh_UpdateViewPipe(struct fh_view *v);
  * @v: Pointer to the view
  * @obj: Pointer to the object
  */
-FH_API s8 fh_ViewAddObject(struct fh_view *v, struct fh_object *obj);
+WT_API s8 wt_ViewAddObject(struct wt_view *v, struct wt_object *obj);
 
 
 /*
@@ -134,6 +134,6 @@ FH_API s8 fh_ViewAddObject(struct fh_view *v, struct fh_object *obj);
  *
  * @obj: Pointer to the object
  */
-FH_API void fh_ViewRemoveObject(struct fh_object *obj);
+WT_API void wt_ViewRemoveObject(struct wt_object *obj);
 
-#endif /* _FH_WIDGET_VIEW_H */
+#endif /* _WT_WIDGET_VIEW_H */
