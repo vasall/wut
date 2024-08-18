@@ -7,70 +7,84 @@
 #include <stdlib.h>
 
 
-struct wt_core_container g_wt_core;
+struct wut_coreContainer _wut_coreContainer;
 
 
 
-WT_API void wt_core_reset(void)
+
+/*
+ * Reset everything in the core. This will not free any memory, but just
+ * overwrite everything with zeros and NULLs, so be careful.
+ */
+WUT_INTERN void core_reset(void)
 {
 	/* Reset the quit flag */
-	g_wt_core.quit = 0;
+	_wut_coreContainer.quit = 0;
 
 	/* Reset pointer to main window */
-	wt_core_set_main_window(NULL);
+	wut_core_set_main_window(NULL);
 
 	/* Reset active window */
-	wt_core_set_active_window(NULL);
+	wut_core_set_active_window(NULL);
 }
 
 
-WT_API void wt_core_quit(void)
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-FUNCTIONS
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+
+WUT_XMOD void wut_core_quit(void)
 {
-	g_wt_core.quit = 1;
+	_wut_coreContainer.quit = 1;
 }
 
 
-WT_API s8 wt_core_check_quit(void)
+WUT_XMOD s8 wut_core_check_quit(void)
 {
-	return g_wt_core.quit;
+	return _wut_coreContainer.quit;
 }
 
 
-WT_API void wt_core_set_main_window(struct wt_window *win)
+WUT_XMOD void wut_core_set_main_window(struct wut_Window *win)
 {
-	g_wt_core.main_window = win;
+	_wut_coreContainer.main_window = win;
 }
 
 
-WT_API struct wt_window *wt_core_get_main_window(void)
+WUT_XMOD struct wut_Window *wut_core_get_main_window(void)
 {
-	return g_wt_core.main_window;
+	return _wut_coreContainer.main_window;
 }
 
 
-WT_API void wt_core_set_active_window(struct wt_window *win)
+WUT_XMOD void wut_core_set_active_window(struct wut_Window *win)
 {
 	if(win)
 		printf("%s is not the active window\n", win->name);
 	else
 		printf("no more active window\n");
 
-	g_wt_core.active_window = win;
+	_wut_coreContainer.active_window = win;
 }
 
 
-WT_API struct wt_window *wt_core_get_active_window(void)
+WUT_XMOD struct wut_Window *wut_core_get_active_window(void)
 {
-	return g_wt_core.active_window;
+	return _wut_coreContainer.active_window;
 }
 
 
-WT_API s8 wt_core_is_active_window(struct wt_window *win)
+WUT_XMOD s8 wut_core_is_active_window(struct wut_Window *win)
 {
-	if(g_wt_core.active_window == NULL)
+	if(_wut_coreContainer.active_window == NULL)
 		return 0;
 
-	if(strcmp(win->name, g_wt_core.active_window->name) == 0)
+	if(strcmp(win->name, _wut_coreContainer.active_window->name) == 0)
 		return 1;
 
 	return 0;
@@ -84,61 +98,61 @@ WT_API s8 wt_core_is_active_window(struct wt_window *win)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API s8 wt_Init(void)
+WUT_API s8 wut_Init(void)
 {
 	/* Reset the core */
-	wt_core_reset();
+	core_reset();
 
 	/* Then initialize the SDL-frameworks */
-	if(wt_sdl_init() < 0) {
-		WT_ALARM(WT_ERROR, "Failed to initialize SDL");
+	if(wut_sdl_init() < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to initialize SDL");
 		goto err_return;
 	}
 
 	/* Initialize OpenGL */
-	if(wt_gl_init() < 0) {
-		WT_ALARM(WT_ERROR, "Failed to initialize OpenGL");
+	if(wut_gl_init() < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to initialize OpenGL");
 		goto err_quit_sdl;
 	}
 
 	return 0;
 
 err_quit_sdl:
-	wt_sdl_quit();
+	wut_sdl_quit();
 
 err_return:
 	/* Reset te core */
-	wt_core_reset();
+	wut_core_reset();
 
-	WT_ALARM(WT_ERROR, "Failed to initialize the freihand framework");
+	WUT_ALARM(WUT_ERROR, "Failed to initialize the freihand framework");
 	return -1;
 }
 
 
-WT_API void wt_Quit(void)
+WUT_API void wut_Quit(void)
 {
 	/* Close all windows */
-	wt_CloseWindow(wt_core_get_main_window());
-	wt_core_set_main_window(NULL);
+	wut_CloseWindow(wut_core_get_main_window());
+	wut_core_set_main_window(NULL);
 	
 	/* Shutdown SDL */
-	wt_sdl_quit();
+	wut_sdl_quit();
 
 	/* Reset the core */
-	wt_core_reset();
+	wut_core_reset();
 }
 
 
-WT_API s8 wt_Update(void)
+WUT_API s8 wut_Update(void)
 {
 	/* Check if the quit flag has been triggered */
-	if(wt_core_check_quit())
+	if(wut_core_check_quit())
 		return 0;
 
-	wt_event_update();
+	wut_evt_update();
 
 	/* Redraw all visible windows */
-	wt_window_redraw_all();
+	wut_win_redraw_all();
 
 	return 1;
 }

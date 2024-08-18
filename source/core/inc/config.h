@@ -1,5 +1,5 @@
-#ifndef _WT_CORE_CONFIG_H
-#define _WT_CORE_CONFIG_H
+#ifndef _WUT_CORE_CONFIG_H
+#define _WUT_CORE_CONFIG_H
 
 
 

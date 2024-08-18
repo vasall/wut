@@ -1,14 +1,5 @@
 #include "core/inc/predefined.h"
 
-
-const u8 wt_ps_num = 3;
-char *wt_ps_lst[3][3] = {
-	{"flat", "res/predef/shaders/flat.vert", "res/predef/shaders/flat.frag"},
-	{"ui", "res/predef/shaders/ui.vert", "res/predef/shaders/ui.frag"},
-	{"model", "res/predef/shaders/model.vert", "res/predef/shaders/model.frag"}
-};
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -17,7 +8,7 @@ char *wt_ps_lst[3][3] = {
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
-char *wt_ps_shd_def_block_v = 
+char *_wut_prBlockVtxShd = 
 "#version 420 core\n"
 "layout(location=0) in vec3 in_position;"
 "layout(location=1) in ivec3 in_index;"
@@ -102,7 +93,7 @@ char *wt_ps_shd_def_block_v =
 "	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
 "}";
 
-char *wt_ps_shd_def_block_f = 
+char *_wut_prBlockFragShd = 
 "#version 420 core\n"
 ""
 "flat in vec2    fs_frame;"
@@ -191,7 +182,7 @@ char *wt_ps_shd_def_block_f =
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
-char *wt_ps_shd_def_texture_v = 
+char *_wut_prTextureVtxShd = 
 "#version 420 core\n"
 "layout(location=0) in vec3 in_position;"
 "layout(location=1) in vec2 in_uv;"
@@ -236,7 +227,7 @@ char *wt_ps_shd_def_texture_v =
 "	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
 "}";
 
-char *wt_ps_shd_def_texture_f = 
+char *_wut_prTextureFragShd = 
 "#version 420 core\n"
 ""
 "flat in vec2   fs_frame;"
@@ -288,8 +279,8 @@ char *wt_ps_shd_def_texture_f =
 */
 
 
-char *wt_ps_shd_def_text_v = "#version 420 core\n\
-\n\
+char *_wut_prTextVtxShd =
+"#version 420 core\n\
 layout(location=0) in vec3 in_pos;\n\
 layout(location=1) in vec2 in_uv;\n\
 \n\
@@ -311,7 +302,8 @@ void main() {\n\
 }\n";
 
 
-char *wt_ps_shd_def_text_f = "#version 420 core\n\
+char *_wut_prTextFragShd =
+"#version 420 core\n\
 \n\
 precision mediump float;\n\
 \n\

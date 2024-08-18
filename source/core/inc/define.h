@@ -1,27 +1,27 @@
-#ifndef _WT_CORE_DEFINE_H
-#define _WT_CORE_DEFINE_H
+#ifndef _WUT_CORE_DEFINE_H
+#define _WUT_CORE_DEFINE_H
 
-#define WT_API 			extern
-#define WT_INTERN		static
-#define WT_XMOD			extern
+#define WUT_API 	        extern
+#define WUT_INTERN		static
+#define WUT_XMOD		extern
 
 #ifndef __SHORT_DATATYPES
 #define __SHORT_DATATYPES
 
 #include <stdint.h>
 
-typedef uint8_t                u8;
-typedef uint16_t               u16;
-typedef uint32_t               u32;
-typedef uint64_t               u64;
+typedef uint8_t                 u8;
+typedef uint16_t                u16;
+typedef uint32_t                u32;
+typedef uint64_t                u64;
 
-typedef int8_t                 s8;
-typedef int16_t                s16;
-typedef int32_t                s32;
-typedef int64_t                s64;
+typedef int8_t                  s8;
+typedef int16_t                 s16;
+typedef int32_t                 s32;
+typedef int64_t                 s64;
 
-typedef float                  f32;
-typedef double                 f64;
+typedef float                   f32;
+typedef double                  f64;
 
 /*
  * The size of the datatypes in bytes.
@@ -65,4 +65,4 @@ typedef double                 f64;
 
 #endif /* __SHORT_DATATYPES */
 
-#endif /* _WT_CORE_DEFINE_H */
+#endif /* _WUT_CORE_DEFINE_H */

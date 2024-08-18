@@ -1,19 +1,19 @@
-#ifndef _WT_CORE_PREDEF_RESOURCES_H
-#define _WT_CORE_PREDEF_RESOURCES_H
+#ifndef _WUT_CORE_PREDEFINED_H
+#define _WUT_CORE_PREDEFINED_H
 
 #include "./define.h"
 #include "./import.h"
 
 
-WT_API char *wt_ps_shd_def_block_v;
-WT_API char *wt_ps_shd_def_block_f;
+WUT_API char *_wut_prBlockVtxShd;
+WUT_API char *_wut_prBlockFragShd;
 
 
-WT_API char *wt_ps_shd_def_texture_v;
-WT_API char *wt_ps_shd_def_texture_f;
+WUT_API char *_wut_prTextureVtxShd;
+WUT_API char *_wut_prTextureFragShd;
 
-WT_API char *wt_ps_shd_def_text_v;
-WT_API char *wt_ps_shd_def_text_f;
+WUT_API char *_wut_prTextVtxShd;
+WUT_API char *_wut_prTextFragShd;
 
 
-#endif /* _WT_CORE_PREDEF_RESOURCES_H */
+#endif /* _WUT_CORE_PREDEFINED_H */
