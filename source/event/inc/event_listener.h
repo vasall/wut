@@ -1,34 +1,34 @@
-#ifndef _WT_EVENT_LISTENER_H
-#define _WT_EVENT_LISTENER_H
+#ifndef _WUT_EVENT_LISTENER_H
+#define _WUT_EVENT_LISTENER_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "event/inc/event.h"
-#include "event/inc/event_types.h"
+#include "event/inc/event_type.h"
 
-#define WT_EVENT_LISTENER_NAME_LIMIT	128
+#define WUT_LIS_NAME_LIMIT	128
 
 
-struct wt_event_listener;
-struct wt_event_listener {
-	char name[WT_EVENT_LISTENER_NAME_LIMIT];
+struct wut_EventListener;
+struct wut_EventListener {
+	char                            name[WUT_LIS_NAME_LIMIT];
 
-	enum wt_event_type type;
+	enum wut_eEventType              type;
 
-	struct wt_event_listener *next;
-	struct wt_event_listener *below;
+	struct wut_EventListener        *next;
+	struct wut_EventListener        *below;
 
-	wt_evt_cfnc fnc;
+	wut_EventFunc                   fnc;
 
-	void *data;
+	void                            *data;
 };
 
 
-struct wt_event_handler {
-	s8 number;
+struct wut_EventHandler {
+	s8                              number;
 
-	struct wt_event_listener *listener;
+	struct wut_EventListener        *listener;
 };
 
 
@@ -46,7 +46,7 @@ struct wt_event_handler {
  * Returns: Either a pointer to the newly created event handler or NULL if an
  *          error occurred
  */
-WT_XMOD struct wt_event_handler *wt_handler_create(void);
+WUT_XMOD struct wut_EventHandler *wut_hdl_create(void);
 
 
 /*
@@ -54,7 +54,7 @@ WT_XMOD struct wt_event_handler *wt_handler_create(void);
  *
  * @hdl: Pointer to the event handler
  */
-WT_XMOD void wt_handler_destroy(struct wt_event_handler *hdl);
+WUT_XMOD void wut_hdl_destroy(struct wut_EventHandler *hdl);
 
 
 /*
@@ -63,8 +63,8 @@ WT_XMOD void wt_handler_destroy(struct wt_event_handler *hdl);
  * @hdl: Pointer to the event handler
  * @lst: The new event listener to add
  */
-WT_XMOD void wt_handler_add(struct wt_event_handler *hdl, 
-		struct wt_event_listener *lst);
+WUT_XMOD void wut_hdl_add(struct wut_EventHandler *hdl, 
+		struct wut_EventListener *lst);
 
 
 /*
@@ -74,8 +74,8 @@ WT_XMOD void wt_handler_add(struct wt_event_handler *hdl,
  * @type: The type of the event listener
  * @name: The name of the event listener
  */
-WT_XMOD void wt_handler_remove(struct wt_event_handler *hdl,
-		enum wt_event_type type, char *name);
+WUT_XMOD void wut_hdl_remove(struct wut_EventHandler *hdl,
+		enum wut_eEventType type, char *name);
 
 /*
  * Throw the event at the event handler and see if it sticks.
@@ -85,8 +85,8 @@ WT_XMOD void wt_handler_remove(struct wt_event_handler *hdl,
  *
  * Returns: 1 if the event has been handled, and 0 if not
  */
-WT_XMOD s8 wt_handler_rundow(struct wt_event_handler *hdl,
-		struct wt_event *evt);
+WUT_XMOD s8 wut_hdl_rundow(struct wut_EventHandler *hdl,
+                struct wut_Event *evt);
 
 
 /*
@@ -96,7 +96,7 @@ WT_XMOD s8 wt_handler_rundow(struct wt_event_handler *hdl,
  *
  * Returns: Either a pointer to the handler or NULL if an error occurred
  */
-WT_XMOD struct wt_event_handler *wt_handler_retrieve(void *ptr);
+WUT_XMOD struct wut_EventHandler *wut_hdl_retrieve(void *ptr);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -118,8 +118,8 @@ WT_XMOD struct wt_event_handler *wt_handler_retrieve(void *ptr);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_BindEventListener(struct wt_event_handler *hdl,
-		enum wt_event_type type, char *name, wt_evt_cfnc fnc,
+WUT_API s8 wut_BindEventListener(struct wut_EventHandler *hdl,
+		enum wut_eEventType type, char *name, wut_evt_cfnc fnc,
 		void *data);
 
 
@@ -132,8 +132,8 @@ WT_API s8 wt_BindEventListener(struct wt_event_handler *hdl,
  * @type: The type of the event listener
  * @name: The name of the event listener
  */
-WT_API void wt_UnbindEventListener(struct wt_event_handler *hdl,
-		enum wt_event_type type, char *name);
+WUT_API void wut_UnbindEventListener(struct wut_EventHandler *hdl,
+		enum wut_eEventType type, char *name);
 
 
-#endif /* _WT_EVENT_LISTENER_H */
+#endif /* _WUT_EVENT_LISTENER_H */

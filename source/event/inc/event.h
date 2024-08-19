@@ -1,57 +1,56 @@
-#ifndef _WT_EVENT_H
-#define _WT_EVENT_H
+#ifndef _WUT_EVENT_H
+#define _WUT_EVENT_H
 
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct wt_event;
+struct wut_Event;
 
 /* The default event callback functions */
-typedef s8 (*wt_evt_cfnc)(struct wt_event *, void *);
+typedef s8 (*wut_EventFunc)(struct wut_Event *, void *);
 
 #include "window/inc/window.h"
 
 /* Catch-all */
 #include "event/inc/event_default.h"
 #include "event/inc/event_listener.h"
-#include "event/inc/event_types.h"
-#include "event/inc/trigger.h"
+#include "event/inc/event_type.h"
 
 
-#define WT_EVT_PIPE_LIM	64
+#define WUT_EVT_PIPE_LIM	64
 
-#define WT_EVT_DATA_LIM	128
+#define WUT_EVT_DATA_LIM	128
 
-#define WT_EVT_QUIT		1
+#define WUT_EVT_QUIT		1
 
 
 /*
  * EVENT-FLAGS
  */
-#define WT_EVT_F_PDEF		(1<<0)	/* Prevent-Default */
+#define WUT_EVT_F_PDEF		(1<<0)	/* Prevent-Default */
 
 
 
 
-struct wt_event_data {
+struct wut_EventData {
 	u8			buffer[128];
 };
 
-struct wt_event_context {
-	struct wt_window 	*window;
-	struct wt_element 	*element;
+struct wut_EventContext {
+	struct wut_Window 	*window;
+	struct wut_Element 	*element;
 };
 
-struct wt_event {
-	enum wt_event_type 	type;
+struct wut_Event {
+	enum wut_eEventType 	type;
 
 	SDL_Event 		raw;
 
-	struct wt_event_context	context;
+	struct wut_EventContext	context;
 
-	struct wt_event_data	data;
+	struct wut_EventData	data;
 
 	u8 			flags;
 };
@@ -72,13 +71,13 @@ struct wt_event {
 /*
  * Process all event in the SDL event queue and handle them.
  */
-WT_XMOD void wt_event_update(void);
+WUT_XMOD void wut_evt_update(void);
 
 
 /*
  * Trigger a new event so it can be handled.
  */
-WT_XMOD void wt_event_trigger(struct wt_event *evt);
+WUT_XMOD void wut_evt_trigger(struct wut_Event *evt);
 
 
 /*
@@ -88,8 +87,8 @@ WT_XMOD void wt_event_trigger(struct wt_event *evt);
  * @win: Pointer to the window context
  * @ele: Pointer to the element context
  */
-WT_XMOD void wt_event_trigger_raw(enum wt_event_type type,
-		struct wt_window *win, struct wt_element *ele);
+WUT_XMOD void wut_evt_trigger_raw(enum wut_eEventType type,
+		struct wut_Window *win, struct wut_Element *ele);
 
 
 /*
@@ -106,7 +105,7 @@ WT_XMOD void wt_event_trigger_raw(enum wt_event_type type,
  *
  * @evt: Pointer to the event
  */
-WT_API void wt_PreventDefault(struct wt_event *evt);
+WUT_API void wut_PreventDefault(struct wut_Event *evt);
 
 
-#endif /* _WT_EVENT_H */
+#endif /* _WUT_EVENT_H */

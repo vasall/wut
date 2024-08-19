@@ -1,5 +1,5 @@
-#ifndef _WT_EVENT_DEFAULT_H
-#define _WT_EVENT_DEFAULT_H
+#ifndef _WUT_EVENT_DEFAULT_H
+#define _WUT_EVENT_DEFAULT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -22,7 +22,7 @@
  *
  * Returns: 1 if the event has been handled, 0 if not
  */
-WT_XMOD s8 wt_evtdef_rundown(struct wt_event *evt);
+WUT_XMOD s8 wut_evd_rundown(struct wut_Event *evt);
 
 
 /*
@@ -34,4 +34,4 @@ WT_XMOD s8 wt_evtdef_rundown(struct wt_event *evt);
  */
 
 
-#endif /* _WT_EVENT_DEFAULT_H */
+#endif /* _WUT_EVENT_DEFAULT_H */

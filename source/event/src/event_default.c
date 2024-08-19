@@ -4,10 +4,10 @@
 
 #include "document/inc/document.h"
 
-#define WT_EVTDEF_DEBUG		0
+#define WUT_EVD_DEBUG		0
 
 
-WT_INTERN s8 def_dump(struct wt_event *evt)
+WUT_INTERN s8 evd_dump(struct wut_Event *evt)
 {
 	if(evt->context.window)
 		printf("window: %s   ", evt->context.window->name);
@@ -21,96 +21,96 @@ WT_INTERN s8 def_dump(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_windowclose(struct wt_event *evt)
+WUT_INTERN s8 evd_windowclose(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowclose\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
 
 	/* If this window is the main window */
-	if(evt->context.window->info & WT_WIN_INFO_MAIN) {
+	if(evt->context.window->info & WUT_WIN_INFO_MAIN) {
 		/* ...quit program */
-		wt_core_quit();
+		wut_cor_quit();
 	}
 	/* Otherwise if it's just a normal subwindow */
 	else {
 		/* ...close it */
-		wt_CloseWindow(evt->context.window);
+		wut_CloseWindow(evt->context.window);
 	}
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_windowenter(struct wt_event *evt)
+WUT_INTERN s8 evd_windowenter(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowenter\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	/* Cursor enters window */
 
-	wt_core_set_active_window(evt->context.window);
+	wut_cor_set_active_window(evt->context.window);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_windowleave(struct wt_event *evt)
+WUT_INTERN s8 evd_windowleave(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowleave\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	/* Cursor leaves window */
 
-	if(wt_core_is_active_window(evt->context.window))
-		wt_core_set_active_window(NULL);
+	if(wut_cor_is_active_window(evt->context.window))
+		wut_cor_set_active_window(NULL);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_windowshown(struct wt_event *evt)
+WUT_INTERN s8 evd_windowshown(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowshown\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_windowhidden(struct wt_event *evt)
+WUT_INTERN s8 evd_windowhidden(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowhidden\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 	
 	return 1;
 }
 
 
-WT_INTERN s8 def_windowresized(struct wt_event *evt)
+WUT_INTERN s8 evd_windowresized(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("windowresized\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	/* User resizes window */
 
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	/* Resize UI */
 
@@ -118,37 +118,37 @@ WT_INTERN s8 def_windowresized(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_elementadded(struct wt_event *evt)
+WUT_INTERN s8 evd_elementadded(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elementadded\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_elementremoved(struct wt_event *evt)
+WUT_INTERN s8 evd_elementremoved(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elementremoved\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_elemententer(struct wt_event *evt)
+WUT_INTERN s8 evd_elemententer(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elemententer\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	/* TODO: This is only a Hotfix*/
@@ -160,11 +160,11 @@ WT_INTERN s8 def_elemententer(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_elementleave(struct wt_event *evt)
+WUT_INTERN s8 evd_elementleave(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elementleave\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
 	printf("Leave %s\n", evt->context.element->name);
@@ -173,11 +173,11 @@ WT_INTERN s8 def_elementleave(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_elementselect(struct wt_event *evt)
+WUT_INTERN s8 evd_elementselect(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elementselect\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	printf("Select %s\n", evt->context.element->name);
@@ -186,11 +186,11 @@ WT_INTERN s8 def_elementselect(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_elementunselect(struct wt_event *evt)
+WUT_INTERN s8 evd_elementunselect(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("elementunselect\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	printf("Unselect %s\n", evt->context.element->name);
@@ -199,89 +199,89 @@ WT_INTERN s8 def_elementunselect(struct wt_event *evt)
 }
 
 
-WT_INTERN s8 def_mousemotion(struct wt_event *evt)
+WUT_INTERN s8 evd_mousemotion(struct wut_Event *evt)
 {
-	struct wt_window *s_w = evt->context.window;
-	struct wt_element *s_e = evt->context.element;
+	struct wut_Window *s_w = evt->context.window;
+	struct wut_Element *s_e = evt->context.element;
 
 
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("mousemotion\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
 
-	return wt_window_hover(s_w, s_e);
+	return wut_win_hover(s_w, s_e);
 }
 
 
-WT_INTERN s8 def_mousebuttondown(struct wt_event *evt)
+WUT_INTERN s8 evd_mousebuttondown(struct wut_Event *evt)
 {
-	struct wt_window *s_w = evt->context.window;
-	struct wt_element *s_e = evt->context.element;
+	struct wut_Window *s_w = evt->context.window;
+	struct wut_Element *s_e = evt->context.element;
 
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("mousebuttondown\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 
-	return wt_window_select(s_w, s_e);
+	return wut_win_select(s_w, s_e);
 }
 
 
-WT_INTERN s8 def_mousebuttonup(struct wt_event *evt)
+WUT_INTERN s8 evd_mousebuttonup(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("mousebuttonup\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	return 1;
 }
 
 
-WT_INTERN s8 def_mousewheel(struct wt_event *evt)
+WUT_INTERN s8 evd_mousewheel(struct wut_Event *evt)
 {
-	struct wt_element *ele = evt->context.element;
+	struct wut_Element *ele = evt->context.element;
 	s32 value[2];
 	s8 f = 8;
 
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("mousehweel\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 
 	value[0] = evt->raw.wheel.x * f;
 	value[1] = evt->raw.wheel.y * f;
 
-	return wt_element_scroll(ele, value);
+	return wut_ele_scroll(ele, value);
 }
 
 
-WT_INTERN s8 def_keydown(struct wt_event *evt)
+WUT_INTERN s8 evd_keydown(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("keydown\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 	
 	return 1;
 }
 
 
-WT_INTERN s8 def_keyup(struct wt_event *evt)
+WUT_INTERN s8 evd_keyup(struct wut_Event *evt)
 {
-#if WT_EVTDEF_DEBUG
+#if WUT_EVD_DEBUG
 	printf("keyup\n");
-	def_dump(evt);
+	evd_dump(evt);
 #endif
 	
-	wt_Ignore(evt);
+	WUT_IGNORE(evt);
 
 	return 1;
 }
@@ -295,38 +295,38 @@ WT_INTERN s8 def_keyup(struct wt_event *evt)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_XMOD s8 wt_evtdef_rundown(struct wt_event *evt)
+WUT_XMOD s8 wut_evd_rundown(struct wut_Event *evt)
 {
 	switch(evt->type) {
 		/*
 		 * WINDOW-EVENT
 		 */
-		case WT_EVT_WINDOWCLOSE:	return def_windowclose(evt);
+		case WUT_EVT_WINDOWCLOSE:	return evd_windowclose(evt);
 
-		case WT_EVT_WINDOWENTER:	return def_windowenter(evt);
-		case WT_EVT_WINDOWLEAVE:	return def_windowleave(evt);
+		case WUT_EVT_WINDOWENTER:	return evd_windowenter(evt);
+		case WUT_EVT_WINDOWLEAVE:	return evd_windowleave(evt);
 
-		case WT_EVT_WINDOWSHOWN:	return def_windowshown(evt);
-		case WT_EVT_WINDOWHIDDEN:	return def_windowhidden(evt);
+		case WUT_EVT_WINDOWSHOWN:	return evd_windowshown(evt);
+		case WUT_EVT_WINDOWHIDDEN:	return evd_windowhidden(evt);
 
-		case WT_EVT_WINDOWRESIZED:	return def_windowresized(evt);
+		case WUT_EVT_WINDOWRESIZED:	return evd_windowresized(evt);
 
-		case WT_EVT_ELEMENTADDED:	return def_elementadded(evt);
+		case WUT_EVT_ELEMENTADDED:	return evd_elementadded(evt);
 
-		case WT_EVT_ELEMENTREMOVED:	return def_elementremoved(evt);
+		case WUT_EVT_ELEMENTREMOVED:	return evd_elementremoved(evt);
 
-		case WT_EVT_ELEMENTENTER:	return def_elemententer(evt);
-		case WT_EVT_ELEMENTLEAVE:	return def_elementleave(evt);
-		case WT_EVT_ELEMENTSELECT:	return def_elementselect(evt);
-		case WT_EVT_ELEMENTUNSELECT:	return def_elementunselect(evt);
+		case WUT_EVT_ELEMENTENTER:	return evd_elemententer(evt);
+		case WUT_EVT_ELEMENTLEAVE:	return evd_elementleave(evt);
+		case WUT_EVT_ELEMENTSELECT:	return evd_elementselect(evt);
+		case WUT_EVT_ELEMENTUNSELECT:	return evd_elementunselect(evt);
 
-		case WT_EVT_MOUSEMOTION:	return def_mousemotion(evt);
-		case WT_EVT_MOUSEBUTTONDOWN:	return def_mousebuttondown(evt);
-		case WT_EVT_MOUSEBUTTONUP:	return def_mousebuttonup(evt);
-		case WT_EVT_MOUSEWHEEL:		return def_mousewheel(evt);
+		case WUT_EVT_MOUSEMOTION:	return evd_mousemotion(evt);
+		case WUT_EVT_MOUSEBUTTONDOWN:	return evd_mousebuttondown(evt);
+		case WUT_EVT_MOUSEBUTTONUP:	return evd_mousebuttonup(evt);
+		case WUT_EVT_MOUSEWHEEL:		return evd_mousewheel(evt);
 
-		case WT_EVT_KEYDOWN: 		return def_keydown(evt);
-		case WT_EVT_KEYUP: 		return def_keyup(evt);
+		case WUT_EVT_KEYDOWN: 		return evd_keydown(evt);
+		case WUT_EVT_KEYUP: 		return evd_keyup(evt);
 
 		default: return 1;
 	}
