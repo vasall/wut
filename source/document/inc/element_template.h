@@ -1,5 +1,5 @@
-#ifndef _WT_DOCUMENT_ELEMENT_TEMPLATE_H
-#define _WT_DOCUMENT_ELEMENT_TEMPLATE_H
+#ifndef _WUT_DOCUMENT_ELEMENT_TEMPLATE_H
+#define _WUT_DOCUMENT_ELEMENT_TEMPLATE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -15,8 +15,8 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_eletemp_load(struct wt_element *ele, void *data);
+WUT_API s8 wut_etmp_load(struct wt_Element *ele, void *data);
 
 
-#endif /* _WT_DOCUMENT_ELEMENT_TEMPLATE_H */
+#endif /* _WUT_DOCUMENT_ELEMENT_TEMPLATE_H */
 

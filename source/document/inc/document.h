@@ -1,5 +1,5 @@
-#ifndef _WT_DOCUMENT_H
-#define _WT_DOCUMENT_H
+#ifndef _WUT_DOCUMENT_H
+#define _WUT_DOCUMENT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -15,39 +15,39 @@
 #include "graphic/inc/flat.h"
 
 
-struct wt_document {
-	/* A pointer to the window this document belongs to */
-	struct wt_window 		*window;
+struct wut_Document {
+        /* A pointer to the window this document belongs to */
+        struct wut_Window 		*window;
 
-	/* A pointer to the context */
-	struct wt_context 		*context;
+        /* A pointer to the context */
+        struct wut_Context 		*context;
 
-	/* The body element, to which all future elements will be attached */
-	struct wt_element 		*body;
+        /* The body element, to which all future elements will be attached */
+        struct wut_Element 		*body;
 
-	struct wt_element		*selected;
-	struct wt_element		*hovered;
-	
-	/* A reference to the window size */
-	struct wt_rect 			*shape_ref;
+        struct wut_Element		*selected;
+        struct wut_Element		*hovered;
 
-	/* A list of all views */
-	struct wt_view_list 		*views;
+        /* A reference to the window size */
+        struct wut_Rect 		*shape_ref;
 
-	/* The main batch render */
-	s16 				batch_id;
+        /* A list of all views */
+        struct wut_ViewList 		*views;
+
+        /* The main batch render */
+        s16 				batch_id;
 
 #if 0
-	/* A list of all canvas widgets */
-	struct wt_canvas_list *canvases
+        /* A list of all canvas widgets */
+        struct wut_canvas_list *canvases
 #endif
 };
 
-struct wt_ele_selector {
-	s8 					state;
-	char 				*name;
-	struct wt_sin2 		*pos;
-	struct wt_element 	*element;
+struct wut_ElementSelector {
+        s8 			state;
+        char 			*name;
+        struct wut_Sin2 	*pos;
+        struct wut_Element 	*element;
 };
 
 
@@ -67,7 +67,7 @@ struct wt_ele_selector {
  *
  * Returns: Either a pointer to a new document or NULL if an error occurred
  */
-WT_API struct wt_document *wt_CreateDocument(struct wt_window *win);
+WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win);
 
 
 /*
@@ -76,7 +76,7 @@ WT_API struct wt_document *wt_CreateDocument(struct wt_window *win);
  *
  * @doc: Pointer to the document
  */
-WT_API void wt_DestroyDocument(struct wt_document *doc);
+WUT_API void wut_DestroyDocument(struct wut_Document *doc);
 
 
 /*
@@ -84,7 +84,7 @@ WT_API void wt_DestroyDocument(struct wt_document *doc);
  *
  * @doc: Pointer to the document
  */
-WT_API void wt_ResizeDocument(struct wt_document *doc);
+WUT_API void wut_ResizeDocument(struct wut_Document *doc);
 
 
 /*
@@ -98,9 +98,9 @@ WT_API void wt_ResizeDocument(struct wt_document *doc);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API struct wt_element *wt_AddElement(struct wt_document *doc,
-		struct wt_element *parent, char *name,
-		enum wt_element_type type, void *data);
+WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
+                struct wut_Element *parent, char *name,
+                enum wut_eElementType type, void *data);
 
 
 /*
@@ -109,7 +109,7 @@ WT_API struct wt_element *wt_AddElement(struct wt_document *doc,
  * @doc: Pointer to the document
  * @ele: Pointer to the element
  */
-WT_API void wt_RemoveElement(struct wt_document *doc, struct wt_element *ele);
+WUT_API void wut_RemoveElement(struct wut_Document *doc, struct wut_Element *ele);
 
 
 /*
@@ -121,7 +121,7 @@ WT_API void wt_RemoveElement(struct wt_document *doc, struct wt_element *ele);
  * Returns: Either a pointer to the element or NULL if an error occurred or no
  * 	    element could be found
  */
-WT_API struct wt_element *wt_GetElement(struct wt_document *doc, char *name);
+WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name);
 
 
 /*
@@ -133,8 +133,8 @@ WT_API struct wt_element *wt_GetElement(struct wt_document *doc, char *name);
  * Returns: Either a pointer to the most relevant element or NULL if an error
  * 	    occurred or no element could be found
  */
-WT_API struct wt_element *wt_GetHoveredElement(struct wt_document *doc,
-		struct wt_sin2 *pos);
+WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
+                struct wut_Sin2 *pos);
 
 
 /*
@@ -143,8 +143,8 @@ WT_API struct wt_element *wt_GetHoveredElement(struct wt_document *doc,
  * @doc: Pointer to the document
  * @ele: The starting element of the branch
  */
-WT_API void wt_UpdateDocumentBranch(struct wt_document *doc,
-		struct wt_element *ele);
+WUT_API void wut_UpdateDocumentBranch(struct wut_Document *doc,
+                struct wut_Element *ele);
 
 
 /*
@@ -152,7 +152,7 @@ WT_API void wt_UpdateDocumentBranch(struct wt_document *doc,
  *
  * @doc: Pointer to the document
  */
-WT_API void wt_UpdateDocument(struct wt_document *doc);
+WUT_API void wut_UpdateDocument(struct wut_Document *doc);
 
 
 /*
@@ -162,8 +162,8 @@ WT_API void wt_UpdateDocument(struct wt_document *doc);
  * @doc: Pointer to the document
  * @ele: The starting element of the branch
  */
-WT_API void wt_RenderDocumentUIBranch(struct wt_document *doc,
-		struct wt_element *ele);
+WUT_API void wut_RenderDocumentUIBranch(struct wut_Document *doc,
+                struct wut_Element *ele);
 
 
 /*
@@ -171,7 +171,7 @@ WT_API void wt_RenderDocumentUIBranch(struct wt_document *doc,
  *
  * @doc: Pointer to the document
  */
-WT_API void wt_RenderDocumentUI(struct wt_document *doc);
+WUT_API void wut_RenderDocumentUI(struct wut_Document *doc);
 
 
 /*
@@ -179,7 +179,7 @@ WT_API void wt_RenderDocumentUI(struct wt_document *doc);
  *
  * @doc: Pointer to the document
  */
-WT_API void wt_RenderDocument(struct wt_document *doc);
+WUT_API void wut_RenderDocument(struct wut_Document *doc);
 
 
 /*
@@ -189,7 +189,7 @@ WT_API void wt_RenderDocument(struct wt_document *doc);
  * @doc: Pointer to the document
  * @ele: Pointer to the starting element or NULL
  */
-WT_API void wt_ShowDocumentTree(struct wt_document *doc,
-		struct wt_element *ele);
+WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
+                struct wut_Element *ele);
 
-#endif /* _WT_DOCUMENT_H */
+#endif /* _WUT_DOCUMENT_H */

@@ -19,192 +19,192 @@
 
 
 
-WT_INTERN s8 wt_eletemp_load_body(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_body(struct wut_Element *ele, void *data)
 {
-	struct wt_style *style = &ele->style;
-	struct wt_stylesheet *sheet = &style->sheet;
+	struct wut_Style *style = &ele->style;
+	struct wut_Stylesheet *sheet = &style->sheet;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	/*
 	 * DISPLAY
 	 */
-	wt_sheet_parse(sheet, "display_mode: visible;");
+	wut_sht_parse(sheet, "display_mode: visible;");
 
 	/*
 	 * SIZE
 	 */
-	wt_sheet_parse(sheet, "width: 100pct;");
-	wt_sheet_parse(sheet, "height: 100pct;");
+	wut_sht_parse(sheet, "width: 100pct;");
+	wut_sht_parse(sheet, "height: 100pct;");
 
 	/*
 	 * REFERENCE
 	 */
-	wt_sheet_parse(sheet, "reference_mode: relative;");
+	wut_sht_parse(sheet, "reference_mode: relative;");
 
 	/*
 	 * SPACING
 	 */
-	wt_sheet_parse(sheet, "spacing_top: 0;");
-	wt_sheet_parse(sheet, "spacing_right: 0;");
-	wt_sheet_parse(sheet, "spacing_bottom: 0;");
-	wt_sheet_parse(sheet, "spacing_left: 0;");
+	wut_sht_parse(sheet, "spacing_top: 0;");
+	wut_sht_parse(sheet, "spacing_right: 0;");
+	wut_sht_parse(sheet, "spacing_bottom: 0;");
+	wut_sht_parse(sheet, "spacing_left: 0;");
 
 	/*
 	 * PADDING
 	 */
-	wt_sheet_parse(sheet, "padding_top: 0;");
-	wt_sheet_parse(sheet, "padding_right: 0;");
-	wt_sheet_parse(sheet, "padding_bottom: 0;");
-	wt_sheet_parse(sheet, "padding_left: 0;");
+	wut_sht_parse(sheet, "padding_top: 0;");
+	wut_sht_parse(sheet, "padding_right: 0;");
+	wut_sht_parse(sheet, "padding_bottom: 0;");
+	wut_sht_parse(sheet, "padding_left: 0;");
 
 	/*
 	 * BORDER
 	 */
-	wt_sheet_parse(sheet, "border_mode: none;");
-	wt_sheet_parse(sheet, "border_width: 0;");
-	wt_sheet_parse(sheet, "border_color: #000000;");
+	wut_sht_parse(sheet, "border_mode: none;");
+	wut_sht_parse(sheet, "border_width: 0;");
+	wut_sht_parse(sheet, "border_color: #000000;");
 
 	/*
 	 * RADIUS
 	 */
-	wt_sheet_parse(sheet, "radius_top_left: 0;");
-	wt_sheet_parse(sheet, "radius_top_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_left: 0;");
+	wut_sht_parse(sheet, "radius_top_left: 0;");
+	wut_sht_parse(sheet, "radius_top_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_left: 0;");
 
 	/*
 	 * INFILL
 	 */
-	wt_sheet_parse(sheet, "infill_mode: color;");
-	wt_sheet_parse(sheet, "infill_color: #B00B1E;");
+	wut_sht_parse(sheet, "infill_mode: color;");
+	wut_sht_parse(sheet, "infill_color: #B00B1E;");
 
 	/*
 	 * LAYOUT
 	 */
-	wt_sheet_parse(sheet, "layout_mode: block;");
+	wut_sht_parse(sheet, "layout_mode: block;");
 
 	/*
 	 * ALIGNMENT
 	 */
-	wt_sheet_parse(sheet, "align_v: top;");
-	wt_sheet_parse(sheet, "align_h: left;");
+	wut_sht_parse(sheet, "align_v: top;");
+	wut_sht_parse(sheet, "align_h: left;");
 
 	/*
 	 * SCROLLBAR
 	 */
-	wt_sheet_parse(sheet, "scrollbar_mode: auto;");
+	wut_sht_parse(sheet, "scrollbar_mode: auto;");
 
 	/*
 	 * TEXT
 	 */
-	wt_sheet_parse(sheet, "text_size: 50px;");
-	wt_sheet_parse(sheet, "text_color: #000000;");
-	wt_sheet_parse(sheet, "text_mass: 50;");
-	wt_sheet_parse(sheet, "text_options: none;");
-	wt_sheet_parse(sheet, "text_wrap_mode: wordwrap;");
-	wt_sheet_parse(sheet, "text_spacing: 1.0;");
-	wt_sheet_parse(sheet, "line_height: 20px;");
+	wut_sht_parse(sheet, "text_size: 50px;");
+	wut_sht_parse(sheet, "text_color: #000000;");
+	wut_sht_parse(sheet, "text_mass: 50;");
+	wut_sht_parse(sheet, "text_options: none;");
+	wut_sht_parse(sheet, "text_wrap_mode: wordwrap;");
+	wut_sht_parse(sheet, "text_spacing: 1.0;");
+	wut_sht_parse(sheet, "line_height: 20px;");
 
 	return 0;
 }
 
 
-WT_INTERN s8 wt_eletemp_load_block(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_block(struct wut_Element *ele, void *data)
 {
-	struct wt_style *style = &ele->style;
-	struct wt_stylesheet *sheet = &style->sheet;
+	struct wut_Style *style = &ele->style;
+	struct wut_Stylesheet *sheet = &style->sheet;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	/*
 	 * DISPLAY
 	 */
-	wt_sheet_parse(sheet, "display_mode: visible;");
+	wut_sht_parse(sheet, "display_mode: visible;");
 
 	/*
 	 * SIZE
 	 */
-	wt_sheet_parse(sheet, "width: 100pct;");
-	wt_sheet_parse(sheet, "height: 100pct;");
+	wut_sht_parse(sheet, "width: 100pct;");
+	wut_sht_parse(sheet, "height: 100pct;");
 
 	/*
 	 * REFERENCE
 	 */
-	wt_sheet_parse(sheet, "reference_mode: relative;");
+	wut_sht_parse(sheet, "reference_mode: relative;");
 
 	/*
 	 * SPACING
 	 */
-	wt_sheet_parse(sheet, "spacing_top: 0;");
-	wt_sheet_parse(sheet, "spacing_right: 0;");
-	wt_sheet_parse(sheet, "spacing_bottom: 0;");
-	wt_sheet_parse(sheet, "spacing_left: 0;");
+	wut_sht_parse(sheet, "spacing_top: 0;");
+	wut_sht_parse(sheet, "spacing_right: 0;");
+	wut_sht_parse(sheet, "spacing_bottom: 0;");
+	wut_sht_parse(sheet, "spacing_left: 0;");
 
 	/*
 	 * PADDING
 	 */
-	wt_sheet_parse(sheet, "padding_top: 0;");
-	wt_sheet_parse(sheet, "padding_right: 0;");
-	wt_sheet_parse(sheet, "padding_bottom: 0;");
-	wt_sheet_parse(sheet, "padding_left: 0;");
+	wut_sht_parse(sheet, "padding_top: 0;");
+	wut_sht_parse(sheet, "padding_right: 0;");
+	wut_sht_parse(sheet, "padding_bottom: 0;");
+	wut_sht_parse(sheet, "padding_left: 0;");
 
 	/*
 	 * BORDER
 	 */
-	wt_sheet_parse(sheet, "border_mode: none;");
-	wt_sheet_parse(sheet, "border_width: 0;");
-	wt_sheet_parse(sheet, "border_color: #000000;");
+	wut_sht_parse(sheet, "border_mode: none;");
+	wut_sht_parse(sheet, "border_width: 0;");
+	wut_sht_parse(sheet, "border_color: #000000;");
 
 	/*
 	 * RADIUS
 	 */
-	wt_sheet_parse(sheet, "radius_top_left: 0;");
-	wt_sheet_parse(sheet, "radius_top_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_left: 0;");
+	wut_sht_parse(sheet, "radius_top_left: 0;");
+	wut_sht_parse(sheet, "radius_top_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_left: 0;");
 
 	/*
 	 * INFILL
 	 */
-	wt_sheet_parse(sheet, "infill_mode: color;");
-	wt_sheet_parse(sheet, "infill_color: #B00B1E;");
+	wut_sht_parse(sheet, "infill_mode: color;");
+	wut_sht_parse(sheet, "infill_color: #B00B1E;");
 
 	/*
 	 * LAYOUT
 	 */
-	wt_sheet_parse(sheet, "layout_mode: block;");
+	wut_sht_parse(sheet, "layout_mode: block;");
 
 	/*
 	 * ALIGNMENT
 	 */
-	wt_sheet_parse(sheet, "align_v: top;");
-	wt_sheet_parse(sheet, "align_h: left;");
+	wut_sht_parse(sheet, "align_v: top;");
+	wut_sht_parse(sheet, "align_h: left;");
 
 	/*
 	 * SCROLLBAR
 	 */
-	wt_sheet_parse(sheet, "scrollbar_mode: auto;");
+	wut_sht_parse(sheet, "scrollbar_mode: auto;");
 
 	/*
 	 * TEXT
 	 */
-	wt_sheet_parse(sheet, "text_size: 12px;");
-	wt_sheet_parse(sheet, "text_color: #000000;");
-	wt_sheet_parse(sheet, "text_mass: 50;");
-	wt_sheet_parse(sheet, "text_options: none;");
-	wt_sheet_parse(sheet, "text_wrap_mode: WORDWRAP;");
+	wut_sht_parse(sheet, "text_size: 12px;");
+	wut_sht_parse(sheet, "text_color: #000000;");
+	wut_sht_parse(sheet, "text_mass: 50;");
+	wut_sht_parse(sheet, "text_options: none;");
+	wut_sht_parse(sheet, "text_wrap_mode: WORDWRAP;");
 
 	return 0;
 }
 
 
-WT_INTERN s8 wt_eletemp_load_text(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_text(struct wut_Element *ele, void *data)
 {
 	/*
 	 * Create and initialize the Image-Widget.
 	 */
-	if(!(ele->widget = wt_CreateWidget(ele, WT_WIDGET_TEXT, data))) {
+	if(!(ele->widget = wut_CreateWidget(ele, WUT_WIDGET_TEXT, data))) {
 		return -1;
 	}
 
@@ -213,116 +213,116 @@ WT_INTERN s8 wt_eletemp_load_text(struct wt_element *ele, void *data)
 }
 
 
-WT_INTERN s8 wt_eletemp_load_button(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_button(struct wut_Element *ele, void *data)
 {
-	wt_Ignore(ele);
-	wt_Ignore(data);
+	WUT_IGNORE(ele);
+	WUT_IGNORE(data);
 
 	return 0;
 }
 
 
-WT_INTERN s8 wt_eletemp_load_input(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_input(struct wut_Element *ele, void *data)
 {
-	wt_Ignore(ele);
-	wt_Ignore(data);
+	WUT_IGNORE(ele);
+	WUT_IGNORE(data);
 
 	return 0;
 }
 
 
-WT_INTERN s8 wt_eletemp_load_image(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_image(struct wut_Element *ele, void *data)
 {
-	wt_Ignore(ele);
-	wt_Ignore(data);
+	WUT_IGNORE(ele);
+	WUT_IGNORE(data);
 
-	struct wt_style *style = &ele->style;
-	struct wt_stylesheet *sheet = &style->sheet;
+	struct wut_Style *style = &ele->style;
+	struct wut_Stylesheet *sheet = &style->sheet;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	/*
 	 * DISPLAY
 	 */
-	wt_sheet_parse(sheet, "display_mode: visible;");
+	wut_sht_parse(sheet, "display_mode: visible;");
 
 	/*
 	 * SIZE
 	 */
-	wt_sheet_parse(sheet, "width: 100pct;");
-	wt_sheet_parse(sheet, "height: 100pct;");
+	wut_sht_parse(sheet, "width: 100pct;");
+	wut_sht_parse(sheet, "height: 100pct;");
 
 	/*
 	 * REFERENCE
 	 */
-	wt_sheet_parse(sheet, "reference_mode: relative;");
+	wut_sht_parse(sheet, "reference_mode: relative;");
 
 	/*
 	 * SPACING
 	 */
-	wt_sheet_parse(sheet, "spacing_top: 0;");
-	wt_sheet_parse(sheet, "spacing_right: 0;");
-	wt_sheet_parse(sheet, "spacing_bottom: 0;");
-	wt_sheet_parse(sheet, "spacing_left: 0;");
+	wut_sht_parse(sheet, "spacing_top: 0;");
+	wut_sht_parse(sheet, "spacing_right: 0;");
+	wut_sht_parse(sheet, "spacing_bottom: 0;");
+	wut_sht_parse(sheet, "spacing_left: 0;");
 
 	/*
 	 * PADDING
 	 */
-	wt_sheet_parse(sheet, "padding_top: 0;");
-	wt_sheet_parse(sheet, "padding_right: 0;");
-	wt_sheet_parse(sheet, "padding_bottom: 0;");
-	wt_sheet_parse(sheet, "padding_left: 0;");
+	wut_sht_parse(sheet, "padding_top: 0;");
+	wut_sht_parse(sheet, "padding_right: 0;");
+	wut_sht_parse(sheet, "padding_bottom: 0;");
+	wut_sht_parse(sheet, "padding_left: 0;");
 
 	/*
 	 * BORDER
 	 */
-	wt_sheet_parse(sheet, "border_mode: none;");
-	wt_sheet_parse(sheet, "border_width: 0;");
-	wt_sheet_parse(sheet, "border_color: #000000;");
+	wut_sht_parse(sheet, "border_mode: none;");
+	wut_sht_parse(sheet, "border_width: 0;");
+	wut_sht_parse(sheet, "border_color: #000000;");
 
 	/*
 	 * RADIUS
 	 */
-	wt_sheet_parse(sheet, "radius_top_left: 0;");
-	wt_sheet_parse(sheet, "radius_top_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_right: 0;");
-	wt_sheet_parse(sheet, "radius_bottom_left: 0;");
+	wut_sht_parse(sheet, "radius_top_left: 0;");
+	wut_sht_parse(sheet, "radius_top_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_right: 0;");
+	wut_sht_parse(sheet, "radius_bottom_left: 0;");
 
 	/*
 	 * INFILL
 	 */
-	wt_sheet_parse(sheet, "infill_mode: color;");
-	wt_sheet_parse(sheet, "infill_color: #B00B1E;");
+	wut_sht_parse(sheet, "infill_mode: color;");
+	wut_sht_parse(sheet, "infill_color: #B00B1E;");
 
 	/*
 	 * LAYOUT
 	 */
-	wt_sheet_parse(sheet, "layout_mode: block;");
+	wut_sht_parse(sheet, "layout_mode: block;");
 
 	/*
 	 * ALIGNMENT
 	 */
-	wt_sheet_parse(sheet, "align_v: top;");
-	wt_sheet_parse(sheet, "align_h: left;");
+	wut_sht_parse(sheet, "align_v: top;");
+	wut_sht_parse(sheet, "align_h: left;");
 
 	/*
 	 * SCROLLBAR
 	 */
-	wt_sheet_parse(sheet, "scrollbar_mode: auto;");
+	wut_sht_parse(sheet, "scrollbar_mode: auto;");
 
 	/*
 	 * TEXT
 	 */
-	wt_sheet_parse(sheet, "text_size: 12px;");
-	wt_sheet_parse(sheet, "text_color: #000000;");
-	wt_sheet_parse(sheet, "text_mass: 50;");
-	wt_sheet_parse(sheet, "text_options: none;");
-	wt_sheet_parse(sheet, "text_wrap_mode: WORDWRAP;");
+	wut_sht_parse(sheet, "text_size: 12px;");
+	wut_sht_parse(sheet, "text_color: #000000;");
+	wut_sht_parse(sheet, "text_mass: 50;");
+	wut_sht_parse(sheet, "text_options: none;");
+	wut_sht_parse(sheet, "text_wrap_mode: WORDWRAP;");
 
 	/*
 	 * Create and initialize the Image-Widget.
 	 */
-	if(!(ele->widget = wt_CreateWidget(ele, WT_WIDGET_IMAGE, data))) {
+	if(!(ele->widget = wut_CreateWidget(ele, WUT_WIDGET_IMAGE, data))) {
 		return -1;
 	}
 
@@ -330,16 +330,16 @@ WT_INTERN s8 wt_eletemp_load_image(struct wt_element *ele, void *data)
 }
 
 
-WT_INTERN s8 wt_eletemp_load_view(struct wt_element *ele, void *data)
+WUT_INTERN s8 wut_etmp_load_view(struct wut_Element *ele, void *data)
 {
-	struct wt_style *style = &ele->style;
+	struct wut_Style *style = &ele->style;
 
-	wt_Ignore(style);
+	WUT_IGNORE(style);
 
 	/*
 	 * Create and initialize the View-Widget.
 	 */
-	if(!(ele->widget = wt_CreateWidget(ele, WT_WIDGET_VIEW, data)))
+	if(!(ele->widget = wut_CreateWidget(ele, WUT_WIDGET_VIEW, data)))
 		return -1;
 
 
@@ -347,10 +347,10 @@ WT_INTERN s8 wt_eletemp_load_view(struct wt_element *ele, void *data)
 }
 
 
-WT_API s8 wt_eletemp_load(struct wt_element *ele, void *data)
+WUT_API s8 wut_etmp_load(struct wut_Element *ele, void *data)
 {
 	if(!ele) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -359,19 +359,19 @@ WT_API s8 wt_eletemp_load(struct wt_element *ele, void *data)
 	 * different element types.
 	 */
 	switch(ele->type) {
-		case WT_BODY: wt_eletemp_load_body(ele, data); break;
-		case WT_BLOCK: wt_eletemp_load_block(ele, data); break;
-		case WT_TEXT: wt_eletemp_load_text(ele, data); break;
-		case WT_BUTTON: wt_eletemp_load_button(ele, data); break;
-		case WT_INPUT: wt_eletemp_load_input(ele, data); break;
-		case WT_IMAGE: wt_eletemp_load_image(ele, data); break;
-		case WT_VIEW: wt_eletemp_load_view(ele, data); break;
+		case WUT_BODY: wut_etmp_load_body(ele, data); break;
+		case WUT_BLOCK: wut_etmp_load_block(ele, data); break;
+		case WUT_TEXT: wut_etmp_load_text(ele, data); break;
+		case WUT_BUTTON: wut_etmp_load_button(ele, data); break;
+		case WUT_INPUT: wut_etmp_load_input(ele, data); break;
+		case WUT_IMAGE: wut_etmp_load_image(ele, data); break;
+		case WUT_VIEW: wut_etmp_load_view(ele, data); break;
 		default:break;
 	}
 
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load element template");
+	WUT_ALARM(WUT_ERROR, "Failed to load element template");
 	return -1;
 }
