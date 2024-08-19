@@ -11,23 +11,18 @@
 #include <stdlib.h>
 
 
-WT_API s8 wt_sdl_init(void)
+WUT_API s8 wut_sdl_init(void)
 {
 	s32 imgFlags = IMG_INIT_PNG;
 
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to initialize SDL");
-		WT_ALARM(WT_ERROR, SDL_GetError());
+		WUT_ALARM(WUT_ERROR, "Failed to initialize SDL");
+		WUT_ALARM(WUT_ERROR, SDL_GetError());
 		goto err_return;
 	}
 
-	if(TTF_Init() < 0) {
-		WT_ALARM(WT_ERROR, "Failed to initialize SDL_TTF");
-		goto err_quit_sdl;
-	}
-
 	if(!(IMG_Init(imgFlags) & imgFlags)) {
-		WT_ALARM(WT_ERROR, "Failed to initialize SDL_IMG");
+		WUT_ALARM(WUT_ERROR, "Failed to initialize SDL_IMG");
 		goto err_quit_sdl;
 	}
 	
@@ -37,12 +32,12 @@ err_quit_sdl:
 	SDL_Quit();
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to initialize SDL module");
+	WUT_ALARM(WUT_ERROR, "Failed to initialize SDL module");
 	return -1;
 }
 
 
-WT_API void wt_sdl_quit(void)
+WUT_API void wut_sdl_quit(void)
 {
 	if(TTF_WasInit())
 		TTF_Quit();
@@ -51,7 +46,7 @@ WT_API void wt_sdl_quit(void)
 }
 
 
-WT_API void wt_sdl_print_info(void)
+WUT_API void wut_sdl_print_info(void)
 {
 	SDL_version sdl_comp;
 	SDL_version sdl_link;

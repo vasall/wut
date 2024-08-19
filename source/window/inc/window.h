@@ -1,7 +1,7 @@
-#ifndef _WT_WINDOW_H
-#define _WT_WINDOW_H
+#ifndef _WUT_WINDOW_H
+#define _WUT_WINDOW_H
 
-struct wt_window;
+struct wut_Window;
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -19,28 +19,28 @@ struct wt_window;
 
 #include "utility/inc/shape.h"
 
-#define WT_WIN_NAME_LIM  	126
-#define WT_WIN_CHILDREN_LIM     6
+#define WUT_WIN_NAME_LIM  	126
+#define WUT_WIN_CHILDREN_LIM     6
 
 
 /*
  * INFO-FLAGS
  */
-#define WT_WIN_INFO_MAIN	(1<<0)
-#define WT_WIN_INFO_VISIBLE	(1<<1)
+#define WUT_WIN_INFO_MAIN	(1<<0)
+#define WUT_WIN_INFO_VISIBLE	(1<<1)
 
 
-struct wt_window {
-	wt_identity_t identity;
+struct wut_Window {
+	enum wut_eIdentity      identity;
 
 	/* The unique identifier for this window */
-	u16 id;
+	u16                     id;
 
 	/* The name of the window */
-	char name[WT_WIN_NAME_LIM];
+	char                    name[WUT_WIN_NAME_LIM];
 
 	/* The size of the window in pixels */
-	struct wt_rect shape;
+	struct wut_Rect         shape;
 
 	/* 
 	 * The state flags of this window (from lowest to highest):
@@ -48,46 +48,46 @@ struct wt_window {
 	 * 0: Main window
 	 * 1: Visibility
 	 */
-	u8 info;
+	u8                      info;
 
 	/* The SDL_Window-handle */
-	SDL_Window *handle;
+	SDL_Window              *handle;
 
 	/* References to both the parent and children windows */
-	struct wt_window *parent;
-	s32 level;
+	struct wut_Window       *parent;
+	s32                     level;
 
-	u8 children_num;
-	struct wt_window *firstborn;
+	u8                      children_num;
+	struct wut_Window       *firstborn;
 
-	struct wt_window *older_sibling;
-	struct wt_window *younger_sibling;
+	struct wut_Window       *left_window;
+	struct wut_Window       *right_window;
 
 
 	/* The document contained in this window */
-	struct wt_document *document;
+	struct wut_Document     *document;
 
 	/* The rendering context */
-	struct wt_context *context;
+	struct wut_Context      *context;
 
 
-	struct wt_element *hovered;
-	struct wt_element *selected;
+	struct wut_Element      *hovered;
+	struct wut_Element      *selected;
 
-	struct wt_event_handler *event_handler;
+	struct wut_EventHandler *event_handler;
 };
 
 
 /* The default callback function higher-level-functions for windows */
-typedef s8 (*wt_win_cfnc)(struct wt_window *, void *);
+typedef s8 (*wut_WindowFunc)(struct wut_Window *, void *);
 
 
-struct wt_win_selector {
+struct wut_win_selector {
 	s8 state;
 
 	s32 id;
 
-	struct wt_window *win;
+	struct wut_Window *win;
 };
 
 
@@ -111,8 +111,8 @@ struct wt_win_selector {
  * @post_fnc: The post-function
  * @data: A data pointer which will be passed to every function call
  */
-WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
-		wt_win_cfnc post_fnc, void *data);
+WUT_XMOD void wut_win_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
+		wut_WindowFunc post_fnc, void *data);
 
 
 /*
@@ -120,13 +120,13 @@ WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
  *
  * @win: Pointer to the window to redraw.
  */
-WT_XMOD void wt_window_redraw(struct wt_window *win);
+WUT_XMOD void wut_win_redraw(struct wut_Window *win);
 
 
 /*
- * This function will call the wt_win_redraw() function on all visible windows.
+ * This function will call the wut_win_redraw() function on all visible windows.
  */
-WT_XMOD void wt_window_redraw_all(void);
+WUT_XMOD void wut_win_redraw_all(void);
 
 
 /*
@@ -137,7 +137,7 @@ WT_XMOD void wt_window_redraw_all(void);
  *
  * Returns: 1 if the element has been selected, 0 if nothing has been done
  */
-WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele);
+WUT_XMOD s8 wut_win_hover(struct wut_Window *win, struct wut_Element *ele);
 
 
 
@@ -149,7 +149,7 @@ WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele);
  *
  * Returns: 1 if the element has been selected, 0 if nothing has been done
  */
-WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele);
+WUT_XMOD s8 wut_win_select(struct wut_Window *win, struct wut_Element *ele);
 
 
 
@@ -172,7 +172,7 @@ WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele);
  *
  * Returns: Either a pointer to the created window or NULL if an error occurred
  */
-WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
+WUT_API struct wut_Window *wut_CreateWindow(struct wut_Window *parent, char *name,
 		s32 width, s32 height);
 
 
@@ -181,7 +181,7 @@ WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
  *
  * @win: Pointer to the window to close
  */
-WT_API void wt_CloseWindow(struct wt_window *win);
+WUT_API void wut_CloseWindow(struct wut_Window *win);
 
 
 /*
@@ -193,7 +193,7 @@ WT_API void wt_CloseWindow(struct wt_window *win);
  * Returns: A pointer to the window or NULL if either an error occurred or the
  * 	    window could not be found
  */
-WT_API struct wt_window *wt_GetWindow(s32 wd);
+WUT_API struct wut_Window *wut_GetWindow(s32 wd);
 
 
 /*
@@ -203,7 +203,7 @@ WT_API struct wt_window *wt_GetWindow(s32 wd);
  * @w: The new width
  * @h: The new height
  */
-WT_API void wt_ResizeWindow(struct wt_window *win, u16 w, u16 h);
+WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h);
 
 
 /*
@@ -211,7 +211,7 @@ WT_API void wt_ResizeWindow(struct wt_window *win, u16 w, u16 h);
  *
  * @win: Pointer to the window
  */
-WT_API void wt_ActivateWindow(struct wt_window *win);
+WUT_API void wut_ActivateWindow(struct wut_Window *win);
 
 
 /*
@@ -221,7 +221,7 @@ WT_API void wt_ActivateWindow(struct wt_window *win);
  *
  * Returns: A pointer to the context
  */
-WT_API struct wt_context *wt_GetContext(struct wt_window *win);
+WUT_API struct wut_Context *wut_GetContext(struct wut_Window *win);
 
 
 /*
@@ -231,13 +231,13 @@ WT_API struct wt_context *wt_GetContext(struct wt_window *win);
  *
  * Returns: A pointer to the document of a window
  */
-WT_API struct wt_document *wt_GetDocument(struct wt_window *win);
+WUT_API struct wut_Document *wut_GetDocument(struct wut_Window *win);
 
 
 /*
  * Show all windows in the console.
  */
-WT_API void wt_DumpWindowTree(void);
+WUT_API void wut_DumpWindowTree(void);
 
 
-#endif /* _WT_WINDOW_H */
+#endif /* _WUT_WINDOW_H */

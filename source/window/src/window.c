@@ -13,38 +13,38 @@
 
 
 
-WT_INTERN struct wt_window *win_create(char *name, s16 w, s16 h)
+WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 {
-	struct wt_window *win;
+	struct wut_Window *win;
 	SDL_Window *hdl;
 	s8 name_len;
 
 	name_len = strlen(name);
-	if(name_len < 1 || name_len > WT_WIN_NAME_LIM) {
-		WT_ALARM(WT_ERROR, "Window name is invalid");
+	if(name_len < 1 || name_len > WUT_WIN_NAME_LIM) {
+		WUT_ALARM(WUT_ERROR, "Window name is invalid");
 		goto err_return;
 	}
 
 	/* Allocate the memory for the window struct */
-	if(!(win = wt_malloc(sizeof(struct wt_window)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate the window struct");
+	if(!(win = wut_malloc(sizeof(struct wut_Window)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate the window struct");
 		goto err_return;
 	}
 
 	/* Create the SDL window */
 	if(!(hdl = SDL_CreateWindow(name, 0, 0, w, h, SDL_WINDOW_OPENGL))) {
-		WT_ALARM(WT_ERROR, "Failed to create SDL window");
+		WUT_ALARM(WUT_ERROR, "Failed to create SDL window");
 		goto err_free_win;
 	}
 
 	/* Set the identifier byte */
-	win->identity = WT_IDT_WINDOW;
+	win->identity = WUT_IDT_WINDOW;
 		
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
-	wt_rect_set(&win->shape, 0, 0, w, h);
-	win->info = WT_WIN_INFO_VISIBLE;
+	wut_rct_set(&win->shape, 0, 0, w, h);
+	win->info = WUT_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
 
 	win->parent = NULL;
@@ -52,84 +52,84 @@ WT_INTERN struct wt_window *win_create(char *name, s16 w, s16 h)
 	win->children_num = 0;
 	win->firstborn = NULL;
 
-	win->older_sibling = NULL;
-	win->younger_sibling = NULL;
+	win->left_window = NULL;
+	win->right_window = NULL;
 
 	win->hovered = NULL;
 	win->selected = NULL;
 
 	/* Create the rendering context used by the window */
-	if(!(win->context = wt_CreateContext(win))) {
-		WT_ALARM(WT_ERROR, "Failed to create rendering context");
+	if(!(win->context = wut_CreateContext(win))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create rendering context");
 		goto err_destroy_hdl;
 	}
 
 	/* Create the document contained in the window */
-	if(!(win->document = wt_CreateDocument(win))) {
-		WT_ALARM(WT_ERROR, "Failed to create document for window");
+	if(!(win->document = wut_CreateDocument(win))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create document for window");
 		goto err_destroy_ctx;
 	}
 
 	/* Create the event handler */
-	if(!(win->event_handler = wt_handler_create()))
+	if(!(win->event_handler = wut_hdl_create()))
 		goto err_destroy_document;
 
 	return win;
 
 err_destroy_document:
-	wt_DestroyDocument(win->document);
+	wut_DestroyDocument(win->document);
 
 err_destroy_ctx:
-	wt_DestroyContext(win->context);
+	wut_DestroyContext(win->context);
 
 err_destroy_hdl:
 	SDL_DestroyWindow(win->handle);
 
 err_free_win:
-	wt_free(win);
+	wut_free(win);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create window");
+	WUT_ALARM(WUT_ERROR, "Failed to create window");
 	return NULL;
 }
 
 
-WT_INTERN void win_destroy(struct wt_window *win)
+WUT_INTERN void win_destroy(struct wut_Window *win)
 {
-	struct wt_window *mwin;
+	struct wut_Window *mwin;
 
-	mwin = wt_core_get_main_window();
+	mwin = wut_cor_get_main_window();
 	if(strcmp(mwin->name, win->name) == 0) {
-		wt_core_set_main_window(NULL);
+		wut_cor_set_main_window(NULL);
 	}
 
-	wt_handler_destroy(win->event_handler);
+	wut_hdl_destroy(win->event_handler);
 
-	wt_DestroyDocument(win->document);
+	wut_DestroyDocument(win->document);
 
-	wt_DestroyContext(win->context);
+	wut_DestroyContext(win->context);
 
 	SDL_DestroyWindow(win->handle);
 
-	wt_free(win);
+	wut_free(win);
 }
 
 
-WT_INTERN s8 win_attach(struct wt_window *par, struct wt_window *win)
+WUT_INTERN s8 win_attach(struct wut_Window *par, struct wut_Window *win)
 {
-	struct wt_window *run;
+	struct wut_Window *run;
 
 	if(!par->firstborn) {
 		par->firstborn = win;
 	}
 	else {
 		run = par->firstborn;
-		while(run->younger_sibling) {
-			run = run->younger_sibling;
+		while(run->right_window) {
+			run = run->right_window;
 		}
 		
-		run->younger_sibling = win;
-		win->older_sibling = run;
+		run->right_window = win;
+		win->left_window = run;
 
 	}
 
@@ -143,9 +143,9 @@ WT_INTERN s8 win_attach(struct wt_window *par, struct wt_window *win)
 }
 
 
-WT_INTERN void win_detach(struct wt_window *win)
+WUT_INTERN void win_detach(struct wut_Window *win)
 {
-	struct wt_window *par;
+	struct wut_Window *par;
 
 	if(!win->parent) {
 		return;
@@ -153,14 +153,14 @@ WT_INTERN void win_detach(struct wt_window *win)
 
 	par = win->parent;
 
-	if(!win->older_sibling) {
-		par->firstborn = win->younger_sibling;
+	if(!win->left_window) {
+		par->firstborn = win->right_window;
 	}
 	else
-		(win->older_sibling)->younger_sibling = win->younger_sibling;
+		(win->left_window)->right_window = win->right_window;
 
-	if(win->younger_sibling)
-		(win->younger_sibling)->older_sibling = win->older_sibling;
+	if(win->right_window)
+		(win->right_window)->left_window = win->left_window;
 
 
 	win->parent = NULL;
@@ -170,16 +170,16 @@ WT_INTERN void win_detach(struct wt_window *win)
 }
 
 
-WT_INTERN s8 win_cfnc_close(struct wt_window *w, void *data)
+WUT_INTERN s8 win_cfnc_close(struct wut_Window *w, void *data)
 {
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	/* First detach the window... */
 	win_detach(w);
 
 	/* Then check if this window is the active one */
-	if(wt_core_is_active_window(w))
-		wt_core_set_active_window(NULL);
+	if(wut_cor_is_active_window(w))
+		wut_cor_set_active_window(NULL);
 
 	/* ...finally destroy it */
 	win_destroy(w);
@@ -187,9 +187,9 @@ WT_INTERN s8 win_cfnc_close(struct wt_window *w, void *data)
 	return 0;
 }
 
-WT_INTERN s8 win_cfnc_redraw(struct wt_window *win, void *data)
+WUT_INTERN s8 win_cfnc_redraw(struct wut_Window *win, void *data)
 {
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	/* Select the current context */
 	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);
@@ -198,10 +198,10 @@ WT_INTERN s8 win_cfnc_redraw(struct wt_window *win, void *data)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	/* Render the Document-UI and views */
-	wt_RenderDocument(win->document);
+	wut_RenderDocument(win->document);
 
 	/* Flush all batches */
-	wt_ContextRenderBatches(win->context);
+	wut_ContextRenderBatches(win->context);
 
 	/* Swap buffer */
 	SDL_GL_SwapWindow(win->handle);
@@ -210,9 +210,9 @@ WT_INTERN s8 win_cfnc_redraw(struct wt_window *win, void *data)
 }
 
 
-WT_INTERN s8 win_cfnc_find(struct wt_window *w, void *data)
+WUT_INTERN s8 win_cfnc_find(struct wut_Window *w, void *data)
 {
-	struct wt_win_selector *sel = (struct wt_win_selector *)data;
+	struct wut_win_selector *sel = (struct wut_win_selector *)data;
 
 	/* Check if the window has already been found */
 	if(sel->state == 1) {
@@ -231,11 +231,11 @@ WT_INTERN s8 win_cfnc_find(struct wt_window *w, void *data)
 }
 
 
-WT_INTERN s8 win_cfnc_show(struct wt_window *w, void *data)
+WUT_INTERN s8 win_cfnc_show(struct wut_Window *w, void *data)
 {
 	s32 i;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	for(i = 0; i < w->level; i++)
 		printf("  ");
@@ -256,11 +256,11 @@ WT_INTERN s8 win_cfnc_show(struct wt_window *w, void *data)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
-		wt_win_cfnc post_fnc, void *data)
+WUT_XMOD void wut_Window_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
+		wut_WindowFunc post_fnc, void *data)
 {
-	struct wt_window *run;
-	struct wt_window *next;
+	struct wut_Window *run;
+	struct wut_Window *next;
 
 	if(!str)
 		return;
@@ -274,9 +274,9 @@ WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
 	/* Call this function on all children */
 	run = str->firstborn;
 	while(run) {
-		next = run->younger_sibling;
+		next = run->right_window;
 
-		wt_window_hlf(run, pre_fnc, post_fnc, data);
+		wut_Window_hlf(run, pre_fnc, post_fnc, data);
 
 		run = next;
 	}
@@ -287,46 +287,46 @@ WT_XMOD void wt_window_hlf(struct wt_window *str, wt_win_cfnc pre_fnc,
 }
 
 
-WT_XMOD void wt_window_redraw(struct wt_window *win)
+WUT_XMOD void wut_Window_redraw(struct wut_Window *win)
 {
 	win_cfnc_redraw(win, NULL);
 }
 
 
-WT_XMOD void wt_window_redraw_all(void)
+WUT_XMOD void wut_Window_redraw_all(void)
 {
-	wt_window_hlf(wt_core_get_main_window(), &win_cfnc_redraw, NULL, NULL);
+	wut_Window_hlf(wut_cor_get_main_window(), &win_cfnc_redraw, NULL, NULL);
 }
 
 
-WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele)
+WUT_XMOD s8 wut_Window_hover(struct wut_Window *win, struct wut_Element *ele)
 {
-	struct wt_element *old_hovered;
+	struct wut_Element *old_hovered;
 
 	/*
 	 * Check if the hovered element has changed.
 	 */
-	if(!(wt_element_compare(win->hovered, ele))) {
+	if(!(wut_ele_compare(win->hovered, ele))) {
 		old_hovered = win->hovered;
 
 		/* If that is the case, first modify the element flags */
-		wt_element_mod_info(win->hovered, WT_ELEMENT_F_HOVERED, 0);
-		wt_element_mod_info(ele, WT_ELEMENT_F_HOVERED, 1);
+		wut_ele_mod_info(win->hovered, WUT_ELEMENT_F_HOVERED, 0);
+		wut_ele_mod_info(ele, WUT_ELEMENT_F_HOVERED, 1);
 
 		/* Then link the new element */
 		win->hovered = ele;
 
 		/* Lastly trigger the events */
 		if(old_hovered) {
-			wt_event_trigger_raw(
-					WT_EVT_ELEMENTLEAVE,
+			wut_evt_trigger_raw(
+					WUT_EVT_ELEMENTLEAVE,
 					win,
 					old_hovered
 					);
 		}
 
-		wt_event_trigger_raw(
-				WT_EVT_ELEMENTENTER,
+		wut_evt_trigger_raw(
+				WUT_EVT_ELEMENTENTER,
 				win,
 				ele
 				);
@@ -337,34 +337,34 @@ WT_XMOD s8 wt_window_hover(struct wt_window *win, struct wt_element *ele)
 }
 
 
-WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele)
+WUT_XMOD s8 wut_Window_select(struct wut_Window *win, struct wut_Element *ele)
 {
-	struct wt_element *old_selected;
+	struct wut_Element *old_selected;
 
 	/*
 	 * Check if the selected element has changed.
 	 */
-	if(!(wt_element_compare(win->selected, ele))) {
+	if(!(wut_ele_compare(win->selected, ele))) {
 		old_selected = win->selected;
 
 		/* If that is the case, first modify the element flags */
-		wt_element_mod_info(win->selected, WT_ELEMENT_F_SELECTED, 0);
-		wt_element_mod_info(ele, WT_ELEMENT_F_SELECTED, 1);
+		wut_ele_mod_info(win->selected, WUT_ELEMENT_F_SELECTED, 0);
+		wut_ele_mod_info(ele, WUT_ELEMENT_F_SELECTED, 1);
 
 		/* Then link the new element */
 		win->selected = ele;
 
 		/* Lastly trigger the events */
 		if(old_selected) {
-			wt_event_trigger_raw(
-					WT_EVT_ELEMENTUNSELECT,
+			wut_evt_trigger_raw(
+					WUT_EVT_ELEMENTUNSELECT,
 					win,
 					old_selected
 					);
 		}
 
-		wt_event_trigger_raw(
-				WT_EVT_ELEMENTSELECT,
+		wut_evt_trigger_raw(
+				WUT_EVT_ELEMENTSELECT,
 				win,
 				ele
 				);
@@ -384,13 +384,13 @@ WT_XMOD s8 wt_window_select(struct wt_window *win, struct wt_element *ele)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
+WUT_API struct wut_Window *wut_CreateWindow(struct wut_Window *parent, char *name,
 		s32 width, s32 height)
 {
-	struct wt_window *win;
+	struct wut_Window *win;
 
 	if(name == NULL || width < 0 || height < 0) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -405,49 +405,49 @@ WT_API struct wt_window *wt_CreateWindow(struct wt_window *parent, char *name,
 	/* Otherwise... */
 	else {
 		/* Mark this window as the main window */
-		win->info = win->info | WT_WIN_INFO_MAIN;
+		win->info = win->info | WUT_WIN_INFO_MAIN;
 
 		/* Set this window as the main window */
-		wt_core_set_main_window(win);
+		wut_cor_set_main_window(win);
 	}
 
 	return win;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create add new window");
+	WUT_ALARM(WUT_ERROR, "Failed to create add new window");
 	return NULL;
 }
 
 
-WT_API void wt_CloseWindow(struct wt_window *win)
+WUT_API void wut_CloseWindow(struct wut_Window *win)
 {
 	if(!win) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	wt_window_hlf(win, NULL, &win_cfnc_close, NULL);
+	wut_Window_hlf(win, NULL, &win_cfnc_close, NULL);
 
 	return;
 
 err_return:
-	WT_ALARM(WT_WARNING, "Failed to close window");
+	WUT_ALARM(WUT_WARNING, "Failed to close window");
 }
 
 
-WT_API struct wt_window *wt_GetWindow(s32 wd)
+WUT_API struct wut_Window *wut_GetWindow(s32 wd)
 {
-	struct wt_win_selector sel;
-	struct wt_window *mwin;
+	struct wut_win_selector sel;
+	struct wut_Window *mwin;
 
 	sel.state = 0;
 	sel.id = wd;
 	sel.win = NULL;
 
 	/* Recursifly search for the window... */
-	mwin = wt_core_get_main_window();
-	wt_window_hlf(mwin, &win_cfnc_find, NULL, &sel);
+	mwin = wut_cor_get_main_window();
+	wut_Window_hlf(mwin, &win_cfnc_find, NULL, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -458,29 +458,29 @@ WT_API struct wt_window *wt_GetWindow(s32 wd)
 }
 
 
-WT_API void wt_ResizeWindow(struct wt_window *win, u16 w, u16 h)
+WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h)
 {
 	if(!win) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	/*
 	 * Update the shape.
 	 */
-	wt_rect_set(&win->shape, 0, 0, w, h);
+	wut_rct_set(&win->shape, 0, 0, w, h);
 
 	/*
 	 * Update the document.
 	 */
-	wt_ResizeDocument(win->document);
+	wut_ResizeDocument(win->document);
 }
 
 
-WT_API void wt_ActivateWindow(struct wt_window *win)
+WUT_API void wut_ActivateWindow(struct wut_Window *win)
 {
 	if(!win) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -488,10 +488,10 @@ WT_API void wt_ActivateWindow(struct wt_window *win)
 }
 
 
-WT_API struct wt_context *wt_GetContext(struct wt_window *win)
+WUT_API struct wut_Context *wut_GetContext(struct wut_Window *win)
 {
 	if(!win) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -499,10 +499,10 @@ WT_API struct wt_context *wt_GetContext(struct wt_window *win)
 }
 
 
-WT_API struct wt_document *wt_GetDocument(struct wt_window *win)
+WUT_API struct wut_Document *wut_GetDocument(struct wut_Window *win)
 {
 	if(!win) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -511,9 +511,9 @@ WT_API struct wt_document *wt_GetDocument(struct wt_window *win)
 
 
 
-WT_API void wt_DumpWindowTree(void)
+WUT_API void wut_DumpWindowTree(void)
 {
-	struct wt_window *mwin = wt_core_get_main_window();
+	struct wut_Window *mwin = wut_cor_get_main_window();
 
-	wt_window_hlf(mwin, &win_cfnc_show, NULL, NULL);
+	wut_Window_hlf(mwin, &win_cfnc_show, NULL, NULL);
 }
