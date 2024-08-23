@@ -50,7 +50,7 @@ WUT_API struct wut_Table *wut_CreateTable(void (*fnc)(u32 size, void *ptr))
         struct wut_Table *tbl;
         u32 i;
 
-        if(!(tbl = wut_malloc(sizeof(struct wut_table))))
+        if(!(tbl = wut_malloc(sizeof(struct wut_Table))))
                 return NULL;
 
         tbl->number = 0;
@@ -110,7 +110,7 @@ WUT_API s8 wut_AddTable(struct wut_Table *tbl, char *name, u32 size, void **ptr)
                 return -1;
 
         /* Check if there is already an entry with that name */
-        if(wut_table_find(tbl, name, NULL)) {
+        if(wut_FindTable(tbl, name, NULL)) {
                 printf("entry with same name already in table\n");
                 return -1;
         }
@@ -164,7 +164,7 @@ WUT_API void wut_RemoveTable(struct wut_Table *tbl, char *name)
                 return;
 
 
-        if(wut_table_find(tbl, name, &ent) != 1)
+        if(wut_FindTable(tbl, name, &ent) != 1)
                 return;
 
         row = ent->hash % WUT_TBL_ROWS;
@@ -191,7 +191,7 @@ WUT_API s8 wut_GetTable(struct wut_Table *tbl, char *name, u32 *size, void **ptr
         if(!tbl || !name)
                 return -1;
 
-        if(wut_table_find(tbl, name, &ent) != 1)
+        if(wut_FindTable(tbl, name, &ent) != 1)
                 return 0;
 
         if(size) *size = ent->size;

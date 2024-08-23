@@ -82,7 +82,7 @@ typedef s8 (*wut_StatListFunc)(void *entry, s16 idx, void *data);
  * Returns: 0 on success or -1 if an error occurred
  */
 WUT_API s8 wut_ApplyStatList(struct wut_StatList *lst,
-                wut_StaticListFunc fnc, void *data);
+                wut_StatListFunc fnc, void *data);
 
 
 

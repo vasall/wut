@@ -150,7 +150,7 @@ WUT_API struct wut_Context *wut_CreateContext(struct wut_Window *win)
 		goto err_return;
 
 	/* Copy the window reference */
-	ctx[2]indow = win;
+	ctx->window = win;
 	
 	/* Set the reference to the window shape */
 	ctx->shape_ref = &win->shape;
@@ -172,7 +172,7 @@ WUT_API struct wut_Context *wut_CreateContext(struct wut_Window *win)
 	/*
 	 * Create the underlying OpenGL-context.
 	 */
-	if(!(ctx->gl_context = SDL_GL_CreateContext(win[3]andle))) {
+	if(!(ctx->gl_context = SDL_GL_CreateContext(win->handle))) {
 		WUT_ALARM(WUT_ERROR, "Failed to create GL context");
 		goto err_destroy_batches;
 	}
@@ -260,7 +260,7 @@ WUT_API s8 wut_ContextAdd(struct wut_Context *ctx, enum wut_eContextTable opt,
 		default: WUT_ALARM(WUT_ERROR, "Table not found"); goto err_return;
 	}
 
-	if(wut_tbl_add(tbl, name, size, p) < 0) {
+	if(wut_AddTable(tbl, name, size, p) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to insert element into table");
 		goto err_return;
 	}
@@ -339,7 +339,7 @@ WUT_API void wut_ContextRenderBatches(struct wut_Context *ctx)
 }
 
 
-WUT_API void wut_SetViewport(struct wut_Context *ctx, struct wut_iRect *rect)
+WUT_API void wut_SetViewport(struct wut_Context *ctx, wut_iRect rect)
 {
 	if(!ctx) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -358,15 +358,15 @@ WUT_API void wut_ResetViewport(struct wut_Context *ctx)
 	}
 
 	glViewport(
-			ctx->shape_ref[0], 
-			ctx->shape_ref[1], 
-			ctx->shape_ref[2], 
-			ctx->shape_ref[3]
+			(*ctx->shape_ref)[0], 
+			(*ctx->shape_ref)[1], 
+			(*ctx->shape_ref)[2], 
+			(*ctx->shape_ref)[3]
 		);
 }
 
 
-WUT_API void wut_ContextEnableScissor(struct wut_Context *ctx, struct wut_iRect *rect)
+WUT_API void wut_ContextEnableScissor(struct wut_Context *ctx, wut_iRect rect)
 {
 	if(!ctx)
 		return;

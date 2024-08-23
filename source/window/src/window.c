@@ -44,7 +44,7 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
         
-        wut_recti_clr(win->shape);
+        wut_irect_clr(win->shape);
         win->shape[2] = w;
         win->shape[3] = h;
 
@@ -260,7 +260,7 @@ WUT_INTERN s8 win_cfnc_show(struct wut_Window *w, void *data)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WUT_XMOD void wut_Window_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
+WUT_XMOD void wut_win_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
 		wut_WindowFunc post_fnc, void *data)
 {
 	struct wut_Window *run;
@@ -280,7 +280,7 @@ WUT_XMOD void wut_Window_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
 	while(run) {
 		next = run->right_window;
 
-		wut_Window_hlf(run, pre_fnc, post_fnc, data);
+		wut_win_hlf(run, pre_fnc, post_fnc, data);
 
 		run = next;
 	}
@@ -291,19 +291,19 @@ WUT_XMOD void wut_Window_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
 }
 
 
-WUT_XMOD void wut_Window_redraw(struct wut_Window *win)
+WUT_XMOD void wut_win_redraw(struct wut_Window *win)
 {
 	win_cfnc_redraw(win, NULL);
 }
 
 
-WUT_XMOD void wut_Window_redraw_all(void)
+WUT_XMOD void wut_win_redraw_all(void)
 {
-	wut_Window_hlf(wut_cor_get_main_window(), &win_cfnc_redraw, NULL, NULL);
+	wut_win_hlf(wut_cor_get_main_window(), &win_cfnc_redraw, NULL, NULL);
 }
 
 
-WUT_XMOD s8 wut_Window_hover(struct wut_Window *win, struct wut_Element *ele)
+WUT_XMOD s8 wut_win_hover(struct wut_Window *win, struct wut_Element *ele)
 {
 	struct wut_Element *old_hovered;
 
@@ -314,8 +314,8 @@ WUT_XMOD s8 wut_Window_hover(struct wut_Window *win, struct wut_Element *ele)
 		old_hovered = win->hovered;
 
 		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(win->hovered, WUT_ELEMENT_F_HOVERED, 0);
-		wut_ele_mod_info(ele, WUT_ELEMENT_F_HOVERED, 1);
+		wut_ele_mod_info(win->hovered, WUT_ELE_F_HOVERED, 0);
+		wut_ele_mod_info(ele, WUT_ELE_F_HOVERED, 1);
 
 		/* Then link the new element */
 		win->hovered = ele;
@@ -341,7 +341,7 @@ WUT_XMOD s8 wut_Window_hover(struct wut_Window *win, struct wut_Element *ele)
 }
 
 
-WUT_XMOD s8 wut_Window_select(struct wut_Window *win, struct wut_Element *ele)
+WUT_XMOD s8 wut_win_select(struct wut_Window *win, struct wut_Element *ele)
 {
 	struct wut_Element *old_selected;
 
@@ -352,8 +352,8 @@ WUT_XMOD s8 wut_Window_select(struct wut_Window *win, struct wut_Element *ele)
 		old_selected = win->selected;
 
 		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(win->selected, WUT_ELEMENT_F_SELECTED, 0);
-		wut_ele_mod_info(ele, WUT_ELEMENT_F_SELECTED, 1);
+		wut_ele_mod_info(win->selected, WUT_ELE_F_SELECTED, 0);
+		wut_ele_mod_info(ele, WUT_ELE_F_SELECTED, 1);
 
 		/* Then link the new element */
 		win->selected = ele;
@@ -431,7 +431,7 @@ WUT_API void wut_CloseWindow(struct wut_Window *win)
 	}
 
 	/* Recursivly close all windows downwards, starting from win */
-	wut_Window_hlf(win, NULL, &win_cfnc_close, NULL);
+	wut_win_hlf(win, NULL, &win_cfnc_close, NULL);
 
 	return;
 
@@ -451,7 +451,7 @@ WUT_API struct wut_Window *wut_GetWindow(s32 wd)
 
 	/* Recursifly search for the window... */
 	mwin = wut_cor_get_main_window();
-	wut_Window_hlf(mwin, &win_cfnc_find, NULL, &sel);
+	wut_win_hlf(mwin, &win_cfnc_find, NULL, &sel);
 
 	/* ...and if the window was found, return it */
 	if(sel.state == 1) {
@@ -462,7 +462,7 @@ WUT_API struct wut_Window *wut_GetWindow(s32 wd)
 }
 
 
-WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h)
+WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 width, u16 height)
 {
 	if(!win) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -472,9 +472,9 @@ WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h)
 	/*
 	 * Update the size.
 	 */
-        wut_recti_clr(win->shape);
-        win->shape[2] = w;
-        win->shape[3] = h;
+        wut_irect_clr(win->shape);
+        win->shape[2] = width;
+        win->shape[3] = height;
 
 	/*
 	 * Update the document.
@@ -521,5 +521,5 @@ WUT_API void wut_DumpWindowTree(void)
 {
 	struct wut_Window *mwin = wut_cor_get_main_window();
 
-	wut_Window_hlf(mwin, &win_cfnc_show, NULL, NULL);
+	wut_win_hlf(mwin, &win_cfnc_show, NULL, NULL);
 }

@@ -7,7 +7,8 @@
 #include "graphic/inc/object.h"
 #include "graphic/inc/camera.h"
 
-#include "utility/inc/extended_math.h"
+#include "math/inc/functions.h"
+#include "math/inc/vector.h"
 
 #define WUT_PIPE_MIN		32
 
@@ -17,12 +18,12 @@
 
 
 struct wut_Pipe {
-	s32 number;
-	s32 alloc;
+	s32                     number;
+	s32                     alloc;
 
-	struct wut_PipeEntry *entries;
-	s32 start;
-	wut_Vec3 ref_point;
+	struct wut_PipeEntry    *entries;
+	s32                     start;
+	wut_Vec3                ref_point;
 };
 
 struct wut_PipeEntry {
@@ -48,13 +49,13 @@ struct wut_PipeEntry {
  *
  * Returns: Either a pointer to the pipe or NULL if an error occurred
  */
-WUT_API struct wut_Pipe *wut_CreatePipe(wut_Vec3 ref);
+WUT_XMOD struct wut_Pipe *wut_pip_create(wut_Vec3 ref);
 
 
 /*
  * Destroy a rendering pipe and free the allocated memory.
  */
-WUT_API void wut_DestroyPipe(struct wut_Pipe *pip);
+WUT_XMOD void wut_pip_destroy(struct wut_Pipe *pip);
 
 
 /*
@@ -65,7 +66,7 @@ WUT_API void wut_DestroyPipe(struct wut_Pipe *pip);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_API s8 wut_PipeAddObject(struct wut_Pipe *pip, struct wut_Object *object);
+WUT_XMOD s8 wut_pip_add(struct wut_Pipe *pip, struct wut_Object *object);
 
 
 /*
@@ -74,7 +75,7 @@ WUT_API s8 wut_PipeAddObject(struct wut_Pipe *pip, struct wut_Object *object);
  * @pip: Pointer to the pipe
  * @slot: The slot of the object
  */
-WUT_API void wut_PipeRemoveObject(struct wut_Pipe *pip, s32 slot);
+WUT_XMOD void wut_pip_remove(struct wut_Pipe *pip, s32 slot);
 
 
 /*
@@ -83,7 +84,7 @@ WUT_API void wut_PipeRemoveObject(struct wut_Pipe *pip, s32 slot);
  * @pip: Pointer to the pipe
  * @name: The name of the object to search for
  */
-WUT_API s32 wut_PipeGetSlot(struct wut_Pipe *pip, char *name);
+WUT_XMOD s32 wut_pip_get(struct wut_Pipe *pip, char *name);
 
 
 /*
@@ -92,7 +93,7 @@ WUT_API s32 wut_PipeGetSlot(struct wut_Pipe *pip, char *name);
  * @pip: Pointer to the pipe
  * @ref: The new reference point
  */
-WUT_API void wut_PipeSetReference(struct wut_Pipe *pip, wut_Vec3 ref);
+WUT_XMOD void wut_pip_set_reference(struct wut_Pipe *pip, wut_Vec3 ref);
 
 
 /*
@@ -102,7 +103,7 @@ WUT_API void wut_PipeSetReference(struct wut_Pipe *pip, wut_Vec3 ref);
  * @pip: Pointer to the pipe
  * @fnc: The callback function to call on every object
  */
-WUT_API void wut_PipeApply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *o));
+WUT_XMOD void wut_pip_apply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *o));
 
 
 /*
@@ -110,6 +111,6 @@ WUT_API void wut_PipeApply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *
  *
  * @pip: Pointer to the pipe
  */
-WUT_API void wut_PipeShow(struct wut_Pipe *pip);
+WUT_XMOD void wut_pip_dump(struct wut_Pipe *pip);
 
 #endif /* _WUT_GRAPHIC_PIPE_H */

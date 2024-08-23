@@ -514,7 +514,7 @@ WUT_API f32 wut_vec4_dot(wut_Vec4 in1, wut_Vec4 in2)
 }
 
 
-WUT_API void wut_vec4rans(wut_Vec4 in, wut_Mat4 mat, wut_Vec4 out)
+WUT_API void wut_vec4_trans(wut_Vec4 in, wut_Mat4 mat, wut_Vec4 out)
 {
 	wut_Vec4 tmp;
 	wut_vec4_cpy(tmp, in);

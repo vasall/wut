@@ -1,7 +1,5 @@
 #include "style/inc/layout.h"
 
-#include "document/inc/element_manager.h"
-
 #include <stdlib.h>
 
 #define WUT_LAYOUT_DEBUG		0
@@ -36,9 +34,9 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 
 	
 	style = &ele->style;
-	wut_irect_add(&inner_rect,
-			&style->shape_bounding_box,
-			&style->shape_content_delta);
+	wut_irect_add(inner_rect,
+			style->shape_bounding_box,
+			style->shape_content_delta);
 
 
 	/* Go through all children */
@@ -47,20 +45,20 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 		style = &run->style;
 
 		/* Get the size of the current child */
-		w = style->shape_bounding_box.w;
-		h = style->shape_bounding_box.h;
+		w = style->shape_bounding_box[2];
+		h = style->shape_bounding_box[3];
 
 
 		/* If the position is absolute, do nothing */
 		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
-			run->layout_offset.x = 0;
-			run->layout_offset.y = 0;
+			run->layout_offset[0] = 0;
+			run->layout_offset[1] = 0;
 
 			wut_ele_adjust_shape(run);
 		}
 		/* Otherwise... */
 		else {
-			if(off_x + w > inner_rect.w) {
+			if(off_x + w > inner_rect[2]) {
 				if(off_x != 0) {
 					off_y += lim_y;
 				}
@@ -69,8 +67,8 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 				lim_y = 0;
 			}
 
-			run->layout_offset.x = off_x;
-			run->layout_offset.y = off_y;
+			run->layout_offset[0] = off_x;
+			run->layout_offset[1] = off_y;
 
 			if(h > lim_y) {
 				lim_y = h;
@@ -88,7 +86,7 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 			wut_ele_adjust_shape(run);
 		}
 
-		run = run->younger_sibling;
+		run = run->right;
 	}
 
 	content_height += lim_y;
@@ -100,8 +98,8 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 			content_height);
 #endif
 
-	ele->content_size.x = content_width;
-	ele->content_size.y = content_height;
+	ele->content_size[0] = content_width;
+	ele->content_size[1] = content_height;
 
 	wut_ele_hdl_scrollbar(ele);
 }
@@ -125,18 +123,18 @@ WUT_XMOD void wut_lay_row(struct wut_Element *ele)
 	while(run) {
 		style = &run->style;
 
-		w = style->shape_bounding_box.w;
-		h = style->shape_bounding_box.h;
+		w = style->shape_bounding_box[2];
+		h = style->shape_bounding_box[3];
 
 		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
-			run->layout_offset.x = 0;
-			run->layout_offset.y = 0;
+			run->layout_offset[0] = 0;
+			run->layout_offset[1] = 0;
 
 			wut_ele_adjust_shape(run);
 		}
 		else {
-			run->layout_offset.x = off_x;
-			run->layout_offset.y = off_y;
+			run->layout_offset[0] = off_x;
+			run->layout_offset[1] = off_y;
 
 			off_y += h;
 
@@ -149,7 +147,7 @@ WUT_XMOD void wut_lay_row(struct wut_Element *ele)
 			wut_ele_adjust_shape(run);
 		}
 
-		run = run->younger_sibling;
+		run = run->right;
 	}
 
 #if WUT_LAYOUT_DEBUG
@@ -159,8 +157,8 @@ WUT_XMOD void wut_lay_row(struct wut_Element *ele)
 			content_height);
 #endif
 
-	ele->content_size.x = content_width;
-	ele->content_size.y = content_height;
+	ele->content_size[0] = content_width;
+	ele->content_size[1] = content_height;
 
 	wut_ele_hdl_scrollbar(ele);
 }
@@ -184,18 +182,18 @@ WUT_XMOD void wut_lay_column(struct wut_Element *ele)
 	while(run) {
 		style = &run->style;
 
-		w = style->shape_bounding_box.w;
-		h = style->shape_bounding_box.h;
+		w = style->shape_bounding_box[2];
+		h = style->shape_bounding_box[3];
 
 		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
-			run->layout_offset.x = 0;
-			run->layout_offset.y = 0;
+			run->layout_offset[0] = 0;
+			run->layout_offset[1] = 0;
 
 			wut_ele_adjust_shape(run);
 		}
 		else {
-			run->layout_offset.x = off_x;
-			run->layout_offset.y = off_y;
+			run->layout_offset[0] = off_x;
+			run->layout_offset[1] = off_y;
 
 			off_x += w;
 
@@ -207,7 +205,7 @@ WUT_XMOD void wut_lay_column(struct wut_Element *ele)
 			wut_ele_adjust_shape(run);
 		}
 
-		run = run->younger_sibling;
+		run = run->right;
 	}
 
 #if WUT_LAYOUT_DEBUG
@@ -217,8 +215,8 @@ WUT_XMOD void wut_lay_column(struct wut_Element *ele)
 			content_height);
 #endif
 
-	ele->content_size.x = content_width;
-	ele->content_size.y = content_height;
+	ele->content_size[0] = content_width;
+	ele->content_size[1] = content_height;
 
 	wut_ele_hdl_scrollbar(ele);
 }

@@ -11,20 +11,20 @@
 
 #define TEXTFIELD_DEBUG 1
 
-WT_INTERN struct wt_rect *textfield_get_limit(struct wt_textfield *txtf)
+WUT_INTERN wut_iRect *tfd_get_limit(struct wut_Textfield *txtf)
 {	
 	return &txtf->element->content_rect;
 }
 
 
-WT_API struct wt_textfield *wt_textfield_create(struct wt_element *ele,
-		struct wt_font *font)
+WUT_XMOD struct wut_Textfield *wut_tfd_create(struct wut_Element *ele,
+		struct wut_Font *font)
 {
-	struct wt_textfield *txtf;
-	struct wt_text_info info;
+	struct wut_Textfield *txtf;
+	struct wut_TextInfo info;
 	char *teststring = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut l";
 
-	if(!(txtf = wt_malloc(sizeof(struct wt_textfield)))) {
+	if(!(txtf = wut_malloc(sizeof(struct wut_Textfield)))) {
 		return NULL;
 	}
 
@@ -34,40 +34,40 @@ WT_API struct wt_textfield *wt_textfield_create(struct wt_element *ele,
 	txtf->length = strlen(txtf->content);
 
 	/* Configure the text information */
-	info.batch = wt_ContextGetBatch(ele->document->context, font->batch_id);
+	info.batch = wut_ContextGetBatch(ele->document->context, font->batch_id);
 	info.font = font;
-	info.limits = textfield_get_limit(txtf);
+	info.limits = tfd_get_limit(txtf);
 	info.style = &ele->style;
 
-	if(!(txtf->tbuffer = wt_text_create(info))) {
-		WT_ALARM(WT_ERROR, "Failed to create text buffer");
+	if(!(txtf->tbuffer = wut_txt_create(info))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create text buffer");
 		goto err_free_txtf;
 	}
 
-	wt_text_push(txtf->tbuffer, 0, txtf->length, txtf->content);
+	wut_txt_push(txtf->tbuffer, 0, txtf->length, txtf->content);
 
 	return txtf;
 
 err_free_txtf:
-	wt_free(txtf);
+	wut_free(txtf);
 	return NULL;
 }
 
 
-WT_API void wt_textfield_destroy(struct wt_textfield *txtf)
+WUT_XMOD void wut_tfd_destroy(struct wut_Textfield *txtf)
 {
-	wt_text_destroy(txtf->tbuffer);
-	wt_free(txtf);
+	wut_txt_destroy(txtf->tbuffer);
+	wut_free(txtf);
 }
 
 
-WT_API void wt_textfield_update(struct wt_textfield *txtf)
+WUT_XMOD void wut_tfd_update(struct wut_Textfield *txtf)
 {
-	wt_text_process(txtf->tbuffer);
+	wut_txt_process(txtf->tbuffer);
 }
 
 
-WT_API void wt_textfield_render(struct wt_textfield *txtf)
+WUT_XMOD void wut_tfd_render(struct wut_Textfield *txtf)
 {
-	wt_text_send(txtf->tbuffer);
+	wut_txt_send(txtf->tbuffer);
 }

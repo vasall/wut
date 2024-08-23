@@ -253,7 +253,7 @@ WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
 	/* calculate the size of a single vertex */
 	vsize = 0;
 	for(i = 0; i < attribnum; i++) {
-		vsize += (batch_sizeof_GLenum(attribs[i].type) * attribs[i].number);
+		vsize += (bat_sizeof_GLenum(attribs[i].type) * attribs[i].number);
 	}
 
 
@@ -458,7 +458,7 @@ WUT_API void wut_bat_flush(struct wut_Batch *ren)
 
 	/* Pass the uniform view matrix onto the shader */
 	for(i = 0; i < ren->uniform_count; i++) {
-		batch_write_uniform(&ren->uniforms[i]);
+		bat_write_uniform(&ren->uniforms[i]);
 	}
 
 	/* Bind the vertex buffer and write the data */

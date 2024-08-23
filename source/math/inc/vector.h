@@ -91,7 +91,7 @@ WUT_API void   wut_vec4_mul(wut_Vec4 q1, wut_Vec4 q2, wut_Vec4 out);
 WUT_API f32    wut_vec4_len(wut_Vec4 in);
 WUT_API void   wut_vec4_nrm(wut_Vec4 in, wut_Vec4 out);
 WUT_API f32    wut_vec4_dot(wut_Vec4 in1, wut_Vec4 in2);
-WUT_API void   wut_vec4rans(wut_Vec4 in, wut_Mat4 wut_mat, wut_Vec4 out);
+WUT_API void   wut_vec4_trans(wut_Vec4 in, wut_Mat4 wut_mat, wut_Vec4 out);
 WUT_API void   wut_vec4_print(wut_Vec4 in);
 
 

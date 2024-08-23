@@ -11,17 +11,11 @@ CC         := gcc
 ERRFLAGS   := -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
 # Compiling flags here
 CFLAGS     := -g -O0 -ansi -std=c89 -I. -I./inc/ -I.. -pedantic -D_POSIX_C_SOURCE=200809L
-SDL_CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image)
-override CFLAGS += $(SDL_CFLAGS)
 
 # The linker to use
 LINKER     := gcc
-# Set libararies (FIXME: switch the variables)
-LIBS  := -lm -lGL -lGLU
 # Linking flags here
-LFLAGS     := -Wall -I. $(LIBS)
-SDL_LFLAGS  := $(shell pkg-config --libs sdl2 SDL2_ttf SDL2_image)
-override LFLAGS += $(SDL_LFLAGS)
+LFLAGS     := -Wall -I.
 
 # Change these to proper directories where each file should be
 SRCDIR     := src

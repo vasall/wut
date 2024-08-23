@@ -15,7 +15,7 @@ struct wut_Element;
 
 
 #define WUT_ELE_NAME_LIM	        126
-#define WUT_ELE_CHILDREN_LIM	126
+#define WUT_ELE_CHILDREN_LIM	        126
 
 #define WUT_ELE_F_VISIBLE	        (1<<0)
 #define WUT_ELE_F_HOVERED	        (1<<1)
@@ -85,7 +85,7 @@ struct wut_Element {
          * The relative position in the reference-area dictated by the
          * layout mode of the parent.
          */
-        struct wut_Vec2i	layout_offset;
+        wut_iVec2	        layout_offset;
 
         /* 
          * The relative offset of the upper-left corner of the parents bounding
@@ -93,7 +93,7 @@ struct wut_Element {
          * bounding box will be located in. This includes the parents padding,
          * parent scrolling and this elements layout offset. 
          */
-        struct wut_Vec2i        relative_offset;
+        wut_iVec2               relative_offset;
 
         /*
          * The absolute offset from the upper-left corner of the window to the
@@ -101,16 +101,16 @@ struct wut_Element {
          * will be located in. This is calculated by the absolute offset of the
          * parent element plus the relative offset of this element.
          */
-        struct wut_Vec2i	absolute_offset;
+        wut_iVec2	        absolute_offset;
 
 
         /*
          * The absolute rectangles of the element in the window.
          */
-        struct wut_Rect	        bounding_rect;
-        struct wut_Rect	        element_rect;	/* Spacing */
-        struct wut_Rect         inner_rect;	/* Spacing, Border */
-        struct wut_Rect	        content_rect;	/* Spacing, Border, Padding */
+        wut_iRect	        bounding_rect;
+        wut_iRect	        element_rect;	/* Spacing */
+        wut_iRect               inner_rect;	/* Spacing, Border */
+        wut_iRect	        content_rect;	/* Spacing, Border, Padding */
 
 
 
@@ -119,25 +119,25 @@ struct wut_Element {
          * and size of the element in the window and specifies how the element
          * will be drawn on the screen.
          */
-        struct wut_Rect	        output_rect;
+        wut_iRect	        output_rect;
 
         /*
          * This rectangle defines the size and offset of the visible part of
          * this element for input. This will be used to calculate the UV-coords
          * for input images.
          */
-        struct wut_Rect         visible_in_rect;
+        wut_iRect               visible_in_rect;
 
         /*
          * This rectangle defines the absolute position and size of the visible
          * part of this element in the window.
          */
-        struct wut_Rect	        visible_out_rect;
+        wut_iRect	        visible_out_rect;
 
 
         /* These properties are used for scrolling */
-        struct wut_Vec2i 	content_size;
-        struct wut_Vec2i        content_offset;
+        wut_iVec2 	        content_size;
+        wut_iVec2               content_offset;
 
         /* This flag indicates which scrollbars to render */
         s32                     scrollbar_flags;
@@ -329,17 +329,16 @@ WUT_API void wut_UpdateElementChildrenShape(struct wut_Element *ele);
  *
  * Returns: Pointer to the context
  */
-WUT_API struct wut_context *wut_GetElementContext(struct wut_Element *ele);
+WUT_API struct wut_Context *wut_GetElementContext(struct wut_Element *ele);
 
 
 /*
  * Get the size and position of the bounding box in the window in pixels.
  *
  * @ele: Pointer to the element
- *
- * Returns: The absolute shape of the bounding box
+ * @out: The rectangle to write the absolute shape of the bounding box to
  */
-WUT_API struct wut_Rect wut_GetBoundingBox(struct wut_Element *ele);
+WUT_API void wut_GetBoundingBox(struct wut_Element *ele, wut_iRect out);
 
 
 /*
@@ -347,10 +346,9 @@ WUT_API struct wut_Rect wut_GetBoundingBox(struct wut_Element *ele);
  * pixels.
  *
  * @ele: Pointer to the element
- *
- * Returns: The absolute shape of the element box
+ * @out: The rectangle to write the absolute shape of the element box to
  */
-WUT_API struct wut_Rect wut_GetElementBox(struct wut_Element *ele);
+WUT_API void wut_GetElementBox(struct wut_Element *ele, wut_iRect out);
 
 
 /*
@@ -358,21 +356,10 @@ WUT_API struct wut_Rect wut_GetElementBox(struct wut_Element *ele);
  * pixels.
  *
  * @ele: Pointer to the element
- *
- * Returns: The absolute shape of the content box
+ * @out: The rectangle to write the absolute shape of the content box to
  */
-WUT_API struct wut_Rect wut_GetContentBox(struct wut_Element *ele);
+WUT_API void wut_GetContentBox(struct wut_Element *ele, wut_iRect out);
 
-
-/*
- * Get a reference pointer to the content box for the element.
- *
- * @ele: Pointer to the element
- *
- * Returns: A pointer to the content ractangle struct or NULL if an error
- * 	    occurred
- */
-WUT_API struct wut_Rect *wut_GetContextBoxRef(struct wut_Element *ele);
 
 /*
  * Modify the stylesheet of an element.
@@ -396,7 +383,7 @@ WUT_API s8 wut_ModifyElementStyle(struct wut_Element *ele, char *str);
  *
  * Returns: Either a pointer to the view struct or NULL if an error occurred
  */
-WUT_API struct wut_view *wut_GetView(struct wut_Element *ele);
+WUT_API struct wut_View *wut_GetView(struct wut_Element *ele);
 
 
 #endif /* _WUT_DOCUMENT_ELEMENT_H */

@@ -31,7 +31,7 @@ struct wut_Table {
         u32 number;
 
         /* The rows in the table */
-        struct wut_TableEntry *rows[WUT_TABLE_ROWS];
+        struct wut_TableEntry *rows[WUT_TBL_ROWS];
 
         /* The remove callback function */
         void (*fnc)(u32 size, void *data);

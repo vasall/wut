@@ -148,7 +148,7 @@ WUT_INTERN s8 objc_init_uniforms(struct wut_Object *obj, struct wut_ObjectConstr
 	u32 i;
 	s32 j;
 	struct wut_ObjectConstrUnibuf *unibuf;
-	struct wut_object_uniform *uniform;
+	struct wut_ObjectUniform *uniform;
 
 	s32 slot;
 
@@ -222,7 +222,7 @@ WUT_API struct wut_ObjectConstr *wut_BeginObjectConstr(char *name,
 		goto err_return;
 	}
 
-	if(!(c = wut_malloc(sizeof(struct wut_object_c)))) {
+	if(!(c = wut_malloc(sizeof(struct wut_ObjectConstr)))) {
 		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for constructor");
 		goto err_return;
 	}
@@ -274,7 +274,7 @@ WUT_API struct wut_Object *wut_EndObjectConstr(struct wut_ObjectConstr *c,
 		goto err_return;
 	}
 
-	if(!(obj = wut_malloc(sizeof(struct wut_object)))) {
+	if(!(obj = wut_malloc(sizeof(struct wut_Object)))) {
 		WUT_ALARM(WUT_ERROR, "Failed to alloctae memory for object");
 		goto err_return;
 	}
@@ -350,10 +350,10 @@ WUT_API struct wut_Object *wut_EndObjectConstr(struct wut_ObjectConstr *c,
 	/* Insert the new object into the context object table */
 	obj->context = ctx;
 
-	size = sizeof(struct wut_object);
+	size = sizeof(struct wut_Object);
 	p = (void **)&obj;
 
-	if(wut_tbl_add(ctx->objects, obj->name, size, p) < 0) {
+	if(wut_AddTable(ctx->objects, obj->name, size, p) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to insert entry into wut_table");
 		goto err_destroy_uniforms;
 	}
@@ -405,7 +405,7 @@ WUT_API void wut_ObjectConstrCleanup(struct wut_ObjectConstr *c)
  * GENERAL
  */
 
-WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_texture *tex)
+WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_Texture *tex)
 {
 	if(!c || !tex) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -421,7 +421,7 @@ WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_text
  * CUSTOM MODE
  */
 
-WUT_API void wut_ObjectConstrShader(struct wut_ObjectConstr *c, struct wut_shader *shd)
+WUT_API void wut_ObjectConstrShader(struct wut_ObjectConstr *c, struct wut_Shader *shd)
 {
 	if(!c || !shd) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");

@@ -12,10 +12,10 @@
 WUT_INTERN void font_batch_cfnc_push(struct wut_Batch *ren, void *data)
 {
 	s32 frame[2];
-	struct wut_rect *ref = (struct wut_rect *)data;
+	wut_iRect *ref = (wut_iRect *)data;
 
-	frame[0] = ref->w;
-	frame[1] = ref->h;
+	frame[0] = (*ref)[2];
+	frame[1] = (*ref)[3];
 	wut_bat_push_uniform(ren, 0, frame);
 
 }
@@ -25,13 +25,13 @@ WUT_INTERN s8 font_create_batch(struct wut_Font *font, struct wut_Texture *tex)
 	struct wut_Shader *shd;
 	struct wut_Batch *ren;
 
-	struct wut_vertex_attrib v_attributes[] = {
+	struct wut_VertexAttrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{2, GL_FLOAT}		/* uv-coords */
 	};
 
-	struct wut_uniform_temp uniforms[] = {
-		{"u_frame", WUT_UNIFORM_2IV, 1, WUT_UNIFORM_F_DEFAULT}	 /* 0 */
+	struct wut_UniformTemp uniforms[] = {
+		{"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT}	 /* 0 */
 	};
 
 	shd = wut_GetShader(font->context, "__def_text_shader");
@@ -121,7 +121,7 @@ WUT_INTERN s8 font_import_meta(struct wut_Font_data *data, char *pth)
 
 WUT_API s8 wut_InitFontTable(struct wut_Context *ctx)
 {
-	struct wut_statlist *lst;
+	struct wut_StatList *lst;
 
 	if(!ctx) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -350,7 +350,7 @@ WUT_API struct wut_FontGlyph *wut_GetGlyphByIndex(struct wut_Font *font,
 {
 	struct wut_FontGlyph *glyph;
 
-	if(wut_list_get(font->data.glyphs, idx, &glyph) < 0) {
+	if(wut_GetList(font->data.glyphs, idx, (void **)&glyph) < 0) {
 		return NULL;
 	}
 

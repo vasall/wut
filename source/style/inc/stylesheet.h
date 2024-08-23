@@ -2,7 +2,6 @@
 #define _WUT_STYLE_STYLESHEET_H
 
 #include "core/inc/define.h"
-#include "core/inc/import.h"
 
 #include "utility/inc/color.h"
 #include "utility/inc/flex.h"
@@ -67,18 +66,18 @@ enum wut_eSheetAttribId {
         WUT_SHEET_SPACING_TOP =		 5,	/* 0xFB   3    26   FLEX      */
         WUT_SHEET_SPACING_RIGHT =	 6,	/* 0x43   3    34   FLEX      */
         WUT_SHEET_SPACING_BOTTOM =	 7,	/* 0xB4   4    42   FLEX      */
-        WUT_SHEET_SPACING_LEFT =		 8,	/* 0x68   0    50   FLEX      */
+        WUT_SHEET_SPACING_LEFT =         8,	/* 0x68   0    50   FLEX      */
 
         /*  	 PADDING						      */
-        WUT_SHEET_PADDING_TOP = 		 9,	/* 0x2C   4    58   FLEX      */
+        WUT_SHEET_PADDING_TOP = 	 9,	/* 0x2C   4    58   FLEX      */
         WUT_SHEET_PADDING_RIGHT = 	10,	/* 0x41   1    66   FLEX      */
         WUT_SHEET_PADDING_BOTTOM = 	11,	/* 0x5B   3    74   FLEX      */
         WUT_SHEET_PADDING_LEFT = 	12,	/* 0x9E   6    82   FLEX      */
 
         /*  	 BORDER							      */
         WUT_SHEET_BORDER_MODE =		13,	/* 0xD8   0    90   KEYWORD-2 */
-        WUT_SHEET_BORDER_WIDTH =		14,	/* 0x56   6    91   FLEX      */
-        WUT_SHEET_BORDER_COLOR =		15,	/* 0x0F   7    99   HEX-CODE  */
+        WUT_SHEET_BORDER_WIDTH =	14,	/* 0x56   6    91   FLEX      */
+        WUT_SHEET_BORDER_COLOR =	15,	/* 0x0F   7    99   HEX-CODE  */
 
         /*  	 RADIUS							      */
         WUT_SHEET_RADIUS_TOP_LEFT =	16,	/* 0x25   6   103   FLEX      */
@@ -88,7 +87,7 @@ enum wut_eSheetAttribId {
 
         /*  	 INFILL							      */
         WUT_SHEET_INFILL_MODE =		20,	/* 0x54   4   135   KEYWORD-3 */
-        WUT_SHEET_INFILL_COLOR =		21,	/* 0xF9   1   136   HEX-CODE  */
+        WUT_SHEET_INFILL_COLOR =	21,	/* 0xF9   1   136   HEX-CODE  */
 
         /*  	 LAYOUT							      */
         WUT_SHEET_LAYOUT_MODE =		22,	/* 0x3F   7   140   KEYWORD-4 */
@@ -104,9 +103,9 @@ enum wut_eSheetAttribId {
         WUT_SHEET_TEXT_SIZE =		26,	/* 0xB0   0   144   FLEX      */
         WUT_SHEET_TEXT_COLOR =		27,	/* 0x93   3   152   HEX-CODE  */
         WUT_SHEET_TEXT_MASS =		28,	/* 0x19   1   156   FLEX      */
-        WUT_SHEET_TEXT_OPTIONS =		29,	/* 0xE8   0   164   KEYWORD-8 */
+        WUT_SHEET_TEXT_OPTIONS =	29,	/* 0xE8   0   164   KEYWORD-8 */
         WUT_SHEET_TEXT_WRAP_MODE =	30,	/* 0xB3   3   165   KEYWORD-9 */
-        WUT_SHEET_TEXT_SPACING =		31,	/* 0x01   1   166   FLEX      */
+        WUT_SHEET_TEXT_SPACING =	31,	/* 0x01   1   166   FLEX      */
         WUT_SHEET_LINE_HEIGHT =		32	/* 0xD2   2   174   FLEX      */
 };
 
@@ -131,73 +130,73 @@ struct wut_SheetAttrib {
 
 struct wut_Stylesheet {
         /* The attribute mask */
-        u64 		mask;
+        u64 		        mask;
 
         /*  	 DISPLAY						   */
-        u8		display_mode;
+        u8		        display_mode;
 
         /*  	 SIZE							   */
-        struct wut_Flex	width;
-        struct wut_Flex	height;
+        struct wut_Flex	        *width;
+        struct wut_Flex	        *height;
 
         /*  	 REFERENCE						   */
-        u8		reference_mode;
+        u8		        reference_mode;
 
         /*  	 SPACING						   */
-        struct wut_Flex	spacing_top;
-        struct wut_Flex	spacing_right;
-        struct wut_Flex	spacing_bottom;
-        struct wut_Flex	spacing_left;
+        struct wut_Flex	        *spacing_top;
+        struct wut_Flex	        *spacing_right;
+        struct wut_Flex	        *spacing_bottom;
+        struct wut_Flex	        *spacing_left;
 
         /*  	 PADDING						   */
-        struct wut_Flex	padding_top;
-        struct wut_Flex	padding_right;
-        struct wut_Flex	padding_bottom;
-        struct wut_Flex	padding_left;
+        struct wut_Flex	        *padding_top;
+        struct wut_Flex	        *padding_right;
+        struct wut_Flex	        *padding_bottom;
+        struct wut_Flex	        *padding_left;
 
         /*  	 BORDER							   */
-        u8		border_mode;
-        struct wut_Flex	border_width;
+        u8		        border_mode;
+        struct wut_Flex	        *border_width;
         struct wut_Color	border_color;
 
         /*  	 RADIUS							   */
-        struct wut_Flex 	radius_top_left;
-        struct wut_Flex 	radius_top_right;
-        struct wut_Flex 	radius_bottom_right;
-        struct wut_Flex 	radius_bottom_left;
+        struct wut_Flex 	*radius_top_left;
+        struct wut_Flex 	*radius_top_right;
+        struct wut_Flex 	*radius_bottom_right;
+        struct wut_Flex 	*radius_bottom_left;
 
         /*  	 INFILL							   */
-        u8		infill_mode;
+        u8		        infill_mode;
         struct wut_Color	infill_color;
 
         /*  	 LAYOUT							   */
-        u8		layout_mode;
+        u8		        layout_mode;
 
         /*  	 ALIGNMENT						   */
-        u8		align_v;
-        u8		align_h;
+        u8		        align_v;
+        u8		        align_h;
 
         /*  	 SCROLLBAR						   */
-        u8		scrollbar_mode;
+        u8	        	scrollbar_mode;
 
         /*	 TEXT							   */
-        struct wut_Flex	text_size;
+        struct wut_Flex	        *text_size;
         struct wut_Color	text_color;
-        struct wut_Flex	text_mass;
-        u8		text_options;
-        u8		text_wrap_mode;
-        struct wut_Flex	text_spacing;
-        struct wut_Flex	line_height;
+        struct wut_Flex	        *text_mass;
+        u8		        text_options;
+        u8		        text_wrap_mode;
+        struct wut_Flex	        *text_spacing;
+        struct wut_Flex	        *line_height;
 } __attribute__((__packed__));
 
 
 struct wut_SheetReturn {
         enum wut_eSheetAttribId 	id;
 
-        enum wut_eSheetType 	type;
-        struct wut_Flex 		flex;
-        u32 			hexcode;
-        u8 			keyword;
+        enum wut_eSheetType 	        type;
+        struct wut_Flex *		flex;
+        u32 			        hexcode;
+        u8 			        keyword;
 };
 
 

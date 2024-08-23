@@ -39,8 +39,7 @@ err_return:
 
 WUT_API void wut_sdl_quit(void)
 {
-	if(TTF_WasInit())
-		TTF_Quit();
+	IMG_Quit();
 
 	SDL_Quit();
 }
@@ -52,11 +51,6 @@ WUT_API void wut_sdl_print_info(void)
 	SDL_version sdl_link;
 	SDL_version img_comp;
 	const SDL_version *img_link;
-	SDL_version ttf_comp;
-
-	/* Get the TTF version */
-	const SDL_version *ttf_link = TTF_Linked_Version();
-	SDL_TTF_VERSION(&ttf_comp);
 
 	/* Get the Image version */
 	img_link = IMG_Linked_Version();
@@ -77,10 +71,6 @@ WUT_API void wut_sdl_print_info(void)
 	printf("IMG link. Version: %d.%d.%d\n",
 			img_link->major, img_link->minor, img_link->patch);
 
-	printf("TTF comp. Version: %d.%d.%d\n", 
-			ttf_comp.major, ttf_comp.minor, ttf_comp.patch);
-	printf("TTF link. Version: %d.%d.%d\n", 
-			ttf_link->major, ttf_link->minor, ttf_link->patch);
 	printf("--------------------------------------------------\n");
 }
 

@@ -79,14 +79,14 @@ WUT_INTERN void obj_rmv_fnc(u32 size, void *ptr)
 
 WUT_API s8 wut_InitObjectTable(struct wut_Context *ctx)
 {
-	struct wut_table *tbl;
+	struct wut_Table *tbl;
 
 	if(!ctx) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(tbl = wut_tbl_create(&obj_rmv_fnc))) {
+	if(!(tbl = wut_CreateTable(&obj_rmv_fnc))) {
 		WUT_ALARM(WUT_ERROR, "Failed to create new table");
 		goto err_return;
 	}
@@ -107,7 +107,7 @@ WUT_API void wut_CloseObjectTable(struct wut_Context *ctx)
 	if(!ctx)
 		return;
 
-	wut_tbl_destroy(ctx->objects);
+	wut_DestroyTable(ctx->objects);
 	ctx->objects = NULL;
 }
 
@@ -130,8 +130,8 @@ WUT_API struct wut_Object *wut_GetObject(struct wut_Context *ctx, char *name)
 		goto err_return;
 	}
 
-	if(wut_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
-		WUT_ALARM(WUT_ERROR, "Object could not be found in wut_table");
+	if(wut_GetTable(ctx->objects, name, NULL, (void **)&obj) != 1) {
+		WUT_ALARM(WUT_ERROR, "Object could not be found in wut_Table");
 		goto err_return;
 	}
 

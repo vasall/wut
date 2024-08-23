@@ -100,10 +100,10 @@ WUT_INTERN void tex_destroy(struct wut_Texture *tex)
 WUT_INTERN void tex_batch_cfnc_push(struct wut_Batch *ren, void *data)
 {
 	s32 frame[2];
-	struct wut_iRect *ref = (struct wut_iRect *)data;
+	wut_iRect *ref = (wut_iRect *)data;
 
-	frame[0] = ref->w;
-	frame[1] = ref->h;
+	frame[0] = (*ref)[2];
+	frame[1] = (*ref)[3];
 	wut_bat_push_uniform(ren, 0, frame);
 
 }
@@ -119,11 +119,11 @@ WUT_INTERN s8 tex_create_batch(struct wut_Texture *tex)
 		{3, GL_INT}		/* 0: shape, 1: limits */
 	};
 
-	struct wut_uniform_temp uniforms[] = {
-		{"u_frame", WUT_UNIFORM_2IV, 1, WUT_UNIFORM_F_DEFAULT},	 /* 0 */
-		{"u_rect", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT},	 /* 1 */
-		{"u_radius", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}, /* 2 */
-		{"u_limit", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}	 /* 3 */
+	struct wut_UniformTemp uniforms[] = {
+		{"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT},	 /* 0 */
+		{"u_rect", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},	 /* 1 */
+		{"u_radius", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}, /* 2 */
+		{"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}	 /* 3 */
 	};
 
 	shd = wut_GetShader(tex->context, "__def_texture_shader");

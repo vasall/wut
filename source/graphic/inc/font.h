@@ -40,7 +40,7 @@ struct wut_Font_data {
 	/*
 	 * A list with all loaded glyphs.
 	 */
-	struct wut_list *glyphs;
+	struct wut_List *glyphs;
 
 };
 

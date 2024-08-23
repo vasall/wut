@@ -51,7 +51,7 @@ WUT_INTERN void flat_set(struct wut_Flat *f, s32 x, s32 y,
  */
 
 
-WUT_API struct wut_Flat *wut_CreateFlat(struct wut_context *ctx, char *name, s16 w, s16 h)
+WUT_API struct wut_Flat *wut_CreateFlat(struct wut_Context *ctx, char *name, s16 w, s16 h)
 {
 	u32 i;
 
@@ -177,7 +177,7 @@ err_return:
 }
 
 
-WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r)
+WUT_API void wut_UpdateFlat(struct wut_Flat *f, wut_iRect r)
 {
 	struct wut_Color *swap;	
 	u32 size;
@@ -224,7 +224,7 @@ WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r)
 }
 
 
-WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r, struct wut_Color c)
+WUT_API void wut_FlatRect(struct wut_Flat *f, wut_iRect r, struct wut_Color c)
 {
 	s32 x;
 	s32 y;
@@ -242,7 +242,7 @@ WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r, struct wut_Co
 }
 
 
-WUT_API void wut_FlatRectSet(struct wut_Flat *f, struct wut_iRect *r,
+WUT_API void wut_FlatRectSet(struct wut_Flat *f, wut_iRect r,
 		struct wut_Color c)
 {
 	s32 x;

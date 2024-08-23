@@ -33,6 +33,16 @@ WUT_API struct wut_Color wut_SetColor(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
+ * Create a new color object from the given HEX color.
+ *
+ * @hex: The color in hex format
+ *
+ * Returns: A color object
+ */
+WUT_API struct wut_Color wut_SetColorHex(u32 hex);
+
+
+/*
  * Convert the given color channel values to one final color.
  *
  * @red: the red channel value

@@ -21,7 +21,7 @@ struct wut_Context {
 	void *gl_context;	
 	
 	/* A reference to the size of the window */
-	struct wut_iRect *shape_ref;
+	wut_iRect *shape_ref;
 
 	/*
 	 * RESOURCE-TABLES
@@ -142,7 +142,7 @@ WUT_API void wut_ContextRenderBatches(struct wut_Context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rendering area
  */
-WUT_API void wut_SetViewport(struct wut_Context *ctx, struct wut_iRect *rect);
+WUT_API void wut_SetViewport(struct wut_Context *ctx, wut_iRect rect);
 
 
 /*
@@ -160,7 +160,7 @@ WUT_API void wut_ResetViewport(struct wut_Context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rectangle in pixels
  */
-WUT_API void wut_ContextEnableScissor(struct wut_Context *ctx, struct wut_iRect *rect);
+WUT_API void wut_ContextEnableScissor(struct wut_Context *ctx, wut_iRect rect);
 
 
 /*

@@ -55,10 +55,10 @@ struct wut_ObjectConstr {
         enum wut_eObjectConstType type;
 
         /* The shader to use for the object */
-        struct wut_shader *shader;
+        struct wut_Shader *shader;
 
         /* The texture to use for the object */
-        struct wut_texture *texture;
+        struct wut_Texture *texture;
 
         /* The number of vertices */
         u32 vtx_num;
@@ -123,7 +123,7 @@ WUT_API void wut_ObjectConstrCleanup(struct wut_ObjectConstr *c);
  * @c: Pointer to the object constructor
  * @tex: Pointer to the texture
  */
-WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_texture *tex);
+WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_Texture *tex);
 
 
 /*
@@ -132,7 +132,7 @@ WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_text
  * @c: Pointer to the object constructor
  * @shd: Pointer to the shader
  */
-WUT_API void wut_ObjectConstrShader(struct wut_ObjectConstr *c, struct wut_shader *shd);
+WUT_API void wut_ObjectConstrShader(struct wut_ObjectConstr *c, struct wut_Shader *shd);
 
 
 /*

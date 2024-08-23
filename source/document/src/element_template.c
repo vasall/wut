@@ -233,12 +233,10 @@ WUT_INTERN s8 wut_etm_load_input(struct wut_Element *ele, void *data)
 
 WUT_INTERN s8 wut_etm_load_image(struct wut_Element *ele, void *data)
 {
-	WUT_IGNORE(ele);
-	WUT_IGNORE(data);
-
 	struct wut_Style *style = &ele->style;
 	struct wut_Stylesheet *sheet = &style->sheet;
 
+	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
 
 	/*

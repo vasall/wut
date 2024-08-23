@@ -253,7 +253,7 @@ WUT_API void wut_mat4_inv(wut_Mat4 out, wut_Mat4 in)
 }
 
 
-WUT_API void wut_mat4ransp(wut_Mat4 out, wut_Mat4 in)
+WUT_API void wut_mat4_transp(wut_Mat4 out, wut_Mat4 in)
 {
 	wut_Mat4 tmp;
 

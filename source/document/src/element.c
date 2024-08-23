@@ -1,27 +1,26 @@
-#include "document/inc/element[3]"
+#include "document/inc/element.h"
 
-#include "document/inc/document[3]"
+#include "document/inc/document.h"
 
-#include "utility/inc/alarm[3]"
-#include "utility/inc/shape[3]"
+#include "utility/inc/alarm.h"
 
-#include "widget/inc/widget[3]"
+#include "math/inc/polygon.h"
 
-#include "system/inc/system[3]"
+#include "widget/inc/widget.h"
 
-#include "style/inc/layout[3]"
+#include "system/inc/system.h"
+
+#include "style/inc/layout.h"
 
 
-#include <stdlib[3]>
+#include <stdlib.h>
 
 
 WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 {
 	struct wut_Element *par = ele->parent;
 
-
-	ele->relative_offset[0] = 0;
-	ele->relative_offset[1] = 0;
+        wut_ivec2_clr(ele->relative_offset);
 
 	/*
 	 * If the element has a parent, calculate the offset from the upper-left
@@ -56,68 +55,55 @@ WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 
 WUT_INTERN void ele_calc_bounding_rect(struct wut_Element *ele)
 {
-	struct wut_Rect rect;
-
-	wut_rct_mov(&rect, &ele->style.shape_bounding_box, &ele->absolute_offset);
-
-	wut_rct_cpy(&ele->bounding_rect, &rect);
+	wut_irect_mov(ele->bounding_rect, ele->style.shape_bounding_box,
+                        ele->absolute_offset);
 }
 
 
 WUT_INTERN void ele_calc_element_rect(struct wut_Element *ele)
 {
-	struct wut_Rect rect;
-
-	wut_rct_add(&rect, &ele->bounding_rect, &ele->style.shape_element_delta);
-
-	wut_rct_cpy(&ele->element_rect, &rect);
-
+	wut_irect_add(ele->element_rect, ele->bounding_rect,
+                        ele->style.shape_element_delta);
 }
 
 
 WUT_INTERN void ele_calc_inner_rect(struct wut_Element *ele)
 {
-	struct wut_Rect rect;
-
-	wut_rct_add(&rect, &ele->bounding_rect, &ele->style.shape_inner_delta);
-
-	wut_rct_cpy(&ele->inner_rect, &rect);
+	wut_irect_add(ele->inner_rect, ele->bounding_rect, 
+                        ele->style.shape_inner_delta);
 }
 
 
 WUT_INTERN void ele_calc_content_rect(struct wut_Element *ele)
 {
-	struct wut_Rect rect;
-
-	wut_rct_add(&rect, &ele->bounding_rect, &ele->style.shape_content_delta);
-
-	wut_rct_cpy(&ele->content_rect, &rect);
+	wut_irect_add(ele->content_rect, ele->bounding_rect, 
+                        ele->style.shape_content_delta);
 }
 
 
 WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 {
-	struct wut_Rect out;
-	struct wut_Rect dif;
+	wut_iRect out;
+	wut_iRect dif;
 
 	/*
 	 * First calculate the absolute position of the reference-area of the 
 	 * bounding box in the window.
 	 */
-	wut_rct_mov(&out, &ele->style.shape_bounding_box, &ele->absolute_offset);
+	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
 
 	/*
 	 * Finally convert from the bounding box to the element box.
 	 */
-	wut_rct_add(&out, &out, &ele->style.shape_element_delta);
+	wut_irect_add(out, out, ele->style.shape_element_delta);
 
-	wut_rct_cpy(&dif, &out);	/* Will be used later */
+	wut_irect_cpy(dif, out);	/* Will be used later */
 
 	/*
 	 * Check intersecting area with the parent.
 	 */
 	if(ele->parent) {
-		if(!wut_rct_intersect(&dif, &out, &ele->parent->output_rect)) {
+		if(!wut_irect_intersect(dif, out, ele->parent->output_rect)) {
 			/* If the element is not inside the parent */
 			ele->info_flags &= ~WUT_ELE_F_VISIBLE;
 			return;
@@ -129,7 +115,7 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	 * Now we have to validate the intersecting area with the window.
 	 * This will also check if the element even is inside the window.
 	 */
-	if(!wut_rct_intersect(&dif, &dif, ele->document->shape_ref)) {
+	if(!wut_irect_intersect(dif, dif, *ele->document->shape_ref)) {
 		/* Element is not inside the window */
 		ele->info_flags &= ~WUT_ELE_F_VISIBLE;
 		return;
@@ -138,12 +124,12 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	/*
 	 * Copy the visible area into the according rectangle.
 	 */
-	wut_rct_cpy(&ele->visible_out_rect, &dif);
+	wut_irect_cpy(ele->visible_out_rect, dif);
 
 	/*
 	 * Now we can copy the resulting rectangle to the element.
 	 */
-	wut_rct_cpy(&ele->output_rect, &out);
+	wut_irect_cpy(ele->output_rect, out);
 	ele->info_flags |= WUT_ELE_F_VISIBLE;
 }
 
@@ -219,9 +205,9 @@ WUT_XMOD void wut_ele_adjust_shape(struct wut_Element *ele)
 WUT_XMOD void wut_ele_hdl_scrollbar(struct wut_Element *ele)
 {
 	u8 flag = 0;
-	struct wut_Rect inner_rect;
+	wut_iRect inner_rect;
 
-	inner_rect = wut_GetContentBox(ele); 
+	wut_GetContentBox(ele, inner_rect); 
 
 	if(inner_rect[3] < ele->content_size[1])
 		flag |= WUT_RESTYLE_SCROLL_V;
@@ -261,7 +247,7 @@ WUT_XMOD s8 wut_ele_hlf(struct wut_Element *ele, wut_ElementFunc prefnc,
 
 	run = ele->firstborn;
 	while(run) {
-		next = run->right_element;
+		next = run->right;
 
 		if(wut_ele_hlf(run, prefnc, postfnc, data))
 			return 1;
@@ -321,10 +307,10 @@ WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 	p1y = ele->element_rect[1] + ele->element_rect[3];
 
 	/* Unioform: u_rect */
-	v_index[0] = wut_bat_push_uniform(ren, 1, &ele->element_rect);
+	v_index[0] = wut_bat_push_uniform(ren, 1, ele->element_rect);
 
 	/* Uniform: u_color */
-	wut_color_get_fv(ele->style.infill_color, color);
+	wut_GetColorFV(ele->style.infill_color, color);
 	v_index[2] = wut_bat_push_uniform(ren, 2, color);
 
 	/* Uniform: u_radius */
@@ -334,12 +320,12 @@ WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 	wut_bat_push_uniform(ren, 4, &ele->style.border_width);
 
 	/* Uniform: u_bcolor */
-	wut_color_get_fv(ele->style.border_color, color);
+	wut_GetColorFV(ele->style.border_color, color);
 	wut_bat_push_uniform(ren, 5, color);
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = wut_bat_push_uniform(ren, 7, &ele->parent->inner_rect);
+		v_index[1] = wut_bat_push_uniform(ren, 7, ele->parent->inner_rect);
 	}
 	else {
 		v_index[1] = -1;
@@ -393,7 +379,7 @@ WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 
 WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *ele)
 {
-	struct wut_Rect rect;
+	wut_iRect rect;
 	s32 indices[4];
 	s32 s_index[3];
 
@@ -418,7 +404,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		s32 p1y = ele->element_rect[1] + ele->element_rect[3] -
                         ele->style.border_width;
 
-		wut_rct_set(&rect,
+		wut_irect_set(rect,
 				p0x,
 				p0y,
 				10,
@@ -426,7 +412,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 
 
 		/* Unioform: u_rect */
-		s_index[0] = wut_bat_push_uniform(ren, 1, &rect);
+		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
 
 		/* Uniform: u_scroll */	
 		scroll[1] = (p1y - p0y) * ((f32)ele->content_rect[3] / (f32)ele->content_size[1]);
@@ -475,7 +461,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - ele->style.border_width;
 		s32 p1y = ele->element_rect[1] + ele->element_rect[3] - ele->style.border_width;
 
-		wut_rct_set(&rect,
+		wut_irect_set(rect,
 				p0x,
 				p0y, 
 				ele->element_rect[2] - (ele->style.border_width * 2),
@@ -483,7 +469,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 
 
 		/* Unioform: u_rect */
-		s_index[0] = wut_bat_push_uniform(ren, 1, &rect);
+		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
 
 		/* Uniform: u_scroll */
 		s_index[2] = wut_bat_push_uniform(ren, 6, h_scroll);
@@ -570,8 +556,8 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 	ele->document = doc;
 	ele->body = NULL;
 	ele->parent = NULL;
-	ele->left_element = NULL;
-	ele->right_element = NULL;
+	ele->left = NULL;
+	ele->right = NULL;
 	ele->slot = -1;
 	ele->children_num = 0;
 	ele->firstborn = NULL;
@@ -591,7 +577,7 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
 	printf("Create widget with %p\n", data);
-	if(wut_etmp_load(ele, data) < 0) {
+	if(wut_etm_load(ele, data) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
 	}
@@ -627,7 +613,8 @@ WUT_API void wut_DestroyElement(struct wut_Element *ele)
 }
 
 
-WUT_API s8 wut_AttachElement(struct wut_Element *parent, struct wut_Element *ele)
+WUT_API s8 wut_AttachElement(struct wut_Element *parent,
+                struct wut_Element *ele)
 {
 	struct wut_Element *run;
 
@@ -641,12 +628,12 @@ WUT_API s8 wut_AttachElement(struct wut_Element *parent, struct wut_Element *ele
 	}
 	else {	
 		run = parent->firstborn;	
-		while(run->right_element) {
-			run = run->right_element;
+		while(run->right) {
+			run = run->right;
 		}
 
-		run->right_element = ele;
-		ele->left_element = run;
+		run->right = ele;
+		ele->left = run;
 	}
 
 	parent->children_num++;
@@ -681,18 +668,18 @@ WUT_API void wut_DetachElement(struct wut_Element *ele)
 		return;
 	}
 
-	if(!ele->left_element)
-		par->firstborn = ele->right_element;
+	if(!ele->left)
+		par->firstborn = ele->right;
 	else
-		(ele->left_element)->right_element = ele->right_element;
+		(ele->left)->right = ele->right;
 
-	if(ele->right_element)
-		(ele->right_element)->left_element = ele->left_element;
+	if(ele->right)
+		(ele->right)->left = ele->left;
 
 	par->children_num--;
 
-	ele->left_element = NULL;
-	ele->right_element = NULL;
+	ele->left = NULL;
+	ele->right = NULL;
 	ele->parent = NULL;
 }
 
@@ -749,15 +736,15 @@ WUT_API void wut_UpdateElementChildrenShape(struct wut_Element *ele)
 	}
 
 	switch(ele->style.layout_mode) {
-		case WUT_KW_LAYOUT_BLOCK:	wut_layout_block(ele);	break;
-		case WUT_KW_LAYOUT_ROW: 		wut_layout_row(ele); 	break;
-		case WUT_KW_LAYOUT_COLUMN: 	wut_layout_column(ele);  break;
+		case WUT_KW_LAYOUT_BLOCK:	wut_lay_block(ele);	break;
+		case WUT_KW_LAYOUT_ROW: 	wut_lay_row(ele); 	break;
+		case WUT_KW_LAYOUT_COLUMN: 	wut_lay_column(ele);  break;
 		default: break;
 	}
 }
 
 
-WUT_API struct wut_context *wut_GetElementContext(struct wut_Element *ele)
+WUT_API struct wut_Context *wut_GetElementContext(struct wut_Element *ele)
 {
 	if(!ele) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -768,60 +755,38 @@ WUT_API struct wut_context *wut_GetElementContext(struct wut_Element *ele)
 }
 
 
-WUT_API struct wut_Rect wut_GetBoundingBox(struct wut_Element *ele)
+WUT_API void wut_GetBoundingBox(struct wut_Element *ele, wut_iRect out)
 {
-	struct wut_Rect r;
-
 	if(!ele) {
-		wut_rct_rst(&r);
-		return r;
+		wut_irect_clr(out);
+		return;
 	}
 
-	wut_rct_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
-
-	return r;
+	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
 }
 
 
-WUT_API struct wut_Rect wut_GetElementBox(struct wut_Element *ele)
+WUT_API void wut_GetElementBox(struct wut_Element *ele, wut_iRect out)
 {
-	struct wut_Rect r;
-
 	if(!ele) {
-		wut_rct_rst(&r);
-		return r;
+		wut_irect_clr(out);
+                return;
 	}
 
-	wut_rct_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
-	wut_rct_add(&r, &r, &ele->style.shape_element_delta);
-
-	return r;
+	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
+	wut_irect_add(out, out, ele->style.shape_element_delta);
 }
 
 
-WUT_API struct wut_Rect wut_GetContentBox(struct wut_Element *ele)
-{
-	struct wut_Rect r;
-
-	if(!ele) {
-		wut_rct_rst(&r);
-		return r;
-	}
-
-	wut_rct_mov(&r, &ele->style.shape_bounding_box, &ele->absolute_offset);
-	wut_rct_add(&r, &r, &ele->style.shape_content_delta);
-
-	return r;
-}
-
-
-WUT_API struct wut_Rect *wut_GetContextBoxRef(struct wut_Element *ele)
+WUT_API void wut_GetContentBox(struct wut_Element *ele, wut_iRect out)
 {
 	if(!ele) {
-		return NULL;
+                wut_irect_clr(out);
+		return;
 	}
 
-	return &ele->content_rect;
+	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
+	wut_irect_add(out, out, ele->style.shape_content_delta);
 }
 
 

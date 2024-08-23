@@ -200,7 +200,7 @@ WUT_INTERN void pip_order_single(struct wut_Pipe *pip, u8 slot)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WUT_API struct wut_Pipe *wut_CreatePipe(wut_Vec3 ref)
+WUT_XMOD struct wut_Pipe *wut_pip_create(wut_Vec3 ref)
 {
 	struct wut_Pipe *pip;
 	u32 size;
@@ -242,7 +242,7 @@ err_return:
 }
 
 
-WUT_API void wut_DestroyPipe(struct wut_Pipe *pip)
+WUT_XMOD void wut_pip_destroy(struct wut_Pipe *pip)
 {
 	if(!pip) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -254,7 +254,7 @@ WUT_API void wut_DestroyPipe(struct wut_Pipe *pip)
 }
 
 
-WUT_API s8 wut_PipeAddObject(struct wut_Pipe *pip, struct wut_Object *obj)
+WUT_XMOD s8 wut_pip_add(struct wut_Pipe *pip, struct wut_Object *obj)
 {
 	s32 slot;
 	struct wut_PipeEntry *ent;
@@ -289,7 +289,7 @@ err_return:
 }
 
 
-WUT_API void wut_PipeRemoveObject(struct wut_Pipe *pip, s32 slot)
+WUT_XMOD void wut_pip_remove(struct wut_Pipe *pip, s32 slot)
 {
 	struct wut_PipeEntry *ent;
 	struct wut_PipeEntry *hdl;
@@ -322,7 +322,7 @@ WUT_API void wut_PipeRemoveObject(struct wut_Pipe *pip, s32 slot)
 }
 
 
-WUT_API s32 wut_PipeGetSlot(struct wut_Pipe *pip, char *name)
+WUT_XMOD s32 wut_pip_get(struct wut_Pipe *pip, char *name)
 {
 	s32 i;
 	struct wut_PipeEntry *run;
@@ -352,7 +352,7 @@ WUT_API s32 wut_PipeGetSlot(struct wut_Pipe *pip, char *name)
 }
 
 
-WUT_API void wut_PipeSetReference(struct wut_Pipe *pip, wut_Vec3 ref)
+WUT_XMOD void wut_pip_set_reference(struct wut_Pipe *pip, wut_Vec3 ref)
 {
 	if(!pip) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -366,7 +366,7 @@ WUT_API void wut_PipeSetReference(struct wut_Pipe *pip, wut_Vec3 ref)
 }
 
 
-WUT_API void wut_PipeApply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *m))
+WUT_XMOD void wut_pip_apply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *m))
 {
 	s32 itr;
 	struct wut_PipeEntry *ent;
@@ -387,7 +387,7 @@ WUT_API void wut_PipeApply(struct wut_Pipe *pip, void (*fnc)(struct wut_Object *
 }
 
 
-WUT_API void wut_PipeShow(struct wut_Pipe *pip)
+WUT_XMOD void wut_pip_dump(struct wut_Pipe *pip)
 {
 	s32 itr;
 	s32 c;

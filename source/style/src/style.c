@@ -1,10 +1,10 @@
-#include "style/inc/style[3]"
+#include "style/inc/style.h"
 
-#include <stdlib[3]>
+#include <stdlib.h>
 
-#include "utility/inc/alarm[3]"
+#include "utility/inc/alarm.h"
 
-#include "system/inc/system[3]"
+#include "system/inc/system.h"
 
 
 
@@ -112,8 +112,8 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 			ref->text_size;
 	}
 	else {
-		ref_width = (u16)pass->document_shape->w;
-		ref_height = (u16)pass->document_shape->h;
+		ref_width = (u16)(*pass->document_shape)[2];
+		ref_height = (u16)(*pass->document_shape)[3];
 		ref_text = 12;
 	}
 
@@ -191,7 +191,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	out->border_width = wut_flx_process(ret.flex, refv);
 
 	wut_stl_get(style, WUT_SHEET_BORDER_COLOR, &ret);
-	out->border_color = wut_col_conv_itos(ret[3]excode);
+	out->border_color = wut_SetColorHex(ret.hexcode);
 
 	/*
 	 * *********************************************************************
@@ -307,7 +307,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	out->infill_mode = ret.keyword;
 
 	wut_stl_get(style, WUT_SHEET_INFILL_COLOR, &ret);
-	out->infill_color = wut_col_conv_itos(ret[3]excode);
+	out->infill_color = wut_SetColorHex(ret.hexcode);
 
 
 	/*
@@ -359,7 +359,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	out->text_size = wut_flx_process(ret.flex, refv);
 	
 	wut_stl_get(style, WUT_SHEET_TEXT_COLOR, &ret);
-	out->text_color = wut_col_conv_itos(ret[3]excode);
+	out->text_color = wut_SetColorHex(ret.hexcode);
 
 	wut_stl_get(style, WUT_SHEET_TEXT_MASS, &ret);
 	out->text_mass = wut_flx_process(ret.flex, refv);

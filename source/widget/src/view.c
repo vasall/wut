@@ -7,11 +7,11 @@
 #include <stdlib.h>
 
 
-WT_INTERN s8 view_get_slot(struct wt_view_list *lst)
+WUT_INTERN s8 vie_get_slot(struct wut_ViewList *lst)
 {
 	s8 i;
 
-	for(i = 0; i < WT_VIEW_LIST_LIM; i++) {
+	for(i = 0; i < WUT_VIEW_LIST_LIM; i++) {
 		if(lst->views[i] == NULL)
 			return i;
 	}
@@ -19,33 +19,33 @@ WT_INTERN s8 view_get_slot(struct wt_view_list *lst)
 	return -1;
 }
 
-WT_INTERN void view_render_objects(struct wt_object *m)
+WUT_INTERN void vie_render_objects(struct wut_Object *m)
 {
-	wt_RenderObject(m, NULL, NULL);
+	wut_RenderObject(m, NULL, NULL);
 }
 
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- *				APPLICATION-INTERFACE
+ *				CROSS-MODULE-INTERFACE
  *
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
 
-WT_API struct wt_view_list *wt_CreateViewList(struct wt_context *ctx)
+WUT_XMOD struct wut_ViewList *wut_vie_create_list(struct wut_Context *ctx)
 {
-	struct wt_view_list *lst;
+	struct wut_ViewList *lst;
 	u8 i;
 
 	if(!ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(lst = wt_malloc(sizeof(struct wt_view_list)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for view list");
+	if(!(lst = wut_malloc(sizeof(struct wut_ViewList)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for view list");
 		goto err_return;
 	}
 
@@ -53,91 +53,91 @@ WT_API struct wt_view_list *wt_CreateViewList(struct wt_context *ctx)
 	lst->context = ctx;
 	lst->number = 0;
 
-	for(i = 0; i < WT_VIEW_LIST_LIM; i++)
+	for(i = 0; i < WUT_VIEW_LIST_LIM; i++)
 		lst->views[i] = NULL;
 
 	return lst;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create view list");
+	WUT_ALARM(WUT_ERROR, "Failed to create view list");
 	return NULL;
 }
 
 
-WT_API void wt_DestroyViewList(struct wt_view_list *lst)
+WUT_XMOD void wut_vie_destroy_list(struct wut_ViewList *lst)
 {
 	s8 i;
 
 	if(!lst) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	for(i = 0; i < WT_VIEW_LIST_LIM; i++) {
+	for(i = 0; i < WUT_VIEW_LIST_LIM; i++) {
 		if(lst->views[i]) {
-			wt_DestroyView(lst->views[i]);
+			wut_vie_destroy(lst->views[i]);
 		}
 	}
 
-	wt_free(lst);
+	wut_free(lst);
 }
 
 
-WT_API void wt_RenderViewList(struct wt_view_list *lst)
+WUT_XMOD void wut_vie_render_list(struct wut_ViewList *lst)
 {
 	s8 i;
 
-	for(i = 0; i < WT_VIEW_LIST_LIM; i++) {
+	for(i = 0; i < WUT_VIEW_LIST_LIM; i++) {
 		if(!lst->views[i])
 			continue;
 
-		wt_RenderView(lst->views[i]);
+		wut_vie_render(lst->views[i]);
 	}
 }
 
 
-WT_API struct wt_view *wt_CreateView(struct wt_view_list *lst,
-		struct wt_rect *rect)
+WUT_XMOD struct wut_View *wut_vie_create(struct wut_ViewList *lst,
+		wut_iRect *rect)
 {
-	struct wt_view *v;
-	struct wt_camera_info cam_info;
+	struct wut_View *v;
+	struct wut_CameraInfo cam_info;
 	s8 slot;
 
 	if(!lst) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if((slot = view_get_slot(lst)) < 0) {
-		WT_ALARM(WT_ERROR, "No more free slots in view list");
+	if((slot = vie_get_slot(lst)) < 0) {
+		WUT_ALARM(WUT_ERROR, "No more free slots in view list");
 		goto err_return;
 	}
 
-	if(!(v = wt_malloc(sizeof(struct wt_view)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for view struct");
+	if(!(v = wut_malloc(sizeof(struct wut_View)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for view struct");
 		goto err_return;
 	}
 
 	/* Set the attributes */
 	v->slot = slot;
 	v->list = lst;
-	wt_rect_cpy(&v->shape, rect);
+	wut_irect_cpy(v->shape, *rect);
 
 	/*
 	 * Create a camera.
 	 */
 	cam_info.area_of_view = 60;
-        cam_info.aspect_ratio = (f32)rect->w / (f32)rect->h;
+        cam_info.aspect_ratio = (f32)(*rect)[2] / (f32)(*rect)[3];
         cam_info.near = 0.01;
         cam_info.far = 1000;
-	if(!(v->camera = wt_CreateCamera(cam_info, v))) {
-		WT_ALARM(WT_ERROR, "Failed to create camera");
+	if(!(v->camera = wut_CreateCamera(cam_info, v))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create camera");
 		goto err_free_v;
 	}
 
 	/* Create a new pipeline */
-	if(!(v->pipe = wt_CreatePipe(v->camera->pos))) {
-		WT_ALARM(WT_ERROR, "Failed to create new object pipeline");
+	if(!(v->pipe = wut_pip_create(v->camera->pos))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create new object pipeline");
 		goto err_destroy_cam;
 	}
 
@@ -151,20 +151,20 @@ WT_API struct wt_view *wt_CreateView(struct wt_view_list *lst,
 	return v;
 
 err_destroy_cam:
-	wt_DestroyCamera(v->camera);
+	wut_DestroyCamera(v->camera);
 
 err_free_v:
-	wt_free(v);
+	wut_free(v);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create new view struct");
+	WUT_ALARM(WUT_ERROR, "Failed to create new view struct");
 	return NULL;
 }
 
 
-WT_API void wt_DestroyView(struct wt_view *v)
+WUT_XMOD void wut_vie_destroy(struct wut_View *v)
 {
-	struct wt_view_list *lst;
+	struct wut_ViewList *lst;
 
 	if(!v)
 		return;
@@ -174,14 +174,14 @@ WT_API void wt_DestroyView(struct wt_view *v)
 	lst->views[v->slot] = NULL;
 	lst->number--;	
 
-	wt_DestroyPipe(v->pipe);
-	wt_free(v);
+	wut_pip_destroy(v->pipe);
+	wut_free(v);
 }
 
 
-WT_API void wt_RenderView(struct wt_view *v)
+WUT_XMOD void wut_vie_render(struct wut_View *v)
 {
-	struct wt_context *ctx;
+	struct wut_Context *ctx;
 
 	if(!v)
 		return;
@@ -191,50 +191,50 @@ WT_API void wt_RenderView(struct wt_view *v)
 	/*
 	 * First translate.
 	 */
-	wt_SetViewport(ctx, &v->shape);
+	wut_SetViewport(ctx, v->shape);
 
 
 	/*
 	 * Then enable scissors.
 	 */
-	wt_ContextEnableScissor(ctx, &v->shape);
+	wut_ContextEnableScissor(ctx, v->shape);
 
 
 	/*
 	 * Now we can render all objects in order.
 	 */
-	wt_PipeApply(v->pipe, &view_render_objects);			
+	wut_pip_apply(v->pipe, &vie_render_objects);			
 
 
 	/*
 	 * Lastly, reset everything.
 	 */
-	wt_ContextDisableScissor(ctx);
-	wt_ResetViewport(ctx);
+	wut_ContextDisableScissor(ctx);
+	wut_ResetViewport(ctx);
 }
 
 
-WT_API void wt_ResizeView(struct wt_view *v, struct wt_rect *rect)
+WUT_XMOD void wut_vie_resize(struct wut_View *v, wut_iRect *rect)
 {
-	struct wt_camera_info info;
+	struct wut_CameraInfo info;
 
 	if(!v || !rect) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	wt_rect_cpy(&v->shape, rect);
+	wut_irect_cpy(v->shape, *rect);
 
-	info = wt_GetCameraInfo(v->camera);
-	info.aspect_ratio = (f32)rect->w / (f32)rect->h;
-	wt_SetCameraInfo(v->camera, info);
+	info = wut_GetCameraInfo(v->camera);
+	info.aspect_ratio = (f32)(*rect)[2] / (f32)(*rect)[3];
+	wut_SetCameraInfo(v->camera, info);
 }
 
 
-WT_API struct wt_camera *wt_GetViewCamera(struct wt_view *v)
+WUT_XMOD struct wut_Camera *wut_vie_get_camera(struct wut_View *v)
 {
 	if(!v) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return NULL;
 	}
 
@@ -242,24 +242,24 @@ WT_API struct wt_camera *wt_GetViewCamera(struct wt_view *v)
 }
 
 
-WT_API void wt_UpdateViewPipe(struct wt_view *v)
+WUT_XMOD void wut_vie_update_pipe(struct wut_View *v)
 {
 	if(!v)
 		return;
 
-	wt_PipeSetReference(v->pipe, v->camera->pos);
+	wut_pip_set_reference(v->pipe, v->camera->pos);
 }
 
 
-WT_API s8 wt_ViewAddObject(struct wt_view *v, struct wt_object *obj)
+WUT_XMOD s8 wut_vie_add_object(struct wut_View *v, struct wut_Object *obj)
 {
 	if(!v || !obj) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(wt_PipeAddObject(v->pipe, obj) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to add object to pipe");
+	if(wut_pip_add(v->pipe, obj) < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to add object to pipe");
 		goto err_return;
 	}
 
@@ -268,28 +268,28 @@ WT_API s8 wt_ViewAddObject(struct wt_view *v, struct wt_object *obj)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to add object to view");
+	WUT_ALARM(WUT_ERROR, "Failed to add object to view");
 	return -1;
 }
 
 
-WT_API void wt_ViewRemoveObject(struct wt_object *obj)
+WUT_XMOD void wut_vie_remove_object(struct wut_Object *obj)
 {
-	struct wt_pipe *pip;
+	struct wut_Pipe *pip;
 
 	if(!obj) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	if(!obj->view) {
-		WT_ALARM(WT_WARNING, "Object is not attached to any view");
+		WUT_ALARM(WUT_WARNING, "Object is not attached to any view");
 		return;
 	}
 
 	pip = obj->view->pipe;
 
-	wt_PipeRemoveObject(pip, wt_PipeGetSlot(pip, obj->name));
+	wut_pip_remove(pip, wut_pip_get(pip, obj->name));
 
 	obj->view = NULL;
 }

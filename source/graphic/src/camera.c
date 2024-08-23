@@ -37,7 +37,7 @@ WUT_INTERN void cam_update_proj(struct wut_Camera *cam)
 	near = cam->info.near;
 	far = cam->info.far;
 
-	tangent = near * tan(aov * 0.5 * M_PI / 180);
+	tangent = near * tan(aov * 0.5 * WUT_PI / 180);
 
 	top = tangent;
 	bottom = -top;
@@ -64,9 +64,9 @@ WUT_INTERN void cam_update_view(struct wut_Camera *cam)
 	wut_Vec3 u;
 	wut_Vec3 p;	
 
-	wut_mat4_t m;
+	wut_Mat4 m;
 
-	wut_mat4_t conv = {
+	wut_Mat4 conv = {
 		1.0,  0.0,  0.0,  0.0,
    		0.0,  1.0,  0.0,  0.0,
    		0.0,  0.0, -1.0,  0.0,
@@ -78,7 +78,7 @@ WUT_INTERN void cam_update_view(struct wut_Camera *cam)
 
 	/* Calculate the forward, right and up wut_vector for the camera */
 	if(cam->mode == WUT_CAM_FOCUS) {
-		wut_vec4_t tmp = {0, 1, 0};
+		wut_Vec4 tmp = {0, 1, 0};
 		wut_vec4_trans(tmp, cam->forw_m, tmp);
 
 		wut_vec3_cpy(f, tmp);
@@ -132,7 +132,7 @@ WUT_INTERN void cam_reorder_pipe(struct wut_Camera *cam)
 	if(!cam->view)
 		return;
 
-	wut_UpdateViewPipe(cam->view);
+	wut_vie_update_pipe(cam->view);
 }
 
 
@@ -146,11 +146,11 @@ WUT_INTERN void cam_reorder_pipe(struct wut_Camera *cam)
  */
 
 WUT_API struct wut_Camera *wut_CreateCamera(struct wut_CameraInfo info,
-		struct wut_view *view)
+		struct wut_View *view)
 {
 	struct wut_Camera *cam;
 
-	if(!(cam = wut_malloc(sizeof(struct wut_camera)))) {
+	if(!(cam = wut_malloc(sizeof(struct wut_Camera)))) {
 		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for camera");
 		goto err_return;
 	}
@@ -197,7 +197,7 @@ WUT_API void wut_DestroyCamera(struct wut_Camera *cam)
 }
 
 
-WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_mat4_t out)
+WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_Mat4 out)
 {
 	if(!cam) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -209,7 +209,7 @@ WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_mat4_t out)
 }
 
 
-WUT_API void wut_GetProjectionMat(struct wut_Camera *cam, wut_mat4_t out)
+WUT_API void wut_GetProjectionMat(struct wut_Camera *cam, wut_Mat4 out)
 {
 	if(!cam) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -290,7 +290,7 @@ WUT_API void wut_SetCameraDirection(struct wut_Camera *cam, wut_Vec3 dir)
 }
 
 
-WUT_API enum wut_cam_mode wut_GetCameraMode(struct wut_Camera *cam)
+WUT_API enum wut_eCameraMode wut_GetCameraMode(struct wut_Camera *cam)
 {
 	if(!cam) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -301,7 +301,7 @@ WUT_API enum wut_cam_mode wut_GetCameraMode(struct wut_Camera *cam)
 }
 
 
-WUT_API void wut_SetCameraMode(struct wut_Camera *cam, enum wut_cam_mode mode)
+WUT_API void wut_SetCameraMode(struct wut_Camera *cam, enum wut_eCameraMode mode)
 {
 	if(!cam) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
@@ -407,22 +407,22 @@ WUT_API void wut_CameraRotate(struct wut_Camera *cam, f32 d_yaw, f32 d_pitch)
 
 		if(cam->v_forward[2] > 0) {	
 			agl = asin(cam->v_forward[2]);
-			agl = RAD_TO_DEG(agl);
+			agl = WUT_RAD_TO_DEG(agl);
 
 			if(agl > WUT_CAM_PITCH_LIM)
 				agl = WUT_CAM_PITCH_LIM;
 
-			agl = DEG_TO_RAD(agl);
+			agl = WUT_DEG_TO_RAD(agl);
 			cam->v_forward[2] = sin(agl);
 		}
 		else {
 			agl = asin(cam->v_forward[2]);
-			agl = RAD_TO_DEG(agl);
+			agl = WUT_RAD_TO_DEG(agl);
 
 			if(agl < -WUT_CAM_PITCH_LIM)
 				agl = -WUT_CAM_PITCH_LIM;
 
-			agl = DEG_TO_RAD(agl);
+			agl = WUT_DEG_TO_RAD(agl);
 			cam->v_forward[2] = sin(agl);
 		}
 	}
@@ -445,8 +445,8 @@ WUT_API void wut_CameraRotate(struct wut_Camera *cam, f32 d_yaw, f32 d_pitch)
 		yaw = atan2(f[0], f[1]);
 		pitch = -asin(f[2]);
 
-		yaw = RAD_TO_DEG(yaw);
-		pitch = RAD_TO_DEG(pitch);
+		yaw = WUT_RAD_TO_DEG(yaw);
+		pitch = WUT_RAD_TO_DEG(pitch);
 
 		wut_mat4_rfagl_s(cam->forw_m, pitch, 0, yaw);
 	}

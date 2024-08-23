@@ -75,7 +75,7 @@ WUT_API s8 wut_ResizeFlat(struct wut_Flat *f, s16 w, s16 h);
  * @f: Pointer to the flat
  * @r: The rect to update
  */
-WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r);
+WUT_API void wut_UpdateFlat(struct wut_Flat *f, wut_iRect r);
 
 
 /*
@@ -85,7 +85,7 @@ WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r);
  * @r: The rectangle
  * @c: The color
  */
-WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r,
+WUT_API void wut_FlatRect(struct wut_Flat *f, wut_iRect r,
 		struct wut_Color c);
 
 
@@ -96,7 +96,7 @@ WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r,
  * @r: The rectangle
  * @c: The color
  */
-WUT_API void wut_FlatRectSet(struct wut_Flat *f, struct wut_iRect *r,
+WUT_API void wut_FlatRectSet(struct wut_Flat *f, wut_iRect r,
 		struct wut_Color c);
 
 #endif /* _WUT_GRAPHIC_FLAT_H */

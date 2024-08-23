@@ -6,7 +6,7 @@
 
 #include "graphic/inc/batch.h"
 
-#include "utility/inc/shape.h"
+#include "math/inc/polygon.h"
 
 #include "style/inc/style.h"
 
@@ -30,7 +30,7 @@ struct wut_TextInfo {
 	/*
 	 * A rectangle setting the render area.
 	 */
-	struct wut_iRect		*limits;
+	wut_iRect		*limits;
 
 	/*
 	 * The style used for the text.

@@ -33,6 +33,7 @@ Modules and Abreviations:
   - Event Handler       -> hdl
   - Event Default       -> evd
   - Batch               -> bat
+  - Pipe                -> pip
   - Camera              -> cam
   - Shader              -> shd
   - SDL                 -> sdl
@@ -42,7 +43,9 @@ Modules and Abreviations:
   - Flex                -> flx
   - List                -> lst
   - Static List         -> sls
-
+  - Widget              -> wgt
+  - View                -> vie
+  - Textfield           -> tfd
   - Size                -> sze
   - Rectangle           -> rct
   - Vector              -> vec

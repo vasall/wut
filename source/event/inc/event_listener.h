@@ -119,7 +119,7 @@ WUT_XMOD struct wut_EventHandler *wut_hdl_retrieve(void *ptr);
  * Returns: 0 on success or -1 if an error occurred
  */
 WUT_API s8 wut_BindEventListener(struct wut_EventHandler *hdl,
-		enum wut_eEventType type, char *name, wut_evt_cfnc fnc,
+		enum wut_eEventType type, char *name, wut_EventFunc fnc,
 		void *data);
 
 

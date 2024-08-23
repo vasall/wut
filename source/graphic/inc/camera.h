@@ -6,7 +6,7 @@
 
 #include "window/inc/window.h"
 
-#include "utility/inc/extended_math.h"
+#include "math/inc/functions.h"
 
 #define WUT_CAM_NAME_LIM	128
 #define WUT_CAM_PITCH_LIM	50.0
@@ -40,10 +40,10 @@ struct wut_Camera {
 
 	wut_Vec3 aim;
 	f32 dist;
-	wut_mat4_t forw_m;
+	wut_Mat4 forw_m;
 
-	wut_mat4_t view_m;
-	wut_mat4_t projection_m;
+	wut_Mat4 view_m;
+	wut_Mat4 projection_m;
 
 	f32 sens;
 
@@ -67,7 +67,7 @@ struct wut_Camera {
  * Returns: Either a pointer to the camera or NULL if an error occurred
  */
 WUT_API struct wut_Camera *wut_CreateCamera(struct wut_CameraInfo info,
-		struct wut_view *view);
+		struct wut_View *view);
 
 
 /*
@@ -86,7 +86,7 @@ WUT_API void wut_DestroyCamera(struct wut_Camera *cam);
  * @cam: Pointer to the camera
  * @out: A matrix to write the view matrix to
  */
-WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_mat4_t out);
+WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_Mat4 out);
 
 
 /*
@@ -97,7 +97,7 @@ WUT_API void wut_GetViewMat(struct wut_Camera *cam, wut_mat4_t out);
  * @cam: Pointer to the camera
  * @out: A matrix to write the projection matrix to
  */
-WUT_API void wut_GetProjectionMat(struct wut_Camera *cam, wut_mat4_t out);
+WUT_API void wut_GetProjectionMat(struct wut_Camera *cam, wut_Mat4 out);
 
 
 /*
@@ -154,7 +154,7 @@ WUT_API void wut_SetCameraDirection(struct wut_Camera *cam, wut_Vec3 dir);
  *
  * Returns: The current mode of the camera
  */
-WUT_API enum wut_cam_mode wut_GetCameraMode(struct wut_Camera *cam); 
+WUT_API enum wut_eCameraMode wut_GetCameraMode(struct wut_Camera *cam); 
 
 
 /*
@@ -163,7 +163,7 @@ WUT_API enum wut_cam_mode wut_GetCameraMode(struct wut_Camera *cam);
  * @cam: Pointer to the camera
  * @mode: The new mode of the camera
  */
-WUT_API void wut_SetCameraMode(struct wut_Camera *cam, enum wut_cam_mode mode);
+WUT_API void wut_SetCameraMode(struct wut_Camera *cam, enum wut_eCameraMode mode);
 
 
 /*

@@ -1,23 +1,23 @@
-#ifndef _WT_WIDGET_H
-#define _WT_WIDGET_H
+#ifndef _WUT_WIDGET_H
+#define _WUT_WIDGET_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "document/inc/element.h"
 
-enum wt_widget_type {
-	WT_WIDGET_TEXT,
-	WT_WIDGET_IMAGE,
-	WT_WIDGET_VIEW
+enum wut_eWidgetType {
+	WUT_WIDGET_TEXT,
+	WUT_WIDGET_IMAGE,
+	WUT_WIDGET_VIEW
 };
 
 
-struct wt_widget {
+struct wut_Widget {
 	/* A pointer to the element */
-	struct wt_element *element;
+	struct wut_Element *element;
 
-	enum wt_widget_type type;
+	enum wut_eWidgetType type;
 
 	void *ref;
 };
@@ -32,8 +32,8 @@ struct wt_widget {
  *
  * Returns: Either a pointer to the widget or NULL if an error occurred
  */
-WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
-		enum wt_widget_type type, void *data);
+WUT_API struct wut_Widget *wut_CreateWidget(struct wut_Element *ele,
+		enum wut_eWidgetType type, void *data);
 
 
 /*
@@ -41,7 +41,7 @@ WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
  *
  * @comp: Pointer to the widget
  */
-WT_API void wt_DestroyWidget(struct wt_widget *w);
+WUT_API void wut_DestroyWidget(struct wut_Widget *w);
 
 
 /*
@@ -50,7 +50,7 @@ WT_API void wt_DestroyWidget(struct wt_widget *w);
  * @comp: Pointer to the widget
  * @[data]: Pointer to data used for updating
  */
-WT_API void wt_UpdateWidget(struct wt_widget *w, void *data);
+WUT_API void wut_UpdateWidget(struct wut_Widget *w, void *data);
 
 
 /*
@@ -58,6 +58,6 @@ WT_API void wt_UpdateWidget(struct wt_widget *w, void *data);
  *
  * @comp: Pointer to the widget
  */
-WT_API void wt_RenderWidget(struct wt_widget *w);
+WUT_API void wut_RenderWidget(struct wut_Widget *w);
 
-#endif /* _WT_WIDGET_H */
+#endif /* _WUT_WIDGET_H */

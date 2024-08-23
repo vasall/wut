@@ -9,7 +9,7 @@
 
 #include "system/inc/system.h"
 
-#include"graphic/inc/shader.h"
+#include "graphic/inc/shader.h"
 
 #include <stdlib.h>
 
@@ -19,12 +19,12 @@
  *
  */
 
-WT_INTERN s8 widget_create_text(struct wt_widget *w, void *data)
+WUT_INTERN s8 wgt_create_text(struct wut_Widget *w, void *data)
 {
-	struct wt_textfield *txt;
+	struct wut_Textfield *txt;
 
-	if(!(txt = wt_textfield_create(w->element, data))) {
-		WT_ALARM(WT_ERROR, "Failed to create textfield");
+	if(!(txt = wut_tfd_create(w->element, data))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create textfield");
 		return -1;
 	}
 
@@ -34,9 +34,9 @@ WT_INTERN s8 widget_create_text(struct wt_widget *w, void *data)
 }
 
 
-WT_INTERN s8 widget_create_image(struct wt_widget *w, void *data)
+WUT_INTERN s8 wgt_create_image(struct wut_Widget *w, void *data)
 {
-	wt_Ignore(w);
+	WUT_IGNORE(w);
 
 	w->ref = data;
 
@@ -44,22 +44,24 @@ WT_INTERN s8 widget_create_image(struct wt_widget *w, void *data)
 }
 
 
-WT_INTERN s8 widget_create_view(struct wt_widget *w, void *data)
+WUT_INTERN s8 wgt_create_view(struct wut_Widget *w, void *data)
 {
-	struct wt_rect rect = wt_GetElementBox(w->element);
-	struct wt_view_list *lst;
+	wut_iRect rect;
+	struct wut_ViewList *lst;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
 	lst = w->element->document->views;
 
-	if(!(w->ref = wt_CreateView(lst, &rect)))
+        wut_GetElementBox(w->element, rect);
+
+	if(!(w->ref = wut_vie_create(lst, &rect)))
 		goto err_return;
 
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create view widget");
+	WUT_ALARM(WUT_ERROR, "Failed to create view widget");
 	return -1;
 }
 
@@ -70,21 +72,21 @@ err_return:
  *
  */
 
-WT_INTERN void widget_destroy_text(struct wt_widget *w)
+WUT_INTERN void wgt_destroy_text(struct wut_Widget *w)
 {
-	wt_textfield_destroy(w->ref);
+	wut_tfd_destroy(w->ref);
 }
 
 
-WT_INTERN void widget_destroy_image(struct wt_widget *w)
+WUT_INTERN void wgt_destroy_image(struct wut_Widget *w)
 {
-	wt_Ignore(w);
+	WUT_IGNORE(w);
 }
 
 
-WT_INTERN void widget_destroy_view(struct wt_widget *w)
+WUT_INTERN void wgt_destroy_view(struct wut_Widget *w)
 {
-	wt_DestroyView(w->ref);
+	wut_vie_destroy(w->ref);
 }
 
 
@@ -94,30 +96,31 @@ WT_INTERN void widget_destroy_view(struct wt_widget *w)
  *
  */
 
-WT_INTERN void widget_update_text(struct wt_widget *w, void *data)
+WUT_INTERN void wgt_update_text(struct wut_Widget *w, void *data)
 {
-	wt_Ignore(w);
-	wt_Ignore(data);
+	WUT_IGNORE(w);
+	WUT_IGNORE(data);
 
-	wt_textfield_update(w->ref);
+	wut_tfd_update(w->ref);
 }
 
 
-WT_INTERN void widget_update_image(struct wt_widget *w, void *data)
+WUT_INTERN void wgt_update_image(struct wut_Widget *w, void *data)
 {
-	wt_Ignore(w);
-	wt_Ignore(data);
+	WUT_IGNORE(w);
+	WUT_IGNORE(data);
 
 }
 
 
-WT_INTERN void widget_update_view(struct wt_widget *w, void *data)
+WUT_INTERN void wgt_update_view(struct wut_Widget *w, void *data)
 {
-	struct wt_rect rect = wt_GetElementBox(w->element);
+	wut_iRect rect;
 
-	wt_Ignore(data);
+	WUT_IGNORE(data);
 
-	wt_ResizeView(w->ref, &rect);
+        wut_GetElementBox(w->element, rect);
+	wut_vie_resize(w->ref, &rect);
 }
 
 
@@ -127,17 +130,17 @@ WT_INTERN void widget_update_view(struct wt_widget *w, void *data)
  *
  */
 
-WT_INTERN void widget_render_text(struct wt_widget *w)
+WUT_INTERN void wgt_render_text(struct wut_Widget *w)
 {
-	wt_textfield_render(w->ref);
+	wut_tfd_render(w->ref);
 }
 
 
-WT_INTERN void widget_render_image(struct wt_widget *w)
+WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 {
-	struct wt_element *ele;
-	struct wt_texture *tex;
-	struct wt_batch *ren;
+	struct wut_Element *ele;
+	struct wut_Texture *tex;
+	struct wut_Batch *ren;
 
 	s32 indices[4];
 	s32 v_index[3];
@@ -159,22 +162,22 @@ WT_INTERN void widget_render_image(struct wt_widget *w)
 
 	ele = w->element;
 	tex = w->ref;
-	ren = wt_ContextGetBatch(ele->document->context, tex->batch_id);
+	ren = wut_ContextGetBatch(ele->document->context, tex->batch_id);
 		
-	p0x = ele->inner_rect.x;
-	p0y = ele->inner_rect.y;
-	p1x = ele->inner_rect.x + ele->inner_rect.w;
-	p1y = ele->inner_rect.y + ele->inner_rect.h;
+	p0x = ele->inner_rect[0];
+	p0y = ele->inner_rect[1];
+	p1x = ele->inner_rect[0] + ele->inner_rect[2];
+	p1y = ele->inner_rect[1] + ele->inner_rect[3];
 
 	/* Uniform: u_rect */
-	v_index[0] = wt_batch_push_uniform(ren, 1, &ele->inner_rect);
+	v_index[0] = wut_bat_push_uniform(ren, 1, ele->inner_rect);
 
 	/* Uniform: u_radius */
-	v_index[2] = wt_batch_push_uniform(ren, 2, ele->style.radius_corner);
+	v_index[2] = wut_bat_push_uniform(ren, 2, ele->style.radius_corner);
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = wt_batch_push_uniform(ren, 3, &ele->parent->inner_rect);
+		v_index[1] = wut_bat_push_uniform(ren, 3, ele->parent->inner_rect);
 	}
 	else {
 		v_index[1] = -1;
@@ -189,41 +192,41 @@ WT_INTERN void widget_render_image(struct wt_widget *w)
 	vdata.y = (f32)p0y;
 	vdata.u = 0;
 	vdata.v = 1;
-	indices[0] = wt_batch_push_vertex(ren, (void *)&vdata);
+	indices[0] = wut_bat_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
 	vdata.u = 1;
 	vdata.v = 1;
-	indices[1] = wt_batch_push_vertex(ren, (void *)&vdata);
+	indices[1] = wut_bat_push_vertex(ren, (void *)&vdata);
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
 	vdata.u = 1;
 	vdata.v = 0;
-	indices[2] = wt_batch_push_vertex(ren, (void *)&vdata);
+	indices[2] = wut_bat_push_vertex(ren, (void *)&vdata);
 
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
 	vdata.u = 0;
 	vdata.v = 0;
-	indices[3] = wt_batch_push_vertex(ren, (void *)&vdata);
+	indices[3] = wut_bat_push_vertex(ren, (void *)&vdata);
 
-	wt_batch_push_index(ren, indices[0]);
-	wt_batch_push_index(ren, indices[2]);
-	wt_batch_push_index(ren, indices[3]);
+	wut_bat_push_index(ren, indices[0]);
+	wut_bat_push_index(ren, indices[2]);
+	wut_bat_push_index(ren, indices[3]);
 
-	wt_batch_push_index(ren, indices[0]);
-	wt_batch_push_index(ren, indices[1]);
-	wt_batch_push_index(ren, indices[2]);
+	wut_bat_push_index(ren, indices[0]);
+	wut_bat_push_index(ren, indices[1]);
+	wut_bat_push_index(ren, indices[2]);
 }
 
 
-WT_INTERN void widget_render_view(struct wt_widget *w)
+WUT_INTERN void wgt_render_view(struct wut_Widget *w)
 {
-	wt_RenderView(w->ref);
+	wut_vie_render(w->ref);
 }
 
 
@@ -235,19 +238,19 @@ WT_INTERN void widget_render_view(struct wt_widget *w)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
-		enum wt_widget_type type, void *data)
+WUT_API struct wut_Widget *wut_CreateWidget(struct wut_Element *ele,
+		enum wut_eWidgetType type, void *data)
 {
-	struct wt_widget *w;
+	struct wut_Widget *w;
 	s8 r = -1;
 
 	if(!ele) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(w = wt_malloc(sizeof(struct wt_widget)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for widget");
+	if(!(w = wut_malloc(sizeof(struct wut_Widget)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for widget");
 		goto err_return;
 	}
 
@@ -258,16 +261,16 @@ WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
 	printf("Create widget\n");
 
 	switch(type) {
-		case WT_WIDGET_TEXT: 
-			r = widget_create_text(w, data);
+		case WUT_WIDGET_TEXT: 
+			r = wgt_create_text(w, data);
 			break;
-		case WT_WIDGET_IMAGE: 
-			r = widget_create_image(w, data); 
+		case WUT_WIDGET_IMAGE: 
+			r = wgt_create_image(w, data); 
 			break;
-		case WT_WIDGET_VIEW: 
-			r = widget_create_view(w, data); 
+		case WUT_WIDGET_VIEW: 
+			r = wgt_create_view(w, data); 
 			break;
-		default: WT_ALARM(WT_ERROR, "Type not found"); break;
+		default: WUT_ALARM(WUT_ERROR, "Type not found"); break;
 	}
 
 	if(r < 0) goto err_free_comp;
@@ -275,74 +278,74 @@ WT_API struct wt_widget *wt_CreateWidget(struct wt_element *ele,
 	return w;
 
 err_free_comp:
-	wt_free(w);
+	wut_free(w);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create widget");
+	WUT_ALARM(WUT_ERROR, "Failed to create widget");
 	return NULL;
 }
 
 
-WT_API void wt_DestroyWidget(struct wt_widget *w)
+WUT_API void wut_DestroyWidget(struct wut_Widget *w)
 {
 	if(!w) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case WT_WIDGET_TEXT:
-			widget_destroy_text(w);
+		case WUT_WIDGET_TEXT:
+			wgt_destroy_text(w);
 			break;
-		case WT_WIDGET_IMAGE:
-			widget_destroy_image(w);
+		case WUT_WIDGET_IMAGE:
+			wgt_destroy_image(w);
 			break;
-		case WT_WIDGET_VIEW: 
-			widget_destroy_view(w);
+		case WUT_WIDGET_VIEW: 
+			wgt_destroy_view(w);
 			break;	
 	}
 
-	wt_free(w);
+	wut_free(w);
 }
 
 
-WT_API void wt_UpdateWidget(struct wt_widget *w, void *data)
+WUT_API void wut_UpdateWidget(struct wut_Widget *w, void *data)
 {
 	if(!w) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case WT_WIDGET_TEXT:
-			widget_update_text(w, data);
+		case WUT_WIDGET_TEXT:
+			wgt_update_text(w, data);
 			break;
-		case WT_WIDGET_IMAGE:
-			widget_update_image(w, data);
+		case WUT_WIDGET_IMAGE:
+			wgt_update_image(w, data);
 			break;
-		case WT_WIDGET_VIEW:
-			widget_update_view(w, data);
+		case WUT_WIDGET_VIEW:
+			wgt_update_view(w, data);
 			break;
 	}
 }
 
 
-WT_API void wt_RenderWidget(struct wt_widget *w)
+WUT_API void wut_RenderWidget(struct wut_Widget *w)
 {
 	if(!w) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	switch(w->type) {
-		case WT_WIDGET_TEXT:
-			widget_render_text(w);
+		case WUT_WIDGET_TEXT:
+			wgt_render_text(w);
 			break;
-		case WT_WIDGET_IMAGE:
-			widget_render_image(w);
+		case WUT_WIDGET_IMAGE:
+			wgt_render_image(w);
 			break;
-		case WT_WIDGET_VIEW:
-			widget_render_view(w);
+		case WUT_WIDGET_VIEW:
+			wgt_render_view(w);
 			break;
 	}
 }

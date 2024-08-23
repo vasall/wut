@@ -1,5 +1,5 @@
-#ifndef _WT_WIDGET_VIEW_H
-#define _WT_WIDGET_VIEW_H
+#ifndef _WUT_WIDGET_VIEW_H
+#define _WUT_WIDGET_VIEW_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -9,31 +9,31 @@
 #include "graphic/inc/camera.h"
 #include "graphic/inc/object.h"
 
-#include "utility/inc/shape.h"
+#include "math/inc/polygon.h"
 
 
 
-#define WT_VIEW_LIST_LIM	8
+#define WUT_VIEW_LIST_LIM	8
 
-struct wt_view_list;
+struct wut_ViewList;
 
-struct wt_view {
+struct wut_View {
 	s8 slot;
-	struct wt_view_list *list;
+	struct wut_ViewList *list;
 
-	struct wt_pipe *pipe;
+	struct wut_Pipe *pipe;
 
-	struct wt_camera *camera;
+	struct wut_Camera *camera;
 
-	struct wt_rect shape;
+	wut_iRect shape;
 };
 
 
-struct wt_view_list {
-	struct wt_context *context;
+struct wut_ViewList {
+	struct wut_Context *context;
 
 	u8 number;
-	struct wt_view *views[WT_VIEW_LIST_LIM];
+	struct wut_View *views[WUT_VIEW_LIST_LIM];
 };
 
 
@@ -45,7 +45,7 @@ struct wt_view_list {
  *
  * Returns: Either a pointer to the view list or NULL if an error occurred
  */
-WT_API struct wt_view_list *wt_CreateViewList(struct wt_context *ctx);
+WUT_XMOD struct wut_ViewList *wut_vie_create_list(struct wut_Context *ctx);
 
 
 /*
@@ -53,7 +53,7 @@ WT_API struct wt_view_list *wt_CreateViewList(struct wt_context *ctx);
  *
  * @lst: Pointer to the view list.
  */
-WT_API void wt_DestroyViewList(struct wt_view_list *lst);
+WUT_XMOD void wut_vie_destroy_list(struct wut_ViewList *lst);
 
 
 /*
@@ -61,7 +61,7 @@ WT_API void wt_DestroyViewList(struct wt_view_list *lst);
  *
  * @lst: Pointer to the view list
  */
-WT_API void wt_RenderViewList(struct wt_view_list *lst);
+WUT_XMOD void wut_vie_render_list(struct wut_ViewList *lst);
 
 
 /*
@@ -72,8 +72,8 @@ WT_API void wt_RenderViewList(struct wt_view_list *lst);
  *
  * Returns: Either a new view or NULL if an error occurred
  */
-WT_API struct wt_view *wt_CreateView(struct wt_view_list *lst,
-		struct wt_rect *rect);
+WUT_XMOD struct wut_View *wut_vie_create(struct wut_ViewList *lst,
+		wut_iRect *rect);
 
 
 /*
@@ -81,7 +81,7 @@ WT_API struct wt_view *wt_CreateView(struct wt_view_list *lst,
  *
  * @v: Pointer to the view struct
  */
-WT_API void wt_DestroyView(struct wt_view *v);
+WUT_XMOD void wut_vie_destroy(struct wut_View *v);
 
 
 /*
@@ -89,7 +89,7 @@ WT_API void wt_DestroyView(struct wt_view *v);
  *
  * @v: Pointer to the view struct
  */
-WT_API void wt_RenderView(struct wt_view *v);
+WUT_XMOD void wut_vie_render(struct wut_View *v);
 
 
 /*
@@ -98,7 +98,7 @@ WT_API void wt_RenderView(struct wt_view *v);
  * @v: Pointer to the view
  * @rect: The new shape of the view
  */
-WT_API void wt_ResizeView(struct wt_view *v, struct wt_rect *rect);
+WUT_XMOD void wut_vie_resize(struct wut_View *v, wut_iRect *rect);
 
 
 /*
@@ -108,7 +108,7 @@ WT_API void wt_ResizeView(struct wt_view *v, struct wt_rect *rect);
  *
  * Returns: A pointer to the camera
  */
-WT_API struct wt_camera *wt_GetViewCamera(struct wt_view *v);
+WUT_XMOD struct wut_Camera *wut_vie_get_camera(struct wut_View *v);
 
 
 /*
@@ -117,7 +117,7 @@ WT_API struct wt_camera *wt_GetViewCamera(struct wt_view *v);
  *
  * @v: Pointer to the view
  */
-WT_API void wt_UpdateViewPipe(struct wt_view *v);
+WUT_XMOD void wut_vie_update_pipe(struct wut_View *v);
 
 
 /*
@@ -126,7 +126,7 @@ WT_API void wt_UpdateViewPipe(struct wt_view *v);
  * @v: Pointer to the view
  * @obj: Pointer to the object
  */
-WT_API s8 wt_ViewAddObject(struct wt_view *v, struct wt_object *obj);
+WUT_XMOD s8 wut_vie_add_object(struct wut_View *v, struct wut_Object *obj);
 
 
 /*
@@ -134,6 +134,6 @@ WT_API s8 wt_ViewAddObject(struct wt_view *v, struct wt_object *obj);
  *
  * @obj: Pointer to the object
  */
-WT_API void wt_ViewRemoveObject(struct wt_object *obj);
+WUT_XMOD void wut_vie_remove_object(struct wut_Object *obj);
 
-#endif /* _WT_WIDGET_VIEW_H */
+#endif /* _WUT_WIDGET_VIEW_H */

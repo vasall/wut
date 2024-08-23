@@ -7,7 +7,6 @@
 #include "window/inc/window.h"
 
 #include "document/inc/element.h"
-#include "document/inc/element_manager.h"
 
 #include "graphic/inc/batch.h"
 #include "graphic/inc/object.h"
@@ -29,7 +28,7 @@ struct wut_Document {
         struct wut_Element		*hovered;
 
         /* A reference to the window size */
-        struct wut_Rect 		*shape_ref;
+        wut_iRect 		        *shape_ref;
 
         /* A list of all views */
         struct wut_ViewList 		*views;
@@ -46,7 +45,7 @@ struct wut_Document {
 struct wut_ElementSelector {
         s8 			state;
         char 			*name;
-        struct wut_Vec2i 	*pos;
+        wut_iVec2 	        *pos;
         struct wut_Element 	*element;
 };
 
@@ -134,7 +133,7 @@ WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name)
  * 	    occurred or no element could be found
  */
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                struct wut_Vec2i *pos);
+                wut_iVec2 *pos);
 
 
 /*

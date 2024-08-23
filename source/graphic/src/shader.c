@@ -292,7 +292,7 @@ WUT_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 {
 	struct wut_Shader *shader;
 
-	wut_Ignore(size);
+	WUT_IGNORE(size);
 
 	if(!ptr)
 		return;
@@ -312,7 +312,7 @@ WUT_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 
 WUT_API s8 wut_InitShaderTable(struct wut_Context *ctx)
 {
-	struct wut_table *tbl;
+	struct wut_Table *tbl;
 	float vec[3];
 
 	if(!ctx) {
@@ -322,8 +322,8 @@ WUT_API s8 wut_InitShaderTable(struct wut_Context *ctx)
 
 	wut_vec3_set(vec, 1, 2, 3);
 
-	if(!(tbl = wut_tbl_create(&shd_rmv_fnc))) {
-		WUT_ALARM(WUT_ERROR, "Failed to create wut_table");
+	if(!(tbl = wut_CreateTable(&shd_rmv_fnc))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create wut_Table");
 		goto err_return;
 	}
 
@@ -345,7 +345,7 @@ WUT_API void wut_CloseShaderTable(struct wut_Context *ctx)
 		return;
 	}
 
-	wut_tbl_destroy(ctx->shaders);
+	wut_DestroyTable(ctx->shaders);
 	ctx->shaders = NULL;
 }
 
@@ -445,7 +445,7 @@ WUT_API struct wut_Shader *wut_GetShader(struct wut_Context *ctx, char *name)
 		goto err_return;
 	}
 
-	if(wut_tbl_get(ctx->shaders, name, NULL, (void **)&shader) != 1)
+	if(wut_GetTable(ctx->shaders, name, NULL, (void **)&shader) != 1)
 		return NULL;
 
 	return shader;

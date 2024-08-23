@@ -16,6 +16,12 @@ WUT_API struct wut_Color wut_SetColor(u8 red, u8 green, u8 blue, u8 alpha)
 }
 
 
+WUT_API struct wut_Color wut_SetColorHex(u32 hex)
+{
+       return  *((struct wut_Color *)&hex);
+}
+
+
 WUT_API u32 wut_SetColorU32(u8 red, u8 green, u8 blue, u8 alpha)
 {
         struct wut_Color col;

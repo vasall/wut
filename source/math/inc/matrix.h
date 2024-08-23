@@ -29,7 +29,7 @@ WUT_API void   wut_mat4_idt(wut_Mat4 m);
 WUT_API void   wut_mat4_cpy(wut_Mat4 out, wut_Mat4 in);
 WUT_API void   wut_mat4_mult(wut_Mat4 m1, wut_Mat4 m2, wut_Mat4 out);
 WUT_API void   wut_mat4_inv(wut_Mat4 out, wut_Mat4 in);
-WUT_API void   wut_mat4ransp(wut_Mat4 out, wut_Mat4 in);
+WUT_API void   wut_mat4_transp(wut_Mat4 out, wut_Mat4 in);
 WUT_API void   wut_mat4_print(wut_Mat4 m);
 
 WUT_API void   wut_mat4_std(wut_Mat4 m);

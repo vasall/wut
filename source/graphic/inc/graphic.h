@@ -9,8 +9,6 @@
 #include "graphic/inc/constructor.h"
 #include "graphic/inc/pipe.h"
 #include "graphic/inc/shader.h"
-#include "utility/inc/shape.h"
-#include "graphic/inc/surface.h"
 #include "graphic/inc/texture.h"
 
 #endif /* _WUT_GRAPHIC_H */

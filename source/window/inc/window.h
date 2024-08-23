@@ -17,7 +17,7 @@ struct wut_Window;
 #include "event/inc/event.h"
 #include "event/inc/event_listener.h"
 
-#include "utility/inc/shape.h"
+#include "math/inc/polygon.h"
 
 #define WUT_WIN_NAME_LIM  	126
 #define WUT_WIN_CHILDREN_LIM     6
@@ -40,7 +40,7 @@ struct wut_Window {
 	char                    name[WUT_WIN_NAME_LIM];
 
 	/* The size of the window in pixels */
-	struct wut_Rect         shape;
+	wut_iRect               shape;
 
 	/* 
 	 * The state flags of this window (from lowest to highest):
@@ -82,7 +82,7 @@ struct wut_Window {
 typedef s8 (*wut_WindowFunc)(struct wut_Window *, void *);
 
 
-struct wut_win_selector {
+struct wut_WindowSelector {
 	s8 state;
 
 	s32 id;
@@ -200,10 +200,10 @@ WUT_API struct wut_Window *wut_GetWindow(s32 wd);
  * Resize the window to the new given size.
  *
  * @win: Pointer to the window
- * @w: The new width
- * @h: The new height
+ * @width: The new width
+ * @height: The new height
  */
-WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h);
+WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 width, u16 height);
 
 
 /*

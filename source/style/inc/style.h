@@ -1,8 +1,9 @@
 #ifndef _WUT_STYLE_H
 #define _WUT_STYLE_H
 
+struct wut_Style;
+
 #include "core/inc/define.h"
-#include "core/inc/import.h"
 
 #include "style/inc/stylesheet.h"
 
@@ -181,7 +182,7 @@ WUT_XMOD s8 wut_stl_link(struct wut_Style *style, struct wut_Style *ref);
  * Returns: 1 if the attribute has been found, 0 if not and -1 if an error
  * 	    occurred
  */
-WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_sheet_id id,
+WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
                 struct wut_SheetReturn *ret);
 
 

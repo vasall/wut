@@ -278,7 +278,7 @@ WUT_XMOD void wut_txt_remove(struct wut_TextBuffer *tbuf, s16 off, s16 len)
 WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 {
 	struct wut_Style *tstyle;
-	struct wut_iRect *limits;
+	wut_iRect *limits;
 	struct wut_Font *font;
 	s16 tmp;
 		
@@ -310,8 +310,8 @@ WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 	font = tbuf->info.font;
 
 	/* Calculate the initial position of the line */
-	line[0] = limits->x;
-	line[1] = limits->y + tstyle->text_line_height;
+	line[0] = (*limits)[0];
+	line[1] = (*limits)[1] + tstyle->text_line_height;
 
 	printf(">> Line: %d, %d\n", line[0], line[1]);
 	printf(">> Text-Size: %d\n", tstyle->text_size);
@@ -358,11 +358,11 @@ WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 
 
 		/* If the word extends over the limit try to wrap it */
-		if(lwidth >= limits->w) {
+		if(lwidth >= (*limits)[2]) {
 			printf("Reached end of line(%d)\n", run);
 			printf("tmp: %d, lwidth: %d\n", tmp, lwidth);
 			printf("Wrap_mode: %d\n", tstyle->text_wrap_mode);
-			printf("Width: %d\n", limits->w);
+			printf("Width: %d\n", (*limits)[2]);
 
 			switch(tstyle->text_wrap_mode) {
 				case WUT_TEXT_WORDWRAP:
@@ -414,7 +414,7 @@ WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 		if(ladv) {
 			printf("Go to next line\n");
 
-			line[0] = limits->x;
+			line[0] = (*limits)[0];
 			line[1] += tstyle->text_line_height;
 
 			tele_last = NULL;
@@ -449,7 +449,6 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 	struct wut_FontGlyph *glyph;
 	struct wut_Style *tstyle;
 
-	s16 i;
 
 	s16 run;
 
@@ -470,7 +469,6 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 
 	batch = tbuf->info.batch;
 	run = tbuf->head;
-	i = 0;
 
 	while(run >= 0) {
 		ele = &tbuf->elements[run];

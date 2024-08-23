@@ -1,16 +1,14 @@
-#include "document/inc/document[3]"
+#include "document/inc/document.h"
 
-#include "document/inc/element_rendering[3]"
+#include "utility/inc/alarm.h"
 
-#include "utility/inc/alarm[3]"
+#include "core/inc/predefined.h"
 
-#include "core/inc/predefined[3]"
+#include "system/inc/system.h"
 
-#include "system/inc/system[3]"
+#include "utility/inc/utility.h"
 
-#include "utility/inc/utility[3]"
-
-#include <stdlib[3]>
+#include <stdlib.h>
 
 /*
  * 
@@ -50,17 +48,17 @@ WUT_INTERN s8 doc_cfnc_find(struct wut_Element *ele, void *data)
 WUT_INTERN s8 doc_cfnc_findpos(struct wut_Element *ele, void *data)
 {
         struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
-        struct wut_Rect rect;
+        wut_iRect rect;
 
-        rect = wut_GetElementBox(ele);
+        wut_GetElementBox(ele, rect);
 
         if(sel->state == 1)
                 return 1;
 
-        if(sel->pos->x < rect[0] || sel->pos->x > (rect[0] + rect[2]))
+        if((*sel->pos)[0] < rect[0] || (*sel->pos)[0] > (rect[0] + rect[2]))
                 return 0;
 
-        if(sel->pos->y < rect[1] || sel->pos->y > (rect[1] + rect[3]))
+        if((*sel->pos)[1] < rect[1] || (*sel->pos)[1] > (rect[1] + rect[3]))
                 return 0;
 
         sel->element = ele;
@@ -116,7 +114,7 @@ WUT_INTERN s8 doc_cfnc_show(struct wut_Element  *ele, void *data)
 
         s32 lim = 16;
 
-        struct wut_Rect r;
+        wut_iRect r;
 
         WUT_IGNORE(data);
 
@@ -132,14 +130,14 @@ WUT_INTERN s8 doc_cfnc_show(struct wut_Element  *ele, void *data)
                 printf(" ");
 
 
-        r = wut_GetBoundingBox(ele);
-        wut_rct_dump(&r);
+        wut_GetBoundingBox(ele, r);
+        wut_irect_dump(r);
         printf("  --  ");
-        r = wut_GetElementBox(ele);
-        wut_rct_dump(&r);
+        wut_GetElementBox(ele, r);
+        wut_irect_dump(r);
         printf("  --  ");
-        r = wut_GetContentBox(ele);
-        wut_rct_dump(&r);
+        wut_GetContentBox(ele, r);
+        wut_irect_dump(r);
 
         printf("\n");
 
@@ -150,10 +148,10 @@ WUT_INTERN s8 doc_cfnc_show(struct wut_Element  *ele, void *data)
 WUT_INTERN void doc_batch_cfnc_push(struct wut_Batch *ren, void *data)
 {
         s32 frame[2];
-        struct wut_Rect *ref = (struct wut_Rect *)data;
+        wut_iRect *ref = (wut_iRect *)data;
 
-        frame[0] = ref->w;
-        frame[1] = ref->h;
+        frame[0] = (*ref)[2];
+        frame[1] = (*ref)[3];
         wut_bat_push_uniform(ren, 0, frame);
 
 }
@@ -164,21 +162,21 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
         struct wut_Shader *shd;
         struct wut_Batch *ren;
 
-        struct wut_vertex_attrib v_attributes[] = {
+        struct wut_VertexAttrib v_attributes[] = {
                 {3, GL_FLOAT},		/* position */
                 {3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
                 {1, GL_INT}		/* type */
         };
 
-        struct wut_uniform_temp uniforms[] = {
-                {"u_frame", WUT_UNIFORM_2IV, 1, WUT_UNIFORM_F_DEFAULT},	 /* 0 */
-                {"u_rect", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT},	 /* 1 */
-                {"u_color", WUT_UNIFORM_4FV, 200, WUT_UNIFORM_F_DEFAULT},	 /* 2 */
-                {"u_radius", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}, /* 3 */
-                {"u_bwidth", WUT_UNIFORM_1IV, 200, WUT_UNIFORM_F_DEFAULT}, /* 4 */
-                {"u_bcolor", WUT_UNIFORM_4FV, 200, WUT_UNIFORM_F_DEFAULT}, /* 5 */
-                {"u_scroll", WUT_UNIFORM_2IV, 200, WUT_UNIFORM_F_DEFAULT}, /* 6 */
-                {"u_limit", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}	 /* 7 */
+        struct wut_UniformTemp uniforms[] = {
+                {"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT},	 /* 0 */
+                {"u_rect", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},	 /* 1 */
+                {"u_color", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT},	 /* 2 */
+                {"u_radius", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}, /* 3 */
+                {"u_bwidth", WUT_UNI_1IV, 200, WUT_UNI_F_DEFAULT}, /* 4 */
+                {"u_bcolor", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT}, /* 5 */
+                {"u_scroll", WUT_UNI_2IV, 200, WUT_UNI_F_DEFAULT}, /* 6 */
+                {"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}	 /* 7 */
         };
 
         shd = wut_GetShader(doc->context, "__def_block_shader");
@@ -217,7 +215,7 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
  */
 
 
-WUT_API struct wut_Document *wut_CreateDocument(struct wut_window *win)
+WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
 {
         struct wut_Document *doc;
 
@@ -249,7 +247,7 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_window *win)
         doc->hovered	= NULL;
 
         /* Create the view list */
-        if(!(doc->views = wut_CreateViewList(doc->context)))
+        if(!(doc->views = wut_vie_create_list(doc->context)))
                 goto err_destroy_body;
 
         /* Create the default batch renderer */
@@ -263,7 +261,7 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_window *win)
 
 
 err_destroy_views:
-        wut_DestroyViewList(doc->views);
+        wut_vie_destroy_list(doc->views);
 
 err_destroy_body:
         wut_DestroyElement(doc->body);
@@ -286,7 +284,7 @@ WUT_API void wut_DestroyDocument(struct wut_Document *doc)
         wut_RemoveElement(doc, doc->body);	
 
         /* Then destroy all left over views */
-        wut_DestroyViewList(doc->views);
+        wut_vie_destroy_list(doc->views);
 
         wut_free(doc);
 }
@@ -379,7 +377,7 @@ err_return:
 
 
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                struct wut_Vec2i *pos)
+                wut_iVec2 *pos)
 {
         struct wut_ElementSelector sel;
 

@@ -122,7 +122,7 @@ err_quit_sdl:
 
 err_return:
 	/* Reset te core */
-	wut_cor_reset();
+	cor_reset();
 
 	WUT_ALARM(WUT_ERROR, "Failed to initialize the freihand framework");
 	return -1;
@@ -139,7 +139,7 @@ WUT_API void wut_Quit(void)
 	wut_sdl_quit();
 
 	/* Reset the core */
-	wut_cor_reset();
+	cor_reset();
 }
 
 

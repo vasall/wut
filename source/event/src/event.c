@@ -22,28 +22,28 @@ WUT_INTERN s8 evt_is_mouse(u32 type)
 }
 
 
-WUT_INTERN void evt_get_position(u32 t, SDL_Event *raw, struct wut_Sin2 *p)
+WUT_INTERN void evt_get_position(u32 t, SDL_Event *raw, wut_iVec2 p)
 {
 	switch(t) {
 		case SDL_MOUSEMOTION:
-			p->x = raw->motion.x;
-			p->y = raw->motion.y;
+			p[0] = raw->motion.x;
+			p[1] = raw->motion.y;
 			return;
 
 		case SDL_MOUSEBUTTONDOWN:
 		case SDL_MOUSEBUTTONUP:
-			p->x = raw->button.x;
-			p->y = raw->button.y;
+			p[0] = raw->button.x;
+			p[1] = raw->button.y;
 			return;
 
 		case SDL_MOUSEWHEEL:
-			p->x = raw->wheel.x;
-			p->y = raw->wheel.y;
+			p[0] = raw->wheel.x;
+			p[1] = raw->wheel.y;
 			return;
 
 		default:
-			p->x = 0;
-			p->y = 0;
+			p[0] = 0;
+			p[1] = 0;
 	}
 }
 
@@ -53,7 +53,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 	u32 type = raw->type;
 	struct wut_Window *win;
 	struct wut_Element *ele = NULL;
-	struct wut_Sin2 pos;
+	wut_iVec2 pos;
 
 	/*
 	 * First get the window.
@@ -87,7 +87,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 				break;
 
 			default:
-				evt_get_position(type, raw, &pos);
+				evt_get_position(type, raw, pos);
 				ele = wut_GetHoveredElement(win->document, &pos); 
 		}
 	}
