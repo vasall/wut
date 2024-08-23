@@ -64,11 +64,6 @@ WUT_XMOD struct wut_Window *wut_cor_get_main_window(void)
 
 WUT_XMOD void wut_cor_set_active_window(struct wut_Window *win)
 {
-	if(win)
-		printf("%s is not the active window\n", win->name);
-	else
-		printf("no more active window\n");
-
 	_wut_coreContainer.active_window = win;
 }
 
@@ -131,9 +126,11 @@ err_return:
 
 WUT_API void wut_Quit(void)
 {
-	/* Close all windows */
-	wut_CloseWindow(wut_cor_get_main_window());
-	wut_cor_set_main_window(NULL);
+	/* Close all windows, if any is open */
+        if(wut_cor_get_main_window()) {
+	        wut_CloseWindow(wut_cor_get_main_window());
+	        wut_cor_set_main_window(NULL);
+        }
 	
 	/* Shutdown SDL */
 	wut_sdl_quit();
