@@ -9,10 +9,10 @@
 #include <stdlib.h>
 
 
-#define WT_SHADER_DEBUG	1
+#define WUT_SHADER_DEBUG	1
 
 
-WT_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
+WUT_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 {
 	u32 shd;
 	char info_log[512];
@@ -31,8 +31,8 @@ WT_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 	glGetShaderiv(shd, GL_COMPILE_STATUS, &success);
 	if(!success) {
 		glGetShaderInfoLog(shd, 512, NULL, info_log);
-		WT_ALARM(WT_ERROR, info_log);
-		WT_ALARM(WT_ERROR, "Failed to compile vertex shader");
+		WUT_ALARM(WUT_ERROR, info_log);
+		WUT_ALARM(WUT_ERROR, "Failed to compile vertex shader");
 
 		glDeleteShader(shd);
 		return -1;
@@ -42,10 +42,10 @@ WT_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 	return 0;
 }
 
-WT_INTERN s8 shd_extract_inputs(struct wt_shader_inputs *inp, const char *str)
+WUT_INTERN s8 shd_extract_inputs(struct wut_ShaderInputs *inp, const char *str)
 {
 	char *line = (char *)str;
-	struct wt_shader_var *var;
+	struct wut_ShaderVar *var;
 	s32 num_vars = 0;
 	char *start;
 	char *end;
@@ -96,7 +96,7 @@ WT_INTERN s8 shd_extract_inputs(struct wt_shader_inputs *inp, const char *str)
 	return num_vars;
 }
 
-WT_INTERN s8 shd_extract_uniforms(struct wt_shader_uniforms *u, const char *str)
+WUT_INTERN s8 shd_extract_uniforms(struct wut_ShaderUniforms *u, const char *str)
 {
 	char *runner = (char *)str;
 	char swap[64];
@@ -104,7 +104,7 @@ WT_INTERN s8 shd_extract_uniforms(struct wt_shader_uniforms *u, const char *str)
 	u32 counter = 0;
 	u32 i = 0;
 
-	struct wt_shader_uniform *uni;
+	struct wut_ShaderUniform *uni;
 
 	while((runner = strstr(runner, "binding=")) != NULL) {
 		uni = &u->uniform[counter];
@@ -135,10 +135,10 @@ WT_INTERN s8 shd_extract_uniforms(struct wt_shader_uniforms *u, const char *str)
 }
 
 
-WT_INTERN struct wt_shader *shd_create(char *name, const char *v_src,
+WUT_INTERN struct wut_Shader *shd_create(char *name, const char *v_src,
 		const char *f_src)
 {
-	struct wt_shader *shader;
+	struct wut_Shader *shader;
 
 	u32 vshader;
 	u32 fshader;
@@ -149,8 +149,8 @@ WT_INTERN struct wt_shader *shd_create(char *name, const char *v_src,
 	/*
 	 * Allocate memory for shader.
 	 */
-	if(!(shader = wt_malloc(sizeof(struct wt_shader)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for new shader");
+	if(!(shader = wut_malloc(sizeof(struct wut_Shader)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for new shader");
 		goto err_return;
 	}
 
@@ -158,12 +158,12 @@ WT_INTERN struct wt_shader *shd_create(char *name, const char *v_src,
 	 * Extract the input variables from the vertex-shader.
 	 */
 	if(shd_extract_inputs(&shader->inputs, v_src) < 1) {
-		WT_ALARM(WT_ERROR, "Failed to extract input");
+		WUT_ALARM(WUT_ERROR, "Failed to extract input");
 		goto err_free_shader;
 	}
 
 	if(shd_extract_uniforms(&shader->uniforms, v_src) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to extract uniforms");
+		WUT_ALARM(WUT_ERROR, "Failed to extract uniforms");
 		goto err_free_shader;
 	}
 
@@ -181,7 +181,7 @@ WT_INTERN struct wt_shader *shd_create(char *name, const char *v_src,
 	 * Create shader program.
 	 */
 	if((shader->program = glCreateProgram()) == 0) {
-		WT_ALARM(WT_ERROR, "Failed to create shader program");
+		WUT_ALARM(WUT_ERROR, "Failed to create shader program");
 		goto err_delete_fshader;
 	}
 
@@ -200,8 +200,8 @@ WT_INTERN struct wt_shader *shd_create(char *name, const char *v_src,
 	glGetProgramiv(shader->program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shader->program, 512, NULL, info_log);
-		WT_ALARM(WT_ERROR, info_log);
-		WT_ALARM(WT_ERROR, "Failed to link shaders to program");
+		WUT_ALARM(WUT_ERROR, info_log);
+		WUT_ALARM(WUT_ERROR, "Failed to link shaders to program");
 		goto err_delete_program;
 	}
 
@@ -229,30 +229,30 @@ err_delete_vshader:
 	glDeleteShader(vshader);	
 
 err_free_shader:
-	wt_free(shader);
+	wut_free(shader);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create new shader");
+	WUT_ALARM(WUT_ERROR, "Failed to create new shader");
 	return NULL;
 }
 
 
-WT_INTERN struct wt_shader *shd_load(char *name, char *v_pth, char *f_pth)
+WUT_INTERN struct wut_Shader *shd_load(char *name, char *v_pth, char *f_pth)
 {
 	char *v_buf = NULL;
 	char *f_buf = NULL;
-	struct wt_shader *shader;
+	struct wut_Shader *shader;
 
 	/*
 	 * Read the vertex and fragment shader files.
 	 */
-	if(wt_fs_text(v_pth, NULL, &v_buf) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to load the vertex shader file");
+	if(wut_fs_text(v_pth, NULL, &v_buf) < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to load the vertex shader file");
 		goto err_return;
 	}
 
-	if(wt_fs_text(f_pth, NULL, &f_buf) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to load the fragment shader file");
+	if(wut_fs_text(f_pth, NULL, &f_buf) < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to load the fragment shader file");
 		goto err_free_v_buf;
 	}
 
@@ -263,41 +263,41 @@ WT_INTERN struct wt_shader *shd_load(char *name, char *v_pth, char *f_pth)
 	if(!(shader = shd_create(name, v_buf, f_buf)))
 		goto err_free_f_buf;
 
-	wt_free(v_buf);
-	wt_free(f_buf);
+	wut_free(v_buf);
+	wut_free(f_buf);
 
 	return shader;
 
 err_free_f_buf:
-	wt_free(v_buf);
+	wut_free(v_buf);
 
 err_free_v_buf:
-	wt_free(f_buf);
+	wut_free(f_buf);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load new shader");
+	WUT_ALARM(WUT_ERROR, "Failed to load new shader");
 	return NULL;
 }
 
 
-WT_INTERN void shd_destroy(struct wt_shader *shd)
+WUT_INTERN void shd_destroy(struct wut_Shader *shd)
 {
 	glDeleteProgram(shd->program);
 
-	wt_free(shd);
+	wut_free(shd);
 }
 
 
-WT_INTERN void shd_rmv_fnc(u32 size, void *ptr)
+WUT_INTERN void shd_rmv_fnc(u32 size, void *ptr)
 {
-	struct wt_shader *shader;
+	struct wut_Shader *shader;
 
-	wt_Ignore(size);
+	wut_Ignore(size);
 
 	if(!ptr)
 		return;
 
-	shader = (struct wt_shader *)ptr;
+	shader = (struct wut_Shader *)ptr;
 	shd_destroy(shader);
 }
 
@@ -310,20 +310,20 @@ WT_INTERN void shd_rmv_fnc(u32 size, void *ptr)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API s8 wt_InitShaderTable(struct wt_context *ctx)
+WUT_API s8 wut_InitShaderTable(struct wut_Context *ctx)
 {
-	struct wt_table *tbl;
+	struct wut_table *tbl;
 	float vec[3];
 
 	if(!ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	wt_vec3_set(vec, 1, 2, 3);
+	wut_vec3_set(vec, 1, 2, 3);
 
-	if(!(tbl = wt_tbl_create(&shd_rmv_fnc))) {
-		WT_ALARM(WT_ERROR, "Failed to create wt_table");
+	if(!(tbl = wut_tbl_create(&shd_rmv_fnc))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create wut_table");
 		goto err_return;
 	}
 
@@ -333,32 +333,32 @@ WT_API s8 wt_InitShaderTable(struct wt_context *ctx)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to initialize shader table");
+	WUT_ALARM(WUT_ERROR, "Failed to initialize shader table");
 	return -1;
 }
 
 
-WT_API void wt_CloseShaderTable(struct wt_context *ctx)
+WUT_API void wut_CloseShaderTable(struct wut_Context *ctx)
 {
 	if(!ctx) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	wt_tbl_destroy(ctx->shaders);
+	wut_tbl_destroy(ctx->shaders);
 	ctx->shaders = NULL;
 }
 
 
-WT_API struct wt_shader *wt_CreateShader(struct wt_context *ctx, char *name,
+WUT_API struct wut_Shader *wut_CreateShader(struct wut_Context *ctx, char *name,
 		const char *v_src, const char *f_src)
 {
-	struct wt_shader *shd;
+	struct wut_Shader *shd;
 	u32 size;
 	void **p;
 
 	if(!ctx || !name || !v_src || !f_src) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -371,9 +371,9 @@ WT_API struct wt_shader *wt_CreateShader(struct wt_context *ctx, char *name,
 	shd->context = ctx;
 
 	/* Insert shader into table */
-	size = sizeof(struct wt_shader);
+	size = sizeof(struct wut_Shader);
 	p = (void **)&shd;
-	if(wt_ContextAdd(ctx, WT_CONTEXT_SHADERS, name, size, p) < 0)
+	if(wut_ContextAdd(ctx, WUT_CONTEXT_SHADERS, name, size, p) < 0)
 		goto err_destroy_shader;
 
 	printf("Fail 3\n");
@@ -384,20 +384,20 @@ err_destroy_shader:
 
 err_return:
 	printf("Failed to create shader: %s\n", name);
-	WT_ALARM(WT_ERROR, "Failed to create new shader");
+	WUT_ALARM(WUT_ERROR, "Failed to create new shader");
 	return NULL;
 }
 
 
-WT_API struct wt_shader *wt_LoadShader(struct wt_context *ctx, char *name,
+WUT_API struct wut_Shader *wut_LoadShader(struct wut_Context *ctx, char *name,
 		char *v_pth, char *f_pth)
 {
-	struct wt_shader *shd;
+	struct wut_Shader *shd;
 	u32 size;
 	void **p;
 
 	if(!ctx || !name || !v_pth || !f_pth) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -408,9 +408,9 @@ WT_API struct wt_shader *wt_LoadShader(struct wt_context *ctx, char *name,
 	shd->context = ctx;
 
 	/* Insert shader into table */
-	size = sizeof(struct wt_shader);
+	size = sizeof(struct wut_Shader);
 	p = (void **)&shd;
-	if(wt_ContextAdd(ctx, WT_CONTEXT_SHADERS, name, size, p) < 0)
+	if(wut_ContextAdd(ctx, WUT_CONTEXT_SHADERS, name, size, p) < 0)
 		goto err_destroy_shader;
 
 	return shd;
@@ -420,46 +420,46 @@ err_destroy_shader:
 
 err_return:
 	printf("Failed to load shader: %s (%s, %s)\n", name, v_pth, f_pth);
-	WT_ALARM(WT_ERROR, "Failed to load shader");
+	WUT_ALARM(WUT_ERROR, "Failed to load shader");
 	return NULL;
 }
 
 
-WT_API void wt_RemoveShader(struct wt_shader *shd)
+WUT_API void wut_RemoveShader(struct wut_Shader *shd)
 {
 	if(!shd) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	wt_ContextRemove(shd->context, WT_CONTEXT_SHADERS, shd->name);
+	wut_ContextRemove(shd->context, WUT_CONTEXT_SHADERS, shd->name);
 }
 
 
-WT_API struct wt_shader *wt_GetShader(struct wt_context *ctx, char *name)
+WUT_API struct wut_Shader *wut_GetShader(struct wut_Context *ctx, char *name)
 {
-	struct wt_shader *shader;
+	struct wut_Shader *shader;
 
 	if(!ctx || !name) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(wt_tbl_get(ctx->shaders, name, NULL, (void **)&shader) != 1)
+	if(wut_tbl_get(ctx->shaders, name, NULL, (void **)&shader) != 1)
 		return NULL;
 
 	return shader;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to get shader from shader table");
+	WUT_ALARM(WUT_ERROR, "Failed to get shader from shader table");
 	return NULL;
 }
 
 
-WT_API void wt_UseShader(struct wt_shader *shd)
+WUT_API void wut_UseShader(struct wut_Shader *shd)
 {
 	if(!shd) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -468,18 +468,18 @@ WT_API void wt_UseShader(struct wt_shader *shd)
 } 
 
 
-WT_API void wt_UnuseShader(void)
+WUT_API void wut_UnuseShader(void)
 {
 	glUseProgram(0);
 }
 
 
-WT_API s8 wt_ShaderGetInputLoc(struct wt_shader *shd, char *var)
+WUT_API s8 wut_ShaderGetInputLoc(struct wut_Shader *shd, char *var)
 {
 	s8 i;
 
 	if(!shd || !var) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -492,12 +492,12 @@ WT_API s8 wt_ShaderGetInputLoc(struct wt_shader *shd, char *var)
 }
 
 
-WT_API s8 wt_ShaderGetUniformLoc(struct wt_shader *shd, char *uni)
+WUT_API s8 wut_ShaderGetUniformLoc(struct wut_Shader *shd, char *uni)
 {
 	u8 i;
 
 	if(!shd || !uni) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -512,10 +512,10 @@ WT_API s8 wt_ShaderGetUniformLoc(struct wt_shader *shd, char *uni)
 
 #if 0
 
-WT_API void wt_shd_show(struct wt_shader *shd)
+WUT_API void wut_shd_show(struct wut_Shader *shd)
 {
 	s32 i;
-	struct wt_shader_var *var;
+	struct wut_ShaderVar *var;
 
 	if(!shd)
 		return;

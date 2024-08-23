@@ -1,22 +1,23 @@
-#ifndef _WT_GRAPHIC_RESOURCES_TEXTURE_H
-#define _WT_GRAPHIC_RESOURCES_TEXTURE_H
+#ifndef _WUT_GRAPHICTEXTURE_H
+#define _WUT_GRAPHICTEXTURE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "utility/inc/table.h"
-#include "utility/inc/shape.h"
+
+#include "math/inc/polygon.h"
 
 #include "graphic/inc/context.h"
 
-#define WT_TEXTURE_SLOTS		16
+#define WUT_TEXTURE_SLOTS		16
 
-#define WT_TEXTURE_NAME_LIM		128
+#define WUT_TEXTURE_NAME_LIM		128
 
 
-struct wt_texture {
+struct wut_Texture {
 	/* The name of the texture */
-	char name[WT_TEXTURE_NAME_LIM];
+	char name[WUT_TEXTURE_NAME_LIM];
 	
 	/* The format used for the pixel data */
 	GLenum format;
@@ -29,7 +30,7 @@ struct wt_texture {
 	u32 texture;
 
 	/* Reference to the context */
-	struct wt_context *context;
+	struct wut_Context *context;
 
 	/* The batch id */
 	s16 batch_id;
@@ -46,7 +47,7 @@ struct wt_texture {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_InitTextureTable(struct wt_context *ctx);
+WUT_API s8 wut_InitTextureTable(struct wut_Context *ctx);
 
 
 /*
@@ -54,7 +55,7 @@ WT_API s8 wt_InitTextureTable(struct wt_context *ctx);
  *
  * @ctx: Pointer to the context
  */
-WT_API void wt_CloseTextureTable(struct wt_context *ctx);
+WUT_API void wut_CloseTextureTable(struct wut_Context *ctx);
 
 
 /*
@@ -71,7 +72,7 @@ WT_API void wt_CloseTextureTable(struct wt_context *ctx);
  *
  * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
+WUT_API struct wut_Texture *wut_CreateTexture(struct wut_Context *ctx, char *name,
 		u16 w, u16 h, GLenum format, u8 *px);
 
 
@@ -84,7 +85,7 @@ WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
  *
  * Returns: Either a pointer to the texture or NULL if an error occurred
  */
-WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name,
+WUT_API struct wut_Texture *wut_LoadTexture(struct wut_Context *ctx, char *name,
 		char *pth);
 
 
@@ -93,7 +94,7 @@ WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name,
  *
  * @tex: Pointer to the texture
  */
-WT_API void wt_RemoveTexture(struct wt_texture *tex);
+WUT_API void wut_RemoveTexture(struct wut_Texture *tex);
 
 
 /*
@@ -106,7 +107,7 @@ WT_API void wt_RemoveTexture(struct wt_texture *tex);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px);
+WUT_API s8 wut_ResizeTexture(struct wut_Texture *tex, u16 w, u16 h, u8 *px);
 
 
 /*
@@ -123,7 +124,7 @@ WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
+WUT_API s8 wut_SetTexture(struct wut_Texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px);
 
 
@@ -135,7 +136,7 @@ WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name);
+WUT_API struct wut_Texture *wut_GetTexture(struct wut_Context *ctx, char *name);
 
 
 /*
@@ -143,14 +144,14 @@ WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name);
  *
  * @tex: Pointer to the texture
  */
-WT_API void wt_UseTexture(struct wt_texture *tex);
+WUT_API void wut_UseTexture(struct wut_Texture *tex);
 
 
 /*
  * Unuse the currently active texture.
  */
-WT_API void wt_UnuseTexture(void);
+WUT_API void wut_UnuseTexture(void);
 
 
 
-#endif /* _WT_GRAPHIC_RESOURCES_TEXTURE_H */
+#endif /* _WUT_GRAPHICTEXTURE_H */

@@ -1,17 +1,17 @@
-#ifndef _WT_UTILITY_STATIC_LIST_H
-#define _WT_UTILITY_STATIC_LIST_H
+#ifndef _WUT_UTILITY_STATIC_LIST_H
+#define _WUT_UTILITY_STATIC_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-struct wt_statlist {
-	s16 size;	/* The size of a single entry */
+struct wut_StatList {
+        s16 size;	/* The size of a single entry */
 
-	s16 count;	/* The number of entries */
-	s16 alloc;
+        s16 count;	/* The number of entries */
+        s16 alloc;
 
-	u8 *mask;
-	u8 *data;
+        u8 *mask;
+        u8 *data;
 };
 
 
@@ -24,7 +24,7 @@ struct wt_statlist {
  * Returns: Either a pointer to the newly created list or NULL if an error
  * 	    occurred
  */
-WT_API struct wt_statlist *wt_statlist_create(s16 size, s16 alloc);
+WUT_API struct wut_StatList *wut_CreateStatList(s16 size, s16 alloc);
 
 
 /*
@@ -32,7 +32,7 @@ WT_API struct wt_statlist *wt_statlist_create(s16 size, s16 alloc);
  *
  * @lst: Pointer to the list
  */
-WT_API void wt_statlist_destroy(struct wt_statlist *lst);
+WUT_API void wut_DestroyStatList(struct wut_StatList *lst);
 
 
 /*
@@ -43,7 +43,7 @@ WT_API void wt_statlist_destroy(struct wt_statlist *lst);
  *
  * Returns: The index of the slot in the list or -1 if an error occurred
  */
-WT_API s16 wt_statlist_add(struct wt_statlist *lst, void *inp);
+WUT_API s16 wut_AddStatList(struct wut_StatList *lst, void *inp);
 
 
 /*
@@ -52,7 +52,7 @@ WT_API s16 wt_statlist_add(struct wt_statlist *lst, void *inp);
  * @lst: Pointer to the list
  * @idx: The index of the slot to clear
  */
-WT_API void wt_statlist_rmv(struct wt_statlist *lst, s16 idx);
+WUT_API void wut_RemoveStatList(struct wut_StatList *lst, s16 idx);
 
 
 /*
@@ -65,10 +65,10 @@ WT_API void wt_statlist_rmv(struct wt_statlist *lst, s16 idx);
  * Returns: 1 if entry was returned and 0 if slot is empty and -1 if an error
  * 	    occurred
  */
-WT_API s8 wt_statlist_get(struct wt_statlist *lst, s16 idx, void *out);
+WUT_API s8 wut_GetStatList(struct wut_StatList *lst, s16 idx, void *out);
 
 
-typedef s8 (*wt_statlist_fnc_t)(void *entry, s16 idx, void *data);
+typedef s8 (*wut_StatListFunc)(void *entry, s16 idx, void *data);
 
 
 /*
@@ -81,8 +81,9 @@ typedef s8 (*wt_statlist_fnc_t)(void *entry, s16 idx, void *data);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_statlist_apply(struct wt_statlist *lst, wt_statlist_fnc_t fnc, void *data);
+WUT_API s8 wut_ApplyStatList(struct wut_StatList *lst,
+                wut_StaticListFunc fnc, void *data);
 
 
 
-#endif /* _WT_UTILITY_STATIC_LIST_H */
+#endif /* _WUT_UTILITY_STATIC_LIST_H */

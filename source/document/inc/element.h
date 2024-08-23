@@ -14,12 +14,12 @@ struct wut_Element;
 #include "event/inc/event_listener.h"
 
 
-#define WUT_ELEMENT_NAME_LIM	        126
-#define WUT_ELEMENT_CHILDREN_LIM	126
+#define WUT_ELE_NAME_LIM	        126
+#define WUT_ELE_CHILDREN_LIM	126
 
-#define WUT_ELEMENT_F_VISIBLE	        (1<<0)
-#define WUT_ELEMENT_F_HOVERED	        (1<<1)
-#define WUT_ELEMENT_F_SELECTED	        (1<<2)
+#define WUT_ELE_F_VISIBLE	        (1<<0)
+#define WUT_ELE_F_HOVERED	        (1<<1)
+#define WUT_ELE_F_SELECTED	        (1<<2)
 
 
 
@@ -36,10 +36,10 @@ enum wut_eElementType {
 
 
 struct wut_Element {
-        enum wut_eIdentity      identity;
+        u8                      identity;
 
         /* The name of the element */
-        char                    name[WUT_ELEMENT_NAME_LIM];
+        char                    name[WUT_ELE_NAME_LIM];
 
         /* The unique identifier for this element */
         u32                     id;
@@ -85,7 +85,7 @@ struct wut_Element {
          * The relative position in the reference-area dictated by the
          * layout mode of the parent.
          */
-        struct wut_Sin2	        layout_offset;
+        struct wut_Vec2i	layout_offset;
 
         /* 
          * The relative offset of the upper-left corner of the parents bounding
@@ -93,7 +93,7 @@ struct wut_Element {
          * bounding box will be located in. This includes the parents padding,
          * parent scrolling and this elements layout offset. 
          */
-        struct wut_Sin2	        relative_offset;
+        struct wut_Vec2i        relative_offset;
 
         /*
          * The absolute offset from the upper-left corner of the window to the
@@ -101,7 +101,7 @@ struct wut_Element {
          * will be located in. This is calculated by the absolute offset of the
          * parent element plus the relative offset of this element.
          */
-        struct wut_Sin2	        absolute_offset;
+        struct wut_Vec2i	absolute_offset;
 
 
         /*
@@ -136,8 +136,8 @@ struct wut_Element {
 
 
         /* These properties are used for scrolling */
-        struct wut_Sin2 	content_size;
-        struct wut_Sin2	        content_offset;
+        struct wut_Vec2i 	content_size;
+        struct wut_Vec2i        content_offset;
 
         /* This flag indicates which scrollbars to render */
         s32                     scrollbar_flags;

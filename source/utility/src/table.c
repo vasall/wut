@@ -7,218 +7,218 @@
 #include <string.h>
 
 
-WT_API u64 wt_table_hash(char *str)
+WUT_INTERN u64 tbl_hash(char *str)
 {
-	u64 hash = 5381;
-	int c;
+        u64 hash = 5381;
+        int c;
 
-	while((c = *(str++)))
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        while((c = *(str++)))
+                hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-	return hash;
+        return hash;
 }
 
-WT_API s8 wt_table_find(struct wt_table *tbl, char *name,
-		struct wt_table_entry **ent)
+WUT_API s8 wut_FindTable(struct wut_Table *tbl, char *name,
+                struct wut_TableEntry **ent)
 {
-	u64 hash;
-	struct wt_table_entry *runner;
+        u64 hash;
+        struct wut_TableEntry *runner;
 
-	if(!tbl || !name)
-		return -1;
+        if(!tbl || !name)
+                return -1;
 
-	hash = wt_table_hash(name);
-
-	
-	runner = tbl->rows[hash % WT_TABLE_ROWS];
-
-	while(runner) {
-		if(runner->hash == hash) {
-			if(ent) *ent = runner;
-			return 1;
-		}
-
-		runner = runner->next;
-	}
-
-	return 0;
-}
+        hash = tbl_hash(name);
 
 
-WT_API struct wt_table *wt_tbl_create(void (*fnc)(u32 size, void *ptr))
-{
-	struct wt_table *tbl;
-	u32 i;
+        runner = tbl->rows[hash % WUT_TBL_ROWS];
 
-	if(!(tbl = wt_malloc(sizeof(struct wt_table))))
-		return NULL;
+        while(runner) {
+                if(runner->hash == hash) {
+                        if(ent) *ent = runner;
+                        return 1;
+                }
 
-	tbl->number = 0;
-	for(i = 0; i < WT_TABLE_ROWS; i++)
-		tbl->rows[i] = NULL;
+                runner = runner->next;
+        }
 
-	tbl->fnc = fnc;
-
-	return tbl;
+        return 0;
 }
 
 
-WT_API void wt_tbl_destroy(struct wt_table *tbl)
+WUT_API struct wut_Table *wut_CreateTable(void (*fnc)(u32 size, void *ptr))
 {
-	struct wt_table_entry *runner;
-	struct wt_table_entry *next;
-	u32 i;
+        struct wut_Table *tbl;
+        u32 i;
 
-	if(!tbl)
-		return;
+        if(!(tbl = wut_malloc(sizeof(struct wut_table))))
+                return NULL;
 
-	printf("Destroy table\n");
+        tbl->number = 0;
+        for(i = 0; i < WUT_TBL_ROWS; i++)
+                tbl->rows[i] = NULL;
 
-	if(tbl->number < 1) {
-		wt_free(tbl);
-		printf("empty\n");
-		return;
-	}
+        tbl->fnc = fnc;
 
-
-	for(i = 0; i < WT_TABLE_ROWS; i++) {
-		runner = tbl->rows[i];
-
-		while(runner) {
-			next = runner->next;
-
-			if(tbl->fnc)
-				tbl->fnc(runner->size, runner->ptr);
-
-			wt_free(runner);
-
-			runner = next;
-		}
-	}
-
-	wt_free(tbl);
+        return tbl;
 }
 
 
-WT_API s8 wt_tbl_add(struct wt_table *tbl, char *name, u32 size, void **ptr)
+WUT_API void wut_DestroyTable(struct wut_Table *tbl)
 {
-	struct wt_table_entry *ent;
-	struct wt_table_entry *runner;
-	u32 row;
+        struct wut_TableEntry *runner;
+        struct wut_TableEntry *next;
+        u32 i;
 
-	if(!tbl)
-		return -1;
+        if(!tbl)
+                return;
 
-	/* Check if there is already an entry with that name */
-	if(wt_table_find(tbl, name, NULL)) {
-		printf("entry with same name already in table\n");
-		return -1;
-	}
+        printf("Destroy table\n");
 
-
-	if(!(ent = wt_malloc(sizeof(struct wt_table_entry)))) {
-		printf("Failed to allocate memory for new entry\n");
-		return -1;
-	}
+        if(tbl->number < 1) {
+                wut_free(tbl);
+                printf("empty\n");
+                return;
+        }
 
 
-	strcpy(ent->name, name);
-	ent->hash = wt_table_hash(name);
-	ent->next = NULL;
-	ent->prev = NULL;
-	ent->size = size;
-	ent->ptr = *ptr;	
+        for(i = 0; i < WUT_TBL_ROWS; i++) {
+                runner = tbl->rows[i];
 
-	row = ent->hash % WT_TABLE_ROWS;
-	
-	if(tbl->rows[row] == NULL) {
-		tbl->rows[row] = ent;
-		tbl->number++;
-		return 0;
-	}
-	
-	runner = tbl->rows[row];
+                while(runner) {
+                        next = runner->next;
 
-	while(runner) {
-		if(runner->next == NULL) {
-			runner->next = ent;
-			ent->prev = runner;
-			tbl->number++;
-			return 0;
-		}
+                        if(tbl->fnc)
+                                tbl->fnc(runner->size, runner->ptr);
 
-		runner = runner->next;
-	}
+                        wut_free(runner);
 
-	printf("WTF¿n\n");
-	return -1;
+                        runner = next;
+                }
+        }
+
+        wut_free(tbl);
 }
 
 
-WT_API void wt_tbl_rmv(struct wt_table *tbl, char *name)
+WUT_API s8 wut_AddTable(struct wut_Table *tbl, char *name, u32 size, void **ptr)
 {
-	struct wt_table_entry *ent;
-	u32 row;
+        struct wut_TableEntry *ent;
+        struct wut_TableEntry *runner;
+        u32 row;
 
-	if(!tbl || !name)
-		return;
+        if(!tbl)
+                return -1;
+
+        /* Check if there is already an entry with that name */
+        if(wut_table_find(tbl, name, NULL)) {
+                printf("entry with same name already in table\n");
+                return -1;
+        }
 
 
-	if(wt_table_find(tbl, name, &ent) != 1)
-		return;
+        if(!(ent = wut_malloc(sizeof(struct wut_TableEntry)))) {
+                printf("Failed to allocate memory for new entry\n");
+                return -1;
+        }
 
-	row = ent->hash % WT_TABLE_ROWS;
 
-	if(ent->prev == NULL) {
-		tbl->rows[row] = ent->next;
-	}
-	else {
-		(ent->prev)->next = ent->next;
-	}
+        strcpy(ent->name, name);
+        ent->hash = tbl_hash(name);
+        ent->next = NULL;
+        ent->prev = NULL;
+        ent->size = size;
+        ent->ptr = *ptr;	
 
-	if(tbl->fnc)
-		tbl->fnc(ent->size, ent->ptr);
+        row = ent->hash % WUT_TBL_ROWS;
 
-	wt_free(ent);
-	tbl->number--;
+        if(tbl->rows[row] == NULL) {
+                tbl->rows[row] = ent;
+                tbl->number++;
+                return 0;
+        }
+
+        runner = tbl->rows[row];
+
+        while(runner) {
+                if(runner->next == NULL) {
+                        runner->next = ent;
+                        ent->prev = runner;
+                        tbl->number++;
+                        return 0;
+                }
+
+                runner = runner->next;
+        }
+
+        printf("WTF¿n\n");
+        return -1;
 }
 
 
-WT_API s8 wt_tbl_get(struct wt_table *tbl, char *name, u32 *size, void **ptr)
+WUT_API void wut_RemoveTable(struct wut_Table *tbl, char *name)
 {
-	struct wt_table_entry *ent;
+        struct wut_TableEntry *ent;
+        u32 row;
 
-	if(!tbl || !name)
-		return -1;
+        if(!tbl || !name)
+                return;
 
-	if(wt_table_find(tbl, name, &ent) != 1)
-		return 0;
 
-	if(size) *size = ent->size;
-	if(ptr) *ptr = ent->ptr;
-	return 1;
+        if(wut_table_find(tbl, name, &ent) != 1)
+                return;
+
+        row = ent->hash % WUT_TBL_ROWS;
+
+        if(ent->prev == NULL) {
+                tbl->rows[row] = ent->next;
+        }
+        else {
+                (ent->prev)->next = ent->next;
+        }
+
+        if(tbl->fnc)
+                tbl->fnc(ent->size, ent->ptr);
+
+        wut_free(ent);
+        tbl->number--;
 }
 
 
-WT_API void wt_tbl_dump(struct wt_table *tbl)
+WUT_API s8 wut_GetTable(struct wut_Table *tbl, char *name, u32 *size, void **ptr)
 {
-	u32 i;
-	struct wt_table_entry *runner;	
+        struct wut_TableEntry *ent;
 
-	if(!tbl)
-		return;
+        if(!tbl || !name)
+                return -1;
 
-	for(i = 0; i < WT_TABLE_ROWS; i++) {
-		printf("Row %d:\n", i);
+        if(wut_table_find(tbl, name, &ent) != 1)
+                return 0;
 
-		if(!(runner = tbl->rows[i])) {
-			printf("EMPTY\n");
-			continue;
-		}
-		
-		while(runner) {
-			printf(" %s\n", runner->name);
-			runner = runner->next;
-		}
-	}
+        if(size) *size = ent->size;
+        if(ptr) *ptr = ent->ptr;
+        return 1;
+}
+
+
+WUT_API void wut_DumpTable(struct wut_Table *tbl)
+{
+        u32 i;
+        struct wut_TableEntry *runner;	
+
+        if(!tbl)
+                return;
+
+        for(i = 0; i < WUT_TBL_ROWS; i++) {
+                printf("Row %d:\n", i);
+
+                if(!(runner = tbl->rows[i])) {
+                        printf("EMPTY\n");
+                        continue;
+                }
+
+                while(runner) {
+                        printf(" %s\n", runner->name);
+                        runner = runner->next;
+                }
+        }
 }

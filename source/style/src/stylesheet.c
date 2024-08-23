@@ -1,6 +1,6 @@
 #include "style/inc/stylesheet.h"
 
-#include "style/inc/stylesheet_tables.h"
+#include "style/inc/stylesht_tables.h"
 
 #include "system/inc/system.h"
 
@@ -9,86 +9,86 @@
 #include <stdlib.h>
 
 
-WT_INTERN void sheet_sanitize(char *s_in, char *s_out)
+WUT_INTERN void sht_sanitize(char *s_in, char *s_out)
 {
-	u8 i;
+        u8 i;
 
-	for(i = 0; i < strlen(s_in); i++) {
-		s_out[i] = s_in[i];
+        for(i = 0; i < strlen(s_in); i++) {
+                s_out[i] = s_in[i];
 
-		if(s_in[i] >= 0x41 && s_in[i] <= 0x5A) {
-			s_out[i] += 0x20;
-		}
-	}
-	s_out[i] = 0;
+                if(s_in[i] >= 0x41 && s_in[i] <= 0x5A) {
+                        s_out[i] += 0x20;
+                }
+        }
+        s_out[i] = 0;
 }
 
-WT_INTERN s8 sheet_isspace(char c)
+WUT_INTERN s8 sht_isspace(char c)
 {
-	return c == 0x20;
-}
-
-
-WT_INTERN s8 sheet_isletter(char c)
-{
-	if(c >= 0x61 && c <= 0x7A)
-		return 1;
-
-	return 0;
+        return c == 0x20;
 }
 
 
-WT_INTERN s8 sheet_ishex(char c)
+WUT_INTERN s8 sht_isletter(char c)
 {
-	/* Numbers */
-	if(c >= 0x30 && c <= 0x39)
-		return 1;
+        if(c >= 0x61 && c <= 0x7A)
+                return 1;
 
-	/* Letters */
-	return sheet_isletter(c);
+        return 0;
 }
 
 
-WT_INTERN s16 sheet_offset(enum wt_sheet_id id)
+WUT_INTERN s8 sht_ishex(char c)
 {
-	return wt_c_sheet_attribs[id].offset;
+        /* Numbers */
+        if(c >= 0x30 && c <= 0x39)
+                return 1;
+
+        /* Letters */
+        return sht_isletter(c);
 }
 
 
-WT_INTERN s8 sheet_sizeof(enum wt_sheet_id id)
+WUT_INTERN s16 sht_offset(enum wut_eSheetAttribId id)
 {
-	switch(wt_c_sheet_attribs[id].type) {
-		case WT_SHEET_FLEX:	return sizeof(wt_flex_t);
-		case WT_SHEET_HEXCODE:	return U32_S;
-		case WT_SHEET_KEYWORD:	return U8_S;
-	}
-	return 0;
+        return wut_c_sht_attribs[id].offset;
 }
 
 
-WT_INTERN u8 sheet_typeof(enum wt_sheet_id id)
+WUT_INTERN s8 sht_sizeof(enum wut_eSheetAttribId id)
 {
-	return wt_c_sheet_attribs[id].type;
+        switch(wut_c_sht_attribs[id].type) {
+                case WUT_SHEET_FLEX:	return sizeof(wut_flex_t);
+                case WUT_SHEET_HEXCODE:	return U32_S;
+                case WUT_SHEET_KEYWORD:	return U8_S;
+        }
+        return 0;
 }
 
 
-WT_INTERN void sheet_read(struct wt_stylesheet *sheet, enum wt_sheet_id id,
-		void *ptr)
+WUT_INTERN u8 sht_typeof(enum wut_eSheetAttribId id)
 {
-	memcpy(ptr, ((u8 *)sheet) + sheet_offset(id), sheet_sizeof(id));
+        return wut_c_sht_attribs[id].type;
 }
 
 
-WT_INTERN void sheet_write(struct wt_stylesheet *sheet, enum wt_sheet_id id,
-		void *ptr)
+WUT_INTERN void sht_read(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
+                void *ptr)
+{
+        memcpy(ptr, ((u8 *)sheet) + sht_offset(id), sht_sizeof(id));
+}
+
+
+WUT_INTERN void sht_write(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
+                void *ptr)
 {		
-	memcpy(((u8 *)sheet) + sheet_offset(id), ptr, sheet_sizeof(id));
+        memcpy(((u8 *)sheet) + sht_offset(id), ptr, sht_sizeof(id));
 }
 
 
-WT_INTERN u8 sheet_category(enum wt_sheet_id id)
+WUT_INTERN u8 sht_category(enum wut_eSheetAttribId id)
 {
-	return wt_c_sheet_attribs[id].category;
+        return wut_c_sht_attribs[id].category;
 }
 
 
@@ -103,46 +103,46 @@ WT_INTERN u8 sheet_category(enum wt_sheet_id id)
  *
  * Returns: The updated pointer or NULL if an error occurred
  */
-WT_INTERN char *sheet_next(char *s, char *attr, char *val)
+WUT_INTERN char *sht_next(char *s, char *attr, char *val)
 {
-	char *run;
-	char c;
-	char *ptr;
+        char *run;
+        char c;
+        char *ptr;
 
-	run = s;
+        run = s;
 
-	/* Extract the attribute string */
-	ptr = attr;
-	while((c = *(run++)) != ':') {
-		if(c == 0)
-			return NULL;
+        /* Extract the attribute string */
+        ptr = attr;
+        while((c = *(run++)) != ':') {
+                if(c == 0)
+                        return NULL;
 
-		/* Skip */
-		if(c == '\n' || sheet_isspace(c))
-			continue;
+                /* Skip */
+                if(c == '\n' || sht_isspace(c))
+                        continue;
 
-		*(ptr++) = c;
-	}
-	*(ptr) = 0;
+                *(ptr++) = c;
+        }
+        *(ptr) = 0;
 
-	/* Extract the value string */
-	ptr = val;
-	while((c = *(run++)) != ';') {
-		if(c == 0)
-			return NULL;
+        /* Extract the value string */
+        ptr = val;
+        while((c = *(run++)) != ';') {
+                if(c == 0)
+                        return NULL;
 
-		/* Skip */
-		if(c == '\n')
-			continue;
+                /* Skip */
+                if(c == '\n')
+                        continue;
 
-		*(ptr++) = c;
-	}
-	*(ptr) = 0;
+                *(ptr++) = c;
+        }
+        *(ptr) = 0;
 
-	return run;
+        return run;
 }
 
-WT_INTERN u8 sheet_hash(char *in)
+WUT_INTERN u8 sht_hash(char *in)
 {
         u64 hash = 5381;
         s32 c;
@@ -154,160 +154,160 @@ WT_INTERN u8 sheet_hash(char *in)
 }
 
 
-WT_INTERN enum wt_sheet_id sheet_get_id(char *s)
+WUT_INTERN enum wut_eSheetAttribId sht_get_id(char *s)
 {
-	u8 hash;
-	u8 row;
-	u8 i;
+        u8 hash;
+        u8 row;
+        u8 i;
 
-	hash = sheet_hash(s);
-	row = hash %  WT_SHEET_ROWS;
+        hash = sht_hash(s);
+        row = hash %  WUT_SHEET_ROWS;
 
-	for(i = 0; i < wt_c_sheet_ids[row].number; i++) {
-		if(wt_c_sheet_ids[row].entries[i].hash == hash) {
-			return wt_c_sheet_ids[row].entries[i].id;
-		}
-	}
+        for(i = 0; i < wut_c_sht_ids[row].number; i++) {
+                if(wut_c_sht_ids[row].entries[i].hash == hash) {
+                        return wut_c_sht_ids[row].entries[i].id;
+                }
+        }
 
-	return WT_SHEET_UNDEFINED;
+        return WUT_SHEET_UNDEFINED;
 }
 
 
-WT_INTERN void sheet_parse_flex(struct wt_stylesheet *sheet, enum wt_sheet_id id,
-		char *val)
+WUT_INTERN void sht_parse_flex(struct wut_Stylesheet *sheet,
+                enum wut_eSheetAttribId id, char *val)
 {
-	wt_flex_t flx = WT_FLEX_UNDEF;
+        wut_flex_t flx = WUT_FLEX_UNDEF;
 
-	sheet_read(sheet, id, &flx);
+        sht_read(sheet, id, &flx);
 
-	flx = wt_flex_parse(flx, val);
+        flx = wut_flex_parse(flx, val);
 
-	sheet_write(sheet, id, &flx);
+        sht_write(sheet, id, &flx);
 }
 
 
-WT_INTERN u8 sheet_fromhex(char c)
+WUT_INTERN u8 sht_fromhex(char c)
 {
-	/* Small letters */
-	if(c >= 0x61)
-		return (c - 0x61) + 10;
+        /* Small letters */
+        if(c >= 0x61)
+                return (c - 0x61) + 10;
 
-	/* Big letters */
-	if(c >= 0x41)
-		return (c - 0x41) + 10;
+        /* Big letters */
+        if(c >= 0x41)
+                return (c - 0x41) + 10;
 
-	/* Numbers */
-	return c - 0x30;	
+        /* Numbers */
+        return c - 0x30;	
 }
 
 
-WT_INTERN s8 sheet_convhex(char *val, u32 *out)
+WUT_INTERN s8 sht_convhex(char *val, u32 *out)
 {
-	s32 i;
-	char *run;
-	char c;
-	char *head = NULL;
+        s32 i;
+        char *run;
+        char c;
+        char *head = NULL;
 
-	u32 buf = 0x000000FF;
+        u32 buf = 0x000000FF;
 
-	run = val;
+        run = val;
 
-	/* Find the beginning of the hex */
-	while((c = *run)) {
-		if(sheet_ishex(c)) {
-			head = run;
-			break;
-		}
-		run++;
-	}
-	if(!head)
-		return -1;
+        /* Find the beginning of the hex */
+        while((c = *run)) {
+                if(sht_ishex(c)) {
+                        head = run;
+                        break;
+                }
+                run++;
+        }
+        if(!head)
+                return -1;
 
-	for(i = 2; i >= 0; i--) {
-		if(!sheet_ishex(head[i*2])) {
-			return 0;
-		}
+        for(i = 2; i >= 0; i--) {
+                if(!sht_ishex(head[i*2])) {
+                        return 0;
+                }
 
-		if(!sheet_ishex(head[i*2+1])) {
-			return -1;
-		}
+                if(!sht_ishex(head[i*2+1])) {
+                        return -1;
+                }
 
-		((u8 *)&buf)[3 - i] = sheet_fromhex(head[i*2]) * 16;
-		((u8 *)&buf)[3 - i] += sheet_fromhex(head[i*2+1]);
-	}
+                ((u8 *)&buf)[3 - i] = sht_fromhex(head[i*2]) * 16;
+                ((u8 *)&buf)[3 - i] += sht_fromhex(head[i*2+1]);
+        }
 
-	*out = buf;
+        *out = buf;
 
-	return 0;
+        return 0;
 }
 
 
-WT_INTERN void sheet_parse_hexcode(struct wt_stylesheet *sheet,
-		enum wt_sheet_id id, char *val)
+WUT_INTERN void sht_parse_hexcode(struct wut_Stylesheet *sheet,
+                enum wut_eSheetAttribId id, char *val)
 {
-	u32 hex;
+        u32 hex;
 
-	sheet_convhex(val, &hex);
+        sht_convhex(val, &hex);
 
-	sheet_write(sheet, id, &hex);
+        sht_write(sheet, id, &hex);
 }
 
 
-WT_INTERN char *sheet_next_keyword(char *s, char *buf)
+WUT_INTERN char *sht_next_keyword(char *s, char *buf)
 {
-	char *run = s;
-	char *head = buf;
+        char *run = s;
+        char *head = buf;
 
-	/* If everything has been read, return NULL */
-	if(*run == 0x00)
-		return NULL;
+        /* If everything has been read, return NULL */
+        if(*run == 0x00)
+                return NULL;
 
-	/* Remove leading spaces */
-	while(sheet_isspace(*run))
-		run++;
+        /* Remove leading spaces */
+        while(sht_isspace(*run))
+                run++;
 
-	/* Read the text */
-	while(sheet_isletter(*run)) {
-		*(head++) = *(run++);
-	}
-	*head = 0;
+        /* Read the text */
+        while(sht_isletter(*run)) {
+                *(head++) = *(run++);
+        }
+        *head = 0;
 
-	return run;
+        return run;
 }
 
 
-WT_INTERN u8 sheet_find_keyword(u8 ctg, char *val)
+WUT_INTERN u8 sht_find_keyword(u8 ctg, char *val)
 {
-	s8 i;
+        s8 i;
 
-	for(i = 0; i < wt_c_sheet_keywords[ctg].number; i++) {
-		if(!strcmp(wt_c_sheet_keywords[ctg].entries[i].string, val)) {
-			return wt_c_sheet_keywords[ctg].entries[i].value;
-		}
-	}
+        for(i = 0; i < wut_c_sht_keywords[ctg].number; i++) {
+                if(!strcmp(wut_c_sht_keywords[ctg].entries[i].string, val)) {
+                        return wut_c_sht_keywords[ctg].entries[i].value;
+                }
+        }
 
-	return WT_KW_UNDEFINED;	
+        return WUT_KW_UNDEFINED;	
 }
 
 
-WT_INTERN void sheet_parse_keyword(struct wt_stylesheet *sheet,
-		enum wt_sheet_id id, char *val)
+WUT_INTERN void sht_parse_keyword(struct wut_Stylesheet *sheet,
+                enum wut_eSheetAttribId id, char *val)
 {
-	u8 kw = WT_KW_UNDEFINED;
-	u8 ctg;
-	
-	char *ptr;
-	char buf[127];
+        u8 kw = WUT_KW_UNDEFINED;
+        u8 ctg;
 
-	ctg = sheet_category(id);
+        char *ptr;
+        char buf[127];
 
-	/* First process the input and set the according keyword flags */
-	ptr = val;
-	while((ptr = sheet_next_keyword(ptr, buf))) {
-		kw |= sheet_find_keyword(ctg, buf);
-	}
+        ctg = sht_category(id);
 
-	sheet_write(sheet, id, &kw);
+        /* First process the input and set the according keyword flags */
+        ptr = val;
+        while((ptr = sht_next_keyword(ptr, buf))) {
+                kw |= sht_find_keyword(ctg, buf);
+        }
+
+        sht_write(sheet, id, &kw);
 }
 
 
@@ -321,180 +321,180 @@ WT_INTERN void sheet_parse_keyword(struct wt_stylesheet *sheet,
 
 
 
-WT_XMOD void wt_sheet_reset(struct wt_stylesheet *sheet)
+WUT_XMOD void wut_sht_reset(struct wut_Stylesheet *sheet)
 {
-	if(!sheet) return;
+        if(!sheet) return;
 
-	sheet->mask = 0;
+        sheet->mask = 0;
 
-	sheet->display_mode = 0;
+        sheet->display_mode = 0;
 
-	sheet->width = WT_FLEX_UNDEF;
-	sheet->height = WT_FLEX_UNDEF;
+        sheet->width = WUT_FLEX_UNDEF;
+        sheet->height = WUT_FLEX_UNDEF;
 
-	sheet->reference_mode = 0;
+        sheet->reference_mode = 0;
 
-	sheet->spacing_top = WT_FLEX_UNDEF;
-	sheet->spacing_right = WT_FLEX_UNDEF;
-	sheet->spacing_bottom = WT_FLEX_UNDEF;
-	sheet->spacing_left = WT_FLEX_UNDEF;
+        sheet->spacing_top = WUT_FLEX_UNDEF;
+        sheet->spacing_right = WUT_FLEX_UNDEF;
+        sheet->spacing_bottom = WUT_FLEX_UNDEF;
+        sheet->spacing_left = WUT_FLEX_UNDEF;
 
-	sheet->padding_top = WT_FLEX_UNDEF;
-	sheet->padding_right = WT_FLEX_UNDEF;
-	sheet->padding_bottom = WT_FLEX_UNDEF;
-	sheet->padding_left = WT_FLEX_UNDEF;
+        sheet->padding_top = WUT_FLEX_UNDEF;
+        sheet->padding_right = WUT_FLEX_UNDEF;
+        sheet->padding_bottom = WUT_FLEX_UNDEF;
+        sheet->padding_left = WUT_FLEX_UNDEF;
 
-	sheet->border_mode = 0;
-	sheet->border_width = WT_FLEX_UNDEF;
-	sheet->border_color = wt_color_set(0, 0, 0, 1);
+        sheet->border_mode = 0;
+        sheet->border_width = WUT_FLEX_UNDEF;
+        sheet->border_color = wut_color_set(0, 0, 0, 1);
 
-	sheet->radius_top_left = WT_FLEX_UNDEF;
-	sheet->radius_top_right = WT_FLEX_UNDEF;
-	sheet->radius_bottom_right = WT_FLEX_UNDEF;
-	sheet->radius_bottom_left = WT_FLEX_UNDEF;
+        sheet->radius_top_left = WUT_FLEX_UNDEF;
+        sheet->radius_top_right = WUT_FLEX_UNDEF;
+        sheet->radius_bottom_right = WUT_FLEX_UNDEF;
+        sheet->radius_bottom_left = WUT_FLEX_UNDEF;
 
-	sheet->infill_mode = 0;
-	sheet->infill_color = wt_color_set(0, 0, 0, 1);
+        sheet->infill_mode = 0;
+        sheet->infill_color = wut_color_set(0, 0, 0, 1);
 
-	sheet->layout_mode = 0;
+        sheet->layout_mode = 0;
 
-	sheet->align_v = 0;
-	sheet->align_h = 0;
+        sheet->align_v = 0;
+        sheet->align_h = 0;
 
-	sheet->scrollbar_mode = 0;
+        sheet->scrollbar_mode = 0;
 
-	sheet->text_size = WT_FLEX_UNDEF;
-	sheet->text_color = wt_color_set(0, 0, 0, 1);
-	sheet->text_mass = WT_FLEX_UNDEF;
-	sheet->text_options = 0;
-	sheet->text_wrap_mode = WT_KW_TEXT_WORDWRAP;
-	sheet->text_spacing = WT_FLEX_UNDEF;
-	sheet->line_height = WT_FLEX_UNDEF;
+        sheet->text_size = WUT_FLEX_UNDEF;
+        sheet->text_color = wut_color_set(0, 0, 0, 1);
+        sheet->text_mass = WUT_FLEX_UNDEF;
+        sheet->text_options = 0;
+        sheet->text_wrap_mode = WUT_KW_TEXT_WORDWRAP;
+        sheet->text_spacing = WUT_FLEX_UNDEF;
+        sheet->line_height = WUT_FLEX_UNDEF;
 }
 
 
-WT_XMOD void wt_sheet_parse(struct wt_stylesheet *sheet, char *s)
+WUT_XMOD void wut_sht_parse(struct wut_Stylesheet *sheet, char *s)
 {
-	char *run;
-	char inp_s[106];
-	char attr_s[64];
-	char val_s[64];
+        char *run;
+        char inp_s[106];
+        char attr_s[64];
+        char val_s[64];
 
-	enum wt_sheet_id id;
+        enum wut_eSheetAttribId id;
 
-	if(!sheet || !s) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
-		return;
-	}
+        if(!sheet || !s) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                return;
+        }
 
-	/*
-	 * Sanitize the input string to make it conform with input requirements.
-	 * This will for example convert letters from big(A..Z) to small(a..z).
-	 */
-	sheet_sanitize(s, inp_s);
+        /*
+         * Sanitize the input string to make it conform with input requirements.
+         * This will for example convert letters from big(A..Z) to small(a..z).
+         */
+        sht_sanitize(s, inp_s);
 
-	run = inp_s;
-	while((run = sheet_next(run, attr_s, val_s))) {
-		if((id = sheet_get_id(attr_s)) == WT_SHEET_UNDEFINED)
-			continue;
+        run = inp_s;
+        while((run = sht_next(run, attr_s, val_s))) {
+                if((id = sht_get_id(attr_s)) == WUT_SHEET_UNDEFINED)
+                        continue;
 
-		switch(sheet_typeof(id)) {
-			case WT_SHEET_FLEX:
-				sheet_parse_flex(sheet, id, val_s);
-				break;
-			case WT_SHEET_HEXCODE:
-				sheet_parse_hexcode(sheet, id, val_s);
-				break;
-			case WT_SHEET_KEYWORD:
-				sheet_parse_keyword(sheet, id, val_s);
-				break;
-		}
+                switch(sht_typeof(id)) {
+                        case WUT_SHEET_FLEX:
+                                sht_parse_flex(sheet, id, val_s);
+                                break;
+                        case WUT_SHEET_HEXCODE:
+                                sht_parse_hexcode(sheet, id, val_s);
+                                break;
+                        case WUT_SHEET_KEYWORD:
+                                sht_parse_keyword(sheet, id, val_s);
+                                break;
+                }
 
-		/* Don't forget to add the flag to the mask */
-		sheet->mask |= (1<<id);
-	}
+                /* Don't forget to add the flag to the mask */
+                sheet->mask |= (1<<id);
+        }
 }
 
 
 
-WT_XMOD s8 wt_sheet_get(struct wt_stylesheet *sheet, enum wt_sheet_id id,
-		struct wt_sheet_ret *ret)
+WUT_XMOD s8 wut_sht_get(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
+                struct wut_SheetReturn *ret)
 {
-	if(!sheet || !ret)
-		return -1;
+        if(!sheet || !ret)
+                return -1;
 
-	if(!(sheet->mask & (1<<id))) {
-		return 0;
-	}
+        if(!(sheet->mask & (1<<id))) {
+                return 0;
+        }
 
-	switch(sheet_typeof(id)) {
-		case WT_SHEET_FLEX:
-			sheet_read(sheet, id, &ret->flex);
-			ret->type = WT_SHEET_FLEX;
-			break;
-		case WT_SHEET_HEXCODE:
-			sheet_read(sheet, id, &ret->hexcode);
-			ret->type = WT_SHEET_HEXCODE;
-			break;
-		case WT_SHEET_KEYWORD:
-			sheet_read(sheet, id, &ret->keyword);
-			ret->type = WT_SHEET_KEYWORD;
-			break;
-	}
+        switch(sht_typeof(id)) {
+                case WUT_SHEET_FLEX:
+                        sht_read(sheet, id, &ret->flex);
+                        ret->type = WUT_SHEET_FLEX;
+                        break;
+                case WUT_SHEET_HEXCODE:
+                        sht_read(sheet, id, &ret->hexcode);
+                        ret->type = WUT_SHEET_HEXCODE;
+                        break;
+                case WUT_SHEET_KEYWORD:
+                        sht_read(sheet, id, &ret->keyword);
+                        ret->type = WUT_SHEET_KEYWORD;
+                        break;
+        }
 
-	return 1;
+        return 1;
 }
 
 
-WT_XMOD void wt_sheet_print(struct wt_stylesheet *sheet)
+WUT_XMOD void wut_sht_print(struct wut_Stylesheet *sheet)
 {
-	if(!sheet)
-		return;
+        if(!sheet)
+                return;
 
-	printf("Mask: %016lx", sheet->mask);
+        printf("Mask: %016lx", sheet->mask);
 
-	printf("\ndisplay_mode: %02x", sheet->display_mode);
+        printf("\ndisplay_mode: %02x", sheet->display_mode);
 
 
-	printf("\nwidth: "); wt_flex_print(sheet->width);
-	printf("\nheight: "); wt_flex_print(sheet->height);
+        printf("\nwidth: "); wut_flex_print(sheet->width);
+        printf("\nheight: "); wut_flex_print(sheet->height);
 
-	printf("\nspacing_top: "); wt_flex_print(sheet->spacing_top);
-	printf("\nspacing_right: "); wt_flex_print(sheet->spacing_right);
-	printf("\nspacing_bottom: "); wt_flex_print(sheet->spacing_bottom);
-	printf("\nspacing_left: "); wt_flex_print(sheet->spacing_left);
+        printf("\nspacing_top: "); wut_flex_print(sheet->spacing_top);
+        printf("\nspacing_right: "); wut_flex_print(sheet->spacing_right);
+        printf("\nspacing_bottom: "); wut_flex_print(sheet->spacing_bottom);
+        printf("\nspacing_left: "); wut_flex_print(sheet->spacing_left);
 
-	printf("\npadding_top: "); wt_flex_print(sheet->padding_top);
-	printf("\npadding_right: "); wt_flex_print(sheet->padding_right);
-	printf("\npadding_bottom: "); wt_flex_print(sheet->padding_bottom);
-	printf("\npadding_left: "); wt_flex_print(sheet->padding_left);
+        printf("\npadding_top: "); wut_flex_print(sheet->padding_top);
+        printf("\npadding_right: "); wut_flex_print(sheet->padding_right);
+        printf("\npadding_bottom: "); wut_flex_print(sheet->padding_bottom);
+        printf("\npadding_left: "); wut_flex_print(sheet->padding_left);
 
-	printf("\nborder_mode: %02x", sheet->border_mode);
-	printf("\nborder_width: "); wt_flex_print(sheet->border_width);
-	printf("\nborder_color: %08x", wt_color_get(sheet->border_color));
+        printf("\nborder_mode: %02x", sheet->border_mode);
+        printf("\nborder_width: "); wut_flex_print(sheet->border_width);
+        printf("\nborder_color: %08x", wut_color_get(sheet->border_color));
 
-	printf("\nradius_top_left: ");
-	wt_flex_print(sheet->radius_top_left);
-	printf("\nradius_top_right: ");
-	wt_flex_print(sheet->radius_top_right);
-	printf("\nradius_bottom_right: ");
-	wt_flex_print(sheet->radius_bottom_right);
-	printf("\nradius_bottom_left: ");
-	wt_flex_print(sheet->radius_bottom_left);
+        printf("\nradius_top_left: ");
+        wut_flex_print(sheet->radius_top_left);
+        printf("\nradius_top_right: ");
+        wut_flex_print(sheet->radius_top_right);
+        printf("\nradius_bottom_right: ");
+        wut_flex_print(sheet->radius_bottom_right);
+        printf("\nradius_bottom_left: ");
+        wut_flex_print(sheet->radius_bottom_left);
 
-	printf("\ninfill_mode: %02x", sheet->infill_mode);
-	printf("\ninfill_color: %08x", wt_color_get(sheet->infill_color));
+        printf("\ninfill_mode: %02x", sheet->infill_mode);
+        printf("\ninfill_color: %08x", wut_color_get(sheet->infill_color));
 
-	printf("\nlayout_mode: %02x", sheet->layout_mode);
+        printf("\nlayout_mode: %02x", sheet->layout_mode);
 
-	printf("\nalign_v: %02x", sheet->align_v);
-	printf("\nalign_h: %02x", sheet->align_h);
+        printf("\nalign_v: %02x", sheet->align_v);
+        printf("\nalign_h: %02x", sheet->align_h);
 
-	printf("\nscrollbar_mode: %02x", sheet->scrollbar_mode);
+        printf("\nscrollbar_mode: %02x", sheet->scrollbar_mode);
 
-	printf("\ntext_size: "); wt_flex_print(sheet->text_size);
-	printf("\ntext_color: %08x", wt_color_get(sheet->text_color));
-	printf("\ntext_mass: "); wt_flex_print(sheet->text_mass);
-	printf("\ntext_options: %02x", sheet->text_options);
-	printf("\ntext_wrap_mode: %02x", sheet->text_wrap_mode);
+        printf("\ntext_size: "); wut_flex_print(sheet->text_size);
+        printf("\ntext_color: %08x", wut_color_get(sheet->text_color));
+        printf("\ntext_mass: "); wut_flex_print(sheet->text_mass);
+        printf("\ntext_options: %02x", sheet->text_options);
+        printf("\ntext_wrap_mode: %02x", sheet->text_wrap_mode);
 }

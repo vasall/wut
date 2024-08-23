@@ -1,5 +1,5 @@
-#ifndef _WT_STYLE_H
-#define _WT_STYLE_H
+#ifndef _WUT_STYLE_H
+#define _WUT_STYLE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -7,38 +7,39 @@
 #include "style/inc/stylesheet.h"
 
 #include "utility/inc/color.h"
-#include "utility/inc/shape.h"
 
-enum wt_style_attrib {
-	WT_STYLE_DISPLAY_MODE,
+#include "math/inc/polygon.h"
 
-	WT_STYLE_SIZE_V,
-	WT_STYLE_SIZE_V_MIN,
-	WT_STYLE_SIZE_V_MAX,
-	WT_STYLE_SIZE_H,
-	WT_STYLE_SIZE_H_MIN,
-	WT_STYLE_SIZE_H_MAX,
-	
-	WT_POSITION_V_ORIENT,
-	WT_POSITION_V,
-	WT_POSITION_H_ORIENT,
-	WT_POSITION_H,
+enum wut_eStyleAttrib {
+        WUT_STYLE_DISPLAY_MODE,
 
-	WT_STYLE_PADDING_TOP,
-	WT_STYLE_PADDING_RIGHT,
-	WT_STYLE_PADDING_BOTTOM,
-	WT_STYLE_PADDING_LEFT,
+        WUT_STYLE_SIZE_V,
+        WUT_STYLE_SIZE_V_MIN,
+        WUT_STYLE_SIZE_V_MAX,
+        WUT_STYLE_SIZE_H,
+        WUT_STYLE_SIZE_H_MIN,
+        WUT_STYLE_SIZE_H_MAX,
 
-	WT_STYLE_INFILL_MODE,
-	WT_STYLE_INFILL_COLOR,
+        WUT_POSITION_V_ORIENT,
+        WUT_POSITION_V,
+        WUT_POSITION_H_ORIENT,
+        WUT_POSITION_H,
 
-	WT_STYLE_BORDER_MODE,
-	WT_STYLE_BORDER_WIDTH,
-	WT_STYLE_BORDER_COLOR,
+        WUT_STYLE_PADDING_TOP,
+        WUT_STYLE_PADDING_RIGHT,
+        WUT_STYLE_PADDING_BOTTOM,
+        WUT_STYLE_PADDING_LEFT,
 
-	WT_STYLE_TEXT_COLOR,
-	WT_STYLE_TEXT_SIZE,
-	WT_STYLE_TEXT_OPTIONS
+        WUT_STYLE_INFILL_MODE,
+        WUT_STYLE_INFILL_COLOR,
+
+        WUT_STYLE_BORDER_MODE,
+        WUT_STYLE_BORDER_WIDTH,
+        WUT_STYLE_BORDER_COLOR,
+
+        WUT_STYLE_TEXT_COLOR,
+        WUT_STYLE_TEXT_SIZE,
+        WUT_STYLE_TEXT_OPTIONS
 };
 
 
@@ -50,89 +51,89 @@ enum wt_style_attrib {
  * They are used when handling with active styling.
  */
 
-enum wt_restyle_type {
-	WT_STYLE_DISPLAY,
-	WT_STYLE_REFERENCE,
-	WT_STYLE_SHAPE,
-	WT_STYLE_BORDER,
-	WT_STYLE_RADIUS,
-	WT_STYLE_INFILL,
-	WT_STYLE_LAYOUT,
-	WT_STYLE_TEXT
+enum wut_eRestyleType {
+        WUT_STYLE_DISPLAY,
+        WUT_STYLE_REFERENCE,
+        WUT_STYLE_SHAPE,
+        WUT_STYLE_BORDER,
+        WUT_STYLE_RADIUS,
+        WUT_STYLE_INFILL,
+        WUT_STYLE_LAYOUT,
+        WUT_STYLE_TEXT
 };
 
 
 
-#define WT_RESTYLE_SCROLL_V	(1<<1)
-#define WT_RESTYLE_SCROLL_H	(1<<2)
+#define WUT_RESTYLE_SCROLL_V	(1<<1)
+#define WUT_RESTYLE_SCROLL_H	(1<<2)
 
 
 
-struct wt_style {
-	struct wt_style			*ref;
-	struct wt_stylesheet		sheet;
+struct wut_Style {
+        struct wut_Style		*ref;
+        struct wut_Stylesheet		sheet;
 
-	/*
-	 * DISPLAY
-	 */
-	u8 		display_mode;
+        /*
+         * DISPLAY
+         */
+        u8 		display_mode;
 
-	/*
-	 * REFERENCE
-	 */
-	u8 		reference_mode;
+        /*
+         * REFERENCE
+         */
+        u8 		reference_mode;
 
-	/*
-	 * SHAPE
-	 */
-	struct wt_rect	shape_bounding_box;	
-	struct wt_rect	shape_element_delta; /* -Spacing */
-	struct wt_rect	shape_inner_delta;   /* -Spacing, -Border */
-	struct wt_rect	shape_content_delta; /* -Spacing, -Border, -Padding */
+        /*
+         * SHAPE
+         */
+        wut_iRect	shape_bounding_box;	
+        wut_iRect	shape_element_delta; /* -Spacing */
+        wut_iRect	shape_inner_delta;   /* -Spacing, -Border */
+        wut_iRect	shape_content_delta; /* -Spacing, -Border, -Padding */
 
-	/*
-	 * BORDER
-	 */
-	u8		border_mode;
-	s32		border_width;
-	struct wt_color	border_color;
+        /*
+         * BORDER
+         */
+        u8		        border_mode;
+        s32		        border_width;
+        struct wut_Color	border_color;
 
-	/*
-	 * RADIUS
-	 */
-	s32		radius_corner[4];
+        /*
+         * RADIUS
+         */
+        s32		        radius_corner[4];
 
-	/*
-	 * INFILL
-	 */
-	u8		infill_mode;
-	struct wt_color	infill_color;
+        /*
+         * INFILL
+         */
+        u8		        infill_mode;
+        struct wut_Color	infill_color;
 
-	/*
-	 * LAYOUT
-	 */
-	u8		layout_mode;
+        /*
+         * LAYOUT
+         */
+        u8		        layout_mode;
 
-	/* 
-	 * SCROLLBAR
-	 */
-	u8		scrollbar_flags;
+        /* 
+         * SCROLLBAR
+         */
+        u8		        scrollbar_flags;
 
-	/*
-	 * TEXT
-	 */
-	u16 		text_size;
-	struct wt_color	text_color;
-	u16		text_mass;
-	u8		text_options;
-	u8		text_wrap_mode;
-	u16		text_spacing;
-	u16		text_line_height;
+        /*
+         * TEXT
+         */
+        u16 		        text_size;
+        struct wut_Color	text_color;
+        u16		        text_mass;
+        u8		        text_options;
+        u8		        text_wrap_mode;
+        u16		        text_spacing;
+        u16		        text_line_height;
 };
 
 
-struct wt_style_pass {
-	struct wt_rect *document_shape;
+struct wut_StylePass {
+        wut_iRect *document_shape;
 };
 
 
@@ -152,7 +153,7 @@ struct wt_style_pass {
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_XMOD s8 wt_style_init(struct wt_style *style, struct wt_style *ref);
+WUT_XMOD s8 wut_stl_init(struct wut_Style *style, struct wut_Style *ref);
 
 
 /*
@@ -164,7 +165,7 @@ WT_XMOD s8 wt_style_init(struct wt_style *style, struct wt_style *ref);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_XMOD s8 wt_style_link(struct wt_style *style, struct wt_style *ref);
+WUT_XMOD s8 wut_stl_link(struct wut_Style *style, struct wut_Style *ref);
 
 
 /*
@@ -180,8 +181,8 @@ WT_XMOD s8 wt_style_link(struct wt_style *style, struct wt_style *ref);
  * Returns: 1 if the attribute has been found, 0 if not and -1 if an error
  * 	    occurred
  */
-WT_XMOD s8 wt_style_get(struct wt_style *style, enum wt_sheet_id id,
-		struct wt_sheet_ret *ret);
+WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_sheet_id id,
+                struct wut_SheetReturn *ret);
 
 
 /*
@@ -193,7 +194,7 @@ WT_XMOD s8 wt_style_get(struct wt_style *style, enum wt_sheet_id id,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_XMOD s8 wt_style_process(struct wt_style *style, struct wt_style_pass *pass);
+WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass);
 
 
 /*
@@ -209,7 +210,7 @@ WT_XMOD s8 wt_style_process(struct wt_style *style, struct wt_style_pass *pass);
  *
  * @style: Pointer to the style struct
  */
-WT_API void wt_ResetStyle(struct wt_style *style);
+WUT_API void wut_ResetStyle(struct wut_Style *style);
 
 
 /*
@@ -218,7 +219,7 @@ WT_API void wt_ResetStyle(struct wt_style *style);
  * @style: Pointer to the style struct
  * @in: A string containing the requested modifications
  */
-WT_API void wt_ModifyStyle(struct wt_style *style, char *in);
+WUT_API void wut_ModifyStyle(struct wut_Style *style, char *in);
 
 
 /*
@@ -229,7 +230,7 @@ WT_API void wt_ModifyStyle(struct wt_style *style, char *in);
  *
  * Returns: Either a pointer to the restyle wrapper or NULL
  */
-WT_API void *wt_GetReStyle(struct wt_style *style, enum wt_restyle_type type);
+WUT_API void *wut_GetReStyle(struct wut_Style *style, enum wut_eRestyleType type);
 
 
 /*
@@ -237,7 +238,7 @@ WT_API void *wt_GetReStyle(struct wt_style *style, enum wt_restyle_type type);
  *
  * @style: Pointer to the style struct
  */
-WT_API void wt_DumpStylesheet(struct wt_style *style);
+WUT_API void wut_DumpStylesheet(struct wut_Style *style);
 
 
 /*
@@ -245,6 +246,6 @@ WT_API void wt_DumpStylesheet(struct wt_style *style);
  *
  * @style: Pointer to the style struct
  */
-WT_API void wt_DumpStyle(struct wt_style *style);
+WUT_API void wut_DumpStyle(struct wut_Style *style);
 
-#endif /* _WT_STYLE_H */
+#endif /* _WUT_STYLE_H */

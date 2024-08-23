@@ -1,18 +1,18 @@
-#include "document/inc/element.h"
+#include "document/inc/element[3]"
 
-#include "document/inc/document.h"
+#include "document/inc/document[3]"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/shape.h"
+#include "utility/inc/alarm[3]"
+#include "utility/inc/shape[3]"
 
-#include "widget/inc/widget.h"
+#include "widget/inc/widget[3]"
 
-#include "system/inc/system.h"
+#include "system/inc/system[3]"
 
-#include "style/inc/layout.h"
+#include "style/inc/layout[3]"
 
 
-#include <stdlib.h>
+#include <stdlib[3]>
 
 
 WUT_INTERN void ele_update_offset(struct wut_Element *ele)
@@ -20,8 +20,8 @@ WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 	struct wut_Element *par = ele->parent;
 
 
-	ele->relative_offset.x = 0;
-	ele->relative_offset.y = 0;
+	ele->relative_offset[0] = 0;
+	ele->relative_offset[1] = 0;
 
 	/*
 	 * If the element has a parent, calculate the offset from the upper-left
@@ -29,26 +29,26 @@ WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 	 * shape.
 	 */
 	if(par) {
-		ele->relative_offset.x =
-			par->style.shape_content_delta.x -	/* Border+Padding */
-			par->content_offset.x +			/* Scrolling */
-			ele->layout_offset.x;			/* Layout */
-		ele->relative_offset.y =
-			par->style.shape_content_delta.y -	/* Border+Padding */
-			par->content_offset.y +			/* Scrolling */
-			ele->layout_offset.y;			/* Layout */
+		ele->relative_offset[0] =
+			par->style.shape_content_delta[0] -	/* Border+Padding */
+			par->content_offset[0] +			/* Scrolling */
+			ele->layout_offset[0];			/* Layout */
+		ele->relative_offset[1] =
+			par->style.shape_content_delta[1] -	/* Border+Padding */
+			par->content_offset[1] +			/* Scrolling */
+			ele->layout_offset[1];			/* Layout */
 	}
 
-	ele->absolute_offset.x = ele->relative_offset.x;
-	ele->absolute_offset.y = ele->relative_offset.y;
+	ele->absolute_offset[0] = ele->relative_offset[0];
+	ele->absolute_offset[1] = ele->relative_offset[1];
 
 	/*
 	 * If this element has a parent, move the absolute offset by the
 	 * absolute offset of the parent.
 	 */
 	if(par) {
-		ele->absolute_offset.x += par->absolute_offset.x;
-		ele->absolute_offset.y += par->absolute_offset.y;
+		ele->absolute_offset[0] += par->absolute_offset[0];
+		ele->absolute_offset[1] += par->absolute_offset[1];
 	}
 }
 
@@ -119,7 +119,7 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	if(ele->parent) {
 		if(!wut_rct_intersect(&dif, &out, &ele->parent->output_rect)) {
 			/* If the element is not inside the parent */
-			ele->info_flags &= ~WUT_ELEMENT_F_VISIBLE;
+			ele->info_flags &= ~WUT_ELE_F_VISIBLE;
 			return;
 		}
 	}
@@ -131,7 +131,7 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	 */
 	if(!wut_rct_intersect(&dif, &dif, ele->document->shape_ref)) {
 		/* Element is not inside the window */
-		ele->info_flags &= ~WUT_ELEMENT_F_VISIBLE;
+		ele->info_flags &= ~WUT_ELE_F_VISIBLE;
 		return;
 	}
 
@@ -144,7 +144,7 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	 * Now we can copy the resulting rectangle to the element.
 	 */
 	wut_rct_cpy(&ele->output_rect, &out);
-	ele->info_flags |= WUT_ELEMENT_F_VISIBLE;
+	ele->info_flags |= WUT_ELE_F_VISIBLE;
 }
 
 
@@ -171,23 +171,23 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 
 	if(val[0] != 0 && (ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H)) {
 		limits[0] = 0;
-		limits[1] = ele->content_size.x - ele->content_rect.w; 
+		limits[1] = ele->content_size[0] - ele->content_rect[2]; 
 
-		ele->content_offset.x -= val[0];
+		ele->content_offset[0] -= val[0];
 
-		if(ele->content_offset.x < limits[0]) ele->content_offset.x = limits[0];
-		if(ele->content_offset.x > limits[1]) ele->content_offset.x = limits[1];
+		if(ele->content_offset[0] < limits[0]) ele->content_offset[0] = limits[0];
+		if(ele->content_offset[0] > limits[1]) ele->content_offset[0] = limits[1];
 
 		ret = 1;
 	}
 	if(val[1] != 0 && (ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V)) {
 		limits[0] = 0;
-		limits[1] = ele->content_size.y - ele->content_rect.h; 
+		limits[1] = ele->content_size[1] - ele->content_rect[3]; 
 
-		ele->content_offset.y -= val[1];
+		ele->content_offset[1] -= val[1];
 
-		if(ele->content_offset.y < limits[0]) ele->content_offset.y = limits[0];
-		if(ele->content_offset.y > limits[1]) ele->content_offset.y = limits[1];
+		if(ele->content_offset[1] < limits[0]) ele->content_offset[1] = limits[0];
+		if(ele->content_offset[1] > limits[1]) ele->content_offset[1] = limits[1];
 
 		ret = 1;
 	}
@@ -223,10 +223,10 @@ WUT_XMOD void wut_ele_hdl_scrollbar(struct wut_Element *ele)
 
 	inner_rect = wut_GetContentBox(ele); 
 
-	if(inner_rect.h < ele->content_size.y)
+	if(inner_rect[3] < ele->content_size[1])
 		flag |= WUT_RESTYLE_SCROLL_V;
 
-	if(inner_rect.w < ele->content_size.x)
+	if(inner_rect[2] < ele->content_size[0])
 		flag |= WUT_RESTYLE_SCROLL_H;
 
 
@@ -312,13 +312,13 @@ WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 	/*
 	 * Return if the element is not visible.
 	 */
-	if(!(ele->info_flags & WUT_ELEMENT_F_VISIBLE))
+	if(!(ele->info_flags & WUT_ELE_F_VISIBLE))
 		return;
 
-	p0x = ele->element_rect.x;
-	p0y = ele->element_rect.y;
-	p1x = ele->element_rect.x + ele->element_rect.w;
-	p1y = ele->element_rect.y + ele->element_rect.h;
+	p0x = ele->element_rect[0];
+	p0y = ele->element_rect[1];
+	p1x = ele->element_rect[0] + ele->element_rect[2];
+	p1y = ele->element_rect[1] + ele->element_rect[3];
 
 	/* Unioform: u_rect */
 	v_index[0] = wut_bat_push_uniform(ren, 1, &ele->element_rect);
@@ -410,24 +410,28 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 
 	/* vertical */
 	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
-		s32 p0x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width - 10;
-		s32 p0y = ele->element_rect.y + ele->style.border_width;
-		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width;
-		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width;
+		s32 p0x = ele->element_rect[0] + ele->element_rect[2] -
+                        ele->style.border_width - 10;
+		s32 p0y = ele->element_rect[1] + ele->style.border_width;
+		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - 
+                        ele->style.border_width;
+		s32 p1y = ele->element_rect[1] + ele->element_rect[3] -
+                        ele->style.border_width;
 
 		wut_rct_set(&rect,
 				p0x,
 				p0y,
 				10,
-				ele->element_rect.h - (ele->style.border_width * 2));
+				ele->element_rect[3] - (ele->style.border_width * 2));
 
 
 		/* Unioform: u_rect */
 		s_index[0] = wut_bat_push_uniform(ren, 1, &rect);
 
 		/* Uniform: u_scroll */	
-		scroll[1] = (p1y - p0y) * ((f32)ele->content_rect.h / (f32)ele->content_size.y);
-		scroll[0] = (p1y - p0y - 2 - scroll[1]) * ((f32)ele->content_offset.y / (f32)(ele->content_size.y - ele->content_rect.h));
+		scroll[1] = (p1y - p0y) * ((f32)ele->content_rect[3] / (f32)ele->content_size[1]);
+		scroll[0] = (p1y - p0y - 2 - scroll[1]) *
+                        ((f32)ele->content_offset[1] / (f32)(ele->content_size[1] - ele->content_rect[3]));
 		s_index[2] = wut_bat_push_uniform(ren, 6, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
@@ -466,15 +470,15 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 
 	/* horizontal */
 	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) {
-		s32 p0x = ele->element_rect.x + ele->style.border_width;
-		s32 p0y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width - 10;
-		s32 p1x = ele->element_rect.x + ele->element_rect.w - ele->style.border_width;
-		s32 p1y = ele->element_rect.y + ele->element_rect.h - ele->style.border_width;
+		s32 p0x = ele->element_rect[0] + ele->style.border_width;
+		s32 p0y = ele->element_rect[1] + ele->element_rect[3] - ele->style.border_width - 10;
+		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - ele->style.border_width;
+		s32 p1y = ele->element_rect[1] + ele->element_rect[3] - ele->style.border_width;
 
 		wut_rct_set(&rect,
 				p0x,
 				p0y, 
-				ele->element_rect.w - (ele->style.border_width * 2),
+				ele->element_rect[2] - (ele->style.border_width * 2),
 				10);
 
 
@@ -519,6 +523,8 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	}
 }
 
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -539,7 +545,7 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 	}
 
 	name_len = strlen(name);
-	if(name_len < 1 || name_len > WUT_ELEMENT_NAME_LIM) {
+	if(name_len < 1 || name_len > WUT_ELE_NAME_LIM) {
 		WUT_ALARM(WUT_ERROR, "Element name is invalid");
 		goto err_return;
 	}

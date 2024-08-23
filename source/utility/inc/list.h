@@ -1,17 +1,17 @@
-#ifndef _WT_UTILITY_LIST_H
-#define _WT_UTILITY_LIST_H
+#ifndef _WUT_UTILITY_LIST_H
+#define _WUT_UTILITY_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct wt_list {
-	s16 size;	/* The size of a single entry */
+struct wut_List {
+        s16 size;	/* The size of a single entry */
 
-	s16 count;	/* The number of entries */
-	s16 alloc;	/* The allocated number of entries */
+        s16 count;	/* The number of entries */
+        s16 alloc;	/* The allocated number of entries */
 
-	u8 *data;
+        u8 *data;
 };
 
 
@@ -24,7 +24,7 @@ struct wt_list {
  * Returns: Either a pointer to the newly created list or NULL if an error
  * 	    occurred
  */
-WT_API struct wt_list *wt_list_create(s16 size, s16 alloc);
+WUT_API struct wut_List *wut_CreateList(s16 size, s16 alloc);
 
 
 /*
@@ -32,7 +32,7 @@ WT_API struct wt_list *wt_list_create(s16 size, s16 alloc);
  *
  * @lst: Pointer to the list
  */
-WT_API void wt_list_destroy(struct wt_list *lst);
+WUT_API void wut_DestroyList(struct wut_List *lst);
 
 
 /*
@@ -44,7 +44,7 @@ WT_API void wt_list_destroy(struct wt_list *lst);
  * Returns: On success the number of elements in the list and if an error
  *          occurred -1
  */
-WT_API s16 wt_list_push(struct wt_list *lst, void *inp);
+WUT_API s16 wut_PushList(struct wut_List *lst, void *inp);
 
 
 /*
@@ -56,7 +56,7 @@ WT_API s16 wt_list_push(struct wt_list *lst, void *inp);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-WT_API s16 wt_list_pop(struct wt_list *lst, void *out);
+WUT_API s16 wut_PopList(struct wut_List *lst, void *out);
 
 
 /*
@@ -67,7 +67,7 @@ WT_API s16 wt_list_pop(struct wt_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-WT_API s16 wt_list_shift(struct wt_list *lst, void *out);
+WUT_API s16 wut_ShiftList(struct wut_List *lst, void *out);
 
 
 /*
@@ -78,7 +78,7 @@ WT_API s16 wt_list_shift(struct wt_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-WT_API s16 wt_list_test_head(struct wt_list *lst, void *out);
+WUT_API s16 wut_TestListHead(struct wut_List *lst, void *out);
 
 
 /*
@@ -89,7 +89,7 @@ WT_API s16 wt_list_test_head(struct wt_list *lst, void *out);
  *
  * Returns: 1 on success, 0 if list is empty and -1 if an error occurred
  */
-WT_API s16 wt_list_test_tail(struct wt_list *lst, void *out);
+WUT_API s16 wut_TestListTail(struct wut_List *lst, void *out);
 
 
 /*
@@ -105,10 +105,10 @@ WT_API s16 wt_list_test_tail(struct wt_list *lst, void *out);
  * Returns: 1 if an element has been returned, 0 if empty or out of bounds and
  * 	    -1 if an error occurred
  */
-WT_API s8 wt_list_get(struct wt_list *lst, u16 idx, void **out);
+WUT_API s8 wut_GetList(struct wut_List *lst, u16 idx, void **out);
 
 
-typedef s8 (*wt_list_fnc_t)(void *entry, s16 idx, void *data);
+typedef s8 (*wut_ListFunc)(void *entry, s16 idx, void *data);
 
 
 /*
@@ -121,6 +121,6 @@ typedef s8 (*wt_list_fnc_t)(void *entry, s16 idx, void *data);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_list_apply(struct wt_list *lst, wt_list_fnc_t fnc, void *data);
+WUT_API s8 wut_ApplyList(struct wut_List *lst, wut_ListFunc fnc, void *data);
 
-#endif /* _WT_UTILITY_LIST_H */
+#endif /* _WUT_UTILITY_LIST_H */

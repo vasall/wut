@@ -1,5 +1,5 @@
-#ifndef _WT_GRAPHIC_TEXT_H
-#define _WT_GRAPHIC_TEXT_H
+#ifndef _WUT_GRAPHIC_TEXT_H
+#define _WUT_GRAPHIC_TEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -11,34 +11,34 @@
 #include "style/inc/style.h"
 
 
-#define WT_TEXT_WORDWRAP	WT_KW_TEXT_WORDWRAP
-#define WT_TEXT_NOWRAP		WT_KW_TEXT_NOWRAP
-#define WT_TEXT_LETTERWRAP	WT_KW_TEXT_LETTERWRAP
+#define WUT_TEXT_WORDWRAP	WUT_KW_TEXT_WORDWRAP
+#define WUT_TEXT_NOWRAP		WUT_KW_TEXT_NOWRAP
+#define WUT_TEXT_LETTERWRAP	WUT_KW_TEXT_LETTERWRAP
 
 
-struct wt_text_info {
+struct wut_TextInfo {
 	/*
 	 * A pointer to the dedicated batch renderer.
 	 */
-	struct wt_batch		*batch;
+	struct wut_Batch		*batch;
 
 	/*
 	 * A pointer to the font.
 	 */
-	struct wt_font		*font;
+	struct wut_Font		*font;
 
 	/*
 	 * A rectangle setting the render area.
 	 */
-	struct wt_rect		*limits;
+	struct wut_iRect		*limits;
 
 	/*
 	 * The style used for the text.
 	 */
-	struct wt_style		*style;
+	struct wut_Style		*style;
 };
 
-struct wt_text_element {
+struct wut_TextElement {
 	s8	used;
 
 	s16	next;
@@ -55,10 +55,10 @@ struct wt_text_element {
 	s16	position_y;
 };
 
-#define WT_TEXT_ALLOC		32
+#define WUT_TEXT_ALLOC		32
 
-struct wt_text_buffer {
-	struct wt_text_info 	info;
+struct wut_TextBuffer {
+	struct wut_TextInfo 	info;
 
 	/* The head and tail of the element list */
 	s16 			head;
@@ -67,7 +67,7 @@ struct wt_text_buffer {
 	/* The size and array containing the elements */
 	s16			alloc;
 	s16			count;
-	struct wt_text_element	*elements;
+	struct wut_TextElement	*elements;
 
 	/* The size of the text buffer in pixel */
 	s16			width;
@@ -87,7 +87,7 @@ struct wt_text_buffer {
  * Returns: Either a pointer to the newly created text buffer or NULL if an
  * 	    error occurred
  */
-WT_API struct wt_text_buffer *wt_text_create(struct wt_text_info info);
+WUT_XMOD struct wut_TextBuffer *wut_txt_create(struct wut_TextInfo info);
 
 
 /*
@@ -95,7 +95,7 @@ WT_API struct wt_text_buffer *wt_text_create(struct wt_text_info info);
  *
  * @tbuf: Pointer to the text buffer
  */
-WT_API void wt_text_destroy(struct wt_text_buffer *tbuf);
+WUT_XMOD void wut_txt_destroy(struct wut_TextBuffer *tbuf);
 
 
 /*
@@ -108,7 +108,7 @@ WT_API void wt_text_destroy(struct wt_text_buffer *tbuf);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_text_push(struct wt_text_buffer *tbuf, s16 off, s16 len,
+WUT_XMOD s8 wut_txt_push(struct wut_TextBuffer *tbuf, s16 off, s16 len,
 		char *text);
 
 
@@ -119,7 +119,7 @@ WT_API s8 wt_text_push(struct wt_text_buffer *tbuf, s16 off, s16 len,
  * @off: The offset position of the text
  * @len: The length of the text in characters
  */
-WT_API void wt_text_remove(struct wt_text_buffer *tbuf, s16 off, s16 len);
+WUT_XMOD void wut_txt_remove(struct wut_TextBuffer *tbuf, s16 off, s16 len);
 
 
 /*
@@ -129,7 +129,7 @@ WT_API void wt_text_remove(struct wt_text_buffer *tbuf, s16 off, s16 len);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_text_send(struct wt_text_buffer *tbuf);
+WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf);
 
 
 /*
@@ -137,7 +137,7 @@ WT_API s8 wt_text_send(struct wt_text_buffer *tbuf);
  *
  * @tbuf: A pointer to the text buffer
  */
-WT_API void wt_text_process(struct wt_text_buffer *tbuf);
+WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf);
 
 
 /*
@@ -145,6 +145,6 @@ WT_API void wt_text_process(struct wt_text_buffer *tbuf);
  *
  * @tbuf: Pointer to the text buffer
  */
-WT_API void wt_text_dump(struct wt_text_buffer *tbuf);
+WUT_XMOD void wut_txt_dump(struct wut_TextBuffer *tbuf);
 
-#endif /* _WT_GRAPHIC_TEXT_H */
+#endif /* _WUT_GRAPHIC_TEXT_H */

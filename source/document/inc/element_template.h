@@ -15,7 +15,7 @@
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_API s8 wut_etmp_load(struct wt_Element *ele, void *data);
+WUT_API s8 wut_etm_load(struct wt_Element *ele, void *data);
 
 
 #endif /* _WUT_DOCUMENT_ELEMENT_TEMPLATE_H */

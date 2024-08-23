@@ -43,7 +43,11 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	/* Set the attributes of the window struct */
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
-	wut_rct_set(&win->shape, 0, 0, w, h);
+        
+        wut_recti_clr(win->shape);
+        win->shape[2] = w;
+        win->shape[3] = h;
+
 	win->info = WUT_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
 
@@ -212,7 +216,7 @@ WUT_INTERN s8 win_cfnc_redraw(struct wut_Window *win, void *data)
 
 WUT_INTERN s8 win_cfnc_find(struct wut_Window *w, void *data)
 {
-	struct wut_win_selector *sel = (struct wut_win_selector *)data;
+	struct wut_WindowSelector *sel = (struct wut_WindowSelector *)data;
 
 	/* Check if the window has already been found */
 	if(sel->state == 1) {
@@ -438,7 +442,7 @@ err_return:
 
 WUT_API struct wut_Window *wut_GetWindow(s32 wd)
 {
-	struct wut_win_selector sel;
+	struct wut_WindowSelector sel;
 	struct wut_Window *mwin;
 
 	sel.state = 0;
@@ -466,9 +470,11 @@ WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 w, u16 h)
 	}
 
 	/*
-	 * Update the shape.
+	 * Update the size.
 	 */
-	wut_rct_set(&win->shape, 0, 0, w, h);
+        wut_recti_clr(win->shape);
+        win->shape[2] = w;
+        win->shape[3] = h;
 
 	/*
 	 * Update the document.

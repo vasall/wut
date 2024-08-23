@@ -1,0 +1,50 @@
+| Type                    | Convention          | Example                     |
+| ----------------------- | ------------------- | --------------------------- |
+| Struct                  | wut_TitleCase       | wut_EventList               |
+| Struct Members          | lowerCase           | elementCount                |
+|                         |                     |                             |
+| Enum                    | wut_eTitleCase      | wut_eElementType            |
+| Enum Members            | WUT_ALL_CAPS        | WUT_BUTTON                  |
+|                         |                     |                             |
+| Predefine               | WUT_ALL_CAPS        | WUT_SCROLLBAR_WIDTH         |
+| Macro                   | WUT_ALL_CAPS        | WUT_ABSOLUTE(...)           |
+|                         |                     |                             |
+| API functions           | wut_TitleCase       | wut_CreateElement(...)      |
+| Cross-module functions  | wut_pfx_lower_case  | wut_doc_attach_element(...) |
+| Internal functions      | pfx_lower_case      | evt_trigger_all(...)        |
+|                         |                     |                             |
+| Trivial variables       | Make it short!      | i, x, n, f, ...             |
+| Local Variables         | lowerCase           | refWidth                    |
+| Global Variables        | _wut_lowerCase      | _wut_coreContainer          |
+
+
+Modules and Abreviations:
+
+  - Alarm               -> alm
+  - Core                -> cor
+  - Document            -> doc
+  - Element             -> ele
+  - Element Template    -> etm
+  - Style               -> stl
+  - Stylesheet          -> sht
+  - Layout              -> lay
+  - Event               -> evt
+  - Event Listener      -> lis
+  - Event Handler       -> hdl
+  - Event Default       -> evd
+  - Batch               -> bat
+  - Camera              -> cam
+  - Shader              -> shd
+  - SDL                 -> sdl
+  - OpenGL              -> ogl
+  - Window              -> win
+  - Point               -> pnt
+  - Flex                -> flx
+  - List                -> lst
+  - Static List         -> sls
+
+  - Size                -> sze
+  - Rectangle           -> rct
+  - Vector              -> vec
+
+

@@ -9,40 +9,40 @@
 
 #include <stdlib.h>
 
-#define WT_MDL_DEBUG 1
+#define WUT_MDL_DEBUG 1
 
 
 
 
-WT_INTERN void obj_destroy(struct wt_object *obj)
+WUT_INTERN void obj_destroy(struct wut_Object *obj)
 {
 	u32 i;
-	struct wt_object_uniform *uniform;
+	struct wut_ObjectUniform *uniform;
 
 	glBindVertexArray(obj->vao);
 
 	for(i = 0; i < obj->uniform_number; i++) {
 		uniform =  &obj->uniforms[i];
 		glDeleteBuffers(1, &uniform->bao);
-		wt_free(uniform->data);	
+		wut_free(uniform->data);	
 	}
 
 	glDeleteBuffers(1, &obj->ebo);
 	glDeleteBuffers(1, &obj->bao);
 	glDeleteVertexArrays(1, &obj->vao);
 
-	wt_free(obj->vertex_buffer);
-	wt_free(obj->index_buffer);
+	wut_free(obj->vertex_buffer);
+	wut_free(obj->index_buffer);
 
-	wt_free(obj);
+	wut_free(obj);
 
 }
 
 
-WT_INTERN void obj_activate_uniforms(struct wt_object *obj)
+WUT_INTERN void obj_activate_uniforms(struct wut_Object *obj)
 {
 	u32 i;
-	struct wt_object_uniform *uniform;
+	struct wut_ObjectUniform *uniform;
 
 	for(i = 0; i < obj->uniform_number; i++) {
 		uniform = &obj->uniforms[i];
@@ -54,16 +54,16 @@ WT_INTERN void obj_activate_uniforms(struct wt_object *obj)
 }
 
 
-WT_INTERN void obj_rmv_fnc(u32 size, void *ptr)
+WUT_INTERN void obj_rmv_fnc(u32 size, void *ptr)
 {
-	struct wt_object *obj;
+	struct wut_Object *obj;
 
-	wt_Ignore(size);
+	WUT_IGNORE(size);
 
 	if(!ptr)
 		return;
 
-	obj = (struct wt_object *)ptr;
+	obj = (struct wut_Object *)ptr;
 
 	obj_destroy(obj);
 }
@@ -77,17 +77,17 @@ WT_INTERN void obj_rmv_fnc(u32 size, void *ptr)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API s8 wt_InitObjectTable(struct wt_context *ctx)
+WUT_API s8 wut_InitObjectTable(struct wut_Context *ctx)
 {
-	struct wt_table *tbl;
+	struct wut_table *tbl;
 
 	if(!ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(tbl = wt_tbl_create(&obj_rmv_fnc))) {
-		WT_ALARM(WT_ERROR, "Failed to create new table");
+	if(!(tbl = wut_tbl_create(&obj_rmv_fnc))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create new table");
 		goto err_return;
 	}
 
@@ -97,61 +97,61 @@ WT_API s8 wt_InitObjectTable(struct wt_context *ctx)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create new object table.");
+	WUT_ALARM(WUT_ERROR, "Failed to create new object table.");
 	return -1;
 }
 
 
-WT_API void wt_CloseObjectTable(struct wt_context *ctx)
+WUT_API void wut_CloseObjectTable(struct wut_Context *ctx)
 {
 	if(!ctx)
 		return;
 
-	wt_tbl_destroy(ctx->objects);
+	wut_tbl_destroy(ctx->objects);
 	ctx->objects = NULL;
 }
 
 
-WT_API void wt_RemoveObject(struct wt_object *obj)
+WUT_API void wut_RemoveObject(struct wut_Object *obj)
 {
 	if(!obj)
 		return;
 
-	wt_ContextRemove(obj->context, WT_CONTEXT_OBJECTS, obj->name);
+	wut_ContextRemove(obj->context, WUT_CONTEXT_OBJECTS, obj->name);
 }
 
 
-WT_API struct wt_object *wt_GetObject(struct wt_context *ctx, char *name)
+WUT_API struct wut_Object *wut_GetObject(struct wut_Context *ctx, char *name)
 {
-	struct wt_object *obj;
+	struct wut_Object *obj;
 
 	if(!ctx || !name) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(wt_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
-		WT_ALARM(WT_ERROR, "Object could not be found in wt_table");
+	if(wut_tbl_get(ctx->objects, name, NULL, (void **)&obj) != 1) {
+		WUT_ALARM(WUT_ERROR, "Object could not be found in wut_table");
 		goto err_return;
 	}
 
 	return obj;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to get object from object table");
+	WUT_ALARM(WUT_ERROR, "Failed to get object from object table");
 	return NULL;
 
 
 }
 
 
-WT_API void wt_SetObjectUniform(struct wt_object *obj, char *name, void *ptr)
+WUT_API void wut_SetObjectUniform(struct wut_Object *obj, char *name, void *ptr)
 {
 	u32 i;
-	struct wt_object_uniform *uniform;
+	struct wut_ObjectUniform *uniform;
 
 	if(!obj || !name || !ptr) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return;
 	}
 
@@ -164,12 +164,12 @@ WT_API void wt_SetObjectUniform(struct wt_object *obj, char *name, void *ptr)
 		}
 	}
 
-	WT_ALARM(WT_ERROR, "Uniform buffer not found");
+	WUT_ALARM(WUT_ERROR, "Uniform buffer not found");
 }
 
 
-WT_API void wt_RenderObject(struct wt_object *obj, struct wt_shader *shd,
-		struct wt_texture *tex)
+WUT_API void wut_RenderObject(struct wut_Object *obj, struct wut_Shader *shd,
+		struct wut_Texture *tex)
 {
 	if(!obj)
 		return;
@@ -179,25 +179,25 @@ WT_API void wt_RenderObject(struct wt_object *obj, struct wt_shader *shd,
 
 	/* Activate shader */
 	if(shd)
-		wt_UseShader(shd);
+		wut_UseShader(shd);
 	else
-		wt_UseShader(obj->shader);
+		wut_UseShader(obj->shader);
 
 	/* Activate the uniform buffers */
 	obj_activate_uniforms(obj);
 
 	/* Activate texture */
 	if(tex)
-		wt_UseTexture(tex);
+		wut_UseTexture(tex);
 	else
-		wt_UseTexture(obj->texture);
+		wut_UseTexture(obj->texture);
 
 	/* Finally render the object */
 	glDrawElements(GL_TRIANGLES, obj->index_number, GL_UNSIGNED_INT, NULL);
 
 	/* Unuse the active texture and shader */
-	wt_UnuseTexture();
-	wt_UnuseShader();
+	wut_UnuseTexture();
+	wut_UnuseShader();
 
 	/* Unbind the vertex-array-object */
 	glBindVertexArray(0);

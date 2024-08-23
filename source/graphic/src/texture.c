@@ -11,17 +11,17 @@
 #include <stdlib.h>
 
 
-WT_INTERN struct wt_texture *tex_create(char *name, u16 w, u16 h,
+WUT_INTERN struct wut_Texture *tex_create(char *name, u16 w, u16 h,
 		GLenum format, u8 *px)
 {
-	struct wt_texture *tex;
+	struct wut_Texture *tex;
 
 	if(!px) {
 		return NULL;
 	}
 
-	if(!(tex = wt_malloc(sizeof(struct wt_texture)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for texture");
+	if(!(tex = wut_malloc(sizeof(struct wut_Texture)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for texture");
 		goto err_return;
 	}
 
@@ -58,18 +58,18 @@ WT_INTERN struct wt_texture *tex_create(char *name, u16 w, u16 h,
 	return tex;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create new texture");
+	WUT_ALARM(WUT_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
 
-WT_INTERN struct wt_texture *tex_load(char *name, char *pth)
+WUT_INTERN struct wut_Texture *tex_load(char *name, char *pth)
 {
-	struct wt_fs_r_image img;
-	struct wt_texture *tex;
+	struct wut_fs_r_image img;
+	struct wut_Texture *tex;
 
 	/* First load the raw pixel data from a PNG */
-	if((wt_fs_image(pth, &img)) < 0)
+	if((wut_fs_image(pth, &img)) < 0)
 		goto err_return;
 
 	/* Then create an OpenGL texture and past them */
@@ -77,58 +77,58 @@ WT_INTERN struct wt_texture *tex_load(char *name, char *pth)
 		goto err_cleanup_img;
 
 	/* Finally clean up the loading buffer */
-	wt_fs_image_cleanup(&img);
+	wut_fs_image_cleanup(&img);
 
 	return tex;
 
 err_cleanup_img:
-	wt_fs_image_cleanup(&img);
+	wut_fs_image_cleanup(&img);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load texture");
+	WUT_ALARM(WUT_ERROR, "Failed to load texture");
 	return NULL;
 }
 
 
-WT_INTERN void tex_destroy(struct wt_texture *tex)
+WUT_INTERN void tex_destroy(struct wut_Texture *tex)
 {
 	glDeleteTextures(1, &tex->texture);
-	wt_free(tex);
+	wut_free(tex);
 }
 
 
-WT_INTERN void tex_batch_cfnc_push(struct wt_batch *ren, void *data)
+WUT_INTERN void tex_batch_cfnc_push(struct wut_Batch *ren, void *data)
 {
 	s32 frame[2];
-	struct wt_rect *ref = (struct wt_rect *)data;
+	struct wut_iRect *ref = (struct wut_iRect *)data;
 
 	frame[0] = ref->w;
 	frame[1] = ref->h;
-	wt_batch_push_uniform(ren, 0, frame);
+	wut_bat_push_uniform(ren, 0, frame);
 
 }
 
-WT_INTERN s8 tex_create_batch(struct wt_texture *tex)
+WUT_INTERN s8 tex_create_batch(struct wut_Texture *tex)
 {
-	struct wt_shader *shd;
-	struct wt_batch *ren;
+	struct wut_Shader *shd;
+	struct wut_Batch *ren;
 
-	struct wt_vertex_attrib v_attributes[] = {
+	struct wut_VertexAttrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{2, GL_FLOAT},		/* uv-coords */
 		{3, GL_INT}		/* 0: shape, 1: limits */
 	};
 
-	struct wt_uniform_temp uniforms[] = {
-		{"u_frame", WT_UNIFORM_2IV, 1, WT_UNIFORM_F_DEFAULT},	 /* 0 */
-		{"u_rect", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT},	 /* 1 */
-		{"u_radius", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}, /* 2 */
-		{"u_limit", WT_UNIFORM_4IV, 200, WT_UNIFORM_F_DEFAULT}	 /* 3 */
+	struct wut_uniform_temp uniforms[] = {
+		{"u_frame", WUT_UNIFORM_2IV, 1, WUT_UNIFORM_F_DEFAULT},	 /* 0 */
+		{"u_rect", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT},	 /* 1 */
+		{"u_radius", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}, /* 2 */
+		{"u_limit", WUT_UNIFORM_4IV, 200, WUT_UNIFORM_F_DEFAULT}	 /* 3 */
 	};
 
-	shd = wt_GetShader(tex->context, "__def_texture_shader");
+	shd = wut_GetShader(tex->context, "__def_texture_shader");
 
-	ren = wt_batch_create(
+	ren = wut_bat_create(
 			shd,		/* Pointer to the shader to use */
 			tex,		/* Pointer to the texture to use */
 			3,		/* Number of vertex attributes */
@@ -144,8 +144,8 @@ WT_INTERN s8 tex_create_batch(struct wt_texture *tex)
 	if(!ren)
 		return -1;
 
-	if((tex->batch_id = wt_ContextAddBatch(tex->context, &ren)) < 0) {
-		wt_batch_destroy(ren);
+	if((tex->batch_id = wut_ContextAddBatch(tex->context, &ren)) < 0) {
+		wut_bat_destroy(ren);
 		return -1;
 	}
 
@@ -153,9 +153,9 @@ WT_INTERN s8 tex_create_batch(struct wt_texture *tex)
 }
 
 
-WT_INTERN void tex_destroy_batch(struct wt_texture *tex)
+WUT_INTERN void tex_destroy_batch(struct wut_Texture *tex)
 {
-	wt_ContextRmvBatch(tex->context, tex->batch_id);
+	wut_ContextRemoveBatch(tex->context, tex->batch_id);
 }
 
 
@@ -168,19 +168,19 @@ WT_INTERN void tex_destroy_batch(struct wt_texture *tex)
  */
 
 
-WT_API s8 wt_InitTextureTable(struct wt_context *ctx)
+WUT_API s8 wut_InitTextureTable(struct wut_Context *ctx)
 {
-	struct wt_statlist *lst;
+	struct wut_StatList *lst;
 	s16 size;		
 
 	if(!ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	size = sizeof(struct wt_texture *);
-	if(!(lst = wt_statlist_create(size, WT_TEXTURE_SLOTS))) {
-		WT_ALARM(WT_ERROR, "Failed to create wt_table");
+	size = sizeof(struct wut_Texture *);
+	if(!(lst = wut_CreateStatList(size, WUT_TEXTURE_SLOTS))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create wut_table");
 		goto err_return;	
 	}
 
@@ -190,30 +190,30 @@ WT_API s8 wt_InitTextureTable(struct wt_context *ctx)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to initialize the texture table");
+	WUT_ALARM(WUT_ERROR, "Failed to initialize the texture table");
 	return -1;
 }
 
 
-WT_API void wt_CloseTextureTable(struct wt_context *ctx)
+WUT_API void wut_CloseTextureTable(struct wut_Context *ctx)
 {
 	if(!ctx) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	wt_statlist_destroy(ctx->textures);
+	wut_DestroyStatList(ctx->textures);
 	ctx->textures = NULL;
 }
 
 
-WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
+WUT_API struct wut_Texture *wut_CreateTexture(struct wut_Context *ctx, char *name,
 		u16 w, u16 h, GLenum format, u8 *px)
 {
-	struct wt_texture *tex;
+	struct wut_Texture *tex;
 
 	if(!ctx || !name || w < 1 || h < 1 || !px) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -228,7 +228,7 @@ WT_API struct wt_texture *wt_CreateTexture(struct wt_context *ctx, char *name,
 		goto err_destroy_tex;
 
 	/* Add the texture to the list  */
-	if((tex->texture_slot = wt_statlist_add(ctx->textures, &tex)) < 0) {
+	if((tex->texture_slot = wut_AddStatList(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
 	}
 
@@ -241,17 +241,17 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create new texture");
+	WUT_ALARM(WUT_ERROR, "Failed to create new texture");
 	return NULL;
 }
 
 
-WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name, char *pth)
+WUT_API struct wut_Texture *wut_LoadTexture(struct wut_Context *ctx, char *name, char *pth)
 {
-	struct wt_texture *tex;
+	struct wut_Texture *tex;
 
 	if(!ctx || !name || !pth) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -265,7 +265,7 @@ WT_API struct wt_texture *wt_LoadTexture(struct wt_context *ctx, char *name, cha
 		goto err_destroy_tex;
 
 	/* Add the texture to the list  */
-	if((tex->texture_slot = wt_statlist_add(ctx->textures, &tex)) < 0) {
+	if((tex->texture_slot = wut_AddStatList(ctx->textures, &tex)) < 0) {
 		goto err_destroy_batch;
 	}
 
@@ -278,28 +278,28 @@ err_destroy_tex:
 	tex_destroy(tex);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load new texture");
+	WUT_ALARM(WUT_ERROR, "Failed to load new texture");
 	return NULL;
 }
 
 
-WT_API void wt_RemoveTexture(struct wt_texture *tex)
+WUT_API void wut_RemoveTexture(struct wut_Texture *tex)
 {
 	if(!tex) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	wt_ContextRemove(tex->context, WT_CONTEXT_TEXTURES, tex->name);
+	wut_ContextRemove(tex->context, WUT_CONTEXT_TEXTURES, tex->name);
 }
 
 
-WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px)
+WUT_API s8 wut_ResizeTexture(struct wut_Texture *tex, u16 w, u16 h, u8 *px)
 {
 	u32 newTex;
 
 	if(!tex) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -331,16 +331,16 @@ WT_API s8 wt_ResizeTexture(struct wt_texture *tex, u16 w, u16 h, u8 *px)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to resize texture");
+	WUT_ALARM(WUT_ERROR, "Failed to resize texture");
 	return -1;
 }
 
 
-WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
+WUT_API s8 wut_SetTexture(struct wut_Texture *tex, u16 x, u16 y, u16 w, u16 h,
 		u8 *px)
 {
 	if(!tex || !px) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return -1;
 	}
 
@@ -354,21 +354,21 @@ WT_API s8 wt_SetTexture(struct wt_texture *tex, u16 x, u16 y, u16 w, u16 h,
 	return 0;
 }
 
-struct wt_tex_filter {
+struct wut_TextureFilter {
 	char name[128];
 
 	s8 found;
 
-	struct wt_texture *tex;
+	struct wut_Texture *tex;
 };
 
 
-WT_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
+WUT_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 {
-	struct wt_texture *tex = (struct wt_texture *)(*(long *)ptr);
-	struct wt_tex_filter *pass = (struct wt_tex_filter *)data;
+	struct wut_Texture *tex = (struct wut_Texture *)(*(long *)ptr);
+	struct wut_TextureFilter *pass = (struct wut_TextureFilter *)data;
 
-	wt_Ignore(idx);
+	WUT_IGNORE(idx);
 
 	if(pass->found)
 		return 1;
@@ -385,19 +385,19 @@ WT_INTERN s8 tex_cfnc_find(void *ptr, s16 idx, void *data)
 }
 
 
-WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name)
+WUT_API struct wut_Texture *wut_GetTexture(struct wut_Context *ctx, char *name)
 {
-	struct wt_tex_filter flt;
+	struct wut_TextureFilter flt;
 
 	if(!ctx || !name) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	flt.found = 0;
 	strcpy(flt.name, name);
 
-	wt_statlist_apply(ctx->textures, &tex_cfnc_find, &flt);
+	wut_ApplyStatList(ctx->textures, &tex_cfnc_find, &flt);
 
 	if(flt.found) {
 		return flt.tex;
@@ -406,12 +406,12 @@ WT_API struct wt_texture *wt_GetTexture(struct wt_context *ctx, char *name)
 	return NULL;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to get texture from texture table");
+	WUT_ALARM(WUT_ERROR, "Failed to get texture from texture table");
 	return NULL;
 }
 
 
-WT_API void wt_UseTexture(struct wt_texture *tex)
+WUT_API void wut_UseTexture(struct wut_Texture *tex)
 {
 	if(!tex) {
 		return;
@@ -422,7 +422,7 @@ WT_API void wt_UseTexture(struct wt_texture *tex)
 }
 
 
-WT_API void wt_UnuseTexture(void)
+WUT_API void wut_UnuseTexture(void)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

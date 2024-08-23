@@ -16,16 +16,16 @@ struct wut_coreContainer _wut_coreContainer;
  * Reset everything in the core. This will not free any memory, but just
  * overwrite everything with zeros and NULLs, so be careful.
  */
-WUT_INTERN void core_reset(void)
+WUT_INTERN void cor_reset(void)
 {
 	/* Reset the quit flag */
 	_wut_coreContainer.quit = 0;
 
 	/* Reset pointer to main window */
-	wut_core_set_main_window(NULL);
+	wut_cor_set_main_window(NULL);
 
 	/* Reset active window */
-	wut_core_set_active_window(NULL);
+	wut_cor_set_active_window(NULL);
 }
 
 
@@ -38,31 +38,31 @@ WUT_INTERN void core_reset(void)
  */
 
 
-WUT_XMOD void wut_core_quit(void)
+WUT_XMOD void wut_cor_quit(void)
 {
 	_wut_coreContainer.quit = 1;
 }
 
 
-WUT_XMOD s8 wut_core_check_quit(void)
+WUT_XMOD s8 wut_cor_check_quit(void)
 {
 	return _wut_coreContainer.quit;
 }
 
 
-WUT_XMOD void wut_core_set_main_window(struct wut_Window *win)
+WUT_XMOD void wut_cor_set_main_window(struct wut_Window *win)
 {
 	_wut_coreContainer.main_window = win;
 }
 
 
-WUT_XMOD struct wut_Window *wut_core_get_main_window(void)
+WUT_XMOD struct wut_Window *wut_cor_get_main_window(void)
 {
 	return _wut_coreContainer.main_window;
 }
 
 
-WUT_XMOD void wut_core_set_active_window(struct wut_Window *win)
+WUT_XMOD void wut_cor_set_active_window(struct wut_Window *win)
 {
 	if(win)
 		printf("%s is not the active window\n", win->name);
@@ -73,13 +73,13 @@ WUT_XMOD void wut_core_set_active_window(struct wut_Window *win)
 }
 
 
-WUT_XMOD struct wut_Window *wut_core_get_active_window(void)
+WUT_XMOD struct wut_Window *wut_cor_get_active_window(void)
 {
 	return _wut_coreContainer.active_window;
 }
 
 
-WUT_XMOD s8 wut_core_is_active_window(struct wut_Window *win)
+WUT_XMOD s8 wut_cor_is_active_window(struct wut_Window *win)
 {
 	if(_wut_coreContainer.active_window == NULL)
 		return 0;
@@ -101,7 +101,7 @@ WUT_XMOD s8 wut_core_is_active_window(struct wut_Window *win)
 WUT_API s8 wut_Init(void)
 {
 	/* Reset the core */
-	core_reset();
+	cor_reset();
 
 	/* Then initialize the SDL-frameworks */
 	if(wut_sdl_init() < 0) {
@@ -122,7 +122,7 @@ err_quit_sdl:
 
 err_return:
 	/* Reset te core */
-	wut_core_reset();
+	wut_cor_reset();
 
 	WUT_ALARM(WUT_ERROR, "Failed to initialize the freihand framework");
 	return -1;
@@ -132,21 +132,21 @@ err_return:
 WUT_API void wut_Quit(void)
 {
 	/* Close all windows */
-	wut_CloseWindow(wut_core_get_main_window());
-	wut_core_set_main_window(NULL);
+	wut_CloseWindow(wut_cor_get_main_window());
+	wut_cor_set_main_window(NULL);
 	
 	/* Shutdown SDL */
 	wut_sdl_quit();
 
 	/* Reset the core */
-	wut_core_reset();
+	wut_cor_reset();
 }
 
 
 WUT_API s8 wut_Update(void)
 {
 	/* Check if the quit flag has been triggered */
-	if(wut_core_check_quit())
+	if(wut_cor_check_quit())
 		return 0;
 
 	wut_evt_update();

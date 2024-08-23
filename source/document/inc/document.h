@@ -46,7 +46,7 @@ struct wut_Document {
 struct wut_ElementSelector {
         s8 			state;
         char 			*name;
-        struct wut_Sin2 	*pos;
+        struct wut_Vec2i 	*pos;
         struct wut_Element 	*element;
 };
 
@@ -134,7 +134,7 @@ WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name)
  * 	    occurred or no element could be found
  */
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                struct wut_Sin2 *pos);
+                struct wut_Vec2i *pos);
 
 
 /*

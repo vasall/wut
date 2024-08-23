@@ -1,5 +1,5 @@
-#ifndef _WT_GRAPHIC_FLAT_H
-#define _WT_GRAPHIC_FLAT_H
+#ifndef _WUT_GRAPHIC_FLAT_H
+#define _WUT_GRAPHIC_FLAT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -8,27 +8,29 @@
 
 #include "graphic/inc/texture.h"
 #include "graphic/inc/shader.h"
+
 #include "utility/inc/color.h"
-#include "utility/inc/shape.h"
 
-#define WT_FLAT_NAME_LIM	128
+#include "math/inc/polygon.h"
+
+#define WUT_FLAT_NAME_LIM	128
 
 
 
 
-struct wt_flat {
-	char name[WT_FLAT_NAME_LIM];
+struct wut_Flat {
+	char name[WUT_FLAT_NAME_LIM];
 
 	/* The size of the flat */
 	s16 width;
 	s16 height;
 
-	struct wt_color *pixels;
+	struct wut_Color *pixels;
 
 	/* A texture used to render the flat struct using OpenGL */
-	struct wt_texture *texture;
+	struct wut_Texture *texture;
 
-	struct wt_context *context;
+	struct wut_Context *context;
 };
 
 
@@ -43,7 +45,7 @@ struct wt_flat {
  * Returns: Either a pointer to the newly created flat surface or NULL if an
  * 	    error occurred
  */
-WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name,
+WUT_API struct wut_Flat *wut_CreateFlat(struct wut_Context *ctx, char *name,
 		s16 w, s16 h);
 
 
@@ -52,7 +54,7 @@ WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name,
  *
  * @f: Pointer to the flat struct
  */
-WT_API void wt_DestroyFlat(struct wt_flat *f);
+WUT_API void wut_DestroyFlat(struct wut_Flat *f);
 
 
 /*
@@ -64,7 +66,7 @@ WT_API void wt_DestroyFlat(struct wt_flat *f);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h);
+WUT_API s8 wut_ResizeFlat(struct wut_Flat *f, s16 w, s16 h);
 
 
 /*
@@ -73,7 +75,7 @@ WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h);
  * @f: Pointer to the flat
  * @r: The rect to update
  */
-WT_API void wt_UpdateFlat(struct wt_flat *f, struct wt_rect *r);
+WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r);
 
 
 /*
@@ -83,8 +85,8 @@ WT_API void wt_UpdateFlat(struct wt_flat *f, struct wt_rect *r);
  * @r: The rectangle
  * @c: The color
  */
-WT_API void wt_FlatRect(struct wt_flat *f, struct wt_rect *r,
-		struct wt_color c);
+WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r,
+		struct wut_Color c);
 
 
 /*
@@ -94,7 +96,7 @@ WT_API void wt_FlatRect(struct wt_flat *f, struct wt_rect *r,
  * @r: The rectangle
  * @c: The color
  */
-WT_API void wt_FlatRectSet(struct wt_flat *f, struct wt_rect *r,
-		struct wt_color c);
+WUT_API void wut_FlatRectSet(struct wut_Flat *f, struct wut_iRect *r,
+		struct wut_Color c);
 
-#endif /* _WT_GRAPHIC_FLAT_H */
+#endif /* _WUT_GRAPHIC_FLAT_H */

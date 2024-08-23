@@ -19,7 +19,7 @@
 
 
 
-WUT_INTERN s8 wut_etmp_load_body(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_body(struct wut_Element *ele, void *data)
 {
 	struct wut_Style *style = &ele->style;
 	struct wut_Stylesheet *sheet = &style->sheet;
@@ -110,7 +110,7 @@ WUT_INTERN s8 wut_etmp_load_body(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_block(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_block(struct wut_Element *ele, void *data)
 {
 	struct wut_Style *style = &ele->style;
 	struct wut_Stylesheet *sheet = &style->sheet;
@@ -199,7 +199,7 @@ WUT_INTERN s8 wut_etmp_load_block(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_text(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_text(struct wut_Element *ele, void *data)
 {
 	/*
 	 * Create and initialize the Image-Widget.
@@ -213,7 +213,7 @@ WUT_INTERN s8 wut_etmp_load_text(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_button(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_button(struct wut_Element *ele, void *data)
 {
 	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
@@ -222,7 +222,7 @@ WUT_INTERN s8 wut_etmp_load_button(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_input(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_input(struct wut_Element *ele, void *data)
 {
 	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
@@ -231,7 +231,7 @@ WUT_INTERN s8 wut_etmp_load_input(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_image(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_image(struct wut_Element *ele, void *data)
 {
 	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
@@ -330,7 +330,7 @@ WUT_INTERN s8 wut_etmp_load_image(struct wut_Element *ele, void *data)
 }
 
 
-WUT_INTERN s8 wut_etmp_load_view(struct wut_Element *ele, void *data)
+WUT_INTERN s8 wut_etm_load_view(struct wut_Element *ele, void *data)
 {
 	struct wut_Style *style = &ele->style;
 
@@ -347,7 +347,7 @@ WUT_INTERN s8 wut_etmp_load_view(struct wut_Element *ele, void *data)
 }
 
 
-WUT_API s8 wut_etmp_load(struct wut_Element *ele, void *data)
+WUT_API s8 wut_etm_load(struct wut_Element *ele, void *data)
 {
 	if(!ele) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -359,13 +359,13 @@ WUT_API s8 wut_etmp_load(struct wut_Element *ele, void *data)
 	 * different element types.
 	 */
 	switch(ele->type) {
-		case WUT_BODY: wut_etmp_load_body(ele, data); break;
-		case WUT_BLOCK: wut_etmp_load_block(ele, data); break;
-		case WUT_TEXT: wut_etmp_load_text(ele, data); break;
-		case WUT_BUTTON: wut_etmp_load_button(ele, data); break;
-		case WUT_INPUT: wut_etmp_load_input(ele, data); break;
-		case WUT_IMAGE: wut_etmp_load_image(ele, data); break;
-		case WUT_VIEW: wut_etmp_load_view(ele, data); break;
+		case WUT_BODY: wut_etm_load_body(ele, data); break;
+		case WUT_BLOCK: wut_etm_load_block(ele, data); break;
+		case WUT_TEXT: wut_etm_load_text(ele, data); break;
+		case WUT_BUTTON: wut_etm_load_button(ele, data); break;
+		case WUT_INPUT: wut_etm_load_input(ele, data); break;
+		case WUT_IMAGE: wut_etm_load_image(ele, data); break;
+		case WUT_VIEW: wut_etm_load_view(ele, data); break;
 		default:break;
 	}
 

@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-#define WT_LAYOUT_DEBUG		0
+#define WUT_LAYOUT_DEBUG		0
 
 
 /*
@@ -16,9 +16,9 @@
  */
 
 
-WT_XMOD void wt_layout_block(struct wt_element *ele)
+WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 {
-	struct wt_element *run;
+	struct wut_Element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
 
@@ -30,13 +30,13 @@ WT_XMOD void wt_layout_block(struct wt_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct wt_style *style;
+	struct wut_Style *style;
 
-	struct wt_rect inner_rect;
+	wut_iRect inner_rect;
 
 	
 	style = &ele->style;
-	wt_rect_add(&inner_rect,
+	wut_irect_add(&inner_rect,
 			&style->shape_bounding_box,
 			&style->shape_content_delta);
 
@@ -52,11 +52,11 @@ WT_XMOD void wt_layout_block(struct wt_element *ele)
 
 
 		/* If the position is absolute, do nothing */
-		if(style->reference_mode == WT_KW_REFERENCE_ABSOLUTE) {
+		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 		/* Otherwise... */
 		else {
@@ -85,7 +85,7 @@ WT_XMOD void wt_layout_block(struct wt_element *ele)
 			if(content_height < off_y)
 				content_height = off_y;
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
@@ -93,7 +93,7 @@ WT_XMOD void wt_layout_block(struct wt_element *ele)
 
 	content_height += lim_y;
 
-#if WT_LAYOUT_DEBUG
+#if WUT_LAYOUT_DEBUG
 	printf("BLOCKS for \"%s\": w=%d, h=%d\n",
 			ele->name,
 			content_width,
@@ -103,13 +103,13 @@ WT_XMOD void wt_layout_block(struct wt_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	wt_element_hdl_scrollbar(ele);
+	wut_ele_hdl_scrollbar(ele);
 }
 
 
-WT_XMOD void wt_layout_row(struct wt_element *ele)
+WUT_XMOD void wut_lay_row(struct wut_Element *ele)
 {
-	struct wt_element *run;
+	struct wut_Element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
 
@@ -119,7 +119,7 @@ WT_XMOD void wt_layout_row(struct wt_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct wt_style *style;
+	struct wut_Style *style;
 
 	run = ele->firstborn;
 	while(run) {
@@ -128,11 +128,11 @@ WT_XMOD void wt_layout_row(struct wt_element *ele)
 		w = style->shape_bounding_box.w;
 		h = style->shape_bounding_box.h;
 
-		if(style->reference_mode == WT_KW_REFERENCE_ABSOLUTE) {
+		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 		else {
 			run->layout_offset.x = off_x;
@@ -146,13 +146,13 @@ WT_XMOD void wt_layout_row(struct wt_element *ele)
 				content_width = w;
 			}
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
 	}
 
-#if WT_LAYOUT_DEBUG
+#if WUT_LAYOUT_DEBUG
 	printf("ROWS for \"%s\": w=%d, h=%d\n",
 			ele->name,
 			content_width,
@@ -162,13 +162,13 @@ WT_XMOD void wt_layout_row(struct wt_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	wt_element_hdl_scrollbar(ele);
+	wut_ele_hdl_scrollbar(ele);
 }
 
 
-WT_XMOD void wt_layout_column(struct wt_element *ele)
+WUT_XMOD void wut_lay_column(struct wut_Element *ele)
 {
-	struct wt_element *run;
+	struct wut_Element *run;
 	s32 off_x = 0;
 	s32 off_y = 0;
 
@@ -178,7 +178,7 @@ WT_XMOD void wt_layout_column(struct wt_element *ele)
 	s32 content_width = 0;
 	s32 content_height = 0;
 
-	struct wt_style *style;
+	struct wut_Style *style;
 
 	run = ele->firstborn;
 	while(run) {
@@ -187,11 +187,11 @@ WT_XMOD void wt_layout_column(struct wt_element *ele)
 		w = style->shape_bounding_box.w;
 		h = style->shape_bounding_box.h;
 
-		if(style->reference_mode == WT_KW_REFERENCE_ABSOLUTE) {
+		if(style->reference_mode == WUT_KW_REFERENCE_ABSOLUTE) {
 			run->layout_offset.x = 0;
 			run->layout_offset.y = 0;
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 		else {
 			run->layout_offset.x = off_x;
@@ -204,13 +204,13 @@ WT_XMOD void wt_layout_column(struct wt_element *ele)
 				content_height = h;
 			}
 
-			wt_element_adjust_shape(run);
+			wut_ele_adjust_shape(run);
 		}
 
 		run = run->younger_sibling;
 	}
 
-#if WT_LAYOUT_DEBUG
+#if WUT_LAYOUT_DEBUG
 	printf("COLUMNS for \"%s\": w=%d, h=%d\n",
 			ele->name,
 			content_width,
@@ -220,5 +220,5 @@ WT_XMOD void wt_layout_column(struct wt_element *ele)
 	ele->content_size.x = content_width;
 	ele->content_size.y = content_height;
 
-	wt_element_hdl_scrollbar(ele);
+	wut_ele_hdl_scrollbar(ele);
 }

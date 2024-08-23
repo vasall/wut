@@ -1,5 +1,5 @@
-#ifndef _WT_UTILITY_COLOR_H
-#define _WT_UTILITY_COLOR_H
+#ifndef _WUT_UTILITY_COLOR_H
+#define _WUT_UTILITY_COLOR_H
 
 
 #include "core/inc/define.h"
@@ -9,15 +9,14 @@
  * A pixel is defined by 4 attributes representing the RGBA-values.
  * Each value can be set in range of 0 t0 255.
  */
-#define WT_COLOR_SIZE	(4*sizeof(u8))
-struct wt_color {	
+#define WUT_COLOR_SIZE	(4*sizeof(u8))
+
+struct wut_Color {	
 	u8 a;
 	u8 b;
 	u8 g;
 	u8 r;
 };
-
-typedef struct wt_color wt_color_t;
 
 
 /*
@@ -30,7 +29,7 @@ typedef struct wt_color wt_color_t;
  *
  * Returns: A color object
  */
-WT_API struct wt_color wt_color_set(u8 red, u8 green, u8 blue, u8 alpha);
+WUT_API struct wut_Color wut_SetColor(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -43,7 +42,7 @@ WT_API struct wt_color wt_color_set(u8 red, u8 green, u8 blue, u8 alpha);
  *
  * Returns: The color as an unsigned integer
  */
-WT_API u32 wt_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
+WUT_API u32 wut_SetColorU32(u8 red, u8 green, u8 blue, u8 alpha);
 
 
 /*
@@ -53,7 +52,7 @@ WT_API u32 wt_color_set_u32(u8 red, u8 green, u8 blue, u8 alpha);
  *
  * Returns: The color code
  */
-WT_API u32 wt_color_get(struct wt_color color);
+WUT_API u32 wut_GetColorU32(struct wut_Color color);
 
 
 /*
@@ -62,7 +61,7 @@ WT_API u32 wt_color_get(struct wt_color color);
  * @color: The color struct
  * @fv: A float array to write the output color to
  */
-WT_API void wt_color_get_fv(struct wt_color color, float *fv);
+WUT_API void wut_GetColorFV(struct wut_Color color, float *fv);
 
 
 /*
@@ -73,23 +72,14 @@ WT_API void wt_color_get_fv(struct wt_color color, float *fv);
  *
  * Returns: The blended color
  */
-WT_API struct wt_color wt_BlendColor(struct wt_color a, struct wt_color b);
-
-
-/*
- * Convert a color value to a color struct.
- *
- * @v: The color value
- *
- * Returns: The color struct
- */
-WT_API struct wt_color wt_col_conv_itos(u32 v);
+WUT_API struct wut_Color wut_BlendColor(struct wut_Color a,
+                struct wut_Color b);
 
 
 /*
  * Reverse the order of the bytes.
  */
-WT_API struct wt_color wt_col_invform(struct wt_color in);
-WT_API u32 wt_col_invform_s32(u32 in);
+WUT_API struct wut_Color wut_InvColor(struct wut_Color in);
+WUT_API u32 wut_InvColorU32(u32 in);
 
-#endif /* WT_UTILITY_COLOR_H */
+#endif /* WUT_UTILITY_COLOR_H */

@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 
-#define WT_FS_DEBUG 1
+#define WUT_FS_DEBUG 1
 
 
-WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out)
+WUT_API s8 wut_fs_raw(const char *pth, u64 *size, u8 **out)
 {
 	FILE *fd;
 	char *buf;
@@ -18,12 +18,12 @@ WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		WT_ALARM(WT_ERROR, "Failed to open file");
+		WUT_ALARM(WUT_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -32,13 +32,13 @@ WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out)
 	fseek(fd, 0, SEEK_SET);
 
 
-	if(!(buf = wt_malloc(file_size + 1))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for file buffer");
+	if(!(buf = wut_malloc(file_size + 1))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		WT_ALARM(WT_ERROR, "Failed to read file");
+		WUT_ALARM(WUT_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -47,18 +47,18 @@ WT_API s8 wt_fs_raw(const char *pth, u64 *size, u8 **out)
 	return 0;
 
 err_free_buf:
-	wt_free(buf);
+	wut_free(buf);
 
 err_close_fd:
 	fclose(fd);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load file");
+	WUT_ALARM(WUT_ERROR, "Failed to load file");
 	return -1;
 }
 
 
-WT_API s8 wt_fs_text(const char *pth, u64 *size, char **out)
+WUT_API s8 wut_fs_text(const char *pth, u64 *size, char **out)
 {
 	FILE *fd;
 	char *buf;
@@ -66,12 +66,12 @@ WT_API s8 wt_fs_text(const char *pth, u64 *size, char **out)
 	u64 bytes_read;
 
 	if(!pth) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	if(!(fd = fopen(pth, "rb"))) {
-		WT_ALARM(WT_ERROR, "Failed to open file");
+		WUT_ALARM(WUT_ERROR, "Failed to open file");
 		goto err_return;
 	}
 
@@ -80,13 +80,13 @@ WT_API s8 wt_fs_text(const char *pth, u64 *size, char **out)
 	fseek(fd, 0, SEEK_SET);
 
 
-	if(!(buf = wt_malloc(file_size + 1))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for file buffer");
+	if(!(buf = wut_malloc(file_size + 1))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for file buffer");
 		goto err_close_fd;
 	}
 
 	if((bytes_read = fread(buf, file_size, 1, fd)) == 0) {
-		WT_ALARM(WT_ERROR, "Failed to read file");
+		WUT_ALARM(WUT_ERROR, "Failed to read file");
 		goto err_free_buf;
 	}
 
@@ -97,13 +97,13 @@ WT_API s8 wt_fs_text(const char *pth, u64 *size, char **out)
 	return 0;
 
 err_free_buf:
-	wt_free(buf);
+	wut_free(buf);
 
 err_close_fd:
 	fclose(fd);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load file");
+	WUT_ALARM(WUT_ERROR, "Failed to load file");
 	return -1;
 }
 
@@ -112,7 +112,7 @@ err_return:
  * This function will map the SDL_PixelFormatEnum to the OpenGL pixel format
  * enum.
  */
-WT_INTERN GLenum wt_fs_map_format(SDL_PixelFormatEnum pixelFormat)
+WUT_INTERN GLenum wut_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 {
     switch (pixelFormat)
     {
@@ -185,27 +185,27 @@ WT_INTERN GLenum wt_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 #endif
 
 
-WT_API s8 wt_fs_image(const char *pth, struct wt_fs_r_image *out)
+WUT_API s8 wut_fs_image(const char *pth, struct wut_fs_r_image *out)
 {
 	SDL_Surface *surf;
 	u8 *buf;
 	u64 size;
 	
 	if(!pth || !out) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 
 	if(!(surf = IMG_Load(pth))) {
-		WT_ALARM(WT_ERROR, "Failed to open and read file");
+		WUT_ALARM(WUT_ERROR, "Failed to open and read file");
 		goto err_return;
 	}
 
 
 	size = surf->pitch * surf->h;
-	if(!(buf = wt_malloc(size))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for image");
+	if(!(buf = wut_malloc(size))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for image");
 		goto err_free_surface;
 	}
 
@@ -224,15 +224,15 @@ err_free_surface:
 	SDL_FreeSurface(surf);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load PNG file");
+	WUT_ALARM(WUT_ERROR, "Failed to load PNG file");
 	return -1;
 }
 
 
-WT_API void wt_fs_image_cleanup(struct wt_fs_r_image *img)
+WUT_API void wut_fs_image_cleanup(struct wut_fs_r_image *img)
 {
 	if(!img)
 		return;
 
-	wt_free(img->data);
+	wut_free(img->data);
 }

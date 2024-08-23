@@ -1,5 +1,5 @@
-#ifndef _WT_GRAPHIC_CONTEXT_H
-#define _WT_GRAPHIC_CONTEXT_H
+#ifndef _WUT_GRAPHIC_CONTEXT_H
+#define _WUT_GRAPHIC_CONTEXT_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -13,43 +13,43 @@
 
 #include "utility/inc/static_list.h"
 
-struct wt_context {
+struct wut_Context {
 	/* Pointer to the window this context belongs to */
-	struct wt_window *window;
+	struct wut_Window *window;
 
 	/* Pointer to the underlying OpenGL-context */
 	void *gl_context;	
 	
 	/* A reference to the size of the window */
-	struct wt_rect *shape_ref;
+	struct wut_iRect *shape_ref;
 
 	/*
 	 * RESOURCE-TABLES
 	 */
-	struct wt_table *shaders;
-	struct wt_statlist *textures;
-	struct wt_statlist *fonts;
-	struct wt_table *objects;
+	struct wut_Table *shaders;
+	struct wut_StatList *textures;
+	struct wut_StatList *fonts;
+	struct wut_Table *objects;
 
 	/*
 	 * A list of all active batch renderers.
 	 */
-	struct wt_statlist 	*batches;
+	struct wut_StatList 	*batches;
 
 	/*
 	 * Predefined resources.
 	 */
-	struct wt_shader	*def_block_shader;
-	struct wt_shader	*def_texture_shader;
-	struct wt_shader	*def_text_shader;
+	struct wut_Shader	*def_block_shader;
+	struct wut_Shader	*def_texture_shader;
+	struct wut_Shader	*def_text_shader;
 };
 
 
-enum wt_context_table {
-	WT_CONTEXT_SHADERS,
-	WT_CONTEXT_TEXTURES,
-	WT_CONTEXT_FONTS,
-	WT_CONTEXT_OBJECTS
+enum wut_eContextTable {
+	WUT_CONTEXT_SHADERS,
+	WUT_CONTEXT_TEXTURES,
+	WUT_CONTEXT_FONTS,
+	WUT_CONTEXT_OBJECTS
 };
 
 
@@ -60,7 +60,7 @@ enum wt_context_table {
  *
  * Returns: A pointer to the newly created context or NULL if an error occurred
  */
-WT_API struct wt_context *wt_CreateContext(struct wt_window *win);
+WUT_API struct wut_Context *wut_CreateContext(struct wut_Window *win);
 
 
 /*
@@ -68,7 +68,7 @@ WT_API struct wt_context *wt_CreateContext(struct wt_window *win);
  *
  * @ctx: Pointer to the context
  */
-WT_API void wt_DestroyContext(struct wt_context *ctx);
+WUT_API void wut_DestroyContext(struct wut_Context *ctx);
 
 
 /*
@@ -82,7 +82,7 @@ WT_API void wt_DestroyContext(struct wt_context *ctx);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_ContextAdd(struct wt_context *ctx, enum wt_context_table opt, 
+WUT_API s8 wut_ContextAdd(struct wut_Context *ctx, enum wut_eContextTable opt, 
 		char *name, u32 size, void **p);
 
 
@@ -93,7 +93,7 @@ WT_API s8 wt_ContextAdd(struct wt_context *ctx, enum wt_context_table opt,
  * @opt: A flag indicating the table to select
  * @name: The name of the entry to remove
  */
-WT_API void wt_ContextRemove(struct wt_context *ctx, enum wt_context_table opt,
+WUT_API void wut_ContextRemove(struct wut_Context *ctx, enum wut_eContextTable opt,
 		char *name);
 
 
@@ -105,7 +105,7 @@ WT_API void wt_ContextRemove(struct wt_context *ctx, enum wt_context_table opt,
  *
  * Returns: The id of the batch in the context or -1 if an error occurred
  */
-WT_API s16 wt_ContextAddBatch(struct wt_context *ctx, struct wt_batch **ren);
+WUT_API s16 wut_ContextAddBatch(struct wut_Context *ctx, struct wut_Batch **ren);
 
 
 /*
@@ -114,7 +114,7 @@ WT_API s16 wt_ContextAddBatch(struct wt_context *ctx, struct wt_batch **ren);
  * @ctx: Pointer to the context
  * @id: The id of the batch renderer
  */
-WT_API void wt_ContextRmvBatch(struct wt_context *ctx, s16 id);
+WUT_API void wut_ContextRemoveBatch(struct wut_Context *ctx, s16 id);
 
 
 /*
@@ -125,7 +125,7 @@ WT_API void wt_ContextRmvBatch(struct wt_context *ctx, s16 id);
  *
  * Returns: Either a pointer to the batch renderer or NULL if an error occurred
  */
-WT_API struct wt_batch *wt_ContextGetBatch(struct wt_context *ctx, s16 id);
+WUT_API struct wut_Batch *wut_ContextGetBatch(struct wut_Context *ctx, s16 id);
 
 
 /*
@@ -133,7 +133,7 @@ WT_API struct wt_batch *wt_ContextGetBatch(struct wt_context *ctx, s16 id);
  *
  * @ctx: Pointer to the context
  */
-WT_API void wt_ContextRenderBatches(struct wt_context *ctx);
+WUT_API void wut_ContextRenderBatches(struct wut_Context *ctx);
 
 
 /*
@@ -142,7 +142,7 @@ WT_API void wt_ContextRenderBatches(struct wt_context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rendering area
  */
-WT_API void wt_SetViewport(struct wt_context *ctx, struct wt_rect *rect);
+WUT_API void wut_SetViewport(struct wut_Context *ctx, struct wut_iRect *rect);
 
 
 /*
@@ -150,7 +150,7 @@ WT_API void wt_SetViewport(struct wt_context *ctx, struct wt_rect *rect);
  *
  * @ctx: Pointer to the context
  */
-WT_API void wt_ResetViewport(struct wt_context *ctx);
+WUT_API void wut_ResetViewport(struct wut_Context *ctx);
 
 
 /*
@@ -160,7 +160,7 @@ WT_API void wt_ResetViewport(struct wt_context *ctx);
  * @ctx: Pointer to the context
  * @rect: The rectangle in pixels
  */
-WT_API void wt_ContextEnableScissor(struct wt_context *ctx, struct wt_rect *rect);
+WUT_API void wut_ContextEnableScissor(struct wut_Context *ctx, struct wut_iRect *rect);
 
 
 /*
@@ -168,8 +168,8 @@ WT_API void wt_ContextEnableScissor(struct wt_context *ctx, struct wt_rect *rect
  *
  * @ctx: Pointer to the context
  */
-WT_API void wt_ContextDisableScissor(struct wt_context *ctx);
+WUT_API void wut_ContextDisableScissor(struct wut_Context *ctx);
 
 
 
-#endif /* _WT_DOCUMENT_CONTEXT_H */
+#endif /* _WUT_DOCUMENT_CONTEXT_H */

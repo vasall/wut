@@ -1,48 +1,46 @@
-#ifndef _WT_UTILITY_TABLE_H
-#define _WT_UTILITY_TABLE_H
-
+#ifndef _WUT_UTILITY_TABLE_H
+#define _WUT_UTILITY_TABLE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#define WT_TABLE_NAME_LIM	128
-#define WT_TABLE_ROWS		128
+#define WUT_TBL_NAME_LIM	128
+#define WUT_TBL_ROWS		128
 
-struct wt_table_entry {
-	/* The name of the entry */
-	char name[WT_TABLE_NAME_LIM];
+struct wut_TableEntry {
+        /* The name of the entry */
+        char name[WUT_TBL_NAME_LIM];
 
-	/* The hash-value for this entry */
-	u64 hash;
+        /* The hash-value for this entry */
+        u64 hash;
 
-	/* The size of the data buffer in bytes */
-	u32 size;
+        /* The size of the data buffer in bytes */
+        u32 size;
 
-	/* A pointer to the data buffer for this entry */
-	void *ptr;
+        /* A pointer to the data buffer for this entry */
+        void *ptr;
 
-	/* References to the previous and next entry in the list */
-	struct wt_table_entry *next;
-	struct wt_table_entry *prev;
+        /* References to the previous and next entry in the list */
+        struct wut_TableEntry *next;
+        struct wut_TableEntry *prev;
 };
 
 
-struct wt_table {
-	/* The total number of entries in the table */
-	u32 number;
+struct wut_Table {
+        /* The total number of entries in the table */
+        u32 number;
 
-	/* The rows in the table */
-	struct wt_table_entry *rows[WT_TABLE_ROWS];
+        /* The rows in the table */
+        struct wut_TableEntry *rows[WUT_TABLE_ROWS];
 
-	/* The remove callback function */
-	void (*fnc)(u32 size, void *data);
+        /* The remove callback function */
+        void (*fnc)(u32 size, void *data);
 };
 
 
 
-WT_API u64 wt_table_hash(char *str);
-WT_API s8 wt_table_find(struct wt_table *tbl, char *name,
-		struct wt_table_entry **ent);
+WUT_API s8 wut_FindTable(struct wut_Table *tbl, char *name,
+                struct wut_TableEntry **ent);
 
 
 /*
@@ -54,7 +52,7 @@ WT_API s8 wt_table_find(struct wt_table *tbl, char *name,
  * Returns: Either a pointer to the newly created table or NULL if an error
  * 	    occurred
  */
-WT_API struct wt_table *wt_tbl_create(void (*fnc)(u32 size, void *ptr));
+WUT_API struct wut_Table *wut_CreateTable(void (*fnc)(u32 size, void *ptr));
 
 
 /*
@@ -63,7 +61,7 @@ WT_API struct wt_table *wt_tbl_create(void (*fnc)(u32 size, void *ptr));
  *
  * @tbl: Pointer to the table
  */
-WT_API void wt_tbl_destroy(struct wt_table *tbl);
+WUT_API void wut_DestroyTable(struct wut_Table *tbl);
 
 
 /*
@@ -77,7 +75,8 @@ WT_API void wt_tbl_destroy(struct wt_table *tbl);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_tbl_add(struct wt_table *tbl, char *name, u32 size, void **ptr);
+WUT_API s8 wut_AddTable(struct wut_Table *tbl, char *name,
+                u32 size, void **ptr);
 
 
 /*
@@ -86,7 +85,7 @@ WT_API s8 wt_tbl_add(struct wt_table *tbl, char *name, u32 size, void **ptr);
  * @tbl: Pointer to the table
  * @name: The name of the entry
  */
-WT_API void wt_tbl_rmv(struct wt_table *tbl, char *name);
+WUT_API void wut_RemoveTable(struct wut_Table *tbl, char *name);
 
 
 /*
@@ -99,7 +98,8 @@ WT_API void wt_tbl_rmv(struct wt_table *tbl, char *name);
  *
  * Returns: 1 if entry has been found, 0 if not and -1 if an error occurred
  */
-WT_API s8 wt_tbl_get(struct wt_table *tbl, char *name, u32 *size, void **ptr);
+WUT_API s8 wut_GetTable(struct wut_Table *tbl, char *name,
+                u32 *size, void **ptr);
 
 
 /*
@@ -107,6 +107,6 @@ WT_API s8 wt_tbl_get(struct wt_table *tbl, char *name, u32 *size, void **ptr);
  *
  * @tbl: Pointer to the table
  */
-WT_API void wt_tbl_dump(struct wt_table *tbl);
+WUT_API void wut_DumpTable(struct wut_Table *tbl);
 
-#endif /* _WT_UTILITY_TABLE_H */
+#endif /* _WUT_UTILITY_TABLE_H */

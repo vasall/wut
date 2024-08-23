@@ -1,5 +1,5 @@
-#ifndef _WT_SYSTEM_H
-#define _WT_SYSTEM_H
+#ifndef _WUT_SYSTEM_H
+#define _WUT_SYSTEM_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -14,7 +14,7 @@
  *
  * Returns: Pointer to the allocated memory or NULL if an error occurred
  */
-WT_API void *wt_malloc(s32 len);
+WUT_API void *wut_malloc(s32 len);
 
 
 /*
@@ -24,7 +24,7 @@ WT_API void *wt_malloc(s32 len);
  *
  * Returns: Pointer to the allocated memory or NULL if an error occurred
  */
-WT_API void *wt_calloc(s32 len);
+WUT_API void *wut_calloc(s32 len);
 
 
 /*
@@ -34,7 +34,7 @@ WT_API void *wt_calloc(s32 len);
  *
  * Returns: Pointer to the allocated memory or NULL if an error occurred
  */
-WT_API void *wt_zalloc(s32 len);
+WUT_API void *wut_zalloc(s32 len);
 
 
 /* 
@@ -46,7 +46,7 @@ WT_API void *wt_zalloc(s32 len);
  * Returns: Either a pointer to the reallocated memory or NULL if an error
  *          occurred
  */
-WT_API void *wt_realloc(void *old, s32 newlen);
+WUT_API void *wut_realloc(void *old, s32 newlen);
 
 
 /*
@@ -54,7 +54,7 @@ WT_API void *wt_realloc(void *old, s32 newlen);
  *
  * @p: Pointer to the memory to free
  */
-WT_API void wt_free(void *p);
+WUT_API void wut_free(void *p);
 
 
 /*
@@ -63,7 +63,7 @@ WT_API void wt_free(void *p);
  * @p: The starting pointer
  * @len: The number of bytes to set to zero starting from p
  */
-WT_API void wt_zeros(void *p, s32 len);
+WUT_API void wut_zeros(void *p, s32 len);
 
 
 /*
@@ -75,7 +75,7 @@ WT_API void wt_zeros(void *p, s32 len);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_strtoint(s32 *out, char *s, s32 base);
+WUT_API s8 wut_strtoint(s32 *out, char *s, s32 base);
 
 
 /*
@@ -84,7 +84,7 @@ WT_API s8 wt_strtoint(s32 *out, char *s, s32 base);
  * @p: Pointer to the memory to dump
  * @len: Number of bytes to dump starting from p
  */
-WT_API void wt_bindump(void *p, s32 len);
+WUT_API void wut_bindump(void *p, s32 len);
 
 
 /*
@@ -93,7 +93,7 @@ WT_API void wt_bindump(void *p, s32 len);
  * @out: A char buffer to write the random string to
  * @size: The number of chars to write
  */
-WT_API void wt_rand_string(char *out, u16 size);
+WUT_API void wut_rand_string(char *out, u16 size);
 
 
-#endif /* _WT_SYSTEM_H */
+#endif /* _WUT_SYSTEM_H */

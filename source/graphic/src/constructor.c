@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define WT_MDLC_DEBUG 0
+#define WUT_MDLC_DEBUG 0
 
 
-WT_INTERN u32 objc_type_size(GLenum type) {
+WUT_INTERN u32 objc_type_size(GLenum type) {
 	switch(type) {
 		case GL_FLOAT: return sizeof(f32);
 	}
@@ -23,11 +23,11 @@ WT_INTERN u32 objc_type_size(GLenum type) {
 }
 
 
-WT_INTERN u32 objc_calc_stride(struct wt_object_c *c)
+WUT_INTERN u32 objc_calc_stride(struct wut_ObjectConstr *c)
 {
 	u32 stride = 0;
 	u8 i;
-	struct wt_object_c_attrib *attr;
+	struct wut_ObjectConstrAttrib *attr;
 
 	for(i = 0; i < c->attrib_num; i++) {
 		attr = &c->attribs[i];
@@ -38,12 +38,12 @@ WT_INTERN u32 objc_calc_stride(struct wt_object_c *c)
 }
 
 
-WT_INTERN void objc_concate_data(struct wt_object *obj, struct wt_object_c *c)
+WUT_INTERN void objc_concate_data(struct wut_Object *obj, struct wut_ObjectConstr *c)
 {
 	u8 *ptr;
 	u32 i;
 	u32 j;
-	struct wt_object_c_attrib *attr;
+	struct wut_ObjectConstrAttrib *attr;
 	u32 tmp = 0;
 
 	ptr = obj->vertex_buffer;
@@ -63,7 +63,7 @@ WT_INTERN void objc_concate_data(struct wt_object *obj, struct wt_object_c *c)
 }
 
 
-WT_INTERN void objc_create_buffers(struct wt_object *obj)
+WUT_INTERN void objc_create_buffers(struct wut_Object *obj)
 {
 	u32 size;
 
@@ -90,22 +90,22 @@ WT_INTERN void objc_create_buffers(struct wt_object *obj)
 }
 
 
-WT_INTERN void objc_enable_attr(struct wt_object *obj, struct wt_object_c *c)
+WUT_INTERN void objc_enable_attr(struct wut_Object *obj, struct wut_ObjectConstr *c)
 {
 	u32 i;
-	struct wt_object_c_attrib *attr;
-	u16 slot_lst[WT_OBJECT_ATTRIB_LIM];
+	struct wut_ObjectConstrAttrib *attr;
+	u16 slot_lst[WUT_OBJECT_ATTRIB_LIM];
 	s8 slot;
 	void *p;
 	u32 count;
 
-	wt_zeros(slot_lst, WT_OBJECT_ATTRIB_LIM * U16_S);
+	wut_zeros(slot_lst, WUT_OBJECT_ATTRIB_LIM * U16_S);
 
 	for(i = 0; i < c->attrib_num; i++) {
 		attr = &c->attribs[i];
 
-		if((slot = wt_ShaderGetInputLoc(obj->shader, attr->name)) < 0) {
-			WT_ALARM(WT_ERROR, "Input variable not found");
+		if((slot = wut_ShaderGetInputLoc(obj->shader, attr->name)) < 0) {
+			WUT_ALARM(WUT_ERROR, "Input variable not found");
 			return;
 		}
 
@@ -143,12 +143,12 @@ WT_INTERN void objc_enable_attr(struct wt_object *obj, struct wt_object_c *c)
 	}
 }
 
-WT_INTERN s8 objc_init_uniforms(struct wt_object *obj, struct wt_object_c *c)
+WUT_INTERN s8 objc_init_uniforms(struct wut_Object *obj, struct wut_ObjectConstr *c)
 {
 	u32 i;
 	s32 j;
-	struct wt_object_c_unibuf *unibuf;
-	struct wt_object_uniform *uniform;
+	struct wut_ObjectConstrUnibuf *unibuf;
+	struct wut_object_uniform *uniform;
 
 	s32 slot;
 
@@ -162,8 +162,8 @@ WT_INTERN s8 objc_init_uniforms(struct wt_object *obj, struct wt_object_c *c)
 		/* First write everything to the uniform buffer */
 		strcpy(uniform->name, unibuf->name);
 		uniform->size = unibuf->size;
-		if(!(uniform->data = wt_malloc(uniform->size))) {
-			WT_ALARM(WT_ERROR, "Failed to allocate memory");
+		if(!(uniform->data = wut_malloc(uniform->size))) {
+			WUT_ALARM(WUT_ERROR, "Failed to allocate memory");
 			goto err_free;
 		}
 
@@ -176,8 +176,8 @@ WT_INTERN s8 objc_init_uniforms(struct wt_object *obj, struct wt_object_c *c)
 		printf("Uniform %d: %s\n", i, uniform->name);
 
 		/* Retrieve the binding location in the shader */
-		if((slot = wt_ShaderGetUniformLoc(obj->shader, uniform->name)) < 0) {
-			WT_ALARM(WT_ERROR, "Uniform not found");
+		if((slot = wut_ShaderGetUniformLoc(obj->shader, uniform->name)) < 0) {
+			WUT_ALARM(WUT_ERROR, "Uniform not found");
 			goto err_free;
 		}
 
@@ -195,11 +195,11 @@ err_free:
 	for(j = i - 1; j >= 0; j--) {
 		uniform = &obj->uniforms[j];
 		glDeleteBuffers(1, &uniform->bao);
-		wt_free(uniform->data);
+		wut_free(uniform->data);
 	}
 
 
-	WT_ALARM(WT_ERROR, "Failed to initialize uniform buffers");
+	WUT_ALARM(WUT_ERROR, "Failed to initialize uniform buffers");
 	return -1;
 }
 
@@ -212,18 +212,18 @@ err_free:
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API struct wt_object_c *wt_BeginObjectConstr(char *name,
+WUT_API struct wut_ObjectConstr *wut_BeginObjectConstr(char *name,
 		u32 vnum, u32 inum, u32 *idx)
 {
-	struct wt_object_c *c;
+	struct wut_ObjectConstr *c;
 
 	if(!name || vnum < 1 || inum < 1 || !idx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(c = wt_malloc(sizeof(struct wt_object_c)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for constructor");
+	if(!(c = wut_malloc(sizeof(struct wut_object_c)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for constructor");
 		goto err_return;
 	}
 
@@ -235,8 +235,8 @@ WT_API struct wt_object_c *wt_BeginObjectConstr(char *name,
 	c->unibuf_num = 0;
 
 	/* Copy the indices */
-	if(!(c->idx = wt_malloc(inum * sizeof(u32)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for index buffer");
+	if(!(c->idx = wut_malloc(inum * sizeof(u32)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for index buffer");
 		goto err_free_c;
 	}
 	memcpy(c->idx, idx, inum * sizeof(u32));
@@ -248,34 +248,34 @@ WT_API struct wt_object_c *wt_BeginObjectConstr(char *name,
 	return c;
 
 err_free_c:
-	wt_free(c);
+	wut_free(c);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to begin creating new object");
+	WUT_ALARM(WUT_ERROR, "Failed to begin creating new object");
 	return NULL;
 
 
 }
 
 
-WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
-		struct wt_context *ctx, wt_vec3_t pos, wt_vec3_t rot)
+WUT_API struct wut_Object *wut_EndObjectConstr(struct wut_ObjectConstr *c,
+		struct wut_Context *ctx, wut_Vec3 pos, wut_Vec3 rot)
 {
 	u32 i;
 
-	struct wt_object *obj;
+	struct wut_Object *obj;
 	u32 tmp;
 
 	u32 size;
 	void **p;
 
 	if(!c || !ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(obj = wt_malloc(sizeof(struct wt_object)))) {
-		WT_ALARM(WT_ERROR, "Failed to alloctae memory for object");
+	if(!(obj = wut_malloc(sizeof(struct wut_object)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to alloctae memory for object");
 		goto err_return;
 	}
 
@@ -294,8 +294,8 @@ WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
 	obj->index_number = c->idx_num;
 
 	tmp = obj->index_number * U32_S;
-	if(!(obj->index_buffer = wt_malloc(tmp))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for index buffer");
+	if(!(obj->index_buffer = wut_malloc(tmp))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for index buffer");
 		goto err_free_obj;
 	}
 
@@ -310,8 +310,8 @@ WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
 	obj->vertex_stride = objc_calc_stride(c);
 
 	tmp = obj->vertex_stride * obj->vertex_number;
-	if(!(obj->vertex_buffer = wt_malloc(tmp))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for vertex buffer");
+	if(!(obj->vertex_buffer = wut_malloc(tmp))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for vertex buffer");
 		goto err_free_index_buffer;
 	}
 
@@ -341,8 +341,8 @@ WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
 		goto err_destroy_buffers;
 
 
-	wt_vec3_cpy(obj->position, pos);
-	wt_vec3_cpy(obj->rotation, rot);
+	wut_vec3_cpy(obj->position, pos);
+	wut_vec3_cpy(obj->rotation, rot);
 
 	/* Reset view pointer */
 	obj->view = NULL;
@@ -350,11 +350,11 @@ WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
 	/* Insert the new object into the context object table */
 	obj->context = ctx;
 
-	size = sizeof(struct wt_object);
+	size = sizeof(struct wut_object);
 	p = (void **)&obj;
 
-	if(wt_tbl_add(ctx->objects, obj->name, size, p) < 0) {
-		WT_ALARM(WT_ERROR, "Failed to insert entry into wt_table");
+	if(wut_tbl_add(ctx->objects, obj->name, size, p) < 0) {
+		WUT_ALARM(WUT_ERROR, "Failed to insert entry into wut_table");
 		goto err_destroy_uniforms;
 	}
 
@@ -363,7 +363,7 @@ WT_API struct wt_object *wt_EndObjectConstr(struct wt_object_c *c,
 err_destroy_uniforms:
 	for(i = 0; i < obj->uniform_number; i++) {
 		glDeleteBuffers(1, &obj->uniforms[i].bao);
-		wt_free(obj->uniforms[i].data);	
+		wut_free(obj->uniforms[i].data);	
 	}
 
 err_destroy_buffers:
@@ -373,18 +373,18 @@ err_destroy_buffers:
 	glDeleteVertexArrays(1, &obj->vao);
 
 err_free_index_buffer:
-	wt_free(obj->index_buffer);
+	wut_free(obj->index_buffer);
 
 err_free_obj:
-	wt_free(obj);
+	wut_free(obj);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to convert constructor");
+	WUT_ALARM(WUT_ERROR, "Failed to convert constructor");
 	return NULL;
 }
 
 
-WT_API void wt_ObjectConstrCleanup(struct wt_object_c *c)
+WUT_API void wut_ObjectConstrCleanup(struct wut_ObjectConstr *c)
 {
 	u8 i;
 
@@ -392,12 +392,12 @@ WT_API void wt_ObjectConstrCleanup(struct wt_object_c *c)
 		return;
 
 	for(i = 0; i < c->attrib_num; i++) {
-		wt_free(c->attribs[i].data);
+		wut_free(c->attribs[i].data);
 	}
 
-	wt_free(c->idx);
+	wut_free(c->idx);
 
-	wt_free(c);
+	wut_free(c);
 }
 
 
@@ -405,10 +405,10 @@ WT_API void wt_ObjectConstrCleanup(struct wt_object_c *c)
  * GENERAL
  */
 
-WT_API void wt_ObjectConstrTexture(struct wt_object_c *c, struct wt_texture *tex)
+WUT_API void wut_ObjectConstrTexture(struct wut_ObjectConstr *c, struct wut_texture *tex)
 {
 	if(!c || !tex) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -421,10 +421,10 @@ WT_API void wt_ObjectConstrTexture(struct wt_object_c *c, struct wt_texture *tex
  * CUSTOM MODE
  */
 
-WT_API void wt_ObjectConstrShader(struct wt_object_c *c, struct wt_shader *shd)
+WUT_API void wut_ObjectConstrShader(struct wut_ObjectConstr *c, struct wut_shader *shd)
 {
 	if(!c || !shd) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
@@ -432,18 +432,18 @@ WT_API void wt_ObjectConstrShader(struct wt_object_c *c, struct wt_shader *shd)
 }
 
 
-WT_API void wt_ObjectConstrAttrib(struct wt_object_c *c, char *name, u8 size,
+WUT_API void wut_ObjectConstrAttrib(struct wut_ObjectConstr *c, char *name, u8 size,
 		GLenum type, void *data)
 {
-	struct wt_object_c_attrib *a;
+	struct wut_ObjectConstrAttrib *a;
 	u32 s;
 
 	if(!c || !name || size < 1 || !data) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return;
 	}
 
-	if(c->attrib_num + 1 > WT_OBJECT_ATTRIB_LIM)
+	if(c->attrib_num + 1 > WUT_OBJECT_ATTRIB_LIM)
 		return;
 
 	a = &c->attribs[c->attrib_num];
@@ -454,8 +454,8 @@ WT_API void wt_ObjectConstrAttrib(struct wt_object_c *c, char *name, u8 size,
 	a->type = type;
 
 	s = c->vtx_num * a->elements * a->element_size;
-	if(!(a->data = wt_malloc(s))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for attribute");
+	if(!(a->data = wut_malloc(s))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for attribute");
 		return;
 	}
 
@@ -465,16 +465,16 @@ WT_API void wt_ObjectConstrAttrib(struct wt_object_c *c, char *name, u8 size,
 }
 
 
-WT_API void wt_ObjectConstrUniform(struct wt_object_c *c, char *name, u32 size)
+WUT_API void wut_ObjectConstrUniform(struct wut_ObjectConstr *c, char *name, u32 size)
 {
-	struct wt_object_c_unibuf *u;
+	struct wut_ObjectConstrUnibuf *u;
 
 	if(!c || !name || size < 1) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		return;
 	}
 
-	if(c->unibuf_num + 1 > WT_OBJECT_UNIFORM_LIM)
+	if(c->unibuf_num + 1 > WUT_OBJECT_UNIFORM_LIM)
 		return;
 
 	u = &c->unibufs[c->unibuf_num];

@@ -41,7 +41,7 @@ WUT_API struct wut_coreContainer _wut_coreContainer;
  * This will set the quit flag to 1, which will prompt the wut_update() function
  * to return 0 and by doing so exit the program.
  */
-WUT_XMOD void wut_core_quit(void);
+WUT_XMOD void wut_cor_quit(void);
 
 
 /*
@@ -49,7 +49,7 @@ WUT_XMOD void wut_core_quit(void);
  *
  * Returns: The value of the quit flag
  */
-WUT_XMOD s8 wut_core_check_quit(void);
+WUT_XMOD s8 wut_cor_check_quit(void);
 
 
 /*
@@ -57,7 +57,7 @@ WUT_XMOD s8 wut_core_check_quit(void);
  *
  * @win: Pointer to the main window
  */
-WUT_XMOD void wut_core_set_main_window(struct wut_Window *win);
+WUT_XMOD void wut_cor_set_main_window(struct wut_Window *win);
 
 
 /*
@@ -65,7 +65,7 @@ WUT_XMOD void wut_core_set_main_window(struct wut_Window *win);
  *
  * Returns: Pointer to the main window
  */
-WUT_XMOD struct wut_Window *wut_core_get_main_window(void);
+WUT_XMOD struct wut_Window *wut_cor_get_main_window(void);
 
 
 /*
@@ -73,7 +73,7 @@ WUT_XMOD struct wut_Window *wut_core_get_main_window(void);
  *
  * @win: Pointer to the active window
  */
-WUT_XMOD void wut_core_set_active_window(struct wut_Window *win);
+WUT_XMOD void wut_cor_set_active_window(struct wut_Window *win);
 
 
 /*
@@ -81,7 +81,7 @@ WUT_XMOD void wut_core_set_active_window(struct wut_Window *win);
  *
  * Returns: Pointer to the active window
  */
-WUT_XMOD struct wut_Window *wut_core_get_active_window(void);
+WUT_XMOD struct wut_Window *wut_cor_get_active_window(void);
 
 
 /*
@@ -91,7 +91,7 @@ WUT_XMOD struct wut_Window *wut_core_get_active_window(void);
  *
  * Returns: 1 if the given window is the active one and 0 if not
  */
-WUT_XMOD s8 wut_core_is_active_window(struct wut_Window *win);
+WUT_XMOD s8 wut_cor_is_active_window(struct wut_Window *win);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

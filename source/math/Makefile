@@ -1,5 +1,5 @@
 # Name of the created library
-TARGET     := lib_fhutility.a
+TARGET     := lib_fhmath.a
 
 # Get the absolute path to the directory this makefile is in
 MKFILE_PTH := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -15,7 +15,7 @@ CFLAGS     := -g -O0 -ansi -std=c89 -I. -I./inc/ -I.. -pedantic -D_POSIX_C_SOURC
 # The linker to use
 LINKER     := gcc
 # Set libararies (FIXME: switch the variables)
-LIBS       := -lm
+LIBS  	   := -lm
 # Linking flags here
 LFLAGS     := -Wall -I. $(LIBS)
 

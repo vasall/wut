@@ -31,7 +31,7 @@ struct wut_Window;
 
 
 struct wut_Window {
-	enum wut_eIdentity      identity;
+	u8                      identity;
 
 	/* The unique identifier for this window */
 	u16                     id;

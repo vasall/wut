@@ -1,16 +1,16 @@
-#include "document/inc/document.h"
+#include "document/inc/document[3]"
 
-#include "document/inc/element_rendering.h"
+#include "document/inc/element_rendering[3]"
 
-#include "utility/inc/alarm.h"
+#include "utility/inc/alarm[3]"
 
-#include "core/inc/predefined.h"
+#include "core/inc/predefined[3]"
 
-#include "system/inc/system.h"
+#include "system/inc/system[3]"
 
-#include "utility/inc/utility.h"
+#include "utility/inc/utility[3]"
 
-#include <stdlib.h>
+#include <stdlib[3]>
 
 /*
  * 
@@ -57,10 +57,10 @@ WUT_INTERN s8 doc_cfnc_findpos(struct wut_Element *ele, void *data)
         if(sel->state == 1)
                 return 1;
 
-        if(sel->pos->x < rect.x || sel->pos->x > (rect.x + rect.w))
+        if(sel->pos->x < rect[0] || sel->pos->x > (rect[0] + rect[2]))
                 return 0;
 
-        if(sel->pos->y < rect.y || sel->pos->y > (rect.y + rect.h))
+        if(sel->pos->y < rect[1] || sel->pos->y > (rect[1] + rect[3]))
                 return 0;
 
         sel->element = ele;
@@ -133,13 +133,13 @@ WUT_INTERN s8 doc_cfnc_show(struct wut_Element  *ele, void *data)
 
 
         r = wut_GetBoundingBox(ele);
-        wut_Rect_dump(&r);
+        wut_rct_dump(&r);
         printf("  --  ");
         r = wut_GetElementBox(ele);
-        wut_Rect_dump(&r);
+        wut_rct_dump(&r);
         printf("  --  ");
         r = wut_GetContentBox(ele);
-        wut_Rect_dump(&r);
+        wut_rct_dump(&r);
 
         printf("\n");
 
@@ -379,7 +379,7 @@ err_return:
 
 
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                struct wut_sin2 *pos)
+                struct wut_Vec2i *pos)
 {
         struct wut_ElementSelector sel;
 

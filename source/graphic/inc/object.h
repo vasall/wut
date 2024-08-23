@@ -1,28 +1,30 @@
-#ifndef _WT_GRAPHIC_OBJECT_H
-#define _WT_GRAPHIC_OBJECT_H
+#ifndef _WUT_GRAPHIC_OBJECT_H
+#define _WUT_GRAPHIC_OBJECT_H
 
-struct wt_object;
+struct wut_Object;
 
-#define WT_OBJECT_NAME_LIM			128
-#define WT_OBJECT_ATTRIB_LIM			12
-#define WT_OBJECT_UNIFORM_LIM		6
-#define WT_OBJECT_ATTRIB_NAME_LIM	128
-#define WT_OBJECT_UNIFORM_NAME_LIM	128
+#define WUT_OBJECT_NAME_LIM			128
+#define WUT_OBJECT_ATTRIB_LIM			12
+#define WUT_OBJECT_UNIFORM_LIM		        6
+#define WUT_OBJECT_ATTRIB_NAME_LIM	        128
+#define WUT_OBJECT_UNIFORM_NAME_LIM	        128
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #include "utility/inc/table.h"
-#include "utility/inc/extended_math.h"
+
+#include "math/inc/functions.h"
+#include "math/inc/vector.h"
 
 #include "window/inc/window.h"
 
 #include "widget/inc/view.h"
 
 
-struct wt_object_uniform {
+struct wut_ObjectUniform {
 	/* The name of the uniform buffer */
-	char name[WT_OBJECT_UNIFORM_NAME_LIM];
+	char name[WUT_OBJECT_UNIFORM_NAME_LIM];
 
 	/* The size of the uniform buffer in bytes */
 	u32 size;
@@ -36,9 +38,9 @@ struct wt_object_uniform {
 };
 
 
-struct wt_object {
+struct wut_Object {
 	/* The name of the object */
-	char name[WT_OBJECT_NAME_LIM];
+	char name[WUT_OBJECT_NAME_LIM];
 
 	/* The vertex data */
 	u32 vertex_number;
@@ -55,21 +57,21 @@ struct wt_object {
 	u32 ebo;
 
 	/* References to both the shader and texture */
-	struct wt_shader *shader;
-	struct wt_texture *texture;
+	struct wut_Shader *shader;
+	struct wut_Texture *texture;
 
 	/* The uniform buffers for this object */
 	u8 uniform_number;
-	struct wt_object_uniform uniforms[WT_OBJECT_UNIFORM_LIM];
+	struct wut_ObjectUniform uniforms[WUT_OBJECT_UNIFORM_LIM];
 
 	/* Pointer to the context this object belongs to */
-	struct wt_context *context;
+	struct wut_Context *context;
 
 	/* Pointer to the view, if object is attached */
-	struct wt_view *view;
+	struct wut_View *view;
 
-	wt_vec3_t position;
-	wt_vec3_t rotation;
+	wut_Vec3 position;
+	wut_Vec3 rotation;
 };
 
 
@@ -80,12 +82,12 @@ struct wt_object {
  * @name: The name of the uniform
  * @ptr: A pointer to copy the data from
  */
-WT_API void wt_obj_set_uniform(struct wt_object *mdl, char *name, void *ptr);
+WUT_API void wut_obj_set_uniform(struct wut_Object *mdl, char *name, void *ptr);
 
 
 
 /* The callback function to call when removing an entry from the objects table */
-WT_API void wt_obj_rmv_fnc(u32 size, void *ptr);
+WUT_API void wut_obj_rmv_fnc(u32 size, void *ptr);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -103,7 +105,7 @@ WT_API void wt_obj_rmv_fnc(u32 size, void *ptr);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_API s8 wt_InitObjectTable(struct wt_context *ctx);
+WUT_API s8 wut_InitObjectTable(struct wut_Context *ctx);
 
 
 /*
@@ -111,7 +113,7 @@ WT_API s8 wt_InitObjectTable(struct wt_context *ctx);
  * 
  * @ctx: Pointer to the context
  */
-WT_API void wt_CloseObjectTable(struct wt_context *ctx);
+WUT_API void wut_CloseObjectTable(struct wut_Context *ctx);
 
 
 /*
@@ -119,7 +121,7 @@ WT_API void wt_CloseObjectTable(struct wt_context *ctx);
  *
  * @mdl: Pointer to the object
  */
-WT_API void wt_RemoveObject(struct wt_object *mdl);
+WUT_API void wut_RemoveObject(struct wut_Object *mdl);
 
 
 /*
@@ -131,7 +133,7 @@ WT_API void wt_RemoveObject(struct wt_object *mdl);
  * Returns: A pointer to the object or NULL if either an error occurred or the
  * 	    object could not be found
  */
-WT_API struct wt_object *wt_GetObject(struct wt_context *ctx, char *name);
+WUT_API struct wut_Object *wut_GetObject(struct wut_Context *ctx, char *name);
 
 
 /*
@@ -141,7 +143,7 @@ WT_API struct wt_object *wt_GetObject(struct wt_context *ctx, char *name);
  * @name: The name of the uniform buffer
  * @ptr: A pointer with the new data
  */
-WT_API void wt_SetObjectUniform(struct wt_object *mdl, char *name, void *ptr);
+WUT_API void wut_SetObjectUniform(struct wut_Object *mdl, char *name, void *ptr);
 
 
 /*
@@ -151,8 +153,8 @@ WT_API void wt_SetObjectUniform(struct wt_object *mdl, char *name, void *ptr);
  * @[shd]: The shader to be used
  * @[tex]: The texture to be used
  */
-WT_API void wt_RenderObject(struct wt_object *mdl, struct wt_shader *shd,
-		struct wt_texture *tex);
+WUT_API void wut_RenderObject(struct wut_Object *mdl, struct wut_Shader *shd,
+		struct wut_Texture *tex);
 
 
-#endif /* _WT_GRAPHIC_OBJECT_H */
+#endif /* _WUT_GRAPHIC_OBJECT_H */

@@ -5,24 +5,24 @@
 #include <stdarg.h>
 
 
-WT_API int wt_alarm_log(enum wt_alarm_prio prio, const char *format, ...)
+WUT_API int wut_alarm_log(enum wut_eAlarmPriority prio, const char *format, ...)
 {
 	FILE *file;
 	va_list args;
 	char *prio_str;
 
-	file = fopen(WT_ALARM_FILE, "a");
+	file = fopen(WUT_ALARM_FILE, "a");
 	if(!file)
 		return -1;
 
 	switch (prio) {
-		case WT_NOTICE:
+		case WUT_NOTICE:
 			prio_str = "NOTICE";
 			break;
-		case WT_WARNING:
+		case WUT_WARNING:
 			prio_str = "WARNING";
 			break;
-		case WT_ERROR:
+		case WUT_ERROR:
 			prio_str = "ERROR";
 			break;
 		default:

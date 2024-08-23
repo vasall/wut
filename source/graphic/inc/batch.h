@@ -1,11 +1,11 @@
-#ifndef _WT_GRAPHIC_BATCH_H
-#define _WT_GRAPHIC_BATCH_H
+#ifndef _WUT_GRAPHIC_BATCH_H
+#define _WUT_GRAPHIC_BATCH_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 
-struct wt_batch;
+struct wut_Batch;
 
 #include "graphic/inc/shader.h"
 #include "graphic/inc/texture.h"
@@ -14,64 +14,64 @@ struct wt_batch;
  * This struct is used to represent a single attribute of a vertex like the
  * vertex position, color or UV-coordinates.
  */
-struct wt_vertex_attrib {
+struct wut_VertexAttrib {
 	s32 	number;		/* The number of elements */
 	GLenum 	type;		/* The type of element */
 };
 
-enum wt_uniform_type {
-	WT_UNIFORM_1F,
-	WT_UNIFORM_2F,
-	WT_UNIFORM_3F,
-	WT_UNIFORM_4F,
+enum wut_eUniformType {
+	WUT_UNI_1F,
+	WUT_UNI_2F,
+	WUT_UNI_3F,
+	WUT_UNI_4F,
 
-	WT_UNIFORM_1I,
-	WT_UNIFORM_2I,
-	WT_UNIFORM_3I,
-	WT_UNIFORM_4I,
+	WUT_UNI_1I,
+	WUT_UNI_2I,
+	WUT_UNI_3I,
+	WUT_UNI_4I,
 
-	WT_UNIFORM_1UI,
-	WT_UNIFORM_2UI,
-	WT_UNIFORM_3UI,
-	WT_UNIFORM_4UI,
+	WUT_UNI_1UI,
+	WUT_UNI_2UI,
+	WUT_UNI_3UI,
+	WUT_UNI_4UI,
 
-	WT_UNIFORM_1FV,
-	WT_UNIFORM_2FV,
-	WT_UNIFORM_3FV,
-	WT_UNIFORM_4FV,
+	WUT_UNI_1FV,
+	WUT_UNI_2FV,
+	WUT_UNI_3FV,
+	WUT_UNI_4FV,
 
-	WT_UNIFORM_1IV,
-	WT_UNIFORM_2IV,
-	WT_UNIFORM_3IV,
-	WT_UNIFORM_4IV,
+	WUT_UNI_1IV,
+	WUT_UNI_2IV,
+	WUT_UNI_3IV,
+	WUT_UNI_4IV,
 
-	WT_UNIFORM_1UIV,
-	WT_UNIFORM_2UIV,
-	WT_UNIFORM_3UIV,
-	WT_UNIFORM_4UIV,
+	WUT_UNI_1UIV,
+	WUT_UNI_2UIV,
+	WUT_UNI_3UIV,
+	WUT_UNI_4UIV,
 
-	WT_UNIFORM_M2FV,
-	WT_UNIFORM_M3FV,
-	WT_UNIFORM_M4FV
+	WUT_UNI_M2FV,
+	WUT_UNI_M3FV,
+	WUT_UNI_M4FV
 };
 
-#define WT_UNIFORM_F_ALL		(1<<0)
-#define WT_UNIFORM_F_CLEANUP		(1<<1)
+#define WUT_UNI_F_ALL		(1<<0)
+#define WUT_UNI_F_CLEANUP		(1<<1)
 
-#define WT_UNIFORM_F_DEFAULT		WT_UNIFORM_F_ALL|WT_UNIFORM_F_CLEANUP
+#define WUT_UNI_F_DEFAULT		WUT_UNI_F_ALL|WUT_UNI_F_CLEANUP
 
-struct wt_uniform_temp {
+struct wut_UniformTemp {
 	char 			name[256]; /* Name of uniform in the shader */
-	enum wt_uniform_type	type;	   /* Variable type in the shader */
+	enum wut_eUniformType	type;	   /* Variable type in the shader */
 	s32 			limit;     /* Number of preallocated slots */
 	u8			flags;	   /* Behaviour flags */
 };
 
 
 
-struct wt_uniform {
+struct wut_Uniform {
 	s32 			slot;
-	enum wt_uniform_type	type;
+	enum wut_eUniformType	type;
 	s32 			count;
 	s32 			number;
 	s32 			limit;
@@ -81,11 +81,11 @@ struct wt_uniform {
 };
 
 
-typedef void (*wt_batch_cfnc)(struct wt_batch *ren, void *data);
+typedef void (*wut_BatchFunc)(struct wut_Batch *ren, void *data);
 
-struct wt_batch {
-	struct wt_shader *shader;
-	struct wt_texture *texture;
+struct wut_Batch {
+	struct wut_Shader *shader;
+	struct wut_Texture *texture;
 
 	u32 vao;
 	u32 vbo;
@@ -105,10 +105,10 @@ struct wt_batch {
 
 	/* uniform data */
 	s32 uniform_count;
-	struct wt_uniform *uniforms;
+	struct wut_Uniform *uniforms;
 
 	/* Optional functions */
-	wt_batch_cfnc pre_fnc;
+	wut_BatchFunc pre_fnc;
 	void *pre_fnc_data;
 };
 
@@ -135,11 +135,11 @@ struct wt_batch {
  *
  * Returns: Either a new batch renderer or NULL if an error occurred
  */
-WT_API struct wt_batch *wt_batch_create(struct wt_shader *shd,
-		struct wt_texture *tex,s32 attribnum,
-		struct wt_vertex_attrib *attribs, s32 vtx_cap,
-		s32 idx_cap, s32 uninum, struct wt_uniform_temp *unis,
-		wt_batch_cfnc pre, void *pre_data);
+WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
+		struct wut_Texture *tex,s32 attribnum,
+		struct wut_VertexAttrib *attribs, s32 vtx_cap,
+		s32 idx_cap, s32 uninum, struct wut_UniformTemp *unis,
+		wut_BatchFunc pre, void *pre_data);
 
 
 /*
@@ -147,7 +147,7 @@ WT_API struct wt_batch *wt_batch_create(struct wt_shader *shd,
  *
  * @ren: Pointer to the batch renderer
  */
-WT_API void wt_batch_destroy(struct wt_batch *ren);
+WUT_API void wut_bat_destroy(struct wut_Batch *ren);
 
 
 /*
@@ -159,7 +159,7 @@ WT_API void wt_batch_destroy(struct wt_batch *ren);
  * Return: The index of the pushed vertex in the vertex array or -1 if an error
  * 	   occurred
  */
-WT_XMOD s32 wt_batch_push_vertex(struct wt_batch *ren, void *ptr);
+WUT_XMOD s32 wut_bat_push_vertex(struct wut_Batch *ren, void *ptr);
 
 
 /*
@@ -171,7 +171,7 @@ WT_XMOD s32 wt_batch_push_vertex(struct wt_batch *ren, void *ptr);
  * Returns: The index of the pushed index in the index array or -1 if an error
  * 	    occurred
  */
-WT_XMOD s32 wt_batch_push_index(struct wt_batch *ren, u32 idx);
+WUT_XMOD s32 wut_bat_push_index(struct wut_Batch *ren, u32 idx);
 
 
 /*
@@ -183,7 +183,7 @@ WT_XMOD s32 wt_batch_push_index(struct wt_batch *ren, u32 idx);
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WT_XMOD s8 wt_batch_set_uniform(struct wt_batch *ren, u32 slot, void *ptr);
+WUT_XMOD s8 wut_bat_set_uniform(struct wut_Batch *ren, u32 slot, void *ptr);
 
 
 /*
@@ -196,7 +196,7 @@ WT_XMOD s8 wt_batch_set_uniform(struct wt_batch *ren, u32 slot, void *ptr);
  * Returns: Either the index of the new entry in the uniform list or -1 if an
  *	        error occurred
  */
-WT_XMOD s32 wt_batch_push_uniform(struct wt_batch *ren, s32 slot, void *ptr);
+WUT_XMOD s32 wut_bat_push_uniform(struct wut_Batch *ren, s32 slot, void *ptr);
 
 
 /*
@@ -205,7 +205,7 @@ WT_XMOD s32 wt_batch_push_uniform(struct wt_batch *ren, s32 slot, void *ptr);
  * @ren: Pointer to the batch renderer
  * @slot: The slot of the uniform in the batch renderer
  */
-WT_XMOD void wt_batch_reset_uniform(struct wt_batch *ren, s32 slot);
+WUT_XMOD void wut_bat_reset_uniform(struct wut_Batch *ren, s32 slot);
 
 
 /*
@@ -213,6 +213,6 @@ WT_XMOD void wt_batch_reset_uniform(struct wt_batch *ren, s32 slot);
  *
  * @ren: Pointer to the batch renderer
  */
-WT_XMOD void wt_batch_flush(struct wt_batch *ren);
+WUT_XMOD void wut_bat_flush(struct wut_Batch *ren);
 
-#endif /* _WT_GRAPHIC_BATCHING_BATCH_H */
+#endif /* _WUT_GRAPHIC_BATCHING_BATCH_H */

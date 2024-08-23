@@ -4,11 +4,11 @@
 
 #include "system/inc/system.h"
 
-WT_INTERN void flat_mod(struct wt_flat *f, s32 x, s32 y,
-		struct wt_color col)
+WUT_INTERN void flat_mod(struct wut_Flat *f, s32 x, s32 y,
+		struct wut_Color col)
 {
-	struct wt_color px;
-	struct wt_color swap;
+	struct wut_Color px;
+	struct wut_Color swap;
 	u32 off;
 
 
@@ -19,16 +19,16 @@ WT_INTERN void flat_mod(struct wt_flat *f, s32 x, s32 y,
 	off = ((f->height - 1 - y) * f->width) + x;
 
 	px = f->pixels[off];
-	swap = wt_BlendColor(px, col);
-	f->pixels[off] = wt_col_invform(swap);
+	swap = wut_BlendColor(px, col);
+	f->pixels[off] = wut_InvColor(swap);
 
 }
 
 
-WT_INTERN void flat_set(struct wt_flat *f, s32 x, s32 y,
-		struct wt_color col)
+WUT_INTERN void flat_set(struct wut_Flat *f, s32 x, s32 y,
+		struct wut_Color col)
 {
-	struct wt_color *px;
+	struct wut_Color *px;
 	u32 off;
 
 	if(y > f->height) {
@@ -38,7 +38,7 @@ WT_INTERN void flat_set(struct wt_flat *f, s32 x, s32 y,
 	off = ((f->height - 1 - y) * f->width) + x;
 
 	px = &f->pixels[off];
-	*px = wt_col_invform(col);
+	*px = wut_InvColor(col);
 
 }
 
@@ -51,22 +51,22 @@ WT_INTERN void flat_set(struct wt_flat *f, s32 x, s32 y,
  */
 
 
-WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name, s16 w, s16 h)
+WUT_API struct wut_Flat *wut_CreateFlat(struct wut_context *ctx, char *name, s16 w, s16 h)
 {
 	u32 i;
 
-	struct wt_flat *f;
+	struct wut_Flat *f;
 	u32 size;
 
-	struct wt_color *px;
+	struct wut_Color *px;
 		
 	if(!ctx || !name || w < 1 || h < 1) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(f = wt_malloc(sizeof(struct wt_flat)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for flat struct");
+	if(!(f = wut_malloc(sizeof(struct wut_Flat)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for flat struct");
 		goto err_return;
 	}
 
@@ -77,9 +77,9 @@ WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name, s16 w, 
 	f->context = ctx;
 
 	/* Allocate memory for pixels */
-	size = w * h * sizeof(struct wt_color);
-	if(!(f->pixels = wt_malloc(size))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate pixel data buffer");
+	size = w * h * sizeof(struct wut_Color);
+	if(!(f->pixels = wut_malloc(size))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate pixel data buffer");
 		goto err_free_f;
 	}
 
@@ -95,8 +95,8 @@ WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name, s16 w, 
 	}
 
 	/* Create a texture to put the flat struct onto */
-	if(!(f->texture = wt_CreateTexture(ctx, name, w, h, GL_RGBA, (u8 *)f->pixels))) {
-		WT_ALARM(WT_ERROR, "Failed to create tetxure for flat");
+	if(!(f->texture = wut_CreateTexture(ctx, name, w, h, GL_RGBA, (u8 *)f->pixels))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create tetxure for flat");
 		goto err_free_pixels;
 	}
 
@@ -104,45 +104,45 @@ WT_API struct wt_flat *wt_CreateFlat(struct wt_context *ctx, char *name, s16 w, 
 
 
 err_free_pixels:
-	wt_free(f->pixels);
+	wut_free(f->pixels);
 
 err_free_f:
-	wt_free(f);
+	wut_free(f);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to create flat structure");
+	WUT_ALARM(WUT_ERROR, "Failed to create flat structure");
 	return NULL;
 }
 
 
-WT_API void wt_DestroyFlat(struct wt_flat *f)
+WUT_API void wut_DestroyFlat(struct wut_Flat *f)
 {
 	if(!f)
 		return;
 
-	wt_RemoveTexture(f->texture);
-	wt_free(f->pixels);
-	wt_free(f);
+	wut_RemoveTexture(f->texture);
+	wut_free(f->pixels);
+	wut_free(f);
 }
 
 
-WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h)
+WUT_API s8 wut_ResizeFlat(struct wut_Flat *f, s16 w, s16 h)
 {
 	void *p;
 	u32 size;
 	u32 i;
 
 	if(!f) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	/*
 	 * Reallocate memory for new pixel data.
 	 */
-	size = w * h * sizeof(struct wt_color); 
-	if(!(p = wt_realloc(f->pixels, size))) {
-		WT_ALARM(WT_ERROR, "Failed to reallocate memory");
+	size = w * h * sizeof(struct wut_Color); 
+	if(!(p = wut_realloc(f->pixels, size))) {
+		WUT_ALARM(WUT_ERROR, "Failed to reallocate memory");
 		goto err_return;
 	}
 
@@ -150,7 +150,7 @@ WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h)
 
 	size = w * h;
 	for(i = 0; i < size; i++) {
-		struct wt_color *px = &f->pixels[i];
+		struct wut_Color *px = &f->pixels[i];
 
 		px->r = 0xff;
 		px->g = 0xff;
@@ -162,7 +162,7 @@ WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h)
 	/*
 	 * Update the OpenGL texture.
 	 */
-	if(wt_ResizeTexture(f->texture, w, h, (u8 *)f->pixels) < 0) 
+	if(wut_ResizeTexture(f->texture, w, h, (u8 *)f->pixels) < 0) 
 		goto err_return;
 
 	/*
@@ -172,14 +172,14 @@ WT_API s8 wt_ResizeFlat(struct wt_flat *f, s16 w, s16 h)
 	f->height = h;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to resize flat struct");
+	WUT_ALARM(WUT_ERROR, "Failed to resize flat struct");
 	return -1;
 }
 
 
-WT_API void wt_UpdateFlat(struct wt_flat *f, struct wt_rect *r)
+WUT_API void wut_UpdateFlat(struct wut_Flat *f, struct wut_iRect *r)
 {
-	struct wt_color *swap;	
+	struct wut_Color *swap;	
 	u32 size;
 	s16 x;
 	s16 y;
@@ -192,70 +192,70 @@ WT_API void wt_UpdateFlat(struct wt_flat *f, struct wt_rect *r)
 	s32 off_y;
 
 	if(!f || !r) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
 	
-	lim_x = (r->x + r->w > f->width) ? f->width - r->x : r->w;
-	lim_y = (r->y + r->h > f->height) ? f->height - r->y : r->h;
+	lim_x = (r[0] + r[2] > f->width) ? f->width - r[0] : r[2];
+	lim_y = (r[1] + r[3] > f->height) ? f->height - r[1] : r[3];
 
-	size = lim_x * lim_y * WT_COLOR_SIZE; 
-	if(!(swap = wt_malloc(size))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for swap buffer");
+	size = lim_x * lim_y * WUT_COLOR_SIZE; 
+	if(!(swap = wut_malloc(size))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for swap buffer");
 		return;
 	}
 
 	i = 0;
 	
-	off_x = r->x + lim_x;
-	off_y = r->y + lim_y;
+	off_x = r[0] + lim_x;
+	off_y = r[1] + lim_y;
 
-	for(y = r->y; y < off_y; y++) {
-		for(x = r->x; x < off_x; x++) {
+	for(y = r[1]; y < off_y; y++) {
+		for(x = r[0]; x < off_x; x++) {
 			swap[i] = f->pixels[(y * f->width)+x];
 			i++;
 		}
 	}
 
-	wt_SetTexture(f->texture, r->x, r->y, lim_x, lim_y, (u8 *)swap);
+	wut_SetTexture(f->texture, r[0], r[1], lim_x, lim_y, (u8 *)swap);
 
-	wt_free(swap);
+	wut_free(swap);
 }
 
 
-WT_API void wt_FlatRect(struct wt_flat *f, struct wt_rect *r, struct wt_color c)
+WUT_API void wut_FlatRect(struct wut_Flat *f, struct wut_iRect *r, struct wut_Color c)
 {
 	s32 x;
 	s32 y;
 
 	if(!f) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	for(x = 0; x < r->w && x < f->width; x++) {
-		for(y = 0; y < r->h && y < f->height; y++) {
-			flat_mod(f, x + r->x, y + r->y, c);
+	for(x = 0; x < r[2] && x < f->width; x++) {
+		for(y = 0; y < r[3] && y < f->height; y++) {
+			flat_mod(f, x + r[0], y + r[1], c);
 		}
 	}
 }
 
 
-WT_API void wt_FlatRectSet(struct wt_flat *f, struct wt_rect *r,
-		struct wt_color c)
+WUT_API void wut_FlatRectSet(struct wut_Flat *f, struct wut_iRect *r,
+		struct wut_Color c)
 {
 	s32 x;
 	s32 y;
 
 	if(!f) {
-		WT_ALARM(WT_WARNING, "Input parameters invalid");
+		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
 
-	for(x = 0; x < r->w && x < f->width; x++) {
-		for(y = 0; y < r->h && y < f->height; y++) {
-			flat_set(f, x + r->x, y + r->y, c);
+	for(x = 0; x < r[2] && x < f->width; x++) {
+		for(y = 0; y < r[3] && y < f->height; y++) {
+			flat_set(f, x + r[0], y + r[1], c);
 		}
 	}
 

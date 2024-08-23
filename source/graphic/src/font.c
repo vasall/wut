@@ -9,34 +9,34 @@
 
 #include <stdlib.h>
 
-WT_INTERN void font_batch_cfnc_push(struct wt_batch *ren, void *data)
+WUT_INTERN void font_batch_cfnc_push(struct wut_Batch *ren, void *data)
 {
 	s32 frame[2];
-	struct wt_rect *ref = (struct wt_rect *)data;
+	struct wut_rect *ref = (struct wut_rect *)data;
 
 	frame[0] = ref->w;
 	frame[1] = ref->h;
-	wt_batch_push_uniform(ren, 0, frame);
+	wut_bat_push_uniform(ren, 0, frame);
 
 }
 
-WT_INTERN s8 font_create_batch(struct wt_font *font, struct wt_texture *tex)
+WUT_INTERN s8 font_create_batch(struct wut_Font *font, struct wut_Texture *tex)
 {
-	struct wt_shader *shd;
-	struct wt_batch *ren;
+	struct wut_Shader *shd;
+	struct wut_Batch *ren;
 
-	struct wt_vertex_attrib v_attributes[] = {
+	struct wut_vertex_attrib v_attributes[] = {
 		{3, GL_FLOAT},		/* position */
 		{2, GL_FLOAT}		/* uv-coords */
 	};
 
-	struct wt_uniform_temp uniforms[] = {
-		{"u_frame", WT_UNIFORM_2IV, 1, WT_UNIFORM_F_DEFAULT}	 /* 0 */
+	struct wut_uniform_temp uniforms[] = {
+		{"u_frame", WUT_UNIFORM_2IV, 1, WUT_UNIFORM_F_DEFAULT}	 /* 0 */
 	};
 
-	shd = wt_GetShader(font->context, "__def_text_shader");
+	shd = wut_GetShader(font->context, "__def_text_shader");
 
-	ren = wt_batch_create(
+	ren = wut_bat_create(
 			shd,		/* Pointer to the shader to use */
 			tex,		/* Pointer to the texture to use */
 			2,		/* Number of vertex attributes */
@@ -52,8 +52,8 @@ WT_INTERN s8 font_create_batch(struct wt_font *font, struct wt_texture *tex)
 	if(!ren)
 		return -1;
 
-	if((font->batch_id = wt_ContextAddBatch(font->context, &ren)) < 0) {
-		wt_batch_destroy(ren);
+	if((font->batch_id = wut_ContextAddBatch(font->context, &ren)) < 0) {
+		wut_bat_destroy(ren);
 		return -1;
 	}
 
@@ -61,19 +61,19 @@ WT_INTERN s8 font_create_batch(struct wt_font *font, struct wt_texture *tex)
 }
 
 
-WT_INTERN struct wt_texture *font_load_tex(struct wt_context *ctx, char *pth)
+WUT_INTERN struct wut_Texture *font_load_tex(struct wut_Context *ctx, char *pth)
 {
 	char *funnyname = "420xd";
-	return wt_LoadTexture(ctx, funnyname, pth);
+	return wut_LoadTexture(ctx, funnyname, pth);
 }
 
 
-WT_INTERN s8 font_import_meta(struct wt_font_data *data, char *pth)
+WUT_INTERN s8 font_import_meta(struct wut_Font_data *data, char *pth)
 {
 	FILE *fd;
 	s32 i;
 
-	struct wt_font_glyph glyph;
+	struct wut_FontGlyph glyph;
 
 	/* Open the file */
 	if(!(fd = fopen(pth, "r")))
@@ -104,7 +104,7 @@ WT_INTERN s8 font_import_meta(struct wt_font_data *data, char *pth)
 				&glyph.tex_height
 		      );
 
-		wt_list_push(data->glyphs, &glyph);
+		wut_PushList(data->glyphs, &glyph);
 	}
 
 	fclose(fd);
@@ -119,17 +119,17 @@ WT_INTERN s8 font_import_meta(struct wt_font_data *data, char *pth)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WT_API s8 wt_InitFontTable(struct wt_context *ctx)
+WUT_API s8 wut_InitFontTable(struct wut_Context *ctx)
 {
-	struct wt_statlist *lst;
+	struct wut_statlist *lst;
 
 	if(!ctx) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
-	if(!(lst = wt_statlist_create(sizeof(struct wt_font), 16))) {
-		WT_ALARM(WT_ERROR, "Failed to create font list");
+	if(!(lst = wut_CreateStatList(sizeof(struct wut_Font), 16))) {
+		WUT_ALARM(WUT_ERROR, "Failed to create font list");
 		goto err_return;
 	}
 
@@ -139,27 +139,27 @@ WT_API s8 wt_InitFontTable(struct wt_context *ctx)
 	return 0;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to initializie the font table");
+	WUT_ALARM(WUT_ERROR, "Failed to initializie the font table");
 	return -1;
 }
 
 
-WT_API void wt_CloseFontTable(struct wt_context *ctx)
+WUT_API void wut_CloseFontTable(struct wut_Context *ctx)
 {
-	wt_statlist_destroy(ctx->fonts);
+	wut_DestroyStatList(ctx->fonts);
 	ctx->fonts = NULL;
 }
 
 
-WT_API struct wt_font *wt_LoadFont(struct wt_context *ctx,
+WUT_API struct wut_Font *wut_LoadFont(struct wut_Context *ctx,
 		char *name, char *img_pth, char *meta_pth)
 {
-	struct wt_texture *font_tex;
-	struct wt_font *font;
+	struct wut_Texture *font_tex;
+	struct wut_Font *font;
 	u32 size;
 
 	if(!ctx || !name || !img_pth || !meta_pth) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
@@ -173,8 +173,8 @@ WT_API struct wt_font *wt_LoadFont(struct wt_context *ctx,
 	/*
 	 * Allocate memory for the font-struct itself.
 	 */
-	if(!(font = wt_malloc(sizeof(struct wt_font)))) {
-		WT_ALARM(WT_ERROR, "Failed to allocate memory for font");
+	if(!(font = wut_malloc(sizeof(struct wut_Font)))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for font");
 		goto err_return;
 	}
 
@@ -192,9 +192,9 @@ WT_API struct wt_font *wt_LoadFont(struct wt_context *ctx,
 	/*
 	 * Initialite the codepoint-list.
 	 */
-	size = sizeof(struct wt_font_glyph);
-	if(!(font->data.glyphs = wt_list_create(size, 255))) {
-		WT_ALARM(WT_ERROR, "Create to create glyph list");
+	size = sizeof(struct wut_FontGlyph);
+	if(!(font->data.glyphs = wut_CreateList(size, 255))) {
+		WUT_ALARM(WUT_ERROR, "Create to create glyph list");
 		goto err_free_font;
 	}
 
@@ -207,39 +207,39 @@ WT_API struct wt_font *wt_LoadFont(struct wt_context *ctx,
 	/*
 	 * Add font to the font list.
 	 */
-	if(wt_statlist_add(ctx->fonts, &font) < 0)
+	if(wut_AddStatList(ctx->fonts, &font) < 0)
 		goto err_return;
 
 	return font;
 
 err_free_font:
-	wt_free(font);
+	wut_free(font);
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to load font");
+	WUT_ALARM(WUT_ERROR, "Failed to load font");
 	return NULL;
 }
 
 
-WT_API void wt_RemoveFont(struct wt_font *font)
+WUT_API void wut_RemoveFont(struct wut_Font *font)
 {
 	if(!font)
 		return;
 }
 
-struct wt_font_filter {
+struct wut_FontFilter {
 	char name[128];
 
 	s8 found;
-	struct wt_font *font;
+	struct wut_Font *font;
 };
 
-WT_INTERN s8 font_cfnc_find(void *ptr, s16 idx, void *data)
+WUT_INTERN s8 font_cfnc_find(void *ptr, s16 idx, void *data)
 {
-	struct wt_font *font = (struct wt_font *)(*(long *)ptr);
-	struct wt_font_filter *pass = (struct wt_font_filter *)data;
+	struct wut_Font *font = (struct wut_Font *)(*(long *)ptr);
+	struct wut_FontFilter *pass = (struct wut_FontFilter *)data;
 
-	wt_Ignore(idx);
+	WUT_IGNORE(idx);
 
 	if(pass->found)
 		return 1;
@@ -253,19 +253,19 @@ WT_INTERN s8 font_cfnc_find(void *ptr, s16 idx, void *data)
 	return 0;
 }
 
-WT_API struct wt_font *wt_GetFont(struct wt_context *ctx, char *name)
+WUT_API struct wut_Font *wut_GetFont(struct wut_Context *ctx, char *name)
 {
-	struct wt_font_filter flt;
+	struct wut_FontFilter flt;
 
 	if(!ctx || !name) {
-		WT_ALARM(WT_ERROR, "Input parameters invalid");
+		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
 	}
 
 	flt.found = 0;
 	strcpy(flt.name, name);
 
-	wt_statlist_apply(ctx->fonts, &font_cfnc_find, &flt);
+	wut_ApplyStatList(ctx->fonts, &font_cfnc_find, &flt);
 
 	if(flt.found) {
 		printf("Found font %s\n", name);
@@ -276,26 +276,26 @@ WT_API struct wt_font *wt_GetFont(struct wt_context *ctx, char *name)
 	return NULL;
 
 err_return:
-	WT_ALARM(WT_ERROR, "Failed to get font from font table");
+	WUT_ALARM(WUT_ERROR, "Failed to get font from font table");
 	return NULL;
 }
 
-struct wt_glyph_filter {
+struct wut_GlyphFilter {
 	s16 codepoint;
 
 	s8 found;
 
-	struct wt_font_glyph *glyph;
+	struct wut_FontGlyph *glyph;
 	s16 index;
 };
 
 
-WT_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
+WUT_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
 {
-	struct wt_font_glyph *glyph = (struct wt_font_glyph *)ptr;
-	struct wt_glyph_filter *flt = (struct wt_glyph_filter *)data;
+	struct wut_FontGlyph *glyph = (struct wut_FontGlyph *)ptr;
+	struct wut_GlyphFilter *flt = (struct wut_GlyphFilter *)data;
 
-	wt_Ignore(idx);
+	WUT_IGNORE(idx);
 
 	if(flt->found)
 		return 1;
@@ -311,14 +311,14 @@ WT_INTERN s8 font_cfnc_find_glyph(void *ptr, s16 idx, void *data)
 }
 
 
-WT_API struct wt_font_glyph *wt_GetGlyph(struct wt_font *font, s16 cpnt)
+WUT_API struct wut_FontGlyph *wut_GetGlyph(struct wut_Font *font, s16 cpnt)
 {
-	struct wt_glyph_filter flt;
+	struct wut_GlyphFilter flt;
 
 	flt.codepoint = cpnt;
 	flt.found = 0;
 
-	wt_list_apply(font->data.glyphs, &font_cfnc_find_glyph, &flt);
+	wut_ApplyList(font->data.glyphs, &font_cfnc_find_glyph, &flt);
 
 	if(flt.found) {
 		return flt.glyph;
@@ -328,14 +328,14 @@ WT_API struct wt_font_glyph *wt_GetGlyph(struct wt_font *font, s16 cpnt)
 }
 
 
-WT_API s16 wt_GetGlyphIndex(struct wt_font *font, s16 cpnt)
+WUT_API s16 wut_GetGlyphIndex(struct wut_Font *font, s16 cpnt)
 {
-	struct wt_glyph_filter flt;
+	struct wut_GlyphFilter flt;
 
 	flt.codepoint = cpnt;
 	flt.found = 0;
 
-	wt_list_apply(font->data.glyphs, &font_cfnc_find_glyph, &flt);
+	wut_ApplyList(font->data.glyphs, &font_cfnc_find_glyph, &flt);
 
 	if(flt.found) {
 		return flt.index;
@@ -345,12 +345,12 @@ WT_API s16 wt_GetGlyphIndex(struct wt_font *font, s16 cpnt)
 }
 
 
-WT_API struct wt_font_glyph *wt_GetGlyphByIndex(struct wt_font *font,
+WUT_API struct wut_FontGlyph *wut_GetGlyphByIndex(struct wut_Font *font,
 		s16 idx)
 {
-	struct wt_font_glyph *glyph;
+	struct wut_FontGlyph *glyph;
 
-	if(wt_list_get(font->data.glyphs, idx, &glyph) < 0) {
+	if(wut_list_get(font->data.glyphs, idx, &glyph) < 0) {
 		return NULL;
 	}
 
