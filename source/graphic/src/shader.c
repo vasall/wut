@@ -362,11 +362,9 @@ WUT_API struct wut_Shader *wut_CreateShader(struct wut_Context *ctx, char *name,
 		goto err_return;
 	}
 
-	printf("Fail 1\n");
 	if(!(shd = shd_create(name, v_src, f_src)))
 		goto err_return;
 
-	printf("Fail 2\n");
 	/* Set additional attributes */
 	shd->context = ctx;
 
@@ -376,7 +374,6 @@ WUT_API struct wut_Shader *wut_CreateShader(struct wut_Context *ctx, char *name,
 	if(wut_ContextAdd(ctx, WUT_CONTEXT_SHADERS, name, size, p) < 0)
 		goto err_destroy_shader;
 
-	printf("Fail 3\n");
 	return shd;
 
 err_destroy_shader:
