@@ -1,52 +1,16 @@
 #include "style/inc/stylesheet.h"
 
 #include "style/inc/stylesheet_tables.h"
+#include "style/inc/stylesheet_attribute.h"
 
 #include "system/inc/system.h"
 
 #include "utility/inc/alarm.h"
+#include "utility/inc/text_formatting.h"
 
 #include <stdlib.h>
 
 
-WUT_INTERN void sht_sanitize(char *s_in, char *s_out)
-{
-        u8 i;
-
-        for(i = 0; i < strlen(s_in); i++) {
-                s_out[i] = s_in[i];
-
-                if(s_in[i] >= 0x41 && s_in[i] <= 0x5A) {
-                        s_out[i] += 0x20;
-                }
-        }
-        s_out[i] = 0;
-}
-
-WUT_INTERN s8 sht_isspace(char c)
-{
-        return c == 0x20;
-}
-
-
-WUT_INTERN s8 sht_isletter(char c)
-{
-        if(c >= 0x61 && c <= 0x7A)
-                return 1;
-
-        return 0;
-}
-
-
-WUT_INTERN s8 sht_ishex(char c)
-{
-        /* Numbers */
-        if(c >= 0x30 && c <= 0x39)
-                return 1;
-
-        /* Letters */
-        return sht_isletter(c);
-}
 
 
 WUT_INTERN s16 sht_offset(enum wut_eSheetAttribId id)
@@ -61,34 +25,43 @@ WUT_INTERN s8 sht_sizeof(enum wut_eSheetAttribId id)
                 case WUT_SHEET_FLEX:	return sizeof(struct wut_Flex *);
                 case WUT_SHEET_HEXCODE:	return U32_S;
                 case WUT_SHEET_KEYWORD:	return U8_S;
+                default: return 0;
         }
-        return 0;
 }
 
 
-WUT_INTERN u8 sht_typeof(enum wut_eSheetAttribId id)
+WUT_INTERN void sht_read(struct wut_Stylesheet *sheet,
+                enum wut_eSheetAttribId id, struct wut_SheetEntry *out)
 {
-        return wut_c_sheet_attribs[id].type;
+        s16 off = sht_offset(id);
+        s8 size = sht_sizeof(id);
+
+        memcpy(&out->value, (u8 *)sheet + off, size);
+
+        out->id = id;
+        out->type = wut_sat_typeof(id);
 }
 
 
-WUT_INTERN void sht_read(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
-                void *ptr)
+WUT_INTERN void sht_write(struct wut_Stylesheet *sheet,
+                struct wut_SheetEntry *ent)
 {
-        memcpy(ptr, ((u8 *)sheet) + sht_offset(id), sht_sizeof(id));
-}
+        s16 off = sht_offset(ent->id);
+        s8 size = sht_sizeof(ent->id);
+        struct wut_Flex *flx;
 
-
-WUT_INTERN void sht_write(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
-                void *ptr)
-{		
-        memcpy(((u8 *)sheet) + sht_offset(id), ptr, sht_sizeof(id));
-}
-
-
-WUT_INTERN u8 sht_category(enum wut_eSheetAttribId id)
-{
-        return wut_c_sheet_attribs[id].category;
+        /*
+         * We have to handle flex seperatelly as the flex struct contains a
+         * list, which will be lost when just overriding the pointer.
+         */
+        if(ent->type == WUT_SHEET_FLEX) {
+                flx = (struct wut_Flex *)((u8 *)sheet + off);
+                flx = wut_flx_duplicate(flx, ent->value.flex.pointer);
+                memcpy((u8 *)sheet + off, &flx, size);
+        }
+        else { 
+                memcpy((u8 *)sheet + off, &ent->value, size);
+        }
 }
 
 
@@ -118,7 +91,7 @@ WUT_INTERN char *sht_next(char *s, char *attr, char *val)
                         return NULL;
 
                 /* Skip */
-                if(c == '\n' || sht_isspace(c))
+                if(c == '\n' || wut_tfm_is_space(c))
                         continue;
 
                 *(ptr++) = c;
@@ -140,174 +113,6 @@ WUT_INTERN char *sht_next(char *s, char *attr, char *val)
         *(ptr) = 0;
 
         return run;
-}
-
-WUT_INTERN u8 sht_hash(char *in)
-{
-        u64 hash = 5381;
-        s32 c;
-
-        while ((c = *in++))
-                hash = ((hash << 5) + hash) + c; /* hash *+ c */
-
-        return hash % 0xff;
-}
-
-
-WUT_INTERN enum wut_eSheetAttribId sht_get_id(char *s)
-{
-        u8 hash;
-        u8 row;
-        u8 i;
-
-        hash = sht_hash(s);
-        row = hash %  WUT_SHEET_ROWS;
-
-        for(i = 0; i < wut_c_sheet_ids[row].number; i++) {
-                if(wut_c_sheet_ids[row].entries[i].hash == hash) {
-                        return wut_c_sheet_ids[row].entries[i].id;
-                }
-        }
-
-        return WUT_SHEET_UNDEFINED;
-}
-
-
-WUT_INTERN void sht_parse_flex(struct wut_Stylesheet *sheet,
-                enum wut_eSheetAttribId id, char *val)
-{
-        struct wut_Flex *flx = WUT_FLX_UNDEF;
-
-        sht_read(sheet, id, &flx);
-
-        flx = wut_flx_parse(flx, val);
-
-        sht_write(sheet, id, &flx);
-}
-
-
-WUT_INTERN u8 sht_fromhex(char c)
-{
-        /* Small letters */
-        if(c >= 0x61)
-                return (c - 0x61) + 10;
-
-        /* Big letters */
-        if(c >= 0x41)
-                return (c - 0x41) + 10;
-
-        /* Numbers */
-        return c - 0x30;	
-}
-
-
-WUT_INTERN s8 sht_convhex(char *val, u32 *out)
-{
-        s32 i;
-        char *run;
-        char c;
-        char *head = NULL;
-
-        u32 buf = 0x000000FF;
-
-        run = val;
-
-        /* Find the beginning of the hex */
-        while((c = *run)) {
-                if(sht_ishex(c)) {
-                        head = run;
-                        break;
-                }
-                run++;
-        }
-        if(!head)
-                return -1;
-
-        for(i = 2; i >= 0; i--) {
-                if(!sht_ishex(head[i*2])) {
-                        return 0;
-                }
-
-                if(!sht_ishex(head[i*2+1])) {
-                        return -1;
-                }
-
-                ((u8 *)&buf)[3 - i] = sht_fromhex(head[i*2]) * 16;
-                ((u8 *)&buf)[3 - i] += sht_fromhex(head[i*2+1]);
-        }
-
-        *out = buf;
-
-        return 0;
-}
-
-
-WUT_INTERN void sht_parse_hexcode(struct wut_Stylesheet *sheet,
-                enum wut_eSheetAttribId id, char *val)
-{
-        u32 hex;
-
-        sht_convhex(val, &hex);
-
-        sht_write(sheet, id, &hex);
-}
-
-
-WUT_INTERN char *sht_next_keyword(char *s, char *buf)
-{
-        char *run = s;
-        char *head = buf;
-
-        /* If everything has been read, return NULL */
-        if(*run == 0x00)
-                return NULL;
-
-        /* Remove leading spaces */
-        while(sht_isspace(*run))
-                run++;
-
-        /* Read the text */
-        while(sht_isletter(*run)) {
-                *(head++) = *(run++);
-        }
-        *head = 0;
-
-        return run;
-}
-
-
-WUT_INTERN u8 sht_find_keyword(u8 ctg, char *val)
-{
-        s8 i;
-
-        for(i = 0; i < wut_c_sheet_keywords[ctg].number; i++) {
-                if(!strcmp(wut_c_sheet_keywords[ctg].entries[i].string, val)) {
-                        return wut_c_sheet_keywords[ctg].entries[i].value;
-                }
-        }
-
-        return WUT_KW_UNDEFINED;	
-}
-
-
-WUT_INTERN void sht_parse_keyword(struct wut_Stylesheet *sheet,
-                enum wut_eSheetAttribId id, char *val)
-{
-        u8 kw = WUT_KW_UNDEFINED;
-        u8 ctg;
-
-        char *ptr;
-        char buf[127];
-
-        ctg = sht_category(id);
-
-        /* First process the input and set the according keyword flags */
-        ptr = val;
-        while((ptr = sht_next_keyword(ptr, buf))) {
-                kw |= sht_find_keyword(ctg, buf);
-        }
-
-        sht_write(sheet, id, &kw);
 }
 
 
@@ -380,67 +185,60 @@ WUT_XMOD void wut_sht_parse(struct wut_Stylesheet *sheet, char *s)
         char attr_s[64];
         char val_s[64];
 
-        enum wut_eSheetAttribId id;
+        struct wut_SheetEntry ent;
 
         if(!sheet || !s) {
                 WUT_ALARM(WUT_ERROR, "Input parameters invalid");
                 return;
         }
 
+        strcpy(inp_s, s);
+
         /*
          * Sanitize the input string to make it conform with input requirements.
-         * This will for example convert letters from big(A..Z) to small(a..z).
          */
-        sht_sanitize(s, inp_s);
+        wut_tfm_to_lowercase(inp_s);
 
         run = inp_s;
         while((run = sht_next(run, attr_s, val_s))) {
-                if((id = sht_get_id(attr_s)) == WUT_SHEET_UNDEFINED)
-                        continue;
+                wut_sat_reset(&ent);
 
-                switch(sht_typeof(id)) {
-                        case WUT_SHEET_FLEX:
-                                sht_parse_flex(sheet, id, val_s);
-                                break;
-                        case WUT_SHEET_HEXCODE:
-                                sht_parse_hexcode(sheet, id, val_s);
-                                break;
-                        case WUT_SHEET_KEYWORD:
-                                sht_parse_keyword(sheet, id, val_s);
-                                break;
+                if(wut_sat_parse(attr_s, val_s, &ent) >= 0) {
+                        /* Write the data to the stylesheet */
+                        sht_write(sheet, &ent);
+
+                        /* Add the flag to the mask */
+                        sheet->mask |= (1<<ent.id);
                 }
 
-                /* Don't forget to add the flag to the mask */
-                sheet->mask |= (1<<id);
+                wut_sat_cleanup(&ent);
         }
 }
 
+WUT_XMOD s8 wut_sht_set(struct wut_Stylesheet *sheet,
+                struct wut_SheetEntry *ent)
+{
+        if(!sheet || !ent) {
+                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
+                return -1;
+        }
+
+        sht_write(sheet, ent);
+        return 0;
+}
 
 
 WUT_XMOD s8 wut_sht_get(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
-                struct wut_SheetReturn *ret)
+                struct wut_SheetEntry *out)
 {
-        if(!sheet || !ret)
+        if(!sheet || !out)
                 return -1;
 
         if(!(sheet->mask & (1<<id))) {
                 return 0;
         }
 
-        switch(sht_typeof(id)) {
-                case WUT_SHEET_FLEX:
-                        sht_read(sheet, id, &ret->flex);
-                        ret->type = WUT_SHEET_FLEX;
-                        break;
-                case WUT_SHEET_HEXCODE:
-                        sht_read(sheet, id, &ret->hexcode);
-                        ret->type = WUT_SHEET_HEXCODE;
-                        break;
-                case WUT_SHEET_KEYWORD:
-                        sht_read(sheet, id, &ret->keyword);
-                        ret->type = WUT_SHEET_KEYWORD;
-                        break;
-        }
+        sht_read(sheet, id, out);
 
         return 1;
 }

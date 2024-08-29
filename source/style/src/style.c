@@ -52,7 +52,7 @@ WUT_XMOD s8 wut_stl_link(struct wut_Style *style, struct wut_Style *ref)
 
 
 WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
-		struct wut_SheetReturn *ret)
+		struct wut_SheetEntry *ret)
 {
 	struct wut_Style *run;
 
@@ -77,7 +77,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 {
 	u32 uref;
 
-	struct wut_SheetReturn ret;
+	struct wut_SheetEntry ret;
 	u16 refv[2];
 
 	u16 ref_height;
@@ -125,12 +125,12 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_WIDTH, &ret);
-	width = wut_flx_process(ret.flex, refv);
+	width = wut_flx_process(ret.value.flex.pointer, refv);
 
 
 	refv[0] = ref_height;
 	wut_stl_get(style, WUT_SHEET_HEIGHT, &ret);
-	height = wut_flx_process(ret.flex, refv);
+	height = wut_flx_process(ret.value.flex.pointer, refv);
 
 	/*
 	 * *********************************************************************
@@ -143,15 +143,15 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	refv[0] = ref_height;
 	wut_stl_get(style, WUT_SHEET_SPACING_TOP, &ret);
-	spacing[0] = wut_flx_process(ret.flex, refv);
+	spacing[0] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_SPACING_BOTTOM, &ret);
-	spacing[2] = wut_flx_process(ret.flex, refv);
+	spacing[2] = wut_flx_process(ret.value.flex.pointer, refv);
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_SPACING_RIGHT, &ret);
-	spacing[1] = wut_flx_process(ret.flex, refv);
+	spacing[1] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_SPACING_LEFT, &ret);
-	spacing[3] = wut_flx_process(ret.flex, refv);
+	spacing[3] = wut_flx_process(ret.value.flex.pointer, refv);
 
 
 	/*
@@ -164,15 +164,15 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	refv[0] = ref_height;
 	wut_stl_get(style, WUT_SHEET_PADDING_TOP, &ret);
-	padding[0] = wut_flx_process(ret.flex, refv);
+	padding[0] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_PADDING_BOTTOM, &ret);
-	padding[2] = wut_flx_process(ret.flex, refv);
+	padding[2] = wut_flx_process(ret.value.flex.pointer, refv);
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_PADDING_RIGHT, &ret);
-	padding[1] = wut_flx_process(ret.flex, refv);
+	padding[1] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_PADDING_LEFT, &ret);
-	padding[3] = wut_flx_process(ret.flex, refv);
+	padding[3] = wut_flx_process(ret.value.flex.pointer, refv);
 
 
 	/*
@@ -184,14 +184,14 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_BORDER_MODE, &ret);
-	out->border_mode = ret.keyword;
+	out->border_mode = ret.value.keyword.code;
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_BORDER_WIDTH, &ret);
-	out->border_width = wut_flx_process(ret.flex, refv);
+	out->border_width = wut_flx_process(ret.value.flex.pointer, refv);
 
 	wut_stl_get(style, WUT_SHEET_BORDER_COLOR, &ret);
-	out->border_color = wut_SetColorHex(ret.hexcode);
+	out->border_color = wut_SetColorHex(ret.value.hexcode.code);
 
 	/*
 	 * *********************************************************************
@@ -263,7 +263,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_DISPLAY_MODE, &ret);
-	out->display_mode = ret.keyword;
+	out->display_mode = ret.value.keyword.code;
 
 	/*
 	 * *********************************************************************
@@ -274,7 +274,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_REFERENCE_MODE, &ret);
-	out->reference_mode = ret.keyword;
+	out->reference_mode = ret.value.keyword.code;
 
 	/*
 	 * *********************************************************************
@@ -286,13 +286,13 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_RADIUS_TOP_LEFT, &ret);
-	out->radius_corner[0] = wut_flx_process(ret.flex, refv);
+	out->radius_corner[0] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_RADIUS_TOP_RIGHT, &ret);
-	out->radius_corner[1] = wut_flx_process(ret.flex, refv);
+	out->radius_corner[1] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_RADIUS_BOTTOM_RIGHT, &ret);
-	out->radius_corner[2] = wut_flx_process(ret.flex, refv);
+	out->radius_corner[2] = wut_flx_process(ret.value.flex.pointer, refv);
 	wut_stl_get(style, WUT_SHEET_RADIUS_BOTTOM_LEFT, &ret);
-	out->radius_corner[3] = wut_flx_process(ret.flex, refv);
+	out->radius_corner[3] = wut_flx_process(ret.value.flex.pointer, refv);
 
 
 	/*
@@ -304,10 +304,10 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_INFILL_MODE, &ret);
-	out->infill_mode = ret.keyword;
+	out->infill_mode = ret.value.keyword.code;
 
 	wut_stl_get(style, WUT_SHEET_INFILL_COLOR, &ret);
-	out->infill_color = wut_SetColorHex(ret.hexcode);
+	out->infill_color = wut_SetColorHex(ret.value.hexcode.code);
 
 
 	/*
@@ -319,7 +319,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_LAYOUT_MODE, &ret);
-	out->layout_mode = ret.keyword;
+	out->layout_mode = ret.value.keyword.code;
 
 	/*
 	 * *********************************************************************
@@ -332,7 +332,7 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	wut_stl_get(style, WUT_SHEET_SCROLLBAR_MODE, &ret);
 
 	out->scrollbar_flags = 0;
-	switch(ret.keyword) {
+	switch(ret.value.keyword.code) {
 		case WUT_KW_SCROLLBAR_AUTO:
 			out->scrollbar_flags |= WUT_RESTYLE_SCROLL_V;
 			out->scrollbar_flags |= WUT_RESTYLE_SCROLL_H;
@@ -356,26 +356,26 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 	 */
 
 	wut_stl_get(style, WUT_SHEET_TEXT_SIZE, &ret);
-	out->text_size = wut_flx_process(ret.flex, refv);
+	out->text_size = wut_flx_process(ret.value.flex.pointer, refv);
 	
 	wut_stl_get(style, WUT_SHEET_TEXT_COLOR, &ret);
-	out->text_color = wut_SetColorHex(ret.hexcode);
+	out->text_color = wut_SetColorHex(ret.value.hexcode.code);
 
 	wut_stl_get(style, WUT_SHEET_TEXT_MASS, &ret);
-	out->text_mass = wut_flx_process(ret.flex, refv);
+	out->text_mass = wut_flx_process(ret.value.flex.pointer, refv);
 
 	wut_stl_get(style, WUT_SHEET_TEXT_OPTIONS, &ret);
-	out->text_options = ret.keyword;
+	out->text_options = ret.value.keyword.code;
 
 	wut_stl_get(style, WUT_SHEET_TEXT_WRAP_MODE, &ret);
-	out->text_wrap_mode = ret.keyword;
+	out->text_wrap_mode = ret.value.keyword.code;
 
 	wut_stl_get(style, WUT_SHEET_TEXT_SPACING, &ret);
 	out->text_spacing = 1;
-	/* out->text_spacing = wut_flx_process(ret.flex, refv); */
+	/* out->text_spacing = wut_flx_process(ret.value.flex.pointer, refv); */
 
 	wut_stl_get(style, WUT_SHEET_LINE_HEIGHT, &ret);
-	out->text_line_height = wut_flx_process(ret.flex, refv);
+	out->text_line_height = wut_flx_process(ret.value.flex.pointer, refv);
 
 	return 0;
 }

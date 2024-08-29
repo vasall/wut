@@ -7,7 +7,7 @@
  */
 
 const struct wut_SheetAttrib wut_c_sheet_attribs[WUT_SHEET_ATTRIBS] = {
-        {0, 		      0,	  0},	/*  0 UNDEFINED		    */
+        {0, 		       0,	  0},	/*  0 UNDEFINED		    */
 
         {WUT_SHEET_KEYWORD,    0,	  8},	/*  1 display_mode 	    */
 
@@ -50,8 +50,8 @@ const struct wut_SheetAttrib wut_c_sheet_attribs[WUT_SHEET_ATTRIBS] = {
         {WUT_SHEET_FLEX,       0,	156},	/* 28 text_mass 	    */
         {WUT_SHEET_KEYWORD,    8,	164},	/* 29 text_options 	    */
         {WUT_SHEET_KEYWORD,    9,	165},	/* 30 text_wrap_mode 	    */
-        {WUT_SHEET_FLEX,	      0,	166},	/* 31 text_spacing          */
-        {WUT_SHEET_FLEX,	      0,	174}	/* 32 line_height 	    */
+        {WUT_SHEET_FLEX,       0,	166},	/* 31 text_spacing          */
+        {WUT_SHEET_FLEX,       0,	174}	/* 32 line_height 	    */
 };
 
 
@@ -118,7 +118,6 @@ const struct wut_SheetAttribIdTable wut_c_sheet_ids[WUT_SHEET_ROWS] = {
         {wut_c_sheet_attr_row6, 5},
         {wut_c_sheet_attr_row7, 4}
 };
-
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

@@ -11,37 +11,6 @@ struct wut_Style;
 
 #include "math/inc/polygon.h"
 
-enum wut_eStyleAttrib {
-        WUT_STYLE_DISPLAY_MODE,
-
-        WUT_STYLE_SIZE_V,
-        WUT_STYLE_SIZE_V_MIN,
-        WUT_STYLE_SIZE_V_MAX,
-        WUT_STYLE_SIZE_H,
-        WUT_STYLE_SIZE_H_MIN,
-        WUT_STYLE_SIZE_H_MAX,
-
-        WUT_POSITION_V_ORIENT,
-        WUT_POSITION_V,
-        WUT_POSITION_H_ORIENT,
-        WUT_POSITION_H,
-
-        WUT_STYLE_PADDING_TOP,
-        WUT_STYLE_PADDING_RIGHT,
-        WUT_STYLE_PADDING_BOTTOM,
-        WUT_STYLE_PADDING_LEFT,
-
-        WUT_STYLE_INFILL_MODE,
-        WUT_STYLE_INFILL_COLOR,
-
-        WUT_STYLE_BORDER_MODE,
-        WUT_STYLE_BORDER_WIDTH,
-        WUT_STYLE_BORDER_COLOR,
-
-        WUT_STYLE_TEXT_COLOR,
-        WUT_STYLE_TEXT_SIZE,
-        WUT_STYLE_TEXT_OPTIONS
-};
 
 
 /*
@@ -158,7 +127,8 @@ WUT_XMOD s8 wut_stl_init(struct wut_Style *style, struct wut_Style *ref);
 
 
 /*
- * Set a new reference.
+ * Set a new reference to a parent style struct, to enable inheriting
+ * attribute-values which have not been set for this style struct.
  * Note that after linking, the style will have to be processed.
  *
  * @style: Pointer to the style struct to link
@@ -183,7 +153,7 @@ WUT_XMOD s8 wut_stl_link(struct wut_Style *style, struct wut_Style *ref);
  * 	    occurred
  */
 WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
-                struct wut_SheetReturn *ret);
+                struct wut_SheetEntry *ret);
 
 
 /*
@@ -224,7 +194,7 @@ WUT_API void wut_ModifyStyle(struct wut_Style *style, char *in);
 
 
 /*
- * Get a specific restyle block like text, shape, etc.
+ * Get a specific restyle block like shape, color, etc.
  *
  * @style: Pointer to the style struct
  * @type: The restyle block type
