@@ -46,22 +46,18 @@ WUT_INTERN void sht_read(struct wut_Stylesheet *sheet,
 WUT_INTERN void sht_write(struct wut_Stylesheet *sheet,
                 struct wut_SheetEntry *ent)
 {
+        struct wut_SheetEntry swp;
         s16 off = sht_offset(ent->id);
         s8 size = sht_sizeof(ent->id);
-        struct wut_Flex *flx;
 
-        /*
-         * We have to handle flex seperatelly as the flex struct contains a
-         * list, which will be lost when just overriding the pointer.
-         */
-        if(ent->type == WUT_SHEET_FLEX) {
-                flx = (struct wut_Flex *)((u8 *)sheet + off);
-                flx = wut_flx_duplicate(flx, ent->value.flex.pointer);
-                memcpy((u8 *)sheet + off, &flx, size);
+        /* Read the current value from the stylesheet */
+        sht_read(sheet, ent->id, &swp);
+
+        if(ent->type == WUT_SHEET_FLEX && swp.value.flex.pointer) {
+                wut_flx_destroy(swp.value.flex.pointer);
         }
-        else { 
-                memcpy((u8 *)sheet + off, &ent->value, size);
-        }
+
+        memcpy((u8 *)sheet + off, &ent->value, size);
 }
 
 
@@ -210,8 +206,6 @@ WUT_XMOD void wut_sht_parse(struct wut_Stylesheet *sheet, char *s)
                         /* Add the flag to the mask */
                         sheet->mask |= (1<<ent.id);
                 }
-
-                wut_sat_cleanup(&ent);
         }
 }
 

@@ -21,10 +21,10 @@
  *
  * OPERAND
  *
- * 	0x11    const		Constant value
- * 	0x12	PIXEL		Pixel value, works like const
- * 	0x13	PERCENT		Pct. used to scale with size value
- * 	0x14	EM		Faktor multp. with text size
+ * 	0x11    const	     12	  Constant value
+ * 	0x12	PIXEL	    9px	  Pixel value, works like const
+ * 	0x13	PERCENT	  10pct	  Pct. used to scale with size value
+ * 	0x14	EM	    4em	  Faktor multp. with text size
  *
  * ----------------------
  */
@@ -61,6 +61,21 @@ WUT_XMOD struct wut_Flex *wut_flx_parse(struct wut_Flex *flx, char *inp);
  * @flx: Pointer to the flex struct
  */
 WUT_XMOD void wut_flx_destroy(struct wut_Flex *flx);
+
+
+/*
+ * Copy the content of the given flex struct to the destination struct without
+ * modifying the source struct. This will however overwrite the original content
+ * of the destination struct if there is any. If there is no destination, then
+ * set parameter to NULL and a new one will be created.
+ *
+ * @dst: The flex struct to copy into
+ * @src: The flex struct to copy from
+ *
+ * Returns: The modified destination struct
+ */
+WUT_XMOD struct wut_Flex *wut_flx_duplicate(struct wut_Flex *dst, 
+                struct wut_Flex *src);
 
 
 /*

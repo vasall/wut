@@ -13,6 +13,7 @@
 #include "graphic/inc/constructor.h"
 #include "graphic/inc/flat.h"
 
+#include "style/inc/class.h"
 
 struct wut_Document {
         /* A pointer to the window this document belongs to */
@@ -36,10 +37,8 @@ struct wut_Document {
         /* The main batch render */
         s16 				batch_id;
 
-#if 0
-        /* A list of all canvas widgets */
-        struct wut_canvas_list *canvases
-#endif
+        /* All available style classes for this document */
+        struct wut_ClassTable           *classes;
 };
 
 struct wut_ElementSelector {
@@ -99,7 +98,7 @@ WUT_API void wut_ResizeDocument(struct wut_Document *doc);
  */
 WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
                 struct wut_Element *parent, char *name,
-                enum wut_eElementType type, void *data);
+                enum wut_eTag type, void *data);
 
 
 /*

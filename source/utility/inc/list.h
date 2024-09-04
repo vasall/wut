@@ -108,6 +108,16 @@ WUT_API s16 wut_TestListTail(struct wut_List *lst, void *out);
 WUT_API s8 wut_GetList(struct wut_List *lst, u16 idx, void **out);
 
 
+/*
+ * Create an identical copy of the given list and return it. This will not
+ * modify or change the original list in any way.
+ *
+ * @src: The source list to copy
+ *
+ * Returns: Either the created copy or NULL if an error occurred
+ */
+WUT_API struct wut_List *wut_DuplicateList(struct wut_List *src);
+
 typedef s8 (*wut_ListFunc)(void *entry, s16 idx, void *data);
 
 

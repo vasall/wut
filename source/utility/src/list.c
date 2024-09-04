@@ -2,6 +2,8 @@
 
 #include "utility/inc/alarm.h"
 
+#include "system/inc/system.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -152,25 +154,6 @@ WUT_API s16 wut_TestListTail(struct wut_List *lst, void *out)
 }
 
 
-WUT_API s8 wut_ApplyList(struct wut_List *lst, wut_ListFunc fnc, void *data)
-{
-        s16 i;
-
-        if(!lst || !fnc) {
-                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
-                return -1;
-        }
-
-        for(i = 0; i < lst->count; i++) {
-                if(fnc(lst->data + (i * lst->size), i, data)) {
-                        return 0;
-                }
-        }
-
-        return 0;
-}
-
-
 WUT_API s8 wut_GetList(struct wut_List *lst, u16 idx, void **out)
 {
         s32 off;
@@ -187,4 +170,53 @@ WUT_API s8 wut_GetList(struct wut_List *lst, u16 idx, void **out)
         *out = lst->data + off;
 
         return 1;
+}
+
+
+WUT_API struct wut_List *wut_DuplicateList(struct wut_List *src)
+{
+        struct wut_List *lst;
+        s32 size;
+
+        if(!(lst = wut_malloc(sizeof(struct wut_List)))) {
+                WUT_ALARM(WUT_ERROR, "Failed to allocate memory for list");
+                return NULL;
+        }
+
+        size = src->size * src->alloc;
+        if(!(lst->data = wut_malloc(size))) {
+                WUT_ALARM(WUT_ERROR, "Failed to preallocate memory for list");
+                goto err_free_lst;
+        }
+
+        /* Copy over everything */
+        lst->size = src->size;
+        lst->count = src->count;
+        lst->alloc = src->alloc;
+        memcpy(lst->data, src->data, size);
+
+        return lst;
+
+err_free_lst:
+        wut_free(lst);
+        return NULL;
+}
+
+
+WUT_API s8 wut_ApplyList(struct wut_List *lst, wut_ListFunc fnc, void *data)
+{
+        s16 i;
+
+        if(!lst || !fnc) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                return -1;
+        }
+
+        for(i = 0; i < lst->count; i++) {
+                if(fnc(lst->data + (i * lst->size), i, data)) {
+                        return 0;
+                }
+        }
+
+        return 0;
 }

@@ -1,12 +1,12 @@
 #include "document/inc/document.h"
 
 #include "utility/inc/alarm.h"
+#include "utility/inc/utility.h"
 
 #include "core/inc/predefined.h"
 
 #include "system/inc/system.h"
 
-#include "utility/inc/utility.h"
 
 #include <stdlib.h>
 
@@ -205,6 +205,11 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
         return 0;
 }
 
+WUT_INTERN void doc_destroy_batch(struct wut_Document *doc)
+{
+        wut_ContextRemoveBatch(doc->context, doc->batch_id);
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -243,6 +248,7 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
         doc->body->parent = NULL;
         doc->body->layer = 0;
 
+        /* Reset the eventbased elements-buffers */
         doc->selected	= NULL;
         doc->hovered	= NULL;
 
@@ -254,11 +260,17 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
         if(doc_create_batch(doc) < 0)
                 goto err_destroy_views;
 
+        /* Create the style class table */
+        if(!(doc->classes = wut_cls_create_table()))
+                goto err_destroy_batch;
+
         /* Update the body element */
         wut_UpdateDocument(doc);
 
         return doc;
 
+err_destroy_batch:
+        doc_destroy_batch(doc);
 
 err_destroy_views:
         wut_vie_destroy_list(doc->views);
@@ -279,6 +291,12 @@ WUT_API void wut_DestroyDocument(struct wut_Document *doc)
 {
         if(!doc)
                 return;
+
+        /* Destroy the style class table */
+        wut_cls_destroy_table(doc->classes);
+
+        /* Detach and destroy the batch renderer */
+        doc_destroy_batch(doc);
 
         /* If the document contains a body, recursivly remove it */
         wut_RemoveElement(doc, doc->body);	
@@ -304,7 +322,7 @@ WUT_API void wut_ResizeDocument(struct wut_Document *doc)
 
 WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
                 struct wut_Element *parent, char *name,
-                enum wut_eElementType type, void *data)
+                enum wut_eTag type, void *data)
 {
         struct wut_Element *ele;
 

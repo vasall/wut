@@ -180,4 +180,6 @@ WUT_XMOD const struct wut_sheet_kw_table wut_c_sheet_keywords[WUT_SHEET_KW_ROWS]
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
+WUT_XMOD const char *wut_sheet_attr_name[WUT_SHEET_ATTRIBS];
+
 #endif /* _WUT_STYLE_STYLESHEET_TABLES_H */

@@ -520,7 +520,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
  */
 
 WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *name,
-		enum wut_eElementType type, void *data)
+		enum wut_eTag type, void *data)
 {
 	struct wut_Element *ele;
 	s8 name_len;

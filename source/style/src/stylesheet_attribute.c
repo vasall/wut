@@ -105,8 +105,6 @@ WUT_INTERN s8 sat_parse_hexcode(struct wut_SheetEntry *ent, char *val)
         ent->type = WUT_SHEET_HEXCODE;
         ent->value.hexcode.code = hex;
         return 0; 
-
-        /* sat_write(sheet, id, &hex); */
 }
 
 
@@ -183,7 +181,6 @@ WUT_XMOD void wut_sat_reset(struct wut_SheetEntry *ent)
                 return;
 
         ent->type = WUT_SHEET_UNDEF;
-        ent->value.flex.pointer = NULL;
 }
 
 
@@ -192,7 +189,9 @@ WUT_XMOD void wut_sat_cleanup(struct wut_SheetEntry *ent)
         if(!ent)
                 return;
 
-        wut_flx_destroy(ent->value.flex.pointer);
+        if(ent->type == WUT_SHEET_FLEX)
+                wut_flx_destroy(ent->value.flex.pointer);
+        
         wut_sat_reset(ent);
 }
 
@@ -248,4 +247,29 @@ WUT_XMOD enum wut_eSheetAttribId wut_sat_get_id(char *s)
 WUT_XMOD u8 wut_sat_typeof(enum wut_eSheetAttribId id)
 {
         return wut_c_sheet_attribs[id].type;
+}
+
+
+WUT_XMOD void wut_sat_print(struct wut_SheetEntry *ent)
+{
+        printf("%16s: ", wut_sheet_attr_name[ent->id]);
+
+        switch(ent->type) {
+                case WUT_SHEET_FLEX:
+                        wut_flx_print(ent->value.flex.pointer);
+                        break;
+
+                case WUT_SHEET_HEXCODE:
+                        printf("%08x", ent->value.hexcode.code);
+                        break;
+
+                case WUT_SHEET_KEYWORD:
+                        printf("%02x", ent->value.keyword.code);
+                        break;
+
+                default:
+                        printf("wrongtype");
+        }
+
+        printf("\n");
 }

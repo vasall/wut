@@ -8,6 +8,14 @@
 #include "utility/inc/color.h"
 #include "utility/inc/flex.h"
 
+/*
+ * IMPORTANT:
+ * When reading from or writing to the stylesheet, always use the appropriate
+ * functions sht_read() and sht_write(). Never write to the stylesheet directly!
+ * This is especially important when working with the flex-pointer.
+ * The only exception to that rule is wut_sht_reset(). 
+ */
+
 
 struct wut_Stylesheet {
         /* The attribute mask */

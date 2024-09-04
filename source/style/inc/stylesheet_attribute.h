@@ -84,4 +84,11 @@ WUT_XMOD enum wut_eSheetAttribId wut_sat_get_id(char *s);
  */
 WUT_XMOD u8 wut_sat_typeof(enum wut_eSheetAttribId id);
 
+/*
+ * Print a style-attribute in the console.
+ *
+ * @ent: Pointer to the style attribute
+ */
+WUT_XMOD void wut_sat_print(struct wut_SheetEntry *ent);
+
 #endif /* _WUT_STYLE_STYLESHEET_ATTRIBUTE_H */

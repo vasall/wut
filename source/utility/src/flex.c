@@ -2,6 +2,9 @@
 
 #include "utility/inc/alarm.h"
 #include "utility/inc/utility.h"
+#include "utility/inc/text_formatting.h"
+
+#include "system/inc/system.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,17 +52,6 @@ WUT_INTERN s8 flx_is_operator(char c)
          */
         return (c == 0x2B || c == 0x2D || c == 0x2A || c == 0x2F || c == 0x28 ||
                         c == 0x29);
-}
-
-
-WUT_INTERN void flx_sanitize(char *s)
-{
-        char *d = s;
-        do {
-                while (*d == ' ') {
-                        ++d;
-                }
-        } while ((*(s++) = *(d++)));
 }
 
 
@@ -194,7 +186,7 @@ WUT_INTERN struct wut_List *flx_tokenize(char *inp)
                 if(fin) {
                         buf[buf_tail] = 0;
 
-                        flx_sanitize(buf);
+                        wut_tfm_strip(buf);
                         if(flx_parse_token(fin, buf, &tok) < 0) {
                                 WUT_ALARM(WUT_ERROR, "Invalid expression");
                                 goto err_destroy_list;
@@ -396,12 +388,15 @@ WUT_XMOD struct wut_Flex *wut_flx_parse(struct wut_Flex *flx, char *inp)
                         WUT_ALARM(WUT_ERROR, "Failed to allocate memory for flex");
                         return flx;
                 }
+                f->list = NULL;
         }
         else {
                 wut_DestroyList(f->list);
+                f->list = NULL;
         }
 
         if(flx_shunting_yard(tokens, &f->list) < 0) {
+                WUT_ALARM(WUT_ERROR, "Shunting yard failed");
                 goto err_destroy_tokens_raw;
         }
 
@@ -420,6 +415,32 @@ WUT_XMOD void wut_flx_destroy(struct wut_Flex *flx)
 
         wut_DestroyList(flx->list);
         free(flx);
+}
+
+
+WUT_XMOD struct wut_Flex *wut_flx_duplicate(struct wut_Flex *dst,
+                struct wut_Flex *src)
+{
+        struct wut_Flex *flx = dst;
+
+        if(!flx) {
+                if(!(flx = wut_malloc(sizeof(struct wut_Flex)))) {
+                        WUT_ALARM(WUT_ERROR, "Failed to allocate memory");
+                        return dst;
+                }
+                flx->list = NULL;
+        }
+        else {
+                wut_DestroyList(flx->list);
+                flx->list = NULL;
+        }
+
+        if(!(flx->list = wut_DuplicateList(src->list))) {
+                WUT_ALARM(WUT_ERROR, "Failed to duplicate token list");
+                return flx;
+        }
+
+        return flx;
 }
 
 

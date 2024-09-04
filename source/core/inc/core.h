@@ -5,6 +5,7 @@
 #include "core/inc/import.h"
 #include "core/inc/predefined.h"
 
+#include "window/inc/window.h"
 #include "document/inc/document.h"
 #include "event/inc/event.h"
 #include "graphic/inc/graphic.h"
@@ -12,8 +13,6 @@
 #include "system/inc/system.h"
 #include "utility/inc/utility.h"
 #include "widget/inc/widget.h"
-
-#include "window/inc/window.h"
 
 
 struct wut_coreContainer {

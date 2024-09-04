@@ -7,6 +7,7 @@ struct wut_Element;
 #include "core/inc/import.h"
 
 #include "document/inc/identity.h"
+#include "document/inc/tag.h"
 #include "document/inc/element_template.h"
 
 #include "style/inc/style.h"
@@ -22,17 +23,6 @@ struct wut_Element;
 #define WUT_ELE_F_SELECTED	        (1<<2)
 
 
-
-enum wut_eElementType {
-        WUT_BODY		= 0,
-        WUT_BLOCK	        = 1,
-        WUT_TEXT		= 2,
-        WUT_BUTTON	        = 3,
-        WUT_INPUT	        = 4,
-        WUT_IMAGE	        = 5,
-        WUT_VIEW		= 6,
-        WUT_CUSTOM	        = 7
-};
 
 
 struct wut_Element {
@@ -68,7 +58,7 @@ struct wut_Element {
         struct wut_Element      *firstborn;
 
         /* The type of element */
-        enum wut_eElementType   type;
+        enum wut_eTag   type;
 
         /* The style structure for this element */
         struct wut_Style        style;
@@ -264,7 +254,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren,
  * 	    occurred
  */
 WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *name,
-		enum wut_eElementType type, void *data);
+		enum wut_eTag type, void *data);
 
 
 /*

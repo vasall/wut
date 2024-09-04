@@ -182,3 +182,55 @@ const struct wut_sheet_kw_table wut_c_sheet_keywords[WUT_SHEET_KW_ROWS] = {
         {wut_c_sheet_kw_row9, 3}
 };
 
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+const char *wut_sheet_attr_name[WUT_SHEET_ATTRIBS] = {
+        "undefined",
+
+        "display_mode",
+        
+        "width",
+        "height",
+        
+        "reference_mode",
+
+        "spacing_top",
+        "spacing_right",
+        "spacing_bottom",
+        "spacing_left",
+
+        "padding_top",
+        "padding_right",
+        "padding_bottom",
+        "padding_left",
+
+        "border_mode",
+        "border_width",
+        "border_color",
+
+        "radius_top_left",
+        "radius_top_right",
+        "radius_bottom_right",
+        "radius_bottom_left",
+
+        "infill_mode",
+        "infill_color",
+
+        "layout_mode",
+
+        "align_v",
+        "align_h",
+
+        "scrollbar_mode",
+
+        "text_size",
+        "text_color",
+        "text_mass",
+        "text_options",
+        "text_wrap_mode",
+        "text_spacing",
+        "line_height"
+};
