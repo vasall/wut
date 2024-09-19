@@ -1,4 +1,6 @@
 .container {
         width: 100pct;
         height: 100pct;
+
+        infill_mode: color;
 }

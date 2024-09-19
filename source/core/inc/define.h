@@ -65,4 +65,5 @@ typedef double                  f64;
 
 #endif /* __SHORT_DATATYPES */
 
+
 #endif /* _WUT_CORE_DEFINE_H */

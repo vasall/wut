@@ -537,6 +537,9 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
 WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                 struct wut_Element *ele)
 {
+        WUT_IGNORE(pth);
+        WUT_IGNORE(ele);
+
         return 0;
 }
 
