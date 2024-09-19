@@ -2,6 +2,7 @@
 
 #include "utility/inc/alarm.h"
 #include "utility/inc/utility.h"
+#include "utility/inc/text_formatting.h"
 
 #include "core/inc/predefined.h"
 
@@ -9,6 +10,11 @@
 
 
 #include <stdlib.h>
+
+
+#define MAX_LINE_LENGTH 1024
+#define MAX_CLASS_NAME_LENGTH 100
+#define MAX_ATTRIBUTE_LENGTH 100
 
 /*
  * 
@@ -525,4 +531,86 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
         else start = doc->body;
 
         wut_ele_hlf(start, &doc_cfnc_show, NULL, NULL);
+}
+
+
+WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
+                struct wut_Element *ele)
+{
+        return 0;
+}
+
+
+WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
+{
+        FILE *file;
+
+        char line[MAX_LINE_LENGTH];
+        char class_name[MAX_CLASS_NAME_LENGTH] = {0};
+
+        char attribute[MAX_ATTRIBUTE_LENGTH] = {0};
+        char value[MAX_ATTRIBUTE_LENGTH] = {0};
+
+        struct wut_ClassTable *tbl;
+        struct wut_Class *cls = NULL;
+        struct wut_SheetEntry ent;
+
+        if(!doc || !pth) {
+                WUT_ALARM(WUT_WARNING, "Invalid parameters");
+                return -1;
+        }
+
+        tbl = doc->classes;
+
+        if(!(file = fopen(pth, "r"))) {
+                char tmp[512];
+                sprintf(tmp, "Failed to open file \"%s\"", pth);
+                WUT_ALARM(WUT_ERROR, tmp);
+                return -1;
+        }
+
+
+        while(fgets(line, sizeof(line), file)) {
+                char *trimmed_line = wut_tfm_trim(line);
+
+                /* Check if the line starts with a class selector */
+                if(trimmed_line[0] == '.' && !cls) {
+                        /* Extract the class name */
+                        sscanf(trimmed_line, ".%[^ {]", class_name);
+
+                        /* Create a new class */
+                        cls = wut_cls_create(class_name);
+                }
+
+                /* Check if the line contains attributes (inside a block) */
+                if(cls) {
+                        if(strstr(trimmed_line, "{") != NULL) {
+                                /* Skip the opening brace line */
+                                continue;
+                        }
+                        else if(strstr(trimmed_line, "}") != NULL) {
+                                /* Push class to table and reset */
+                                wut_cls_push_table(tbl, cls);
+                                cls = NULL;
+                        }
+                        else {
+                                wut_sat_reset(&ent);
+
+                                sscanf(trimmed_line, "%[^:]:%[^;];", attribute, value);
+
+                                /* Parse attribute and push to class */
+                                wut_sat_parse(
+                                                wut_tfm_trim(attribute),
+                                                wut_tfm_trim(value),
+                                                &ent
+                                             );
+
+                                wut_cls_push_attr(cls, &ent);
+                        }
+                }
+        }
+
+        fclose(file);
+
+        return 0;
 }

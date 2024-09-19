@@ -4,3 +4,6 @@
 *.sw*
 
 .libs
+
+/testchamber
+/tools

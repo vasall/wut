@@ -1,0 +1,8 @@
+.senpai {
+        radius_top_left: 2px;
+        radius_bottom_left: 10pct;
+}
+
+.chips {
+        border_mode: solid;
+}

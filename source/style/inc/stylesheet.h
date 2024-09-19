@@ -1,9 +1,12 @@
 #ifndef _WUT_STYLE_STYLESHEET_H
 #define _WUT_STYLE_STYLESHEET_H
 
+struct wut_Stylesheet;
+
 #include "core/inc/define.h"
 
 #include "style/inc/stylesheet_attribute.h"
+#include "style/inc/class.h"
 
 #include "utility/inc/color.h"
 #include "utility/inc/flex.h"
@@ -125,6 +128,14 @@ WUT_XMOD s8 wut_sht_set(struct wut_Stylesheet *sheet,
 WUT_XMOD s8 wut_sht_get(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id,
                 struct wut_SheetEntry *out);
 
+
+/*
+ * Apply a class to the stylesheet and write all the attributes.
+ *
+ * @sht: pointer to the stylesheet
+ * @cls: Pointer to the class
+ */
+WUT_XMOD void wut_sht_apply(struct wut_Stylesheet *sht, struct wut_Class *cls);
 
 /*
  * Print the stylesheet in the console.

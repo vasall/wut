@@ -98,13 +98,13 @@ struct wut_SheetAttribIdEntry wut_c_sheet_attr_row6[] = {
         {0x9E, WUT_SHEET_PADDING_LEFT},
         {0x56, WUT_SHEET_BORDER_WIDTH},
         {0xA6, WUT_SHEET_RADIUS_TOP_RIGHT},
-        {0x1E, WUT_SHEET_RADIUS_BOTTOM_LEFT},
+        {0x1E, WUT_SHEET_RADIUS_BOTTOM_RIGHT},
         {0xFE, WUT_SHEET_ALIGN_H}
 };
 struct wut_SheetAttribIdEntry wut_c_sheet_attr_row7[] = {
         {0x77, WUT_SHEET_REFERENCE_MODE},
         {0x0F, WUT_SHEET_BORDER_COLOR},
-        {0x5F, WUT_SHEET_RADIUS_BOTTOM_RIGHT},
+        {0x5F, WUT_SHEET_RADIUS_BOTTOM_LEFT},
         {0x3F, WUT_SHEET_LAYOUT_MODE}
 };
 

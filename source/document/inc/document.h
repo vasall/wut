@@ -190,4 +190,25 @@ WUT_API void wut_RenderDocument(struct wut_Document *doc);
 WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
                 struct wut_Element *ele);
 
+/*
+ * Load an element-tree from a file.
+ *
+ * @doc: Pointer to the document
+ * @pth: Pointer to the file containing the element structure
+ * @[atc]: The attachment element or NULL for body
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+
+
+/*
+ * Load classes from a style file and add them to the class table.
+ *
+ * @doc: Pointer to the document
+ * @pth: The path to the style file
+ *
+ * Returns: 0 on success or -1 if na error occurred
+ */
+WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth);
+
 #endif /* _WUT_DOCUMENT_H */

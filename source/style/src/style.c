@@ -92,11 +92,9 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	struct wut_Style *ref;
 	struct wut_Style *out;
-	struct wut_Stylesheet *sheet;
 
 	ref = style->ref;
 	out = style;
-	sheet = &style->sheet;
 
 		
 	/*
@@ -125,9 +123,6 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	refv[0] = ref_width;
 	wut_stl_get(style, WUT_SHEET_WIDTH, &ret);
-
-        printf("Reading width:\n");
-        printf("%p, %p\n", ret.value.flex.pointer, ret.value.flex.pointer->list);
 
 	width = wut_flx_process(ret.value.flex.pointer, refv);
 

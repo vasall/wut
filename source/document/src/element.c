@@ -187,6 +187,28 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 }
 
 
+WUT_INTERN void ele_reset_class_names(struct wut_Element *ele)
+{
+        s8 i;
+
+        /*
+         * Just write the null-terminator to every possible class-name-slot.
+         */
+        for(i = 0; i < WUT_ELE_CLASSES; i++) {
+                *ele->class_names[i] = 0;
+        }
+}
+
+
+WUT_INTERN void ele_reset_classes(struct wut_Element *ele)
+{
+       s8 i;
+
+       for(i = 0; i < WUT_ELE_CLASSES; i++) {
+               ele->classes[i] = NULL;
+       }
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -510,6 +532,11 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 }
 
 
+WUT_XMOD s8 wut_ele_link_classes(struct wut_Element *ele)
+{
+        
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -524,6 +551,7 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 {
 	struct wut_Element *ele;
 	s8 name_len;
+        s8 i;
 
 	if(!name) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
@@ -581,6 +609,10 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 		WUT_ALARM(WUT_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
 	}
+
+        /* Reset the class list and names */
+        ele_reset_class_names(ele);
+        ele_reset_classes(ele);
 
 	return ele;
 
@@ -681,6 +713,28 @@ WUT_API void wut_DetachElement(struct wut_Element *ele)
 	ele->left = NULL;
 	ele->right = NULL;
 	ele->parent = NULL;
+}
+
+
+WUT_API void wut_AddClasses(struct wut_Element *ele, s8 num, char **names)
+{
+        s8 i;
+        s8 j;
+
+        /* Go through all given names */
+        for(i = 0; i < num; i++) {
+                /* Find an empty slot in the name list */
+                for(j = 0; j < WUT_ELE_CLASSES; j++) {
+                        if(*ele->class_names[j] == 0) {
+                                /* Copy class name into list */
+                                strcpy(ele->class_names[j], names[i]);
+                                break;
+                        }
+                }
+        }
+
+        /* Link all class names */
+        wut_ele_link_classes(ele);
 }
 
 

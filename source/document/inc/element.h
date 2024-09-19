@@ -22,6 +22,7 @@ struct wut_Element;
 #define WUT_ELE_F_HOVERED	        (1<<1)
 #define WUT_ELE_F_SELECTED	        (1<<2)
 
+#define WUT_ELE_CLASSES                 8
 
 
 
@@ -58,7 +59,7 @@ struct wut_Element {
         struct wut_Element      *firstborn;
 
         /* The type of element */
-        enum wut_eTag   type;
+        enum wut_eTag           type;
 
         /* The style structure for this element */
         struct wut_Style        style;
@@ -134,6 +135,10 @@ struct wut_Element {
 
 
         struct wut_EventHandler *event_handler;
+
+        /* Style class names and the appropriate links */
+        char                    class_names[WUT_ELE_CLASSES][128];
+        struct wut_Class        *classes[WUT_ELE_CLASSES];
 };
 
 /*
@@ -281,6 +286,16 @@ WUT_API s8 wut_AttachElement(struct wut_Element *parent, struct wut_Element *ele
  * if the element doesn't have a parent.
  */
 WUT_API void wut_DetachElement(struct wut_Element *ele);
+
+
+/*
+ * Add style classes to an element.
+ *
+ * @ele: Pointer to the element
+ * @num: The number of classes to add
+ * @name: The names of the classes to add
+ */
+WUT_API void wut_AddClasses(struct wut_Element *ele, s8 num, char **names);
 
 
 /*

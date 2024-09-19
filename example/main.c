@@ -4,10 +4,17 @@
 
 #include "../wut.h"
 
-#define STYLE_PATH      "style.wts"
+#define STYLE_FILES     2
+char *style_paths[STYLE_FILES] = {
+        "style.wts",
+        "style_two.wts"
+};
+
 
 int main(void)
 {
+        int i;
+
         struct wut_Window *win;
         struct wut_Document *doc;
         struct wut_Context *ctx;
@@ -31,12 +38,14 @@ int main(void)
         ctx = wut_GetContext(win);
         printf("Done\n");
 
-        printf("Load style class from file \"%s\"...\n", STYLE_PATH);
-        if(wut_LoadClasses(doc, STYLE_PATH) < 0) {
-                printf("Failed\n");
-                goto err_close_window;
+        for(i = 0; i < STYLE_FILES; i++) {
+                printf("Load style class from file \"%s\"...\n", style_paths[i]);
+                if(wut_LoadClasses(doc, style_paths[i]) < 0) {
+                        printf("Failed\n");
+                        goto err_close_window;
+                }
+                printf("Done\n");
         }
-        printf("Done\n");
 
         wut_PrintClasses(doc->classes);
 

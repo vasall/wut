@@ -6,6 +6,7 @@
 #include "system/inc/system.h"
 
 #include "utility/inc/alarm.h"
+#include "utility/inc/utility.h"
 #include "utility/inc/text_formatting.h"
 
 #include <stdlib.h>
@@ -112,6 +113,19 @@ WUT_INTERN char *sht_next(char *s, char *attr, char *val)
 }
 
 
+WUT_INTERN s8 sht_cfnc_apply(void *ptr, s16 idx, void *data)
+{
+        struct wut_SheetEntry *ent = (struct wut_SheetEntry *)ptr;
+        struct wut_Stylesheet *sht = (struct wut_Stylesheet *)data;
+
+        WUT_IGNORE(idx);
+
+        sht_write(sht, ent);
+
+        return 0;
+}
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -209,6 +223,7 @@ WUT_XMOD void wut_sht_parse(struct wut_Stylesheet *sheet, char *s)
         }
 }
 
+
 WUT_XMOD s8 wut_sht_set(struct wut_Stylesheet *sheet,
                 struct wut_SheetEntry *ent)
 {
@@ -235,6 +250,12 @@ WUT_XMOD s8 wut_sht_get(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id
         sht_read(sheet, id, out);
 
         return 1;
+}
+
+
+WUT_XMOD void wut_sht_apply(struct wut_Stylesheet *sht, struct wut_Class *cls)
+{ 
+        wut_ApplyList(cls->attributes, &sht_cfnc_apply, (void *)sht); 
 }
 
 

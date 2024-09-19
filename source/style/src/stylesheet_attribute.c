@@ -198,8 +198,6 @@ WUT_XMOD void wut_sat_cleanup(struct wut_SheetEntry *ent)
 
 WUT_XMOD s8 wut_sat_parse(char *attr, char *val, struct wut_SheetEntry *out)
 {
-        s8 r;
-
         if(!attr || !val || !out) {
                 WUT_ALARM(WUT_WARNING, "Input parameters invalid");
                 return -1;
@@ -207,7 +205,9 @@ WUT_XMOD s8 wut_sat_parse(char *attr, char *val, struct wut_SheetEntry *out)
 
         /* First get the Id for the attribute */
         if((out->id = wut_sat_get_id(attr)) == WUT_SHEET_UNDEFINED) {
-                WUT_ALARM(WUT_WARNING, "Attribute name unknown");
+                char tmp[512];
+                sprintf(tmp, "Attribute name \"%s\" unknown", attr);
+                WUT_ALARM(WUT_WARNING, tmp);
                 return -1;
         }
 
@@ -252,7 +252,7 @@ WUT_XMOD u8 wut_sat_typeof(enum wut_eSheetAttribId id)
 
 WUT_XMOD void wut_sat_print(struct wut_SheetEntry *ent)
 {
-        printf("%16s: ", wut_sheet_attr_name[ent->id]);
+        printf("%20s: ", wut_sheet_attr_name[ent->id]);
 
         switch(ent->type) {
                 case WUT_SHEET_FLEX:
