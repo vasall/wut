@@ -48,6 +48,15 @@ int main(void)
         }
 
         wut_PrintClasses(doc->classes);
+        printf("Load the elements from file...\n");
+
+        if(wut_LoadElements(doc, "elements.wtd", NULL) < 0) {
+                printf("Failed to load elements from file\n");
+                goto err_close_window;
+        }
+        printf("Done\n");
+
+        wut_ShowDocumentTree(doc, NULL);
 
         while(wut_Update()) {
 

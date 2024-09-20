@@ -537,8 +537,76 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
 WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                 struct wut_Element *ele)
 {
-        WUT_IGNORE(pth);
+        FILE *file;
+
+#define MAX_LINE_LENGTH 512
+
+        char line[MAX_LINE_LENGTH];
+        int in_tag = 0;
+        char tag[MAX_LINE_LENGTH];
+        char classes[MAX_LINE_LENGTH];
+
         WUT_IGNORE(ele);
+
+        if(!(file = fopen(pth, "r"))) {
+                char swp[512];
+                sprintf(swp, "Failed to open %s", pth);
+                WUT_ALARM(WUT_ERROR, swp);
+                return -1;
+        }
+
+        while (fgets(line, sizeof(line), file)) {
+                char *ptr = line;
+
+                while (*ptr) {
+                        if (*ptr == '<') {
+                                char *tag_start;
+
+                                in_tag = 1;
+                                memset(tag, 0, sizeof(tag));
+                                memset(classes, 0, sizeof(classes));
+                                ptr++;
+                                tag_start = ptr;
+
+                                while (*ptr && *ptr != ' ' && *ptr != '>' && *ptr != '/') {
+                                        ptr++;
+                                }
+
+                                strncpy(tag, tag_start, ptr - tag_start);
+
+                                if (*ptr == ' ') {
+                                        char *attr_start = ++ptr;
+
+                                        while (*ptr && *ptr != '>') {
+                                                if (strncmp(ptr, "class=\"", 7) == 0) {
+                                                        char *class_start;
+                                                        ptr += 7;
+                                                        class_start = ptr;
+                                                        while (*ptr && *ptr != '\"') {
+                                                                ptr++;
+                                                        }
+                                                        strncpy(classes, class_start, ptr - class_start);
+                                                        classes[ptr - class_start] = '\0';
+                                                }
+                                                ptr++;
+                                        }
+                                }
+
+                                if (*ptr == '>') {
+                                        in_tag = 0;
+                                        printf("Tag Name: %s\n", tag);
+                                        if (strlen(classes) > 0) {
+                                                printf("Classes: %s\n", classes);
+                                        } else {
+                                                printf("Classes: None\n");
+                                        }
+                                }
+                        }
+                        ptr++;
+                }
+        }
+
+        fclose(file);
 
         return 0;
 }

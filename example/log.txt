@@ -2,3 +2,7 @@ WARNING | src/stylesheet_attribute.c:210 Attribute name unknown
 WARNING | src/stylesheet_attribute.c:212 Attribute name "border_radius_top_left" unknown
 WARNING | src/stylesheet_attribute.c:210 Attribute name "
 " unknown
+WARNING | src/stylesheet_attribute.c:210 Attribute name "
+" unknown
+WARNING | src/stylesheet_attribute.c:210 Attribute name "
+" unknown

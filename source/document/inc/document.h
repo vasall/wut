@@ -199,7 +199,8 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-
+WUT_API s8 wut_LoadElemnts(struct wut_Documnt *doc, char *pth,
+                struct wut_Element *ele);
 
 /*
  * Load classes from a style file and add them to the class table.
