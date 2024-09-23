@@ -4,7 +4,7 @@
 
 #include "document/inc/document.h"
 
-#define WUT_EVD_DEBUG		1
+#define WUT_EVD_DEBUG		0
 
 #define WUT_EVD_SCROLL_FACTOR   20
 

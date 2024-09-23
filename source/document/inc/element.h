@@ -24,6 +24,7 @@ struct wut_Element;
 
 #define WUT_ELE_CLASSES                 8
 
+#define WUT_SCROLLBAR_WIDTH             10
 
 
 struct wut_Element {

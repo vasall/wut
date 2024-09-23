@@ -5,6 +5,7 @@
         infill_mode: color;
         infill_color: #00ff00;
 
-        spacing_top: 700px;
-        spacing_left: 200px;
+        spacing_left: 700px;
+        spacing_right: 10px;
+        spacing_bottom: 10px;
 }

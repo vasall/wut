@@ -471,11 +471,8 @@ WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
         wut_ele_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
 
         if(sel.state == 1) {
-                printf("Found an element\n");
                 return sel.element;
         }
-
-        printf("Found no element\n");
 
         return NULL;
 

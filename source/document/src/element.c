@@ -387,8 +387,11 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	s32 indices[4];
 	s32 s_index[3];
 
+        /* 
+         * index 0: offset of the slider
+         * index 1: size of the slider
+         */
 	s32 scroll[2];
-	s32 h_scroll[2] = {0, 100};
 
 	struct tempStruct_vtx {
 		f32 x;
@@ -401,7 +404,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	/* vertical */
 	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
 		s32 p0x = ele->element_rect[0] + ele->element_rect[2] -
-                        ele->style.border_width - 10;
+                        ele->style.border_width - WUT_SCROLLBAR_WIDTH;
 		s32 p0y = ele->element_rect[1] + ele->style.border_width;
 		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - 
                         ele->style.border_width;
@@ -419,9 +422,11 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
 
 		/* Uniform: u_scroll */	
-		scroll[1] = (p1y - p0y) * ((f32)ele->content_rect[3] / (f32)ele->content_size[1]);
+		scroll[1] = (p1y - p0y) *
+                        ((f32)ele->content_rect[3] / (f32)ele->content_size[1]);
 		scroll[0] = (p1y - p0y - 2 - scroll[1]) *
-                        ((f32)ele->content_offset[1] / (f32)(ele->content_size[1] - ele->content_rect[3]));
+                        ((f32)ele->content_offset[1] / (f32)(ele->content_size[1] -
+                                ele->content_rect[3]));
 		s_index[2] = wut_bat_push_uniform(ren, 6, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
@@ -461,9 +466,21 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	/* horizontal */
 	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) {
 		s32 p0x = ele->element_rect[0] + ele->style.border_width;
-		s32 p0y = ele->element_rect[1] + ele->element_rect[3] - ele->style.border_width - 10;
-		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - ele->style.border_width;
-		s32 p1y = ele->element_rect[1] + ele->element_rect[3] - ele->style.border_width;
+		s32 p0y = ele->element_rect[1] + ele->element_rect[3] -
+                        ele->style.border_width - WUT_SCROLLBAR_WIDTH;
+
+		s32 p1x = ele->element_rect[0] + ele->element_rect[2] -
+                        ele->style.border_width;
+		s32 p1y = ele->element_rect[1] + ele->element_rect[3] -
+                        ele->style.border_width;
+
+                /* 
+                 * If the vertical scrollbar is also active, reduce size to
+                 * prevent overlap.
+                 */
+	        if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
+                        p1x -= 10;
+                }
 
 		wut_irect_set(rect,
 				p0x,
@@ -475,8 +492,13 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		/* Unioform: u_rect */
 		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
 
-		/* Uniform: u_scroll */
-		s_index[2] = wut_bat_push_uniform(ren, 6, h_scroll);
+		/* Uniform: u_scroll */	
+		scroll[1] = (p1x - p0x) *
+                        ((f32)ele->content_rect[2] / (f32)ele->content_size[0]);
+		scroll[0] = (p1x - p0x - 2 - scroll[1]) *
+                        ((f32)ele->content_offset[0] / (f32)(ele->content_size[0] -
+                                ele->content_rect[2]));
+		s_index[2] = wut_bat_push_uniform(ren, 6, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
@@ -585,7 +607,6 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
-	printf("Create widget with %p\n", data);
 	if(wut_etm_load(ele, data) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;

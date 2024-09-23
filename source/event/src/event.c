@@ -89,7 +89,6 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 
 			default:
 				evt_get_position(type, raw, pos);
-                                printf("Position (%d, %d)\n", pos[0], pos[1]);
 				ele = wut_GetHoveredElement(win->document, &pos); 
 		}
 	}
