@@ -4,8 +4,9 @@
 
 #include "document/inc/document.h"
 
-#define WUT_EVD_DEBUG		0
+#define WUT_EVD_DEBUG		1
 
+#define WUT_EVD_SCROLL_FACTOR   20
 
 WUT_INTERN s8 evd_dump(struct wut_Event *evt)
 {
@@ -14,6 +15,8 @@ WUT_INTERN s8 evd_dump(struct wut_Event *evt)
 
 	if(evt->context.element)
 		printf("element: %s   ", evt->context.element->name);
+        else
+                printf("element: <unknown>   ");
 
 	printf("\n");
 
@@ -147,27 +150,28 @@ WUT_INTERN s8 evd_elementremoved(struct wut_Event *evt)
 WUT_INTERN s8 evd_elemententer(struct wut_Event *evt)
 {
 #if WUT_EVD_DEBUG
-	printf("elemententer\n");
+        printf("Event: %p\n", (void *)evt);
+        printf("Element: %p\n", (void *)evt->context.element);
+
+        /* 
+	printf("elemententer (%s)\n", evt->context.element->name);
 	evd_dump(evt);
+        */
 #endif
 
 	/* TODO: This is only a Hotfix*/
 	if(!evt->context.element) return 1;
-
-	printf("Entered %s\n", evt->context.element->name);
-
-	return 1;
+	
+        return 1;
 }
 
 
 WUT_INTERN s8 evd_elementleave(struct wut_Event *evt)
 {
 #if WUT_EVD_DEBUG
-	printf("elementleave\n");
+	printf("elementleave (%s)\n", evt->context.element->name);
 	evd_dump(evt);
 #endif
-	
-	printf("Leave %s\n", evt->context.element->name);
 
 	return 1;
 }
@@ -176,11 +180,9 @@ WUT_INTERN s8 evd_elementleave(struct wut_Event *evt)
 WUT_INTERN s8 evd_elementselect(struct wut_Event *evt)
 {
 #if WUT_EVD_DEBUG
-	printf("elementselect\n");
+	printf("elementselect (%s)\n", evt->context.element->name);
 	evd_dump(evt);
 #endif
-
-	printf("Select %s\n", evt->context.element->name);
 
 	return 1;
 }
@@ -189,11 +191,9 @@ WUT_INTERN s8 evd_elementselect(struct wut_Event *evt)
 WUT_INTERN s8 evd_elementunselect(struct wut_Event *evt)
 {
 #if WUT_EVD_DEBUG
-	printf("elementunselect\n");
+	printf("elementunselect (%s)\n", evt->context.element->name);
 	evd_dump(evt);
 #endif
-
-	printf("Unselect %s\n", evt->context.element->name);
 
 	return 1;
 }
@@ -246,16 +246,25 @@ WUT_INTERN s8 evd_mousebuttonup(struct wut_Event *evt)
 WUT_INTERN s8 evd_mousewheel(struct wut_Event *evt)
 {
 	struct wut_Element *ele = evt->context.element;
-	s32 value[2];
-	s8 f = 8;
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+        s32 value[2];
 
 #if WUT_EVD_DEBUG
 	printf("mousehweel\n");
 	evd_dump(evt);
 #endif
 
-	value[0] = evt->raw.wheel.x * f;
-	value[1] = evt->raw.wheel.y * f;
+        
+        if(keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT]) {
+        	value[0] = evt->raw.wheel.y * WUT_EVD_SCROLL_FACTOR;
+                value[1] = 0;
+        }
+        else {
+                
+                value[0] = 0;
+        	value[1] = evt->raw.wheel.y * WUT_EVD_SCROLL_FACTOR;
+        }
 
 	return wut_ele_scroll(ele, value);
 }

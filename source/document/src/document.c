@@ -129,8 +129,14 @@ WUT_INTERN s8 doc_cfnc_show(struct wut_Element  *ele, void *data)
                 lim -= 2;
         }
 
-        printf("%s ", ele->name);
-        lim -= strlen(ele->name);
+        if(strlen(ele->name) > 0) {
+                printf("%s ", ele->name);
+                lim -= strlen(ele->name);
+        }
+        else {
+                printf("<no-name> ");
+                lim -= 9;
+        }
 
         for(i = 0; i < lim; i++)
                 printf(" ");
@@ -217,6 +223,54 @@ WUT_INTERN void doc_destroy_batch(struct wut_Document *doc)
 }
 
 
+WUT_INTERN char *doc_opening_tag(char *ptr, char *tag, char *name,
+                char *classes)
+{
+        char *tag_start = ptr;
+        char *attr_start;
+        char *name_start;
+        char *class_start;
+
+        while (*ptr && *ptr != ' ' && *ptr != '>' && *ptr != '/') {
+                ptr++;
+        }
+
+        if(tag) {
+                strncpy(tag, tag_start, ptr - tag_start);
+        }
+
+        if (*ptr == ' ') {
+                attr_start = ++ptr;
+                while (*ptr && *ptr != '>') {
+                        if(strncmp(ptr, "name=\"", 6) == 0) {
+                                ptr += 6;
+                                name_start = ptr;
+                                while (*ptr && *ptr != '\"') {
+                                        ptr++;
+                                }
+                                if(name) {
+                                        strncpy(name, name_start, ptr - name_start);
+                                        name[ptr - name_start] = '\0';
+                                }
+                        }
+                        else if (strncmp(ptr, "class=\"", 7) == 0) {
+                                ptr += 7;
+                                class_start = ptr;
+                                while (*ptr && *ptr != '\"') {
+                                        ptr++;
+                                }
+                                if(classes) {
+                                        strncpy(classes, class_start, ptr - class_start);
+                                        classes[ptr - class_start] = '\0';
+                                }
+                        } 
+                        ptr++;
+                }
+        }
+
+        return ptr;
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -267,7 +321,7 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
                 goto err_destroy_views;
 
         /* Create the style class table */
-        if(!(doc->classes = wut_cls_create_table()))
+        if(!(doc->class_table = wut_cls_create_table()))
                 goto err_destroy_batch;
 
         /* Update the body element */
@@ -299,7 +353,7 @@ WUT_API void wut_DestroyDocument(struct wut_Document *doc)
                 return;
 
         /* Destroy the style class table */
-        wut_cls_destroy_table(doc->classes);
+        wut_cls_destroy_table(doc->class_table);
 
         /* Detach and destroy the batch renderer */
         doc_destroy_batch(doc);
@@ -535,18 +589,28 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
 
 
 WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
-                struct wut_Element *ele)
+                struct wut_Element *start)
 {
         FILE *file;
 
-#define MAX_LINE_LENGTH 512
-
         char line[MAX_LINE_LENGTH];
-        int in_tag = 0;
+        char *ptr;
+
         char tag[MAX_LINE_LENGTH];
+        char name[MAX_LINE_LENGTH];
         char classes[MAX_LINE_LENGTH];
 
-        WUT_IGNORE(ele);
+        char *tag_start;
+
+        enum wut_eTag tagt;
+
+        struct wut_Element *run = start;
+        struct wut_Element *ele;
+
+
+        if(!run) {
+                run = doc->body;
+        }
 
         if(!(file = fopen(pth, "r"))) {
                 char swp[512];
@@ -555,60 +619,63 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                 return -1;
         }
 
+        memset(tag, 0, sizeof(tag));
+        memset(name, 0, sizeof(name));
+        memset(classes, 0, sizeof(classes));
+
         while (fgets(line, sizeof(line), file)) {
-                char *ptr = line;
+                ptr = line;
 
                 while (*ptr) {
-                        if (*ptr == '<') {
-                                char *tag_start;
-
-                                in_tag = 1;
-                                memset(tag, 0, sizeof(tag));
-                                memset(classes, 0, sizeof(classes));
-                                ptr++;
+                        if(strncmp(ptr, "</", 2) == 0) {
+                                ptr += 2;
                                 tag_start = ptr;
 
                                 while (*ptr && *ptr != ' ' && *ptr != '>' && *ptr != '/') {
                                         ptr++;
                                 }
 
-                                strncpy(tag, tag_start, ptr - tag_start);
-
-                                if (*ptr == ' ') {
-                                        char *attr_start = ++ptr;
-
-                                        while (*ptr && *ptr != '>') {
-                                                if (strncmp(ptr, "class=\"", 7) == 0) {
-                                                        char *class_start;
-                                                        ptr += 7;
-                                                        class_start = ptr;
-                                                        while (*ptr && *ptr != '\"') {
-                                                                ptr++;
-                                                        }
-                                                        strncpy(classes, class_start, ptr - class_start);
-                                                        classes[ptr - class_start] = '\0';
-                                                }
-                                                ptr++;
+                                if(strncmp(tag, tag_start, ptr - tag_start) == 0) {
+                                        if(run->parent) {
+                                                run = run->parent;
                                         }
                                 }
+                        }
+                        else if (*ptr == '<') {
+                                ptr++;
 
-                                if (*ptr == '>') {
-                                        in_tag = 0;
-                                        printf("Tag Name: %s\n", tag);
-                                        if (strlen(classes) > 0) {
-                                                printf("Classes: %s\n", classes);
-                                        } else {
-                                                printf("Classes: None\n");
-                                        }
+                                *name = 0;
+                                *classes = 0;
+
+                                ptr = doc_opening_tag(ptr, tag, name, classes);
+
+                                tagt = wut_tag_get(tag); 
+                                if(!(ele = wut_CreateElement(doc, name, tagt, NULL))) {
+                                        printf("Failed to create %s\n", name);
+                                        goto err_close_file;
                                 }
+
+                                /* Attach the element to the parent */
+                                wut_AttachElement(run, ele); 
+                                run = ele;
+
+                                /* Attach classes to the element */
+                                wut_AddClasses(ele, classes);
+
+
                         }
                         ptr++;
                 }
         }
+ 
+        wut_UpdateDocument(doc);
 
         fclose(file);
-
         return 0;
+
+err_close_file:
+        fclose(file);
+        return -1;
 }
 
 
@@ -631,7 +698,7 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                 return -1;
         }
 
-        tbl = doc->classes;
+        tbl = doc->class_table;
 
         if(!(file = fopen(pth, "r"))) {
                 char tmp[512];
@@ -667,6 +734,7 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                         else {
                                 wut_sat_reset(&ent);
 
+                                /* TODO: Newlines are read as attribute name */
                                 sscanf(trimmed_line, "%[^:]:%[^;];", attribute, value);
 
                                 /* Parse attribute and push to class */
@@ -681,7 +749,9 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                 }
         }
 
-        fclose(file);
 
+        wut_UpdateDocument(doc);
+
+        fclose(file);
         return 0;
 }

@@ -11,6 +11,7 @@
 #include "document/inc/document.h"
 
 
+#define WUT_EVT_DEBUG   0
 
 WUT_INTERN s8 evt_is_mouse(u32 type)
 {
@@ -88,6 +89,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 
 			default:
 				evt_get_position(type, raw, pos);
+                                printf("Position (%d, %d)\n", pos[0], pos[1]);
 				ele = wut_GetHoveredElement(win->document, &pos); 
 		}
 	}
@@ -159,7 +161,9 @@ WUT_INTERN void evt_translate_type(struct wut_Event *evt)
 			return;
 
 		default:
+#if WUT_EVT_DEBUG
 			printf("Event type unknown (%d)\n", evt->raw.type);
+#endif
 			return;
 	}
 }

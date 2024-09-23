@@ -38,7 +38,7 @@ struct wut_Document {
         s16 				batch_id;
 
         /* All available style classes for this document */
-        struct wut_ClassTable           *classes;
+        struct wut_ClassTable           *class_table;
 };
 
 struct wut_ElementSelector {
@@ -199,7 +199,7 @@ WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_API s8 wut_LoadElemnts(struct wut_Documnt *doc, char *pth,
+WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                 struct wut_Element *ele);
 
 /*

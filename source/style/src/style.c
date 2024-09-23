@@ -28,7 +28,7 @@ WUT_XMOD s8 wut_stl_init(struct wut_Style *style, struct wut_Style *ref)
 
 	/* First of all: Wipe everything */
 	memset(style, 0, sizeof(struct wut_Stylesheet));
-		
+
 	/* Then reset the stylesheet */
 	wut_ResetStyle(style);	
 
@@ -63,17 +63,22 @@ WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
 	run = style;
 	while(run) {
 		if(run->sheet.mask & (1<<id)) {
-			break;
+                	return wut_sht_get(&run->sheet, id, ret);
 		}
+
+                if(run->classes.mask & (1<<id)) {
+                        return wut_cls_find(&run->classes, id, ret);
+                }
 
 		run = run->ref;
 	}
 
-	return wut_sht_get(&run->sheet, id, ret);
+        return -1;
 }
 
 
-WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
+WUT_XMOD s8 wut_stl_process(struct wut_Style *style,
+                struct wut_StylePass *pass)
 {
 	u32 uref;
 
@@ -92,11 +97,10 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 
 	struct wut_Style *ref;
 	struct wut_Style *out;
-
+                        
 	ref = style->ref;
 	out = style;
 
-		
 	/*
 	 * CALCULATE REFERENCE SIZE
 	 */
@@ -380,6 +384,19 @@ WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass)
 }
 
 
+WUT_XMOD void wut_stl_add_classes(struct wut_Style *style, char *classes)
+{
+        wut_cls_add_names(&style->classes, classes);
+}
+
+
+WUT_XMOD void wut_stl_link_classes(struct wut_Style *style,
+                struct wut_ClassTable *tbl)
+{
+        wut_cls_link(tbl, &style->classes);
+}
+
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -398,6 +415,8 @@ WUT_API void wut_ResetStyle(struct wut_Style *style)
 	style->ref = NULL;
 
 	wut_sht_reset(&style->sheet);
+
+        wut_cls_reset_references(&style->classes);
 }
 
 

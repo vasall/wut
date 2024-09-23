@@ -137,6 +137,17 @@ WUT_XMOD s8 wut_sht_get(struct wut_Stylesheet *sheet, enum wut_eSheetAttribId id
  */
 WUT_XMOD void wut_sht_apply(struct wut_Stylesheet *sht, struct wut_Class *cls);
 
+
+/*
+ * Copy the stylesheet attributes from one to another.
+ *
+ * @dst: Pointer to the destination stylesheet
+ * @src: Pointer to the source stylesheet
+ */
+WUT_XMOD void wut_sht_copy(struct wut_Stylesheet *dst,
+                struct wut_Stylesheet *src);
+
+
 /*
  * Print the stylesheet in the console.
  *

@@ -1,1 +1,1 @@
-cd .. && bash cleanup.sh && bash build.sh && cd test
+cd .. && bash cleanup.sh && bash build.sh && cd example

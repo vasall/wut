@@ -42,6 +42,7 @@ enum wut_eRestyleType {
 struct wut_Style {
         struct wut_Style		*ref;
         struct wut_Stylesheet		sheet;
+        struct wut_ClassSheet           classes;
 
         /*
          * DISPLAY
@@ -140,10 +141,9 @@ WUT_XMOD s8 wut_stl_link(struct wut_Style *style, struct wut_Style *ref);
 
 
 /*
- * This function will aquire an attribute from the stylesheet. To do that, a
- * stylesheet has to be found which contains the wanted attribute. For that
- * purpose it will climb up the style-ladder until a stylesheet has been found
- * with the wanted attribute.
+ * Not to brag, but this function is great.
+ * This function will go up step-by-step until it finds a stylesheet or class
+ * with the requested attribute.
  *
  * @style: Pointer to the initial style struct
  * @id: The id of the attribute
@@ -165,8 +165,28 @@ WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_XMOD s8 wut_stl_process(struct wut_Style *style, struct wut_StylePass *pass);
+WUT_XMOD s8 wut_stl_process(struct wut_Style *style,
+                struct wut_StylePass *pass);
 
+
+/*
+ * Add class names to the style struct. To actually link the classes you need to
+ * call wut_stl_link_classes().
+ *
+ * @style: The style struct to add class names
+ * @classes: A string containing the class names
+ */
+WUT_XMOD void wut_stl_add_classes(struct wut_Style *style, char *classes);
+
+
+/*
+ * Actually link the classes in the reference sheet.
+ *
+ * @style: Pointer to the style struct
+ * @tbl: The class table containing all classes to link to
+ */
+WUT_XMOD void wut_stl_link_classes(struct wut_Style *style,
+                struct wut_ClassTable *tbl);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

@@ -4,10 +4,9 @@
 
 #include "../wut.h"
 
-#define STYLE_FILES     2
+#define STYLE_FILES     1
 char *style_paths[STYLE_FILES] = {
-        "style.wts",
-        "style_two.wts"
+        "style.wts"
 };
 
 
@@ -18,6 +17,8 @@ int main(void)
         struct wut_Window *win;
         struct wut_Document *doc;
         struct wut_Context *ctx;
+
+        struct wut_Element *ele;
 
         printf("Initialize WUT framework...\n");
         if(wut_Init() < 0) {
@@ -47,8 +48,8 @@ int main(void)
                 printf("Done\n");
         }
 
-        wut_PrintClasses(doc->classes);
-        printf("Load the elements from file...\n");
+        /* wut_PrintClasses(doc->classes); */
+        printf("Load the elements from file \"%s\"...\n", "elements.wtd");
 
         if(wut_LoadElements(doc, "elements.wtd", NULL) < 0) {
                 printf("Failed to load elements from file\n");
@@ -56,8 +57,12 @@ int main(void)
         }
         printf("Done\n");
 
+        printf("----------------------------------------------------------\n");
+        printf("DOCUMENT TREE:\n");
         wut_ShowDocumentTree(doc, NULL);
-
+        printf("----------------------------------------------------------\n");
+        wut_PrintClasses(doc->class_table);
+        printf("----------------------------------------------------------\n");
         while(wut_Update()) {
 
         }

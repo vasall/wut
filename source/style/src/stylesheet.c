@@ -259,6 +259,13 @@ WUT_XMOD void wut_sht_apply(struct wut_Stylesheet *sht, struct wut_Class *cls)
 }
 
 
+WUT_XMOD void wut_sht_copy(struct wut_Stylesheet *dst,
+                struct wut_Stylesheet *src)
+{
+        memcpy(dst, src, sizeof(struct wut_Stylesheet));
+}
+
+
 WUT_XMOD void wut_sht_print(struct wut_Stylesheet *sheet)
 {
         if(!sheet)

@@ -135,10 +135,6 @@ struct wut_Element {
 
 
         struct wut_EventHandler *event_handler;
-
-        /* Style class names and the appropriate links */
-        char                    class_names[WUT_ELE_CLASSES][128];
-        struct wut_Class        *classes[WUT_ELE_CLASSES];
 };
 
 /*
@@ -235,6 +231,13 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren,
                 struct wut_Element *ele);
 
 
+/*
+ * Link the classes from the reference sheet to the actual classes in the class
+ * table.
+ *
+ * @ele: Pointer to the element
+ */
+WUT_XMOD void wut_ele_link_classes(struct wut_Element *ele);
 
 
 /*
@@ -292,10 +295,9 @@ WUT_API void wut_DetachElement(struct wut_Element *ele);
  * Add style classes to an element.
  *
  * @ele: Pointer to the element
- * @num: The number of classes to add
- * @name: The names of the classes to add
+ * @names: A string with the class names seperated by a space
  */
-WUT_API void wut_AddClasses(struct wut_Element *ele, s8 num, char **names);
+WUT_API void wut_AddClasses(struct wut_Element *ele, char *names);
 
 
 /*

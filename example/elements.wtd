@@ -1,2 +1,4 @@
-<block name="main" class="one two">
-</block>
+<block name="a" class="one"></block>
+<block name="b" class="one"></block>
+<block name="c" class="one"></block>
+<block name="d" class="one"></block>

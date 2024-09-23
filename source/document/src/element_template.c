@@ -117,6 +117,7 @@ WUT_INTERN s8 wut_etm_load_block(struct wut_Element *ele, void *data)
 
 	WUT_IGNORE(data);
 
+#if 0
 	/*
 	 * DISPLAY
 	 */
@@ -194,6 +195,7 @@ WUT_INTERN s8 wut_etm_load_block(struct wut_Element *ele, void *data)
 	wut_sht_parse(sheet, "text_mass: 50;");
 	wut_sht_parse(sheet, "text_options: none;");
 	wut_sht_parse(sheet, "text_wrap_mode: WORDWRAP;");
+#endif
 
 	return 0;
 }

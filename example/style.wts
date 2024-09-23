@@ -1,6 +1,10 @@
-.container {
-        width: 100pct;
-        height: 100pct;
+.one {
+        width: 80pct;
+        height: 100px;
 
         infill_mode: color;
+        infill_color: #00ff00;
+
+        spacing_top: 700px;
+        spacing_left: 200px;
 }
