@@ -94,6 +94,13 @@ WUT_INTERN void GLAPIENTRY gl_callback(GLenum source,
 WUT_INTERN s8 ctx_load_predef(struct wut_Context *ctx)
 {
 
+        ctx->def_scrollbar_shader = wut_CreateShader(
+                        ctx,
+                        "__def_scrollbar_shader",
+                        (const char *)_wut_prScrollbarVtxShd,
+                        (const char *)_wut_prScrollbarFragShd
+                        );
+
 	ctx->def_block_shader = wut_CreateShader(
 			ctx, 
 			"__def_block_shader", 
@@ -108,14 +115,13 @@ WUT_INTERN s8 ctx_load_predef(struct wut_Context *ctx)
 			(const char *)_wut_prTextureFragShd
 			);
 
-	printf("Load font shader...\n");
 	ctx->def_text_shader = wut_CreateShader(
 			ctx,
 			"__def_text_shader",
 			(const char *)_wut_prTextVtxShd,
 			(const char *)_wut_prTextFragShd
 			);
-	printf("done\n");
+
 	return 0;
 }
 

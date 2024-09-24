@@ -8,6 +8,14 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *		DEFAULT BLOCK SHADER
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+*/
+
 char *_wut_prBlockVtxShd = 
 "#version 420 core\n"
 "layout(location=0) in vec3 in_position;"
@@ -116,7 +124,7 @@ char *_wut_prBlockFragShd =
 "	vec4 color;"
 "	float dist;"
 ""
-"	int scrollbar_width = 10;"
+"	int scrollbar_width = 2;"
 "	int scroll_thumbsize = 8;"
 "	int scroll_end_padding = 1;"
 "	int scroll_side_padding = (scrollbar_width - scroll_thumbsize) / 2;"
@@ -126,7 +134,7 @@ char *_wut_prBlockFragShd =
 "	}"
 "	else {"
 "		switch(fs_type) {"
-"			case 1:"
+"			case 1:"    /* default block */
 "				if(loc.x <= fs_cpoints[0].x && loc.y <= fs_cpoints[0].y) corner = 0;"
 "				else if(loc.x >= fs_cpoints[1].x && loc.y <= fs_cpoints[1].y) corner = 1;"
 "				else if(loc.x >= fs_cpoints[2].x && loc.y >= fs_cpoints[2].y) corner = 2;"
@@ -149,7 +157,7 @@ char *_wut_prBlockFragShd =
 "				out_color = vec4(color.xyz, color.w * alpha);"
 "				break;"
 ""
-"			case 2:"
+"			case 2:"	/* vertical scrollbar */
 "				if(loc.y > fs_sides[0] + scroll_end_padding + fs_scroll[0] && loc.x < fs_sides[1] - scroll_side_padding && loc.y < fs_sides[0] + scroll_end_padding + fs_scroll[0] + fs_scroll[1] && loc.x > fs_sides[3] + scroll_side_padding) {"
 "					out_color = vec4(1, 0, 1, 1);"
 "				}"
@@ -157,7 +165,7 @@ char *_wut_prBlockFragShd =
 "					out_color = vec4(1, 1, 0, 1);"
 "				}"
 "				break;"
-"			case 3:"
+"			case 3:"	/* horizontal scrollbar */
 "				if(loc.y > fs_sides[0] + scroll_side_padding && loc.x < fs_sides[3] + scroll_end_padding + fs_scroll[0] + fs_scroll[1] && loc.y < fs_sides[2] - scroll_side_padding && loc.x > fs_sides[3] + scroll_end_padding + fs_scroll[0]) {"
 "					out_color = vec4(1, 0, 1, 1);"
 "				}"
