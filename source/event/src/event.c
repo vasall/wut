@@ -54,7 +54,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 	u32 type = raw->type;
 	struct wut_Window *win;
 	struct wut_Element *ele = NULL;
-	wut_iVec2 pos;
+	wut_iVec2 pos = {0, 0};
 
 	/*
 	 * First get the window.
@@ -79,8 +79,9 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 	 * used.
 	 */
 	if(evt_is_mouse(type)) {
-
-		switch(type) {
+		evt_get_position(type, raw, pos);
+		
+                switch(type) {
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			case SDL_MOUSEWHEEL:
@@ -88,7 +89,6 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 				break;
 
 			default:
-				evt_get_position(type, raw, pos);
 				ele = wut_GetHoveredElement(win->document, &pos); 
 		}
 	}
@@ -102,6 +102,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 	/*
 	 * Attach the info to the context.
 	 */
+        wut_ivec2_cpy(ctx->position, pos);
 	ctx->window = win;
 	ctx->element = ele;
 }

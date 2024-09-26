@@ -209,7 +209,8 @@ WUT_INTERN s8 evd_mousemotion(struct wut_Event *evt)
 	printf("mousemotion\n");
 	evd_dump(evt);
 #endif
-	
+
+        wut_doc_track_scrollbar(s_w->document, s_e, evt->context.position);
 
 	return wut_win_hover(s_w, s_e);
 }

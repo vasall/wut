@@ -1,4 +1,6 @@
-<block name="a" class="one"></block>
-<block name="b" class="one"></block>
-<block name="c" class="one"></block>
-<block name="d" class="one"></block>
+<block name="main" class="container">
+        <block name="a" class="one"></block>
+        <block name="b" class="one"></block>
+        <block name="c" class="one"></block>
+        <block name="d" class="one"></block>
+</block>

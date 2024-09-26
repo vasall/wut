@@ -15,6 +15,22 @@
 
 #include "style/inc/class.h"
 
+struct wut_DocumentTrackTable {
+        /* 
+         * This flag indicates if the document has changed, and the element to
+         * update from. This will reduce the times the document will be updated.
+         */
+        s8                              has_changed;
+        struct wut_Element              *update_element;
+
+
+        /* The lowest element with a scrollbar relative to the cursor */
+        struct wut_Element              *scrollbar_element;
+
+        struct wut_Element		*selected;
+        struct wut_Element		*hovered;
+};
+
 struct wut_Document {
         /* A pointer to the window this document belongs to */
         struct wut_Window 		*window;
@@ -25,8 +41,11 @@ struct wut_Document {
         /* The body element, to which all future elements will be attached */
         struct wut_Element 		*body;
 
-        struct wut_Element		*selected;
-        struct wut_Element		*hovered;
+        /* All available style classes for this document */
+        struct wut_ClassTable           *class_table;
+
+        /* The activity table containing all active elements */
+        struct wut_DocumentTrackTable   track_table;
 
         /* A reference to the window size */
         wut_iRect 		        *shape_ref;
@@ -36,9 +55,7 @@ struct wut_Document {
 
         /* The main batch render */
         s16 				batch_id;
-
-        /* All available style classes for this document */
-        struct wut_ClassTable           *class_table;
+        s16                             scroll_id;
 };
 
 struct wut_ElementSelector {
@@ -47,6 +64,31 @@ struct wut_ElementSelector {
         wut_iVec2 	        *pos;
         struct wut_Element 	*element;
 };
+
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+/*
+ * Mark the document as changed, so it will be updated.
+ *
+ * @doc: Pointer to the document
+ */
+WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc);
+
+/*
+ * Update the element with the closes scrollbar in the tracking table.
+ *
+ * @doc: Pointer to the document
+ * @ele: The element the cursor is currently hovering
+ */
+WUT_XMOD void wut_doc_track_scrollbar(struct wut_Document *doc,
+                struct wut_Element *ele, wut_iVec2 pos);
 
 
 /*

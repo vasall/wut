@@ -13,6 +13,8 @@ typedef s8 (*wut_EventFunc)(struct wut_Event *, void *);
 
 #include "window/inc/window.h"
 
+#include "math/inc/vector.h"
+
 /* Catch-all */
 #include "event/inc/event_default.h"
 #include "event/inc/event_listener.h"
@@ -39,7 +41,8 @@ struct wut_EventData {
 };
 
 struct wut_EventContext {
-	struct wut_Window 	*window;
+	wut_iVec2               position;
+        struct wut_Window 	*window;
 	struct wut_Element 	*element;
 };
 

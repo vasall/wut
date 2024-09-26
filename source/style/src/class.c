@@ -59,6 +59,24 @@ WUT_INTERN s8 cls_cfnc_search(void *ptr, s16 idx, void *data)
 
 }
 
+
+WUT_INTERN s8 cls_cfnc_write(void *ptr, s16 idx, void *data)
+{
+        struct wut_SheetEntry *ent = (struct wut_SheetEntry *)ptr;
+        struct cls_search_pass *pass = (struct cls_search_pass *)data;
+
+        WUT_IGNORE(idx);
+
+        if(ent->id == pass->id) {
+                pass->found = 1;
+                memcpy(ent, pass->entry, sizeof(struct wut_SheetEntry));
+                return 1;
+        }
+
+        return 0;
+}
+
+
 WUT_INTERN s8 cls_search(struct wut_Class *cls, enum wut_eSheetAttribId id,
                 struct wut_SheetEntry *ret)
 {
@@ -118,14 +136,24 @@ WUT_XMOD void wut_cls_destroy(struct wut_Class *cls)
 }
 
 
-WUT_XMOD void wut_cls_push_attr(struct wut_Class *cls,
+WUT_XMOD void wut_cls_set_attr(struct wut_Class *cls,
                 struct wut_SheetEntry *ent)
 {
-        /* Push attribute into list */
-        wut_PushList(cls->attributes, ent); 
+        struct cls_search_pass pass;
 
-        /* Add attribute flag to mask */
-        cls->mask |= (1<<ent->id);
+        pass.found = 0;
+        pass.id = ent->id;
+        pass.entry = ent;
+
+        wut_ApplyList(cls->attributes, &cls_cfnc_write, &pass);
+
+        if(pass.found == 0) {
+                /* Push attribute into list */
+                wut_PushList(cls->attributes, ent); 
+
+                /* Add attribute flag to mask */
+                cls->mask |= (1<<ent->id);
+        }
 }
 
 

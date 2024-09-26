@@ -16,10 +16,13 @@
 #define MAX_CLASS_NAME_LENGTH 100
 #define MAX_ATTRIBUTE_LENGTH 100
 
+
 /*
- * 
- *     CALLBACK-FUNCTIONS
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
+ *				CALLBACK-FUNCTIONS
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
 WUT_INTERN s8 doc_cfnc_remove(struct wut_Element *ele, void *data)
@@ -165,7 +168,21 @@ WUT_INTERN void doc_batch_cfnc_push(struct wut_Batch *ren, void *data)
         frame[0] = (*ref)[2];
         frame[1] = (*ref)[3];
         wut_bat_push_uniform(ren, 0, frame);
+}
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				INTERNAL-FUNCTIONS
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
+{
+        doc->track_table.scrollbar_element = NULL;
+        doc->track_table.selected = NULL;
+        doc->track_table.hovered = NULL;
 }
 
 
@@ -174,45 +191,91 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
         struct wut_Shader *shd;
         struct wut_Batch *ren;
 
-        struct wut_VertexAttrib v_attributes[] = {
+        struct wut_VertexAttrib v_block_attributes[] = {
                 {3, GL_FLOAT},		/* position */
                 {3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
                 {1, GL_INT}		/* type */
         };
 
-        struct wut_UniformTemp uniforms[] = {
-                {"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT},	 /* 0 */
-                {"u_rect", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},	 /* 1 */
-                {"u_color", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT},	 /* 2 */
-                {"u_radius", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}, /* 3 */
-                {"u_bwidth", WUT_UNI_1IV, 200, WUT_UNI_F_DEFAULT}, /* 4 */
-                {"u_bcolor", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT}, /* 5 */
-                {"u_scroll", WUT_UNI_2IV, 200, WUT_UNI_F_DEFAULT}, /* 6 */
-                {"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}	 /* 7 */
+        struct wut_UniformTemp block_uniforms[] = {
+                {"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT},     /* 0 */
+                {"u_rect", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},    /* 1 */
+                {"u_color", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT},   /* 2 */
+                {"u_radius", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},  /* 3 */
+                {"u_bwidth", WUT_UNI_1IV, 200, WUT_UNI_F_DEFAULT},  /* 4 */
+                {"u_bcolor", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT},  /* 5 */
+                {"u_scroll", WUT_UNI_2IV, 200, WUT_UNI_F_DEFAULT},  /* 6 */
+                {"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}    /* 7 */
+        };
+ 
+        struct wut_VertexAttrib v_scroll_attributes[] = {
+                {3, GL_FLOAT},		/* position */
+                {3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
+                {1, GL_INT}		/* type */
+        };
+
+        struct wut_UniformTemp scroll_uniforms[] = {
+                {"u_frame", WUT_UNI_2IV, 1, WUT_UNI_F_DEFAULT},     /* 0 */
+                {"u_rect", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT},    /* 1 */
+                {"u_color", WUT_UNI_4FV, 200, WUT_UNI_F_DEFAULT},   /* 2 */
+                {"u_width", WUT_UNI_1IV, 200, WUT_UNI_F_DEFAULT},   /* 3 */
+                {"u_scroll", WUT_UNI_2IV, 200, WUT_UNI_F_DEFAULT},  /* 4 */
+                {"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}    /* 5 */
         };
 
         shd = wut_GetShader(doc->context, "__def_block_shader");
 
         ren = wut_bat_create(
-                        shd,		/* Pointer to the shader to use */
-                        NULL,		/* Pointer to the texture to use */
-                        3,		/* Number of vertex attributes */
-                        v_attributes,	/* List of all vertex attributes */
-                        6000,		/* Vertex capacity */
-                        6000,		/* Index capacity */
-                        8,		/* Number of uniform buffers */
-                        uniforms,	/* List of all uniforms */
+                        shd,		        /* Pointer to the shader to use */
+                        NULL,		        /* Pointer to the texture to use */
+                        3,		        /* Number of vertex attributes */
+                        v_block_attributes,	/* List of all vertex attributes */
+                        6000,		        /* Vertex capacity */
+                        6000,		        /* Index capacity */
+                        8,		        /* Number of uniform buffers */
+                        block_uniforms,	        /* List of all uniforms */
                         &doc_batch_cfnc_push,
                         doc->shape_ref
                         );
 
-        if(!ren)
+        if(!ren) {
+                printf("Failed to create batch renderer for block\n");
                 return -1;
+        }
 
         if((doc->batch_id = wut_ContextAddBatch(doc->context, &ren)) < 0) {
                 wut_bat_destroy(ren);
                 return -1;
         }
+
+
+        /*  */
+
+        shd = wut_GetShader(doc->context, "__def_scrollbar_shader");
+
+        ren = wut_bat_create(
+                        shd,		        /* Pointer to the shader to use */
+                        NULL,		        /* Pointer to the texture to use */
+                        3,		        /* Number of vertex attributes */
+                        v_scroll_attributes,	/* List of all vertex attributes */
+                        6000,		        /* Vertex capacity */
+                        6000,		        /* Index capacity */
+                        6,		        /* Number of uniform buffers */
+                        scroll_uniforms,	/* List of all uniforms */
+                        &doc_batch_cfnc_push,
+                        doc->shape_ref
+                        );
+
+        if(!ren) {
+                printf("Failed to create batch renderer for scroll\n");
+                return -1;
+        }
+
+        if((doc->scroll_id = wut_ContextAddBatch(doc->context, &ren)) < 0) {
+                wut_bat_destroy(ren);
+                return -1;
+        }
+
 
         return 0;
 }
@@ -274,6 +337,47 @@ WUT_INTERN char *doc_opening_tag(char *ptr, char *tag, char *name,
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
+ *				CROSS-MODULE-INTERFACE
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
+WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc)
+{
+
+}
+
+WUT_XMOD void wut_doc_track_scrollbar(struct wut_Document *doc,
+                struct wut_Element *run, wut_iVec2 pos)
+{
+        struct wut_Element *sele = NULL;
+
+        /*
+         * Get the closest element with enabled scrollbars.
+         */
+        while(run) {
+                printf("Check %s\n", run->name);
+
+                if(run->scrollbar_flags & ((1<<0)|(1<<1))) {
+                        printf("Has scrollbar\n");
+
+                        sele = run;
+                        break;
+                }
+
+                run = run->parent;
+        }
+       
+        if(sele) {
+                wut_ele_set_scrollbar_vis(doc->track_table.scrollbar_element, 0);
+                wut_ele_set_scrollbar_vis(sele, 1);
+                doc->track_table.scrollbar_element = sele;
+        }
+}
+
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
  *				APPLICATION-INTERFACE
  *
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -308,9 +412,8 @@ WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
         doc->body->parent = NULL;
         doc->body->layer = 0;
 
-        /* Reset the eventbased elements-buffers */
-        doc->selected	= NULL;
-        doc->hovered	= NULL;
+        /* Reset the tracking table */
+        doc_reset_track_table(doc);
 
         /* Create the view list */
         if(!(doc->views = wut_vie_create_list(doc->context)))
@@ -536,7 +639,14 @@ WUT_API void wut_RenderDocumentUIBranch(struct wut_Document *doc,
 
         wut_ele_hlf(ele,
                         &doc_cfnc_render_ui,
+                        NULL,
+                        ren);
+
+        ren = wut_ContextGetBatch(doc->context, doc->scroll_id);
+
+        wut_ele_hlf(ele,
                         &doc_cfnc_render_ui_post,
+                        NULL,
                         ren);
 }
 
@@ -664,7 +774,7 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                         ptr++;
                 }
         }
- 
+
         wut_UpdateDocument(doc);
 
         fclose(file);
@@ -690,6 +800,8 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
         struct wut_Class *cls = NULL;
         struct wut_SheetEntry ent;
 
+        s8 isnew = 1;
+
         if(!doc || !pth) {
                 WUT_ALARM(WUT_WARNING, "Invalid parameters");
                 return -1;
@@ -713,8 +825,14 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                         /* Extract the class name */
                         sscanf(trimmed_line, ".%[^ {]", class_name);
 
-                        /* Create a new class */
-                        cls = wut_cls_create(class_name);
+                        /* Check if the class already exists */
+                        if((cls = wut_cls_get(doc->class_table, class_name))) {
+                                isnew = 0;
+                        }
+                        /* Otherwise, create a new class */
+                        else {
+                                cls = wut_cls_create(class_name);
+                        }
                 }
 
                 /* Check if the line contains attributes (inside a block) */
@@ -724,8 +842,12 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                                 continue;
                         }
                         else if(strstr(trimmed_line, "}") != NULL) {
-                                /* Push class to table and reset */
-                                wut_cls_push_table(tbl, cls);
+                                /* Push class if it is new */
+                                if(isnew) {
+                                        wut_cls_push_table(tbl, cls);
+                                }
+
+                                isnew = 1;
                                 cls = NULL;
                         }
                         else {
@@ -741,7 +863,7 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                                                 &ent
                                              );
 
-                                wut_cls_push_attr(cls, &ent);
+                                wut_cls_set_attr(cls, &ent);
                         }
                 }
         }
