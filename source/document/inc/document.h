@@ -7,6 +7,7 @@
 #include "window/inc/window.h"
 
 #include "document/inc/element.h"
+#include "document/inc/loader.h"
 
 #include "graphic/inc/batch.h"
 #include "graphic/inc/object.h"
@@ -14,6 +15,14 @@
 #include "graphic/inc/flat.h"
 
 #include "style/inc/class.h"
+
+#define WUT_CHANGE_STYLE        (1<<0)
+#define WUT_CHANGE_ELEMENT      (1<<1)
+
+#define WUT_LOW                 1
+#define WUT_MIDDLE              2
+#define WUT_HIGH                3
+#define WUT_VERYHIGH            4
 
 struct wut_DocumentTrackTable {
         /* 
@@ -25,7 +34,7 @@ struct wut_DocumentTrackTable {
 
 
         /* The lowest element with a scrollbar relative to the cursor */
-        struct wut_Element              *scrollbar_element;
+        struct wut_Element              *scrollbar;
 
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
@@ -75,21 +84,62 @@ struct wut_ElementSelector {
  */
 
 /*
- * Mark the document as changed, so it will be updated.
+ * Update the document, update the document body and the elements contained that
+ * have changed.
  *
  * @doc: Pointer to the document
  */
-WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc);
+WUT_XMOD void wut_doc_update(struct wut_Document *doc);
+
 
 /*
+ * Mark the document as changed, so it will be updated.
+ *
+ * @doc: Pointer to the document
+ * @ele: The element to update from or NULL for the entire document
+ * @opt: What has changed
+ * @prio: How fast do the changes need to be processed
+ */
+WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
+                struct wut_Element *ele, s8 opt, s8 prio);
+
+/*
+ * TODO: Update comment
  * Update the element with the closes scrollbar in the tracking table.
  *
  * @doc: Pointer to the document
  * @ele: The element the cursor is currently hovering
+ *
+ * Returns: 1 if something happened, 0 if not
  */
-WUT_XMOD void wut_doc_track_scrollbar(struct wut_Document *doc,
+WUT_XMOD s8 wut_doc_track_move(struct wut_Document *doc,
                 struct wut_Element *ele, wut_iVec2 pos);
 
+
+/*
+ * TODO: Update comment
+ * Update the element with the closes scrollbar in the tracking table.
+ *
+ * @doc: Pointer to the document
+ * @ele: The element the cursor is currently hovering
+ *
+ * Returns: 1 if something happened, 0 if not
+ */
+WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
+                struct wut_Element *ele, wut_iVec2 pos);
+
+
+/*
+ * TODO: Update comment
+ * Update the element with the closes scrollbar in the tracking table.
+ *
+ * @doc: Pointer to the document
+ * @ele: The element the cursor is currently hovering
+ *
+ * Returns: 1 if something happened, 0 if not
+ */
+WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
+                struct wut_Element *ele, wut_iVec2 pos);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -231,27 +281,5 @@ WUT_API void wut_RenderDocument(struct wut_Document *doc);
  */
 WUT_API void wut_ShowDocumentTree(struct wut_Document *doc,
                 struct wut_Element *ele);
-
-/*
- * Load an element-tree from a file.
- *
- * @doc: Pointer to the document
- * @pth: Pointer to the file containing the element structure
- * @[atc]: The attachment element or NULL for body
- *
- * Returns: 0 on success or -1 if an error occurred
- */
-WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
-                struct wut_Element *ele);
-
-/*
- * Load classes from a style file and add them to the class table.
- *
- * @doc: Pointer to the document
- * @pth: The path to the style file
- *
- * Returns: 0 on success or -1 if na error occurred
- */
-WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth);
 
 #endif /* _WUT_DOCUMENT_H */

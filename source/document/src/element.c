@@ -30,11 +30,11 @@ WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 	if(par) {
 		ele->relative_offset[0] =
 			par->style.shape_content_delta[0] -	/* Border+Padding */
-			par->content_offset[0] +			/* Scrolling */
+			par->content_offset[0] +		/* Scrolling */
 			ele->layout_offset[0];			/* Layout */
 		ele->relative_offset[1] =
 			par->style.shape_content_delta[1] -	/* Border+Padding */
-			par->content_offset[1] +			/* Scrolling */
+			par->content_offset[1] +		/* Scrolling */
 			ele->layout_offset[1];			/* Layout */
 	}
 
@@ -110,7 +110,6 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 		}
 	}
 
-
 	/*
 	 * Now we have to validate the intersecting area with the window.
 	 * This will also check if the element even is inside the window.
@@ -127,26 +126,11 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	wut_irect_cpy(ele->visible_out_rect, dif);
 
 	/*
-	 * Now we can copy the resulting rectangle to the element.
+	 * Now we can copy the resulting rectangle to the element and mark the
+         * element as visible.
 	 */
 	wut_irect_cpy(ele->output_rect, out);
 	ele->info_flags |= WUT_ELE_F_VISIBLE;
-}
-
-
-WUT_INTERN void ele_calc_shape(struct wut_Element *ele)
-{
-	/* First calculate the relative and absolute offset */
-	ele_update_offset(ele);
-
-	/* Then calculate the different shape rectangles */
-	ele_calc_bounding_rect(ele);
-	ele_calc_element_rect(ele);
-	ele_calc_inner_rect(ele);
-	ele_calc_content_rect(ele);
-
-	/* Finally check visibility */
-	ele_calc_visible(ele);
 }
 
 
@@ -184,8 +168,8 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 	}
 
 	if(ret) {
-		/* Update after scrolling */
-		wut_UpdateDocumentBranch(ele->document, ele);
+                /* Mark the document to be updated */
+                wut_doc_has_changed(ele->document, ele, 0, WUT_HIGH);
 	}
 
 	return ret;
@@ -208,7 +192,17 @@ WUT_XMOD void wut_ele_check_scroll_act(struct wut_Element *ele, wut_iVec2 pos)
 
 WUT_XMOD void wut_ele_adjust_shape(struct wut_Element *ele)
 {
-	ele_calc_shape(ele);
+        /* First calculate the relative and absolute offset */
+	ele_update_offset(ele);
+
+	/* Then calculate the different shape rectangles */
+	ele_calc_bounding_rect(ele);
+	ele_calc_element_rect(ele);
+	ele_calc_inner_rect(ele);
+	ele_calc_content_rect(ele);
+
+	/* Finally check visibility */
+	ele_calc_visible(ele);
 }
 
 
@@ -277,9 +271,20 @@ WUT_XMOD void wut_ele_get_scrollbar_hori(struct wut_Element *ele,
 
 WUT_XMOD s8 wut_ele_compare(struct wut_Element *in1, struct wut_Element *in2)
 {
-	if(in1 == in2) {
+        /* If at least one of the elements is NULL... */
+        if(!in1 || !in2) {
+                /* If both elements are NULL, then they're equal */
+                if(in1 == in2) {
+                        return 1;
+                }
+
+                return 0;
+        }
+        
+	if(in1->id == in2->id) {
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -638,6 +643,8 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 	struct wut_Element *ele;
 	s8 name_len;
 
+        static s32 element_counter = 0;
+
 	if(doc == NULL || name == NULL) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
@@ -657,6 +664,7 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 
 	/* Set the identifier */
 	ele->identity = WUT_IDT_ELEMENT;
+        ele->id = element_counter++;
 
 	/* Set the basic attributes for the element */
 	strcpy(ele->name, name);
@@ -918,9 +926,11 @@ WUT_API s8 wut_ModifyElementStyle(struct wut_Element *ele, char *str)
 		goto err_return;
 	}
 
+        /* Parse the incoming instructions and update the stylesheet */
 	wut_ModifyStyle(&ele->style, str);
 
-	wut_UpdateDocumentBranch(ele->document, ele);
+        /* Mark the document for updating */
+        wut_doc_has_changed(ele->document, ele, 0, 0);
 
 	return 0;
 
