@@ -266,10 +266,11 @@ WUT_INTERN s8 evd_mousewheel(struct wut_Event *evt)
         	value[1] = evt->raw.wheel.y * WUT_EVD_SCROLL_FACTOR;
         }
 
-        if(wut_ele_scroll(s_e, value) == 0)
-                return 0;
+        return wut_ele_scroll(s_e, value);
 
+#if 0
 	return wut_doc_track_scroll(s_d, s_e, evt->context.position);
+#endif
 }
 
 

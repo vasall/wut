@@ -167,10 +167,9 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 		ret = 1;
 	}
 
-	if(ret) {
-                /* Mark the document to be updated */
-                wut_doc_has_changed(ele->document, ele, 0, WUT_HIGH);
-	}
+	
+        /* Mark the document to be updated */
+        wut_doc_has_changed(ele->document, ele->document->body, 0, WUT_HIGH);
 
 	return ret;
 }

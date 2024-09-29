@@ -212,11 +212,8 @@ WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
         doc->track_table.has_changed = 0;
         doc->track_table.update_element = NULL;
 
-        doc->track_table.scrollbar = NULL;
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
-
-        wut_ivec2_set(doc->track_table.cursor_position, 0, 0);
 }
 
 
@@ -339,60 +336,6 @@ WUT_INTERN struct wut_Element *doc_common_parent(struct wut_Element *e1,
 }
 
 
-WUT_INTERN void doc_discover_scrollbar(struct wut_Document *doc)
-{
-        struct wut_ElementSelector sel;
-
-        sel.state = 0;
-        sel.element = NULL;
-
-        wut_ele_hlf(doc->body, &doc_cfnc_discv_scrollbar_v, NULL, &sel);
-
-        if(sel.state == 1) {
-                doc->track_table.scrollbar = sel.element;
-                return;
-        }
-
-        doc->track_table.scrollbar = doc->body;
-}
-
-
-/* 
- * This function will find the closest scrollbar to the cursor, in the case of
- * mouse movement or scrolling.
- */
-WUT_INTERN void doc_find_scrollbar(struct wut_Document *doc,
-                struct wut_Element *run, wut_iVec2 pos)
-{
-        struct wut_Element *sele = NULL;
-
-        printf("Trying to find scrollbar\n");
-
-        /*
-         * Get the closest element with enabled scrollbars.
-         */
-        while(run) {
-                printf("Check %s\n", run->name);
-
-                if(run->scrollbar_flags & ((1<<0)|(1<<1))) {
-                        printf("Has scrollbar\n");
-
-                        sele = run;
-                        break;
-                }
-
-                run = run->parent;
-        }
-       
-        if(sele) {
-                wut_ele_set_scrollbar_vis(doc->track_table.scrollbar, 0);
-                wut_ele_set_scrollbar_vis(sele, 1);
-                doc->track_table.scrollbar = sele;
-        }
-}
-
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -411,6 +354,14 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc)
 
         ele = doc->track_table.update_element;
 
+        /* TODO: Home update flag is set, but not the element
+         * Probably fixed.*/
+        if(!ele) {
+                doc->track_table.has_changed = 0;
+                doc->track_table.update_element = NULL;
+                return;
+        }
+                
         /* First update the style */
         wut_ele_hlf(ele, &doc_cfnc_update_style, NULL, NULL);
 
@@ -444,22 +395,11 @@ WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
 
         uele = doc->track_table.update_element;
 
-        /* If the changes have to be processed now, we interrupt... */
-        if(prio >= WUT_HIGH) {
-                doc->track_table.update_element = ele;
-                doc->track_table.has_changed = 1;
-
-                wut_doc_update(doc);
-
-                /* and then reset */
-                doc->track_table.update_element = uele;
-                doc->track_table.has_changed = 1;
-                return;
-                
-        }
-
         /* If an element is given... */
         if(ele) {
+                
+                printf("%s changed!\n", ele->name);
+
                 /* and an element is already set, then get the common parent */
                 if(uele) {
                        uele = doc_common_parent(uele, ele); 
@@ -520,9 +460,6 @@ WUT_XMOD s8 wut_doc_track_move(struct wut_Document *doc,
 		        		ele
 		        		);
                 }
-
-                /* Also update the scrollbar element */
-                doc_find_scrollbar(doc, ele, cpos);
 	}
 
 	return 1;

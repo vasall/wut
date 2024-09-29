@@ -32,15 +32,8 @@ struct wut_DocumentTrackTable {
         s8                              has_changed;
         struct wut_Element              *update_element;
 
-
-        /* Pointer to the scrollbar which has been last used */
-        struct wut_Element              *scrollbar;
-        s8                              scrollbar_orientation;
-
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
-
-        wut_iVec2                       cursor_position;
 };
 
 struct wut_Document {
