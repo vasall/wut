@@ -55,17 +55,17 @@ WUT_INTERN s8 doc_cfnc_findpos(struct wut_Element *ele, void *data)
         struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
         wut_iRect rect;
 
-        printf("Check (%d, %d)\n", (*sel->pos)[0], sel->pos[1]);
+        printf("Check (%d, %d)\n", sel->pos[0], sel->pos[1]);
 
         wut_GetElementBox(ele, rect);
 
         if(sel->state == 1)
                 return 1;
 
-        if((*sel->pos)[0] < rect[0] || (*sel->pos)[0] > (rect[0] + rect[2]))
+        if(sel->pos[0] < rect[0] || sel->pos[0] > (rect[0] + rect[2]))
                 return 0;
 
-        if((*sel->pos)[1] < rect[1] || (*sel->pos)[1] > (rect[1] + rect[3]))
+        if(sel->pos[1] < rect[1] || sel->pos[1] > (rect[1] + rect[3]))
                 return 0;
 
         sel->element = ele;
@@ -169,12 +169,11 @@ WUT_INTERN void doc_batch_cfnc_push(struct wut_Batch *ren, void *data)
 }
 
 
-WUT_INTERN s8 doc_cfnc_discv_scrollbar(struct wut_Element *ele, void *data)
+WUT_INTERN s8 doc_cfnc_discv_scrollbar_v(struct wut_Element *ele, void *data)
 {
         struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
 
-        if(ele->scrollbar_flags & ((1<<0)|(1<<1))) {
-                printf("Has scrollbar %s\n", ele->name);
+        if(ele->scrollbar_flags & (1<<0)) {
                 sel->state = 1;
                 sel->element = ele;
 
@@ -183,6 +182,22 @@ WUT_INTERN s8 doc_cfnc_discv_scrollbar(struct wut_Element *ele, void *data)
 
         return 0;
 }
+
+
+WUT_INTERN s8 doc_cfnc_discv_scrollbar_h(struct wut_Element *ele, void *data)
+{
+        struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
+
+        if(ele->scrollbar_flags & (1<<1)) {
+                sel->state = 1;
+                sel->element = ele;
+
+                return 1;
+        }
+
+        return 0;
+}
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -197,7 +212,8 @@ WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
         doc->track_table.has_changed = 0;
         doc->track_table.update_element = NULL;
 
-        doc->track_table.scrollbar = NULL;
+        doc->track_table.scrollbar_v = NULL;
+        doc->track_table.scrollbar_h = NULL;
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
 }
@@ -329,7 +345,7 @@ WUT_INTERN void doc_discover_scrollbar(struct wut_Document *doc)
         sel.state = 0;
         sel.element = NULL;
 
-        wut_ele_hlf(doc->body, &doc_cfnc_discv_scrollbar, NULL, &sel);
+        wut_ele_hlf(doc->body, &doc_cfnc_discv_scrollbar_v, NULL, &sel);
 
         if(sel.state == 1) {
                 doc->track_table.scrollbar = sel.element;
@@ -522,7 +538,7 @@ WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
          * Because all elements have been moved, we have to recheck the hovered
          * element.
          */
-        ele = wut_GetHoveredElement(doc, &pos);
+        ele = wut_GetHoveredElement(doc, pos);
 
 	/*
 	 * Check if the hovered element has changed.
@@ -788,7 +804,7 @@ err_return:
 
 
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                wut_iVec2 *pos)
+                wut_iVec2 pos)
 {
         struct wut_ElementSelector sel;
 
@@ -798,7 +814,7 @@ WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
         }
 
         sel.state = 0;
-        sel.pos = pos;
+        wut_ivec2_cpy(sel.pos, pos);
         sel.element = NULL;
 
         wut_ele_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);

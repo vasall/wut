@@ -10,6 +10,14 @@
 struct wut_coreContainer _wut_coreContainer;
 
 
+/*
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ *
+ *				INTERNAL-FUNCTIONS
+ *
+ * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+ */
+
 
 
 /*
@@ -27,7 +35,6 @@ WUT_INTERN void cor_reset(void)
 	/* Reset active window */
 	wut_cor_set_active_window(NULL);
 }
-
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -149,7 +156,7 @@ WUT_API s8 wut_Update(void)
 	wut_evt_update();
 
 	/* Redraw all visible windows */
-	wut_win_redraw_all();
+	wut_win_update_all();
 
 	return 1;
 }

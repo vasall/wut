@@ -34,7 +34,8 @@ struct wut_DocumentTrackTable {
 
 
         /* The lowest element with a scrollbar relative to the cursor */
-        struct wut_Element              *scrollbar;
+        struct wut_Element              *scrollbar_v;
+        struct wut_Element              *scrollbar_h;
 
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
@@ -70,7 +71,7 @@ struct wut_Document {
 struct wut_ElementSelector {
         s8 			state;
         char 			*name;
-        wut_iVec2 	        *pos;
+        wut_iVec2 	        pos;
         struct wut_Element 	*element;
 };
 
@@ -224,7 +225,7 @@ WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name)
  * 	    occurred or no element could be found
  */
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                wut_iVec2 *pos);
+                wut_iVec2 pos);
 
 
 /*

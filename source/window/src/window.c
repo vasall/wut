@@ -59,9 +59,6 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	win->left_window = NULL;
 	win->right_window = NULL;
 
-	win->hovered = NULL;
-	win->selected = NULL;
-
 	/* Create the rendering context used by the window */
 	if(!(win->context = wut_CreateContext(win))) {
 		WUT_ALARM(WUT_ERROR, "Failed to create rendering context");
@@ -191,10 +188,21 @@ WUT_INTERN s8 win_cfnc_close(struct wut_Window *w, void *data)
 	return 0;
 }
 
-WUT_INTERN s8 win_cfnc_redraw(struct wut_Window *win, void *data)
+WUT_INTERN s8 win_cfnc_update(struct wut_Window *win, void *data)
 {
 	WUT_IGNORE(data);
 
+        /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+         * 
+         * First update the contained document.
+         */
+        wut_doc_update(win->document);
+
+
+        /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+         * 
+         * Then render the window.
+         */
 	/* Select the current context */
 	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);
 
@@ -291,92 +299,9 @@ WUT_XMOD void wut_win_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
 }
 
 
-WUT_XMOD void wut_win_redraw(struct wut_Window *win)
+WUT_XMOD void wut_win_update_all(void)
 {
-	win_cfnc_redraw(win, NULL);
-}
-
-
-WUT_XMOD void wut_win_redraw_all(void)
-{
-	wut_win_hlf(wut_cor_get_main_window(), &win_cfnc_redraw, NULL, NULL);
-}
-
-
-WUT_XMOD s8 wut_win_hover(struct wut_Window *win, struct wut_Element *ele)
-{
-	struct wut_Element *old_hovered;
-
-	/*
-	 * Check if the hovered element has changed.
-	 */
-	if(!(wut_ele_compare(win->hovered, ele))) {
-		old_hovered = win->hovered;
-
-		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(win->hovered, WUT_ELE_F_HOVERED, 0);
-		wut_ele_mod_info(ele, WUT_ELE_F_HOVERED, 1);
-
-		/* Then link the new element */
-		win->hovered = ele;
-
-		/* Lastly trigger the events */
-		if(old_hovered) {
-			wut_evt_trigger_raw(
-					WUT_EVT_ELEMENTLEAVE,
-					win,
-					old_hovered
-					);
-		}
-
-		wut_evt_trigger_raw(
-				WUT_EVT_ELEMENTENTER,
-				win,
-				ele
-				);
-
-	}
-
-	return 1;
-}
-
-
-WUT_XMOD s8 wut_win_select(struct wut_Window *win, struct wut_Element *ele)
-{
-	struct wut_Element *old_selected;
-
-	/*
-	 * Check if the selected element has changed.
-	 */
-	if(!(wut_ele_compare(win->selected, ele))) {
-		old_selected = win->selected;
-
-		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(win->selected, WUT_ELE_F_SELECTED, 0);
-		wut_ele_mod_info(ele, WUT_ELE_F_SELECTED, 1);
-
-		/* Then link the new element */
-		win->selected = ele;
-
-		/* Lastly trigger the events */
-		if(old_selected) {
-			wut_evt_trigger_raw(
-					WUT_EVT_ELEMENTUNSELECT,
-					win,
-					old_selected
-					);
-		}
-
-		wut_evt_trigger_raw(
-				WUT_EVT_ELEMENTSELECT,
-				win,
-				ele
-				);
-
-		return 1;
-	}
-
-	return 0;
+	wut_win_hlf(wut_cor_get_main_window(), &win_cfnc_update, NULL, NULL);
 }
 
 
