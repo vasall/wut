@@ -85,12 +85,9 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
                 switch(type) {
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEWHEEL:
 				ele = win->document->track_table.hovered;
                                 break;
-
-			case SDL_MOUSEWHEEL:
-                                ele = win->document->track_table.scrollbar;
-				break;
 
 			default:
 				ele = wut_GetHoveredElement(win->document, pos); 

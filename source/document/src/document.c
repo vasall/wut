@@ -212,10 +212,11 @@ WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
         doc->track_table.has_changed = 0;
         doc->track_table.update_element = NULL;
 
-        doc->track_table.scrollbar_v = NULL;
-        doc->track_table.scrollbar_h = NULL;
+        doc->track_table.scrollbar = NULL;
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
+
+        wut_ivec2_set(doc->track_table.cursor_position, 0, 0);
 }
 
 
@@ -571,9 +572,6 @@ WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
 		        		ele
 		        		);
                 }
-
-                /* Also update the scrollbar element */
-                doc_find_scrollbar(doc, ele, pos);
 	}
 
 	return 1;

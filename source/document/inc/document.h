@@ -33,12 +33,14 @@ struct wut_DocumentTrackTable {
         struct wut_Element              *update_element;
 
 
-        /* The lowest element with a scrollbar relative to the cursor */
-        struct wut_Element              *scrollbar_v;
-        struct wut_Element              *scrollbar_h;
+        /* Pointer to the scrollbar which has been last used */
+        struct wut_Element              *scrollbar;
+        s8                              scrollbar_orientation;
 
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
+
+        wut_iVec2                       cursor_position;
 };
 
 struct wut_Document {
