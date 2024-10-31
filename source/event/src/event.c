@@ -90,7 +90,7 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
                                 break;
 
 			default:
-				ele = wut_GetHoveredElement(win->document, pos); 
+				ele = wut_doc_hovered(win->document, pos); 
 		}
 	}
 	else if(win) {

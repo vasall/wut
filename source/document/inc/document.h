@@ -189,6 +189,19 @@ WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
 WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
                 struct wut_Element *ele, wut_iVec2 pos);
 
+
+/*
+ * Get the most relevant element at the given position.
+ *
+ * @doc: Pointer to the document
+ * @pos: The position to look at
+ *
+ * Returns: Either a pointer to the most relevant element or NULL if an error
+ * 	    occurred or no element could be found
+ */
+WUT_XMOD struct wut_Element *wut_doc_hovered(struct wut_Document *doc,
+                wut_iVec2 pos);
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -233,19 +246,6 @@ WUT_API void wut_RemoveElement(struct wut_Document *doc, struct wut_Element *ele
  * 	    element could be found
  */
 WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name);
-
-
-/*
- * Get the most relevant element at the given position.
- *
- * @doc: Pointer to the document
- * @pos: The position to look at
- *
- * Returns: Either a pointer to the most relevant element or NULL if an error
- * 	    occurred or no element could be found
- */
-WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                wut_iVec2 pos);
 
 
 /*

@@ -55,23 +55,20 @@ WUT_INTERN s8 doc_cfnc_findpos(struct wut_Element *ele, void *data)
         struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
         wut_iRect rect;
 
-        printf("Check (%d, %d)\n", sel->pos[0], sel->pos[1]);
+        printf("Check %s (%d, %d)\n", ele->name, sel->pos[0], sel->pos[1]);
 
         wut_GetElementBox(ele, rect);
 
-        if(sel->state == 1)
+        if(sel->pos[0] < rect[0] || sel->pos[0] > (rect[0] + rect[2]))
                 return 1;
 
-        if(sel->pos[0] < rect[0] || sel->pos[0] > (rect[0] + rect[2]))
-                return 0;
-
         if(sel->pos[1] < rect[1] || sel->pos[1] > (rect[1] + rect[3]))
-                return 0;
+                return 1;
 
         sel->element = ele;
         sel->state = 1;
 
-        return 1;
+        return 0;
 }
 
 
@@ -570,7 +567,7 @@ WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
          * Because all elements have been moved, we have to recheck the hovered
          * element.
          */
-        ele = wut_GetHoveredElement(doc, pos);
+        ele = wut_doc_hovered(doc, pos);
 
 	/*
 	 * Check if the hovered element has changed.
@@ -648,6 +645,36 @@ WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
 	}
 
 	return 0;
+}
+
+
+WUT_XMOD struct wut_Element *wut_doc_hovered(struct wut_Document *doc,
+                wut_iVec2 pos)
+{
+        struct wut_ElementSelector sel;
+
+        if(!doc) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                goto err_return;
+        }
+
+        sel.state = 0;
+        wut_ivec2_cpy(sel.pos, pos);
+        sel.element = NULL;
+
+        printf("Find element:\n");
+        wut_ele_hlf(doc->body, &doc_cfnc_findpos, NULL, &sel);
+
+        if(sel.state == 1) {
+                printf("Found: %s\n", sel.element->name);
+                return sel.element;
+        }
+
+        return NULL;
+
+err_return:
+        WUT_ALARM(WUT_ERROR, "Failed to get hovered element");
+        return NULL;
 }
 
 /*
@@ -729,34 +756,6 @@ WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name)
 
 err_return:
         WUT_ALARM(WUT_ERROR, "Failed to get element");
-        return NULL;
-}
-
-
-WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
-                wut_iVec2 pos)
-{
-        struct wut_ElementSelector sel;
-
-        if(!doc) {
-                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
-                goto err_return;
-        }
-
-        sel.state = 0;
-        wut_ivec2_cpy(sel.pos, pos);
-        sel.element = NULL;
-
-        wut_ele_hlf(doc->body, NULL, &doc_cfnc_findpos, &sel);
-
-        if(sel.state == 1) {
-                return sel.element;
-        }
-
-        return NULL;
-
-err_return:
-        WUT_ALARM(WUT_ERROR, "Failed to get hovered element");
         return NULL;
 }
 
