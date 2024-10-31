@@ -209,11 +209,16 @@ WUT_INTERN s8 doc_cfnc_discv_scrollbar_h(struct wut_Element *ele, void *data)
 
 WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
 {
+        s8 i;
+
         doc->track_table.has_changed = 0;
         doc->track_table.update_element = NULL;
 
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
+
+        for(i = 0; i < WUT_REGULAR_LENGTH; i++)
+                doc->track_table.regular[i] = NULL;
 }
 
 
@@ -350,6 +355,9 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc)
         struct wut_Element *ele;
 
         if(!doc) return;
+        
+        wut_doc_update_regular(doc);
+
         if(!doc->track_table.has_changed) return;
 
         ele = doc->track_table.update_element;
@@ -416,6 +424,60 @@ WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
 
         doc->track_table.update_element = uele;
         doc->track_table.has_changed = 1;
+}
+
+
+WUT_XMOD void wut_doc_add_regular(struct wut_Document *doc,
+                struct wut_Element *ele)
+{
+        s8 i;
+        struct wut_Element *c;
+
+        /*
+         * To prevent duplication, we have to check if the element is already in
+         * the list.
+         */
+        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
+                c = doc->track_table.regular[i];
+                if(wut_ele_compare(c, ele))
+                        return;
+        }
+
+        /*
+         * If the element is not yet in the list, find an empty slot and add it.
+         */
+        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
+                if(!doc->track_table.regular[i]) {
+                        doc->track_table.regular[i] = ele;
+                        return;
+                } 
+        }
+}
+
+
+WUT_XMOD void wut_doc_remove_regular(struct wut_Document *doc,
+                struct wut_Element *ele)
+{
+        s8 i;
+
+        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
+                if(wut_ele_compare(ele, doc->track_table.regular[i])) {
+                        doc->track_table.regular[i] = NULL;
+                        return;
+                }
+        }
+}
+
+
+WUT_XMOD void wut_doc_update_regular(struct wut_Document *doc)
+{
+        s8 i;
+
+        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
+                if(doc->track_table.regular[i]) {
+                        wut_ele_update(doc->track_table.regular[i]);
+                }
+        }
 }
 
 

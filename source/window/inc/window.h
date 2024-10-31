@@ -118,6 +118,12 @@ WUT_XMOD void wut_win_update_all(void);
 
 
 /*
+ * Go through all windows from top to bottom and render the document in it's
+ * current state.
+ */
+WUT_XMOD void wut_win_render_all(void);
+
+/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE

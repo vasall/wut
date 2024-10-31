@@ -19,6 +19,8 @@
 #define WUT_CHANGE_STYLE        (1<<0)
 #define WUT_CHANGE_ELEMENT      (1<<1)
 
+#define WUT_REGULAR_LENGTH      16
+
 #define WUT_LOW                 1
 #define WUT_MIDDLE              2
 #define WUT_HIGH                3
@@ -32,8 +34,18 @@ struct wut_DocumentTrackTable {
         s8                              has_changed;
         struct wut_Element              *update_element;
 
+        /*
+         * Pointer to the element currently selected and the element the cursor
+         * is currently hovering over.
+         */
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
+
+        /*
+         * A list of elements which have to be updated regularly until removed
+         * for animation purposes. 
+         */
+        struct wut_Element              *regular[WUT_REGULAR_LENGTH];
 };
 
 struct wut_Document {
@@ -98,6 +110,33 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc);
  */
 WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
                 struct wut_Element *ele, s8 opt, s8 prio);
+
+/*
+ * Add a new element to the regular list, so it will be updated regardles of
+ * changes, until removed from the list.
+ *
+ * @doc: Pointer to the document
+ * @ele: Pointer to the element to add to the list
+ */
+WUT_XMOD void wut_doc_add_regular(struct wut_Document *doc,
+                struct wut_Element *ele);
+
+
+/*
+ * Remove an element from the regular list.
+ *
+ * @doc: Pointer to the document
+ * @ele: Pointer to the element to remove
+ */
+WUT_XMOD void wut_doc_remove_regular(struct wut_Document *doc,
+                struct wut_Element *ele);
+
+
+/*
+ * 
+ */
+WUT_XMOD void wut_doc_update_regular(struct wut_Document *doc);
+
 
 /*
  * TODO: Update comment

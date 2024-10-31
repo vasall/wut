@@ -248,7 +248,7 @@ WUT_XMOD void wut_evt_update(void)
 		evt_collect_info(&evt.raw, &evt.context);
 
 		/*
-		 * Second translate the SDL-event-type to a FH-event-type.
+		 * Second translate the SDL-event-type to a WUT-event-type.
 		 */
 		evt_translate_type(&evt);
 

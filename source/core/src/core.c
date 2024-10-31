@@ -155,8 +155,15 @@ WUT_API s8 wut_Update(void)
 
 	wut_evt_update();
 
-	/* Redraw all visible windows */
+        /*
+         * Handle all events, incorporate all changes and update the documents.
+         */
 	wut_win_update_all();
+
+        /*
+         * Render all windows.
+         */
+        wut_win_render_all();
 
 	return 1;
 }

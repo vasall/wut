@@ -249,6 +249,14 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val);
 
 
 /*
+ * Update the element.
+ *
+ * @ele: Pointer to the element
+ */
+WUT_XMOD void wut_ele_update(struct wut_Element *ele);
+
+
+/*
  * Render an element onto a flat struct using the given renderer.
  *
  * @ren: Pointer to the batch renderer

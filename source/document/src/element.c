@@ -334,6 +334,13 @@ WUT_XMOD void wut_ele_mod_info(struct wut_Element *ele, u8 flag, u8 val)
 }
 
 
+WUT_XMOD void wut_ele_update(struct wut_Element *ele)
+{
+        /* TODO */
+       WUT_IGNORE(ele); 
+}
+
+
 WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 {
 	s32 indices[4];
@@ -901,8 +908,12 @@ WUT_API void wut_GetElementBox(struct wut_Element *ele, wut_iRect out)
                 return;
 	}
 
+#if 0
 	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
 	wut_irect_add(out, out, ele->style.shape_element_delta);
+#else
+	wut_irect_cpy(out, ele->element_rect);
+#endif
 }
 
 

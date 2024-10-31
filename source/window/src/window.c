@@ -192,18 +192,17 @@ WUT_INTERN s8 win_cfnc_update(struct wut_Window *win, void *data)
 {
 	WUT_IGNORE(data);
 
-        /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-         * 
-         * First update the contained document.
-         */
         wut_doc_update(win->document);
 
+	return 0;
+}
 
-        /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-         * 
-         * Then render the window.
-         */
-	/* Select the current context */
+
+WUT_INTERN s8 win_cfnc_render(struct wut_Window *win, void *data)
+{
+        WUT_IGNORE(data);
+
+        /* Select the current context */
 	SDL_GL_MakeCurrent(win->handle, win->context->gl_context);
 
 	/* Clear the window */
@@ -218,7 +217,7 @@ WUT_INTERN s8 win_cfnc_update(struct wut_Window *win, void *data)
 	/* Swap buffer */
 	SDL_GL_SwapWindow(win->handle);
 
-	return 0;
+        return 0;
 }
 
 
@@ -304,6 +303,11 @@ WUT_XMOD void wut_win_update_all(void)
 	wut_win_hlf(wut_cor_get_main_window(), &win_cfnc_update, NULL, NULL);
 }
 
+
+WUT_XMOD void wut_win_render_all(void)
+{
+        wut_win_hlf(wut_cor_get_main_window(), &win_cfnc_render, NULL, NULL);
+}
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
