@@ -62,12 +62,13 @@ WUT_XMOD void wut_cls_destroy(struct wut_Class *cls);
 
 
 /*
- * Push a new attribute to the class.
+ * Check if the attribute already exists and then set the value. If it does not
+ * yet exist, push to the list.
  *
  * @cls: Pointer to the class
  * @ent: Pointer to the attribute
  */
-WUT_XMOD void wut_cls_push_attr(struct wut_Class *cls,
+WUT_XMOD void wut_cls_set_attr(struct wut_Class *cls,
                 struct wut_SheetEntry *ent);
 
 

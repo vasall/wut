@@ -34,8 +34,8 @@ enum wut_eRestyleType {
 
 
 
-#define WUT_RESTYLE_SCROLL_V	(1<<1)
-#define WUT_RESTYLE_SCROLL_H	(1<<2)
+#define WUT_RESTYLE_SCROLL_V	(1<<0)
+#define WUT_RESTYLE_SCROLL_H	(1<<1)
 
 
 

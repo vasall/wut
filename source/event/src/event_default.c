@@ -4,7 +4,7 @@
 
 #include "document/inc/document.h"
 
-#define WUT_EVD_DEBUG		0
+#define WUT_EVD_DEBUG		1
 
 #define WUT_EVD_SCROLL_FACTOR   20
 
@@ -201,23 +201,21 @@ WUT_INTERN s8 evd_elementunselect(struct wut_Event *evt)
 
 WUT_INTERN s8 evd_mousemotion(struct wut_Event *evt)
 {
-	struct wut_Window *s_w = evt->context.window;
+	struct wut_Document *s_d = evt->context.window->document;
 	struct wut_Element *s_e = evt->context.element;
-
 
 #if WUT_EVD_DEBUG
 	printf("mousemotion\n");
 	evd_dump(evt);
 #endif
-	
 
-	return wut_win_hover(s_w, s_e);
+        return wut_doc_track_move(s_d, s_e, evt->context.position);
 }
 
 
 WUT_INTERN s8 evd_mousebuttondown(struct wut_Event *evt)
 {
-	struct wut_Window *s_w = evt->context.window;
+	struct wut_Document *s_d = evt->context.window->document;
 	struct wut_Element *s_e = evt->context.element;
 
 #if WUT_EVD_DEBUG
@@ -226,7 +224,7 @@ WUT_INTERN s8 evd_mousebuttondown(struct wut_Event *evt)
 #endif
 
 
-	return wut_win_select(s_w, s_e);
+	return wut_doc_track_click(s_d, s_e, evt->context.position);
 }
 
 
@@ -245,8 +243,10 @@ WUT_INTERN s8 evd_mousebuttonup(struct wut_Event *evt)
 
 WUT_INTERN s8 evd_mousewheel(struct wut_Event *evt)
 {
-	struct wut_Element *ele = evt->context.element;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+	struct wut_Document *s_d = evt->context.window->document;
+	struct wut_Element *s_e = evt->context.element;
 
         s32 value[2];
 
@@ -266,7 +266,11 @@ WUT_INTERN s8 evd_mousewheel(struct wut_Event *evt)
         	value[1] = evt->raw.wheel.y * WUT_EVD_SCROLL_FACTOR;
         }
 
-	return wut_ele_scroll(ele, value);
+        return wut_ele_scroll(s_e, value);
+
+#if 0
+	return wut_doc_track_scroll(s_d, s_e, evt->context.position);
+#endif
 }
 
 

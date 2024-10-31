@@ -5,6 +5,10 @@
 #include "./import.h"
 
 
+
+WUT_API char *_wut_prScrollbarVtxShd;
+WUT_API char *_wut_prScrollbarFragShd;
+
 WUT_API char *_wut_prBlockVtxShd;
 WUT_API char *_wut_prBlockFragShd;
 

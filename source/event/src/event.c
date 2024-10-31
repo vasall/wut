@@ -52,9 +52,10 @@ WUT_INTERN void evt_get_position(u32 t, SDL_Event *raw, wut_iVec2 p)
 WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 {
 	u32 type = raw->type;
-	struct wut_Window *win;
+        struct wut_Document *doc;
 	struct wut_Element *ele = NULL;
-	wut_iVec2 pos;
+	wut_iVec2 pos = {0, 0};
+        struct wut_Window *win;
 
 	/*
 	 * First get the window.
@@ -79,29 +80,31 @@ WUT_INTERN void evt_collect_info(SDL_Event *raw, struct wut_EventContext *ctx)
 	 * used.
 	 */
 	if(evt_is_mouse(type)) {
-
-		switch(type) {
+		evt_get_position(type, raw, pos);
+		
+                switch(type) {
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 			case SDL_MOUSEWHEEL:
-				ele = win->hovered;
-				break;
+				ele = win->document->track_table.hovered;
+                                break;
 
 			default:
-				evt_get_position(type, raw, pos);
-				ele = wut_GetHoveredElement(win->document, &pos); 
+				ele = wut_GetHoveredElement(win->document, pos); 
 		}
 	}
 	else if(win) {
-		ele = win->selected;
+		ele = win->document->track_table.selected;
 	}
 	else {
+                /* TODO */
 	}
 	
 
 	/*
 	 * Attach the info to the context.
 	 */
+        wut_ivec2_cpy(ctx->position, pos);
 	ctx->window = win;
 	ctx->element = ele;
 }
@@ -245,7 +248,7 @@ WUT_XMOD void wut_evt_update(void)
 		evt_collect_info(&evt.raw, &evt.context);
 
 		/*
-		 * Second translate the SDL-event-type to a FH-event-type.
+		 * Second translate the SDL-event-type to a WUT-event-type.
 		 */
 		evt_translate_type(&evt);
 

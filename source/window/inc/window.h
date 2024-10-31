@@ -70,10 +70,6 @@ struct wut_Window {
 	/* The rendering context */
 	struct wut_Context      *context;
 
-
-	struct wut_Element      *hovered;
-	struct wut_Element      *selected;
-
 	struct wut_EventHandler *event_handler;
 };
 
@@ -116,42 +112,16 @@ WUT_XMOD void wut_win_hlf(struct wut_Window *str, wut_WindowFunc pre_fnc,
 
 
 /*
- * Redraw a window.
- *
- * @win: Pointer to the window to redraw.
- */
-WUT_XMOD void wut_win_redraw(struct wut_Window *win);
-
-
-/*
  * This function will call the wut_win_redraw() function on all visible windows.
  */
-WUT_XMOD void wut_win_redraw_all(void);
+WUT_XMOD void wut_win_update_all(void);
 
 
 /*
- * Set a new element in the window as selected.
- *
- * @win: Pointer to the window
- * @ele: Pointer to the element
- *
- * Returns: 1 if the element has been selected, 0 if nothing has been done
+ * Go through all windows from top to bottom and render the document in it's
+ * current state.
  */
-WUT_XMOD s8 wut_win_hover(struct wut_Window *win, struct wut_Element *ele);
-
-
-
-/*
- * Set an element in the window as selected.
- *
- * @win: Pointer to the window
- * @ele: Pointer to the element
- *
- * Returns: 1 if the element has been selected, 0 if nothing has been done
- */
-WUT_XMOD s8 wut_win_select(struct wut_Window *win, struct wut_Element *ele);
-
-
+WUT_XMOD void wut_win_render_all(void);
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

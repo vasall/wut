@@ -39,6 +39,7 @@ struct wut_Context {
 	/*
 	 * Predefined resources.
 	 */
+        struct wut_Shader       *def_scrollbar_shader;
 	struct wut_Shader	*def_block_shader;
 	struct wut_Shader	*def_texture_shader;
 	struct wut_Shader	*def_text_shader;

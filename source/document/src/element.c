@@ -30,11 +30,11 @@ WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 	if(par) {
 		ele->relative_offset[0] =
 			par->style.shape_content_delta[0] -	/* Border+Padding */
-			par->content_offset[0] +			/* Scrolling */
+			par->content_offset[0] +		/* Scrolling */
 			ele->layout_offset[0];			/* Layout */
 		ele->relative_offset[1] =
 			par->style.shape_content_delta[1] -	/* Border+Padding */
-			par->content_offset[1] +			/* Scrolling */
+			par->content_offset[1] +		/* Scrolling */
 			ele->layout_offset[1];			/* Layout */
 	}
 
@@ -110,7 +110,6 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 		}
 	}
 
-
 	/*
 	 * Now we have to validate the intersecting area with the window.
 	 * This will also check if the element even is inside the window.
@@ -127,26 +126,11 @@ WUT_INTERN void ele_calc_visible(struct wut_Element *ele)
 	wut_irect_cpy(ele->visible_out_rect, dif);
 
 	/*
-	 * Now we can copy the resulting rectangle to the element.
+	 * Now we can copy the resulting rectangle to the element and mark the
+         * element as visible.
 	 */
 	wut_irect_cpy(ele->output_rect, out);
 	ele->info_flags |= WUT_ELE_F_VISIBLE;
-}
-
-
-WUT_INTERN void ele_calc_shape(struct wut_Element *ele)
-{
-	/* First calculate the relative and absolute offset */
-	ele_update_offset(ele);
-
-	/* Then calculate the different shape rectangles */
-	ele_calc_bounding_rect(ele);
-	ele_calc_element_rect(ele);
-	ele_calc_inner_rect(ele);
-	ele_calc_content_rect(ele);
-
-	/* Finally check visibility */
-	ele_calc_visible(ele);
 }
 
 
@@ -183,10 +167,9 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 		ret = 1;
 	}
 
-	if(ret) {
-		/* Update after scrolling */
-		wut_UpdateDocumentBranch(ele->document, ele);
-	}
+	
+        /* Mark the document to be updated */
+        wut_doc_has_changed(ele->document, ele->document->body, 0, WUT_HIGH);
 
 	return ret;
 }
@@ -202,7 +185,17 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 
 WUT_XMOD void wut_ele_adjust_shape(struct wut_Element *ele)
 {
-	ele_calc_shape(ele);
+        /* First calculate the relative and absolute offset */
+	ele_update_offset(ele);
+
+	/* Then calculate the different shape rectangles */
+	ele_calc_bounding_rect(ele);
+	ele_calc_element_rect(ele);
+	ele_calc_inner_rect(ele);
+	ele_calc_content_rect(ele);
+
+	/* Finally check visibility */
+	ele_calc_visible(ele);
 }
 
 
@@ -213,22 +206,78 @@ WUT_XMOD void wut_ele_hdl_scrollbar(struct wut_Element *ele)
 
 	wut_GetContentBox(ele, inner_rect); 
 
+        /*
+         * Check if scrollbars are enabled.
+         */
 	if(inner_rect[3] < ele->content_size[1])
 		flag |= WUT_RESTYLE_SCROLL_V;
 
 	if(inner_rect[2] < ele->content_size[0])
 		flag |= WUT_RESTYLE_SCROLL_H;
 
-
 	ele->scrollbar_flags = flag & ele->style.scrollbar_flags;
+}
+
+
+WUT_XMOD void wut_ele_set_scrollbar_vis(struct wut_Element *ele, s8 opt)
+{
+        if(!ele)
+                return;
+
+        if(opt) {
+                printf("Enable scrollbar for %s\n", ele->name);
+
+                if((ele->scrollbar_flags & (1<<0)))
+                        ele->scrollbar_flags |= (1<<2);
+                if((ele->scrollbar_flags & (1<<1)))
+                        ele->scrollbar_flags |= (1<<3);
+        }
+        else {
+                ele->scrollbar_flags &= ~((1<<2)|(1<<3));
+        }
+}
+
+
+WUT_XMOD void wut_ele_get_scrollbar_vert(struct wut_Element *ele,
+               wut_iRect rect)
+{
+        s32 bw = ele->style.border_width;
+
+        rect[0] = ele->element_rect[0] + ele->element_rect[2] - bw - 10;
+	rect[1] = ele->element_rect[1] + bw;
+	rect[2] = 10;
+	rect[3] = ele->element_rect[3];
+}
+
+
+WUT_XMOD void wut_ele_get_scrollbar_hori(struct wut_Element *ele,
+               wut_iRect rect)
+{
+        s32 bw = ele->style.border_width;
+
+        rect[0] = ele->element_rect[0] + bw;
+        rect[1] = ele->element_rect[1] + ele->element_rect[3] - bw - 10;
+	rect[2] = ele->element_rect[2];
+	rect[3] = 10;
 }
 
 
 WUT_XMOD s8 wut_ele_compare(struct wut_Element *in1, struct wut_Element *in2)
 {
-	if(in1 == in2) {
+        /* If at least one of the elements is NULL... */
+        if(!in1 || !in2) {
+                /* If both elements are NULL, then they're equal */
+                if(in1 == in2) {
+                        return 1;
+                }
+
+                return 0;
+        }
+        
+	if(in1->id == in2->id) {
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -276,6 +325,13 @@ WUT_XMOD void wut_ele_mod_info(struct wut_Element *ele, u8 flag, u8 val)
 		ele->info_flags &= ~flag;
 	else 
 		ele->info_flags |= flag;
+}
+
+
+WUT_XMOD void wut_ele_update(struct wut_Element *ele)
+{
+        /* TODO */
+       WUT_IGNORE(ele); 
 }
 
 
@@ -387,6 +443,9 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	s32 indices[4];
 	s32 s_index[3];
 
+        f32 color[4] = {1.0, 0, 0, 1.0};
+        static s32 width = 5;
+
         /* 
          * index 0: offset of the slider
          * index 1: size of the slider
@@ -401,25 +460,41 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		s32 type;
 	} vdata;
 
+        s32 p0x;
+        s32 p0y;
+        s32 p1x;
+        s32 p1y;
+
 	/* vertical */
 	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
-		s32 p0x = ele->element_rect[0] + ele->element_rect[2] -
-                        ele->style.border_width - WUT_SCROLLBAR_WIDTH;
-		s32 p0y = ele->element_rect[1] + ele->style.border_width;
-		s32 p1x = ele->element_rect[0] + ele->element_rect[2] - 
+                /* Scrollbar is active */
+                if(ele->scrollbar_flags & (1<<4)) {
+                        width = 10;
+                }
+
+		p0x = ele->element_rect[0] + ele->element_rect[2] -
+                        ele->style.border_width - width;
+		p0y = ele->element_rect[1] + ele->style.border_width;
+		p1x = ele->element_rect[0] + ele->element_rect[2] - 
                         ele->style.border_width;
-		s32 p1y = ele->element_rect[1] + ele->element_rect[3] -
+		p1y = ele->element_rect[1] + ele->element_rect[3] -
                         ele->style.border_width;
 
 		wut_irect_set(rect,
 				p0x,
 				p0y,
-				10,
+				width,
 				ele->element_rect[3] - (ele->style.border_width * 2));
 
 
 		/* Unioform: u_rect */
 		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
+
+	        /* Uniform: u_color */
+	        s_index[2] = wut_bat_push_uniform(ren, 2, color);
+
+        	/* Uniform: u_width */
+        	wut_bat_push_uniform(ren, 3, &width);
 
 		/* Uniform: u_scroll */	
 		scroll[1] = (p1y - p0y) *
@@ -427,7 +502,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		scroll[0] = (p1y - p0y - 2 - scroll[1]) *
                         ((f32)ele->content_offset[1] / (f32)(ele->content_size[1] -
                                 ele->content_rect[3]));
-		s_index[2] = wut_bat_push_uniform(ren, 6, scroll);
+		s_index[2] = wut_bat_push_uniform(ren, 4, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
@@ -464,14 +539,19 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	}
 
 	/* horizontal */
-	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) {
-		s32 p0x = ele->element_rect[0] + ele->style.border_width;
-		s32 p0y = ele->element_rect[1] + ele->element_rect[3] -
-                        ele->style.border_width - WUT_SCROLLBAR_WIDTH;
+	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) {	
+                /* Scrollbar is active */
+                if(ele->scrollbar_flags & (1<<5)) {
+                        width = 10;
+                }
 
-		s32 p1x = ele->element_rect[0] + ele->element_rect[2] -
+                p0x = ele->element_rect[0] + ele->style.border_width;
+		p0y = ele->element_rect[1] + ele->element_rect[3] -
+                        ele->style.border_width - width;
+
+		p1x = ele->element_rect[0] + ele->element_rect[2] -
                         ele->style.border_width;
-		s32 p1y = ele->element_rect[1] + ele->element_rect[3] -
+		p1y = ele->element_rect[1] + ele->element_rect[3] -
                         ele->style.border_width;
 
                 /* 
@@ -479,18 +559,24 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
                  * prevent overlap.
                  */
 	        if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
-                        p1x -= 10;
+                        p1x -= width;
                 }
 
 		wut_irect_set(rect,
 				p0x,
 				p0y, 
 				ele->element_rect[2] - (ele->style.border_width * 2),
-				10);
+				width);
 
 
 		/* Unioform: u_rect */
 		s_index[0] = wut_bat_push_uniform(ren, 1, rect);
+
+	        /* Uniform: u_color */
+	        s_index[2] = wut_bat_push_uniform(ren, 2, color);
+
+        	/* Uniform: u_width */
+        	wut_bat_push_uniform(ren, 3, &width);
 
 		/* Uniform: u_scroll */	
 		scroll[1] = (p1x - p0x) *
@@ -498,7 +584,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		scroll[0] = (p1x - p0x - 2 - scroll[1]) *
                         ((f32)ele->content_offset[0] / (f32)(ele->content_size[0] -
                                 ele->content_rect[2]));
-		s_index[2] = wut_bat_push_uniform(ren, 6, scroll);
+		s_index[2] = wut_bat_push_uniform(ren, 4, scroll);
 
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
@@ -556,6 +642,8 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 	struct wut_Element *ele;
 	s8 name_len;
 
+        static s32 element_counter = 0;
+
 	if(doc == NULL || name == NULL) {
 		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
 		goto err_return;
@@ -575,6 +663,7 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 
 	/* Set the identifier */
 	ele->identity = WUT_IDT_ELEMENT;
+        ele->id = element_counter++;
 
 	/* Set the basic attributes for the element */
 	strcpy(ele->name, name);
@@ -812,8 +901,12 @@ WUT_API void wut_GetElementBox(struct wut_Element *ele, wut_iRect out)
                 return;
 	}
 
+#if 0
 	wut_irect_mov(out, ele->style.shape_bounding_box, ele->absolute_offset);
 	wut_irect_add(out, out, ele->style.shape_element_delta);
+#else
+	wut_irect_cpy(out, ele->element_rect);
+#endif
 }
 
 
@@ -836,9 +929,11 @@ WUT_API s8 wut_ModifyElementStyle(struct wut_Element *ele, char *str)
 		goto err_return;
 	}
 
+        /* Parse the incoming instructions and update the stylesheet */
 	wut_ModifyStyle(&ele->style, str);
 
-	wut_UpdateDocumentBranch(ele->document, ele);
+        /* Mark the document for updating */
+        wut_doc_has_changed(ele->document, ele, 0, 0);
 
 	return 0;
 

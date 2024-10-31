@@ -34,8 +34,6 @@ WUT_API struct wut_coreContainer _wut_coreContainer;
 
 
 
-
-
 /*
  * This will set the quit flag to 1, which will prompt the wut_update() function
  * to return 0 and by doing so exit the program.

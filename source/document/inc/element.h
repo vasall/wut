@@ -14,6 +14,7 @@ struct wut_Element;
 
 #include "event/inc/event_listener.h"
 
+#include "math/inc/vector.h"
 
 #define WUT_ELE_NAME_LIM	        126
 #define WUT_ELE_CHILDREN_LIM	        126
@@ -131,9 +132,17 @@ struct wut_Element {
         wut_iVec2 	        content_size;
         wut_iVec2               content_offset;
 
-        /* This flag indicates which scrollbars to render */
+        /* This flag indicates which scrollbars to render.
+         *
+         * 0: Vertical scrollbar is enabled
+         * 1: Horizontal scrollbar is enabled
+         * 2: Verical scrollbar is visible
+         * 3: Horizontal scrollbar is visible
+         * 4: Vertical scrollbar is active (hovered or dragged)
+         * 5: Horizontal scrollbar is active (hovered or dragged)
+         */
         s32                     scrollbar_flags;
-
+        u64                     scrollbar_time; 
 
         struct wut_EventHandler *event_handler;
 };
@@ -164,6 +173,33 @@ WUT_XMOD void wut_ele_adjust_shape(struct wut_Element *ele);
  */
 WUT_XMOD void wut_ele_hdl_scrollbar(struct wut_Element *ele);
 
+
+/*
+ * 
+ */
+WUT_XMOD void wut_ele_set_scrollbar_vis(struct wut_Element *ele, s8 opt);
+
+
+/*
+ * Get the box surrounding the vertical scrollbar in absolute terms.
+ *
+ * @ele: Pointer to the element
+ * @rect: A rectangle to write the absolute position and size of the scrollbar
+ *        box to
+ */
+WUT_XMOD void wut_ele_get_scrollbar_vert(struct wut_Element *ele,
+               wut_iRect rect);
+
+
+/*
+ * Get the box surrounding the horizontal scrollbar in absolute terms.
+ *
+ * @ele: Pointer to the element
+ * @rect: A rectangle to write the absolute position and size of the scrollbar
+ *        box to
+ */
+WUT_XMOD void wut_ele_get_scrollbar_hori(struct wut_Element *ele,
+               wut_iRect rect);
 
 /*
  * Check if the two element pointers point to the same element.
@@ -210,6 +246,14 @@ WUT_XMOD void wut_ele_mod_info(struct wut_Element *ele, u8 flag, u8 val);
  * Returns: 1 if scrolling was successfull or 0 if not
  */
 WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val);
+
+
+/*
+ * Update the element.
+ *
+ * @ele: Pointer to the element
+ */
+WUT_XMOD void wut_ele_update(struct wut_Element *ele);
 
 
 /*
