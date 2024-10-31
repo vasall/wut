@@ -40,12 +40,6 @@ struct wut_DocumentTrackTable {
          */
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
-
-        /*
-         * A list of elements which have to be updated regularly until removed
-         * for animation purposes. 
-         */
-        struct wut_Element              *regular[WUT_REGULAR_LENGTH];
 };
 
 struct wut_Document {
@@ -91,6 +85,34 @@ struct wut_ElementSelector {
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
+
+/*
+ * Create a new document.
+ *
+ * @win: Pointer to the window
+ *
+ * Returns: Either a pointer to a new document or NULL if an error occurred
+ */
+WUT_XMOD struct wut_Document *wut_doc_create(struct wut_Window *win);
+
+
+/*
+ * Destroy a document and free the allocated memory. This function is save to
+ * call, even if doc is NULL.
+ *
+ * @doc: Pointer to the document
+ */
+WUT_XMOD void wut_doc_destroy(struct wut_Document *doc);
+
+
+/*
+ * This function will resize the document to fit the given reference shape.
+ *
+ * @doc: Pointer to the document
+ */
+WUT_XMOD void wut_doc_resize(struct wut_Document *doc);
+
+
 /*
  * Update the document, update the document body and the elements contained that
  * have changed.
@@ -98,6 +120,23 @@ struct wut_ElementSelector {
  * @doc: Pointer to the document
  */
 WUT_XMOD void wut_doc_update(struct wut_Document *doc);
+
+
+/*
+ * Only update a branch of the element tree starting from <ele>.
+ *
+ * @doc: Pointer to the document
+ * @ele: The starting element of the branch
+ */
+WUT_API void wut_doc_refresh_branch(struct wut_Document *doc,
+                struct wut_Element *ele);
+
+/*
+ * Render the document batch onto the window.
+ *
+ * @doc: Pointer to the document
+ */
+WUT_API void wut_doc_render(struct wut_Document *doc);
 
 
 /*
@@ -110,32 +149,6 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc);
  */
 WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
                 struct wut_Element *ele, s8 opt, s8 prio);
-
-/*
- * Add a new element to the regular list, so it will be updated regardles of
- * changes, until removed from the list.
- *
- * @doc: Pointer to the document
- * @ele: Pointer to the element to add to the list
- */
-WUT_XMOD void wut_doc_add_regular(struct wut_Document *doc,
-                struct wut_Element *ele);
-
-
-/*
- * Remove an element from the regular list.
- *
- * @doc: Pointer to the document
- * @ele: Pointer to the element to remove
- */
-WUT_XMOD void wut_doc_remove_regular(struct wut_Document *doc,
-                struct wut_Element *ele);
-
-
-/*
- * 
- */
-WUT_XMOD void wut_doc_update_regular(struct wut_Document *doc);
 
 
 /*
@@ -186,33 +199,6 @@ WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
 
 
 /*
- * Create a new document.
- *
- * @win: Pointer to the window
- *
- * Returns: Either a pointer to a new document or NULL if an error occurred
- */
-WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win);
-
-
-/*
- * Destroy a document and free the allocated memory. This function is save to
- * call, even if doc is NULL.
- *
- * @doc: Pointer to the document
- */
-WUT_API void wut_DestroyDocument(struct wut_Document *doc);
-
-
-/*
- * This function will resize the document to fit the given reference shape.
- *
- * @doc: Pointer to the document
- */
-WUT_API void wut_ResizeDocument(struct wut_Document *doc);
-
-
-/*
  * Add a new element to the document.
  *
  * @doc: Pointer to the document
@@ -260,51 +246,6 @@ WUT_API struct wut_Element *wut_GetElement(struct wut_Document *doc, char *name)
  */
 WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
                 wut_iVec2 pos);
-
-
-/*
- * Only update a branch of the element tree starting from <ele>.
- *
- * @doc: Pointer to the document
- * @ele: The starting element of the branch
- */
-WUT_API void wut_UpdateDocumentBranch(struct wut_Document *doc,
-                struct wut_Element *ele);
-
-
-/*
- * Update the whole document.
- *
- * @doc: Pointer to the document
- */
-WUT_API void wut_UpdateDocument(struct wut_Document *doc);
-
-
-/*
- * Only render a branch of the element tree onto the UI texture, starting from
- * <ele>.
- *
- * @doc: Pointer to the document
- * @ele: The starting element of the branch
- */
-WUT_API void wut_RenderDocumentUIBranch(struct wut_Document *doc,
-                struct wut_Element *ele);
-
-
-/*
- * Render the whole element tree onto the UI texture.
- *
- * @doc: Pointer to the document
- */
-WUT_API void wut_RenderDocumentUI(struct wut_Document *doc);
-
-
-/*
- * Render the document onto the screen.
- *
- * @doc: Pointer to the document
- */
-WUT_API void wut_RenderDocument(struct wut_Document *doc);
 
 
 /*

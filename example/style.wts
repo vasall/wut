@@ -17,8 +17,10 @@
 
 .one {
         width: 110pct;
-        height: 50px;
+        height: 200px;
+
+        spacing_top: 100px;
 
         infill_mode: color;
-        infill_color: #00ff00;
+        infill_color: #0000ff;
 }

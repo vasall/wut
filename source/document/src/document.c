@@ -168,37 +168,6 @@ WUT_INTERN void doc_batch_cfnc_push(struct wut_Batch *ren, void *data)
         wut_bat_push_uniform(ren, 0, frame);
 }
 
-
-WUT_INTERN s8 doc_cfnc_discv_scrollbar_v(struct wut_Element *ele, void *data)
-{
-        struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
-
-        if(ele->scrollbar_flags & (1<<0)) {
-                sel->state = 1;
-                sel->element = ele;
-
-                return 1;
-        }
-
-        return 0;
-}
-
-
-WUT_INTERN s8 doc_cfnc_discv_scrollbar_h(struct wut_Element *ele, void *data)
-{
-        struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
-
-        if(ele->scrollbar_flags & (1<<1)) {
-                sel->state = 1;
-                sel->element = ele;
-
-                return 1;
-        }
-
-        return 0;
-}
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -209,16 +178,11 @@ WUT_INTERN s8 doc_cfnc_discv_scrollbar_h(struct wut_Element *ele, void *data)
 
 WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
 {
-        s8 i;
-
         doc->track_table.has_changed = 0;
         doc->track_table.update_element = NULL;
 
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
-
-        for(i = 0; i < WUT_REGULAR_LENGTH; i++)
-                doc->track_table.regular[i] = NULL;
 }
 
 
@@ -350,14 +314,110 @@ WUT_INTERN struct wut_Element *doc_common_parent(struct wut_Element *e1,
  */
 
 
+WUT_XMOD struct wut_Document *wut_doc_create(struct wut_Window *win)
+{
+        struct wut_Document *doc;
+
+        /* Allocate memory for the document */
+        if(!(doc = wut_zalloc(sizeof(struct wut_Document)))) {
+                WUT_ALARM(WUT_ERROR, "Failed to allocate memory for document");
+                goto err_return;
+        }
+
+        /* Set the attributes for the document */
+        doc->window = win;
+        doc->context = win->context;
+
+        /* Get a reference to the shape/size of the window */
+        doc->shape_ref = &win->shape;
+
+        /* Create the body element */	
+        if(!(doc->body = wut_CreateElement(doc, "body", WUT_BODY, NULL))) {
+                WUT_ALARM(WUT_ERROR, "Failed to create body for document");
+                goto err_free_doc;
+        }
+
+        /* Set the attributes for the body element */
+        doc->body->body = doc->body;
+        doc->body->parent = NULL;
+        doc->body->layer = 0;
+
+        /* Reset the tracking table */
+        doc_reset_track_table(doc);
+
+        /* Create the view list */
+        if(!(doc->views = wut_vie_create_list(doc->context)))
+                goto err_destroy_body;
+
+        /* Create the default batch renderer */
+        if(doc_create_batch(doc) < 0)
+                goto err_destroy_views;
+
+        /* Create the style class table */
+        if(!(doc->class_table = wut_cls_create_table()))
+                goto err_destroy_batch;
+
+        /* Mark the document for updating */
+        wut_doc_has_changed(doc, NULL, 0, 0);
+
+        return doc;
+
+err_destroy_batch:
+        doc_destroy_batch(doc);
+
+err_destroy_views:
+        wut_vie_destroy_list(doc->views);
+
+err_destroy_body:
+        wut_DestroyElement(doc->body);
+
+err_free_doc:
+        wut_free(doc);
+
+err_return:
+        WUT_ALARM(WUT_ERROR, "Failed to create new document");
+        return NULL;
+}
+
+
+WUT_XMOD void wut_doc_destroy(struct wut_Document *doc)
+{
+        if(!doc)
+                return;
+
+        /* Destroy the style class table */
+        wut_cls_destroy_table(doc->class_table);
+
+        /* Detach and destroy the batch renderer */
+        doc_destroy_batch(doc);
+
+        /* If the document contains a body, recursivly remove it */
+        wut_RemoveElement(doc, doc->body);	
+
+        /* Then destroy all left over views */
+        wut_vie_destroy_list(doc->views);
+
+        wut_free(doc);
+}
+
+
+WUT_XMOD void wut_doc_resize(struct wut_Document *doc)
+{
+        if(!doc) {
+                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
+                return;
+        }
+
+        /* Mark the document for updating */
+        wut_doc_has_changed(doc, NULL, 0, 0);
+}
+
+
 WUT_XMOD void wut_doc_update(struct wut_Document *doc)
 {
         struct wut_Element *ele;
 
         if(!doc) return;
-        
-        wut_doc_update_regular(doc);
-
         if(!doc->track_table.has_changed) return;
 
         ele = doc->track_table.update_element;
@@ -394,6 +454,32 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc)
 }
 
 
+WUT_API void wut_doc_render(struct wut_Document *doc)
+{
+        struct wut_Batch *ren;
+
+        if(!doc) {
+                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
+                return;
+        }
+
+        ren = wut_ContextGetBatch(doc->context, doc->batch_id);
+
+        wut_ele_hlf(doc->body,
+                        &doc_cfnc_render_ui,
+                        NULL,
+                        ren);
+
+        ren = wut_ContextGetBatch(doc->context, doc->scroll_id);
+
+        wut_ele_hlf(doc->body,
+                        &doc_cfnc_render_ui_post,
+                        NULL,
+                        ren);
+
+}
+
+
 WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
                 struct wut_Element *ele, s8 opt, s8 prio)
 {
@@ -424,60 +510,6 @@ WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
 
         doc->track_table.update_element = uele;
         doc->track_table.has_changed = 1;
-}
-
-
-WUT_XMOD void wut_doc_add_regular(struct wut_Document *doc,
-                struct wut_Element *ele)
-{
-        s8 i;
-        struct wut_Element *c;
-
-        /*
-         * To prevent duplication, we have to check if the element is already in
-         * the list.
-         */
-        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
-                c = doc->track_table.regular[i];
-                if(wut_ele_compare(c, ele))
-                        return;
-        }
-
-        /*
-         * If the element is not yet in the list, find an empty slot and add it.
-         */
-        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
-                if(!doc->track_table.regular[i]) {
-                        doc->track_table.regular[i] = ele;
-                        return;
-                } 
-        }
-}
-
-
-WUT_XMOD void wut_doc_remove_regular(struct wut_Document *doc,
-                struct wut_Element *ele)
-{
-        s8 i;
-
-        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
-                if(wut_ele_compare(ele, doc->track_table.regular[i])) {
-                        doc->track_table.regular[i] = NULL;
-                        return;
-                }
-        }
-}
-
-
-WUT_XMOD void wut_doc_update_regular(struct wut_Document *doc)
-{
-        s8 i;
-
-        for(i = 0; i < WUT_REGULAR_LENGTH; i++) {
-                if(doc->track_table.regular[i]) {
-                        wut_ele_update(doc->track_table.regular[i]);
-                }
-        }
 }
 
 
@@ -627,105 +659,6 @@ WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
  */
 
 
-WUT_API struct wut_Document *wut_CreateDocument(struct wut_Window *win)
-{
-        struct wut_Document *doc;
-
-        /* Allocate memory for the document */
-        if(!(doc = wut_zalloc(sizeof(struct wut_Document)))) {
-                WUT_ALARM(WUT_ERROR, "Failed to allocate memory for document");
-                goto err_return;
-        }
-
-        /* Set the attributes for the document */
-        doc->window = win;
-        doc->context = win->context;
-
-        /* Get a reference to the shape/size of the window */
-        doc->shape_ref = &win->shape;
-
-        /* Create the body element */	
-        if(!(doc->body = wut_CreateElement(doc, "body", WUT_BODY, NULL))) {
-                WUT_ALARM(WUT_ERROR, "Failed to create body for document");
-                goto err_free_doc;
-        }
-
-        /* Set the attributes for the body element */
-        doc->body->body = doc->body;
-        doc->body->parent = NULL;
-        doc->body->layer = 0;
-
-        /* Reset the tracking table */
-        doc_reset_track_table(doc);
-
-        /* Create the view list */
-        if(!(doc->views = wut_vie_create_list(doc->context)))
-                goto err_destroy_body;
-
-        /* Create the default batch renderer */
-        if(doc_create_batch(doc) < 0)
-                goto err_destroy_views;
-
-        /* Create the style class table */
-        if(!(doc->class_table = wut_cls_create_table()))
-                goto err_destroy_batch;
-
-        /* Mark the document for updating */
-        wut_doc_has_changed(doc, NULL, 0, 0);
-
-        return doc;
-
-err_destroy_batch:
-        doc_destroy_batch(doc);
-
-err_destroy_views:
-        wut_vie_destroy_list(doc->views);
-
-err_destroy_body:
-        wut_DestroyElement(doc->body);
-
-err_free_doc:
-        wut_free(doc);
-
-err_return:
-        WUT_ALARM(WUT_ERROR, "Failed to create new document");
-        return NULL;
-}
-
-
-WUT_API void wut_DestroyDocument(struct wut_Document *doc)
-{
-        if(!doc)
-                return;
-
-        /* Destroy the style class table */
-        wut_cls_destroy_table(doc->class_table);
-
-        /* Detach and destroy the batch renderer */
-        doc_destroy_batch(doc);
-
-        /* If the document contains a body, recursivly remove it */
-        wut_RemoveElement(doc, doc->body);	
-
-        /* Then destroy all left over views */
-        wut_vie_destroy_list(doc->views);
-
-        wut_free(doc);
-}
-
-
-WUT_API void wut_ResizeDocument(struct wut_Document *doc)
-{
-        if(!doc) {
-                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
-                return;
-        }
-
-        /* Mark the document for updating */
-        wut_doc_has_changed(doc, NULL, 0, 0);
-}
-
-
 WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
                 struct wut_Element *parent, char *name,
                 enum wut_eTag type, void *data)
@@ -825,59 +758,6 @@ WUT_API struct wut_Element *wut_GetHoveredElement(struct wut_Document *doc,
 err_return:
         WUT_ALARM(WUT_ERROR, "Failed to get hovered element");
         return NULL;
-}
-
-
-WUT_API void wut_RenderDocumentUIBranch(struct wut_Document *doc,
-                struct wut_Element *ele)
-{
-        struct wut_Batch *ren;
-
-        if(!doc || !ele) {
-                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
-                return;
-        }
-
-        ren = wut_ContextGetBatch(doc->context, doc->batch_id);
-
-        wut_ele_hlf(ele,
-                        &doc_cfnc_render_ui,
-                        NULL,
-                        ren);
-
-        ren = wut_ContextGetBatch(doc->context, doc->scroll_id);
-
-        wut_ele_hlf(ele,
-                        &doc_cfnc_render_ui_post,
-                        NULL,
-                        ren);
-}
-
-
-WUT_API void wut_RenderDocumentUI(struct wut_Document *doc)
-{
-        if(!doc) {
-                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
-                return;
-        }
-
-        wut_RenderDocumentUIBranch(doc, doc->body);
-
-}
-
-
-WUT_API void wut_RenderDocument(struct wut_Document *doc)
-{
-        struct wut_Batch *ren;
-
-        if(!doc) {
-                WUT_ALARM(WUT_WARNING, "Input parameters invalid");
-                return;
-        }
-
-        ren = wut_ContextGetBatch(doc->context, doc->batch_id);
-
-        wut_RenderDocumentUI(doc);
 }
 
 

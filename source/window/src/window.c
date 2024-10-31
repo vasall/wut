@@ -66,7 +66,7 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	}
 
 	/* Create the document contained in the window */
-	if(!(win->document = wut_CreateDocument(win))) {
+	if(!(win->document = wut_doc_create(win))) {
 		WUT_ALARM(WUT_ERROR, "Failed to create document for window");
 		goto err_destroy_ctx;
 	}
@@ -78,7 +78,7 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	return win;
 
 err_destroy_document:
-	wut_DestroyDocument(win->document);
+	wut_doc_destroy(win->document);
 
 err_destroy_ctx:
 	wut_DestroyContext(win->context);
@@ -106,7 +106,7 @@ WUT_INTERN void win_destroy(struct wut_Window *win)
 
 	wut_hdl_destroy(win->event_handler);
 
-	wut_DestroyDocument(win->document);
+	wut_doc_destroy(win->document);
 
 	wut_DestroyContext(win->context);
 
@@ -208,8 +208,8 @@ WUT_INTERN s8 win_cfnc_render(struct wut_Window *win, void *data)
 	/* Clear the window */
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	/* Render the Document-UI and views */
-	wut_RenderDocument(win->document);
+	/* Render the document and views */
+	wut_doc_render(win->document);
 
 	/* Flush all batches */
 	wut_ContextRenderBatches(win->context);
@@ -408,7 +408,7 @@ WUT_API void wut_ResizeWindow(struct wut_Window *win, u16 width, u16 height)
 	/*
 	 * Update the document.
 	 */
-	wut_ResizeDocument(win->document);
+	wut_doc_resize(win->document);
 }
 
 

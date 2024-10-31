@@ -174,12 +174,6 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 	return ret;
 }
 
-
-WUT_XMOD void wut_ele_check_scroll_act(struct wut_Element *ele, wut_iVec2 pos)
-{
-
-}
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -451,7 +445,6 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 
         f32 color[4] = {1.0, 0, 0, 1.0};
         static s32 width = 5;
-        static s32 i = 0;
 
         /* 
          * index 0: offset of the slider
@@ -473,7 +466,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
         s32 p1y;
 
 	/* vertical */
-	if((ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) && (ele->scrollbar_flags & (1<<2))) {
+	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_V) {
                 /* Scrollbar is active */
                 if(ele->scrollbar_flags & (1<<4)) {
                         width = 10;
@@ -546,7 +539,7 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 	}
 
 	/* horizontal */
-	if((ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) && (ele->scrollbar_flags & (1<<3))) {	
+	if(ele->scrollbar_flags & WUT_RESTYLE_SCROLL_H) {	
                 /* Scrollbar is active */
                 if(ele->scrollbar_flags & (1<<5)) {
                         width = 10;

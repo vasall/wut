@@ -286,15 +286,6 @@ WUT_XMOD void wut_ele_link_classes(struct wut_Element *ele);
 
 
 /*
- * If the mouse has moved, set the closest scrollbar to visible and if the mouse
- * is directly over a scrollbar, set it as active.
- *
- * @ele: The starting element to check from
- * @pos: The position of the mouse
- */
-WUT_XMOD void wut_ele_check_scroll_act(struct wut_Element *ele, wut_iVec2 pos);
-
-/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE
