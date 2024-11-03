@@ -1,5 +1,5 @@
-#ifndef _WUT_UTILITY_LIST_H
-#define _WUT_UTILITY_LIST_H
+#ifndef _WUT_COMPONENT_LIST_H
+#define _WUT_COMPONENT_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -133,4 +133,4 @@ typedef s8 (*wut_ListFunc)(void *entry, s16 idx, void *data);
  */
 WUT_API s8 wut_ApplyList(struct wut_List *lst, wut_ListFunc fnc, void *data);
 
-#endif /* _WUT_UTILITY_LIST_H */
+#endif /* _WUT_COMPONENT_LIST_H */

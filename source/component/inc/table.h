@@ -1,11 +1,12 @@
-#ifndef _WUT_UTILITY_TABLE_H
-#define _WUT_UTILITY_TABLE_H
+#ifndef _WUT_COMPONENT_TABLE_H
+#define _WUT_COMPONENT_TABLE_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
 #define WUT_TBL_NAME_LIM	128
 #define WUT_TBL_ROWS		128
+
 
 struct wut_TableEntry {
         /* The name of the entry */
@@ -109,4 +110,4 @@ WUT_API s8 wut_GetTable(struct wut_Table *tbl, char *name,
  */
 WUT_API void wut_DumpTable(struct wut_Table *tbl);
 
-#endif /* _WUT_UTILITY_TABLE_H */
+#endif /* _WUT_COMPONENT_TABLE_H */

@@ -1,5 +1,5 @@
 # Name of the created library
-TARGET     := lib_wut_graphic.a
+TARGET     := lib_fhcomponent.a
 
 # Get the absolute path to the directory this makefile is in
 MKFILE_PTH := $(abspath $(lastword $(MAKEFILE_LIST)))

@@ -5,8 +5,9 @@
 #include "core/inc/import.h"
 
 #include "utility/inc/utility.h"
-#include "utility/inc/static_list.h"
-#include "utility/inc/list.h"
+
+#include "component/inc/static_list.h"
+#include "component/inc/list.h"
 
 #include "graphic/inc/context.h"
 

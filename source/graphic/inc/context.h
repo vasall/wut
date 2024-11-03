@@ -11,7 +11,7 @@
 
 #include "widget/inc/view.h"
 
-#include "utility/inc/static_list.h"
+#include "component/inc/static_list.h"
 
 struct wut_Context {
 	/* Pointer to the window this context belongs to */

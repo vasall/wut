@@ -4,7 +4,7 @@
 #include "core/inc/define.h"
 #include "core/inc/import.h"
 
-#include "utility/inc/table.h"
+#include "component/inc/table.h"
 
 #include "graphic/inc/context.h"
 

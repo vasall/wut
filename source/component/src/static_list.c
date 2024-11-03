@@ -1,4 +1,4 @@
-#include "utility/inc/static_list.h"
+#include "component/inc/static_list.h"
 
 #include "utility/inc/alarm.h"
 

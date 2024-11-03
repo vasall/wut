@@ -6,7 +6,7 @@ struct wut_ClassTable;
 
 #include "core/inc/define.h"
 
-#include "utility/inc/list.h"
+#include "component/inc/list.h"
 
 #include "style/inc/stylesheet.h"
 

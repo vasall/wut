@@ -1,4 +1,4 @@
-#include "utility/inc/table.h"
+#include "component/inc/table.h"
 
 #include "system/inc/system.h"
 

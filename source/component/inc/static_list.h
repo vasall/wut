@@ -1,5 +1,5 @@
-#ifndef _WUT_UTILITY_STATIC_LIST_H
-#define _WUT_UTILITY_STATIC_LIST_H
+#ifndef _WUT_COMPONENT_STATIC_LIST_H
+#define _WUT_COMPONENT_STATIC_LIST_H
 
 #include "core/inc/define.h"
 #include "core/inc/import.h"
@@ -86,4 +86,4 @@ WUT_API s8 wut_ApplyStatList(struct wut_StatList *lst,
 
 
 
-#endif /* _WUT_UTILITY_STATIC_LIST_H */
+#endif /* _WUT_COMPONENT_STATIC_LIST_H */
