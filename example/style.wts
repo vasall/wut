@@ -24,3 +24,14 @@
         infill_mode: color;
         infill_color: #0000ff;
 }
+
+
+.two {
+        width: 80pct;
+        height: 200px;
+
+        spacing_top: 100px;
+
+        infill_mode: color;
+        infill_color: #00ff00;
+}

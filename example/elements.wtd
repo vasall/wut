@@ -1,5 +1,8 @@
 <block name="main" class="container">
-        <block name="a" class="one"></block>
+        <block name="a" class="one">
+                <block name="a1" class="two">
+                </block>
+        </block>
         <block name="b" class="one"></block>
         <block name="c" class="one"></block>
         <block name="d" class="one"></block>

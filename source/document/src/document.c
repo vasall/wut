@@ -55,8 +55,6 @@ WUT_INTERN s8 doc_cfnc_findpos(struct wut_Element *ele, void *data)
         struct wut_ElementSelector *sel = (struct wut_ElementSelector *)data;
         wut_iRect rect;
 
-        printf("Check %s (%d, %d)\n", ele->name, sel->pos[0], sel->pos[1]);
-
         wut_GetElementBox(ele, rect);
 
         if(sel->pos[0] < rect[0] || sel->pos[0] > (rect[0] + rect[2]))
@@ -488,9 +486,6 @@ WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
 
         /* If an element is given... */
         if(ele) {
-                
-                printf("%s changed!\n", ele->name);
-
                 /* and an element is already set, then get the common parent */
                 if(uele) {
                        uele = doc_common_parent(uele, ele); 
@@ -662,11 +657,9 @@ WUT_XMOD struct wut_Element *wut_doc_hovered(struct wut_Document *doc,
         wut_ivec2_cpy(sel.pos, pos);
         sel.element = NULL;
 
-        printf("Find element:\n");
         wut_ele_hlf(doc->body, &doc_cfnc_findpos, NULL, &sel);
 
         if(sel.state == 1) {
-                printf("Found: %s\n", sel.element->name);
                 return sel.element;
         }
 

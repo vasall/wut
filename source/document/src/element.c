@@ -225,8 +225,6 @@ WUT_XMOD void wut_ele_set_scrollbar_vis(struct wut_Element *ele, s8 opt)
                 return;
 
         if(opt) {
-                printf("Enable scrollbar for %s\n", ele->name);
-
                 if((ele->scrollbar_flags & (1<<0)))
                         ele->scrollbar_flags |= (1<<2);
                 if((ele->scrollbar_flags & (1<<1)))
@@ -385,7 +383,7 @@ WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = wut_bat_push_uniform(ren, 7, ele->parent->inner_rect);
+		v_index[1] = wut_bat_push_uniform(ren, 7, ele->parent->visible_out_rect);
 	}
 	else {
 		v_index[1] = -1;
@@ -504,9 +502,19 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
                                 ele->content_rect[3]));
 		s_index[2] = wut_bat_push_uniform(ren, 4, scroll);
 
+ 
+	        /* Uniform: u_limit */
+	        if(ele->parent) {
+		        s_index[1] = wut_bat_push_uniform(ren, 5, 
+                                        ele->parent->visible_out_rect);
+	        }
+	        else {
+		        s_index[1] = -1;
+	        }               
+
 		vdata.z = (f32)ele->layer / 100.0;
 		vdata.index[0] = s_index[0];
-		vdata.index[1] = -1;
+		vdata.index[1] = s_index[1];
 		vdata.index[2] = s_index[2];
 		vdata.type = WUT_RENTYPE_SCROLL_V;
 
