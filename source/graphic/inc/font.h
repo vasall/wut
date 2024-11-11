@@ -1,15 +1,15 @@
 #ifndef _WUT_GRAPHIC_RESOURCES_FONT_H
 #define _WUT_GRAPHIC_RESOURCES_FONT_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "utility/inc/utility.h"
+#include "source/utility/inc/utility.h"
 
-#include "component/inc/static_list.h"
-#include "component/inc/list.h"
+#include "source/component/inc/static_list.h"
+#include "source/component/inc/list.h"
 
-#include "graphic/inc/context.h"
+#include "source/graphic/inc/context.h"
 
 #define WUT_FONT_NAME_LIM	128
 

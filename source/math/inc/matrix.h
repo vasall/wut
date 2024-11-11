@@ -1,7 +1,7 @@
 #ifndef _WUT_MATH_MATRIX_H
 #define _WUT_MATH_MATRIX_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 
 #define NULLMAT ((f32 *)NULL)
@@ -13,7 +13,7 @@ typedef f32 wut_Mat3[9];
 typedef f32 wut_Mat4[16];
 
 
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
 
 WUT_API void   wut_mat3_zero(wut_Mat3 m);

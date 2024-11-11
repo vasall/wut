@@ -1,7 +1,7 @@
 #ifndef _DOCUMENT_TAG_H
 #define _DOCUMENT_TAG_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 enum wut_eTag {
         WUT_UNDEF               = -1,

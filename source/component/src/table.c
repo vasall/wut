@@ -1,6 +1,6 @@
-#include "component/inc/table.h"
+#include "source/component/inc/table.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdio.h>
 #include <stdlib.h>

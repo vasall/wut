@@ -1,6 +1,6 @@
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
-#include "math/inc/functions.h"
+#include "source/math/inc/functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

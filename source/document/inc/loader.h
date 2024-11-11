@@ -1,10 +1,10 @@
 #ifndef _WUT_DOCUMENT_LOADER_H
 #define _WUT_DOCUMENT_LOADER_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
-#include "document/inc/document.h"
-#include "document/inc/element.h"
+#include "source/document/inc/document.h"
+#include "source/document/inc/element.h"
 
 
 /*

@@ -1,8 +1,8 @@
 #ifndef _WUT_COMPONENT_LIST_H
 #define _WUT_COMPONENT_LIST_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 
 struct wut_List {

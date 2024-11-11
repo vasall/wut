@@ -1,12 +1,12 @@
-#include "event/inc/event_listener.h"
+#include "source/event/inc/event_listener.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "document/inc/element.h"
+#include "source/document/inc/element.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 

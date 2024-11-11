@@ -1,8 +1,8 @@
 #ifndef _WUT_COMPONENT_TABLE_H
 #define _WUT_COMPONENT_TABLE_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 #define WUT_TBL_NAME_LIM	128
 #define WUT_TBL_ROWS		128

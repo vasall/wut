@@ -1,10 +1,10 @@
 #ifndef _WUT_WINDOW_OPENGL_H
 #define _WUT_WINDOW_OPENGL_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
 
 /*

@@ -1,18 +1,18 @@
 #ifndef _WUT_CORE_H
 #define _WUT_CORE_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
-#include "core/inc/predefined.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
+#include "source/core/inc/predefined.h"
 
-#include "window/inc/window.h"
-#include "document/inc/document.h"
-#include "event/inc/event.h"
-#include "graphic/inc/graphic.h"
-#include "style/inc/style.h"
-#include "system/inc/system.h"
-#include "utility/inc/utility.h"
-#include "widget/inc/widget.h"
+#include "source/window/inc/window.h"
+#include "source/document/inc/document.h"
+#include "source/event/inc/event.h"
+#include "source/graphic/inc/graphic.h"
+#include "source/style/inc/style.h"
+#include "source/system/inc/system.h"
+#include "source/utility/inc/utility.h"
+#include "source/widget/inc/widget.h"
 
 
 struct wut_coreContainer {

@@ -1,11 +1,11 @@
 #ifndef _WUT_STYLE_STYLESHEET_ATTRIBUTE_H
 #define _WUT_STYLE_STYLESHEET_ATTRIBUTE_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
-#include "style/inc/stylesheet_tables.h"
+#include "source/style/inc/stylesheet_tables.h"
 
-#include "utility/inc/flex.h"
+#include "source/utility/inc/flex.h"
 
 /*
  * An entry containing data used when adding, retrieving and updating data in

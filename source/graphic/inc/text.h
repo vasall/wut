@@ -1,14 +1,14 @@
 #ifndef _WUT_GRAPHIC_TEXT_H
 #define _WUT_GRAPHIC_TEXT_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "graphic/inc/batch.h"
+#include "source/graphic/inc/batch.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
-#include "style/inc/style.h"
+#include "source/style/inc/style.h"
 
 
 #define WUT_TEXT_WORDWRAP	WUT_KW_TEXT_WORDWRAP

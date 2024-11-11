@@ -1,17 +1,17 @@
-#include "document/inc/element_template.h"
+#include "source/document/inc/element_template.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "document/inc/document.h"
-#include "document/inc/element.h"
+#include "source/document/inc/document.h"
+#include "source/document/inc/element.h"
 
-#include "style/inc/style.h"
+#include "source/style/inc/style.h"
 
-#include "widget/inc/widget.h"
-#include "widget/inc/view.h"
+#include "source/widget/inc/widget.h"
+#include "source/widget/inc/view.h"
 
-#include "graphic/inc/context.h"
-#include "graphic/inc/camera.h"
+#include "source/graphic/inc/context.h"
+#include "source/graphic/inc/camera.h"
 
 #include <stdio.h>
 #include <stdlib.h>

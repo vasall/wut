@@ -3,13 +3,13 @@
 
 struct wut_Style;
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
-#include "style/inc/stylesheet.h"
+#include "source/style/inc/stylesheet.h"
 
-#include "utility/inc/color.h"
+#include "source/utility/inc/color.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
 
 

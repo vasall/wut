@@ -1,7 +1,7 @@
-#include "document/inc/loader.h"
+#include "source/document/inc/loader.h"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/alarm.h"
+#include "source/utility/inc/text_formatting.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -88,6 +88,8 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
         char name[MAX_LINE_LENGTH];
         char classes[MAX_LINE_LENGTH];
 
+        char swp[MAX_LINE_LENGTH];
+
         char *tag_start;
 
         enum wut_eTag tagt;
@@ -123,7 +125,11 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                                         ptr++;
                                 }
 
-                                if(strncmp(tag, tag_start, ptr - tag_start) == 0) {
+                                strncpy(swp, tag_start, ptr - tag_start);
+
+                                printf("Closing tag \"%s\"\n", swp);
+
+                                if(strcmp(swp, tag) == 0) {
                                         if(run->parent) {
                                                 run = run->parent;
                                         }
@@ -134,6 +140,8 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
 
                                 *name = 0;
                                 *classes = 0;
+
+                                printf("Opening tag \"%s\"\n", tag);
 
                                 ptr = ldr_opening_tag(ptr, tag, name, classes);
 

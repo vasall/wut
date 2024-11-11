@@ -1,8 +1,8 @@
-#include "event/inc/event_default.h"
+#include "source/event/inc/event_default.h"
 
-#include "core/inc/core.h"
+#include "source/core/inc/core.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
 #define WUT_EVD_DEBUG		0
 

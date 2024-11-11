@@ -1,6 +1,6 @@
-#include "document/inc/tag.h"
+#include "source/document/inc/tag.h"
 
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/text_formatting.h"
 
 #include <stdlib.h>
 #include <string.h>

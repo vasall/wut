@@ -2,8 +2,8 @@
 #define _WUT_UTILITY_COLOR_H
 
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 /*
  * A pixel is defined by 4 attributes representing the RGBA-values.

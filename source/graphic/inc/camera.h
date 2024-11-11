@@ -1,12 +1,12 @@
 #ifndef _WUT_GRAPHIC_CAMERA_H
 #define _WUT_GRAPHIC_CAMERA_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "math/inc/functions.h"
+#include "source/math/inc/functions.h"
 
 #define WUT_CAM_NAME_LIM	128
 #define WUT_CAM_PITCH_LIM	50.0

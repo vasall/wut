@@ -1,17 +1,17 @@
 #ifndef _WUT_GRAPHIC_CONSTRUCTOR_H
 #define _WUT_GRAPHIC_CONSTRUCTOR_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "graphic/inc/object.h"
+#include "source/graphic/inc/object.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
 struct wut_ObjectConstr;
 
 
-#include "graphic/inc/object.h"
+#include "source/graphic/inc/object.h"
 
 
 struct wut_ObjectConstrAttrib {

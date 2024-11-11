@@ -1,6 +1,6 @@
-#include "math/inc/matrix.h"
+#include "source/math/inc/matrix.h"
 
-#include "math/inc/functions.h"
+#include "source/math/inc/functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

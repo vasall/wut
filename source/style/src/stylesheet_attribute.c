@@ -1,9 +1,9 @@
-#include "style/inc/stylesheet_attribute.h"
+#include "source/style/inc/stylesheet_attribute.h"
 
-#include "style/inc/stylesheet_tables.h"
+#include "source/style/inc/stylesheet_tables.h"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/alarm.h"
+#include "source/utility/inc/text_formatting.h"
 
 #include <stdio.h>
 #include <stdlib.h>

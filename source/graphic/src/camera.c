@@ -1,12 +1,12 @@
-#include "graphic/inc/camera.h"
+#include "source/graphic/inc/camera.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "core/inc/core.h"
+#include "source/core/inc/core.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "widget/inc/view.h"
+#include "source/widget/inc/view.h"
 
 #include <stdio.h>
 #include <stdlib.h>

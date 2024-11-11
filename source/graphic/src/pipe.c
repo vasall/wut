@@ -1,8 +1,8 @@
-#include "graphic/inc/pipe.h"
+#include "source/graphic/inc/pipe.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 
 WUT_INTERN s32 pip_get_slot(struct wut_Pipe *pip)

@@ -3,21 +3,21 @@
 
 struct wut_Window;
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 /* Catch-all */
-#include "window/inc/sdl.h"
-#include "window/inc/opengl.h"
+#include "source/window/inc/sdl.h"
+#include "source/window/inc/opengl.h"
 
-#include "graphic/inc/context.h"
+#include "source/graphic/inc/context.h"
 
-#include "document/inc/identity.h"
+#include "source/document/inc/identity.h"
 
-#include "event/inc/event.h"
-#include "event/inc/event_listener.h"
+#include "source/event/inc/event.h"
+#include "source/event/inc/event_listener.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
 #define WUT_WIN_NAME_LIM  	126
 #define WUT_WIN_CHILDREN_LIM     6

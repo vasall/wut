@@ -1,7 +1,7 @@
 #ifndef _WUT_MATH_VECTOR_H
 #define _WUT_MATH_VECTOR_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 #include <math.h>
 
@@ -24,7 +24,7 @@ typedef s32 wut_iVec3[3];
 #define WUT_IVEC4_SIZE (S32_S*4)
 typedef s32 wut_iVec4[4];
 
-#include "math/inc/matrix.h"
+#include "source/math/inc/matrix.h"
 
 
 /*

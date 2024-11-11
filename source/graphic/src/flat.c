@@ -1,8 +1,8 @@
-#include "graphic/inc/flat.h"
+#include "source/graphic/inc/flat.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 WUT_INTERN void flat_mod(struct wut_Flat *f, s32 x, s32 y,
 		struct wut_Color col)

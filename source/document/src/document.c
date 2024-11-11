@@ -1,12 +1,12 @@
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/utility.h"
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/alarm.h"
+#include "source/utility/inc/utility.h"
+#include "source/utility/inc/text_formatting.h"
 
-#include "core/inc/predefined.h"
+#include "source/core/inc/predefined.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 
 #include <stdlib.h>

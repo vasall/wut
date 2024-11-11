@@ -1,12 +1,12 @@
-#include "graphic/inc/batch.h"
+#include "source/graphic/inc/batch.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "window/inc/opengl.h"
+#include "source/window/inc/opengl.h"
 
-#include "core/inc/predefined.h"
+#include "source/core/inc/predefined.h"
 
 
 WUT_INTERN size_t bat_sizeof_GLenum(GLenum type)

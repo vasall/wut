@@ -10,7 +10,7 @@ CC         := gcc
 # Error flags for compiling
 ERRFLAGS   := -Wall -Wextra -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition
 # Compiling flags here
-CFLAGS     := -g -O0 -ansi -std=c89 -I. -I./inc/ -I.. -pedantic -D_POSIX_C_SOURCE=200809L
+CFLAGS     := -g -O0 -ansi -std=c89 -I. -I./inc/ -I../../ -pedantic -D_POSIX_C_SOURCE=200809L
 
 # The linker to use
 LINKER     := gcc

@@ -1,6 +1,6 @@
-#include "utility/inc/color.h"
+#include "source/utility/inc/color.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
 #include <stdlib.h>
 

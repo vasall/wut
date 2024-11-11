@@ -1,15 +1,15 @@
-#include "widget/inc/widget.h"
+#include "source/widget/inc/widget.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "widget/inc/textfield.h"
-#include "widget/inc/view.h"
+#include "source/widget/inc/textfield.h"
+#include "source/widget/inc/view.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "graphic/inc/shader.h"
+#include "source/graphic/inc/shader.h"
 
 #include <stdlib.h>
 

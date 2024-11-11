@@ -1,12 +1,12 @@
-#include "style/inc/class.h"
+#include "source/style/inc/class.h"
 
-#include "style/inc/stylesheet_attribute.h"
+#include "source/style/inc/stylesheet_attribute.h"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/utility.h"
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/alarm.h"
+#include "source/utility/inc/utility.h"
+#include "source/utility/inc/text_formatting.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdio.h>
 #include <stdlib.h>

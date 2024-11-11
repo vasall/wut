@@ -1,4 +1,4 @@
-#include "math/inc/functions.h"
+#include "source/math/inc/functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,11 +1,11 @@
 #ifndef _WUT_SYSTEM_H
 #define _WUT_SYSTEM_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 /* Catch-all */
-#include "system/inc/file.h"
+#include "source/system/inc/file.h"
 
 /*
  * Safer reimplementation of malloc().

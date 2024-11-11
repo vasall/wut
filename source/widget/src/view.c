@@ -1,8 +1,8 @@
-#include "widget/inc/view.h"
+#include "source/widget/inc/view.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 

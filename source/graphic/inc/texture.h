@@ -1,14 +1,14 @@
 #ifndef _WUT_GRAPHICTEXTURE_H
 #define _WUT_GRAPHICTEXTURE_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "component/inc/table.h"
+#include "source/component/inc/table.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
-#include "graphic/inc/context.h"
+#include "source/graphic/inc/context.h"
 
 #define WUT_TEXTURE_SLOTS		16
 

@@ -1,11 +1,11 @@
-#include "widget/inc/textfield.h"
+#include "source/widget/inc/textfield.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "document/inc/document.h"
-#include "document/inc/element.h"
+#include "source/document/inc/document.h"
+#include "source/document/inc/element.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
 #include <stdlib.h>
 

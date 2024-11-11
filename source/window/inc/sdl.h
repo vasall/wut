@@ -1,8 +1,8 @@
 #ifndef _WUT_WINDOW_SDL_H
 #define _WUT_WINDOW_SDL_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define SDL_R_MASK 0xff000000

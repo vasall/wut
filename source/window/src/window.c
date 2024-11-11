@@ -1,13 +1,13 @@
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "core/inc/predefined.h"
-#include "core/inc/core.h"
+#include "source/core/inc/predefined.h"
+#include "source/core/inc/core.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
 #include <stdlib.h>
 

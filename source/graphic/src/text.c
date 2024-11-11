@@ -1,10 +1,10 @@
-#include "graphic/inc/text.h"
+#include "source/graphic/inc/text.h"
 
 #include <stdlib.h>
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
 
 WUT_INTERN s8 text_resize(struct wut_TextBuffer *tbuf, s16 len)

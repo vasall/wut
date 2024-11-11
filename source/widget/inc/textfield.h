@@ -1,11 +1,11 @@
 #ifndef _WUT_WIDGET_TEXTFIELD_H
 #define _WUT_WIDGET_TEXTFIELD_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "graphic/inc/font.h"
-#include "graphic/inc/text.h"
+#include "source/graphic/inc/font.h"
+#include "source/graphic/inc/text.h"
 
 
 struct wut_Textfield {

@@ -1,15 +1,15 @@
 #ifndef _WUT_WIDGET_VIEW_H
 #define _WUT_WIDGET_VIEW_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "graphic/inc/context.h"
-#include "graphic/inc/pipe.h"
-#include "graphic/inc/camera.h"
-#include "graphic/inc/object.h"
+#include "source/graphic/inc/context.h"
+#include "source/graphic/inc/pipe.h"
+#include "source/graphic/inc/camera.h"
+#include "source/graphic/inc/object.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
 
 

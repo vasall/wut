@@ -1,14 +1,14 @@
-#include "event/inc/event.h"
+#include "source/event/inc/event.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "core/inc/core.h"
+#include "source/core/inc/core.h"
 
-#include "event/inc/event_default.h"
+#include "source/event/inc/event_default.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
 
 #define WUT_EVT_DEBUG   0

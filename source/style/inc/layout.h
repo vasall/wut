@@ -1,7 +1,7 @@
 #ifndef _WUT_STYLE_LAYOUT_H
 #define _WUT_STYLE_LAYOUT_H
 
-#include "document/inc/element.h"
+#include "source/document/inc/element.h"
 
 
 /*

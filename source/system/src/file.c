@@ -1,8 +1,8 @@
-#include "system/inc/file.h"
+#include "source/system/inc/file.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 

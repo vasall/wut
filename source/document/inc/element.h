@@ -3,18 +3,18 @@
 
 struct wut_Element;
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "document/inc/identity.h"
-#include "document/inc/tag.h"
-#include "document/inc/element_template.h"
+#include "source/document/inc/identity.h"
+#include "source/document/inc/tag.h"
+#include "source/document/inc/element_template.h"
 
-#include "style/inc/style.h"
+#include "source/style/inc/style.h"
 
-#include "event/inc/event_listener.h"
+#include "source/event/inc/event_listener.h"
 
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
 #define WUT_ELE_NAME_LIM	        126
 #define WUT_ELE_CHILDREN_LIM	        126

@@ -4,11 +4,11 @@
 struct wut_Class;
 struct wut_ClassTable;
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
-#include "component/inc/list.h"
+#include "source/component/inc/list.h"
 
-#include "style/inc/stylesheet.h"
+#include "source/style/inc/stylesheet.h"
 
 
 #define WUT_CLASS_NAME_LIMIT    128

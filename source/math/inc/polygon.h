@@ -1,7 +1,7 @@
 #ifndef _WUT_MATH_POLYGON_H
 #define _WUT_MATH_POLYGON_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 #include <math.h>
 
@@ -11,7 +11,7 @@ typedef s32 wut_iPnt[2];
 #define WUT_IRECT_SIZE  (4*sizeof(s32))
 typedef s32 wut_iRect[4];
 
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
 /*
  * The default use for edges is:

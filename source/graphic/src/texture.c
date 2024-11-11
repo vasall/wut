@@ -1,11 +1,11 @@
-#include "graphic/inc/texture.h"
+#include "source/graphic/inc/texture.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "core/inc/core.h"
+#include "source/core/inc/core.h"
 
-#include "system/inc/system.h"
-#include "system/inc/file.h"
+#include "source/system/inc/system.h"
+#include "source/system/inc/file.h"
 
 #include <stdlib.h>
 

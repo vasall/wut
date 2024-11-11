@@ -1,10 +1,10 @@
-#include "graphic/inc/context.h"
+#include "source/graphic/inc/context.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "core/inc/predefined.h"
+#include "source/core/inc/predefined.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 

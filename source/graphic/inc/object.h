@@ -9,17 +9,17 @@ struct wut_Object;
 #define WUT_OBJECT_ATTRIB_NAME_LIM	        128
 #define WUT_OBJECT_UNIFORM_NAME_LIM	        128
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "component/inc/table.h"
+#include "source/component/inc/table.h"
 
-#include "math/inc/functions.h"
-#include "math/inc/vector.h"
+#include "source/math/inc/functions.h"
+#include "source/math/inc/vector.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "widget/inc/view.h"
+#include "source/widget/inc/view.h"
 
 
 struct wut_ObjectUniform {

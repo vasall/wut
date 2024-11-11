@@ -1,9 +1,9 @@
 #ifndef _WUT_MATH_FUNCTIONS_H
 #define _WUT_MATH_FUNCTIONS_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
 #define WUT_PI 3.14159265358979323846
 

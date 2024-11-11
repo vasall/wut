@@ -1,7 +1,7 @@
 #ifndef _WUT_UTILITY_TEXT_FORMATTING_H
 #define _WUT_UTILITY_TEXT_FORMATTING_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 
 /*

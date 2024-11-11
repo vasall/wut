@@ -1,10 +1,10 @@
-#include "style/inc/style.h"
+#include "source/style/inc/style.h"
 
 #include <stdlib.h>
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 
 

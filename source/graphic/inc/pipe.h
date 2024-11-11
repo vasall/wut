@@ -1,14 +1,14 @@
 #ifndef _WUT_GRAPHIC_PIPE_H
 #define _WUT_GRAPHIC_PIPE_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "graphic/inc/object.h"
-#include "graphic/inc/camera.h"
+#include "source/graphic/inc/object.h"
+#include "source/graphic/inc/camera.h"
 
-#include "math/inc/functions.h"
-#include "math/inc/vector.h"
+#include "source/math/inc/functions.h"
+#include "source/math/inc/vector.h"
 
 #define WUT_PIPE_MIN		32
 

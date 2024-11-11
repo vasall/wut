@@ -1,12 +1,12 @@
 #ifndef _WUT_GRAPHICSHADER_H
 #define _WUT_GRAPHICSHADER_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "component/inc/table.h"
+#include "source/component/inc/table.h"
 
-#include "graphic/inc/context.h"
+#include "source/graphic/inc/context.h"
 
 #define WUT_SHADER_LIM		128
 #define WUT_SHADER_VAR_LIM	16

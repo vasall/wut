@@ -1,13 +1,13 @@
-#include "style/inc/stylesheet.h"
+#include "source/style/inc/stylesheet.h"
 
-#include "style/inc/stylesheet_tables.h"
-#include "style/inc/stylesheet_attribute.h"
+#include "source/style/inc/stylesheet_tables.h"
+#include "source/style/inc/stylesheet_attribute.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "utility/inc/alarm.h"
-#include "utility/inc/utility.h"
-#include "utility/inc/text_formatting.h"
+#include "source/utility/inc/alarm.h"
+#include "source/utility/inc/utility.h"
+#include "source/utility/inc/text_formatting.h"
 
 #include <stdlib.h>
 

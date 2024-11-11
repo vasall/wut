@@ -1,14 +1,14 @@
 #ifndef _WUT_GRAPHIC_BATCH_H
 #define _WUT_GRAPHIC_BATCH_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 
 struct wut_Batch;
 
-#include "graphic/inc/shader.h"
-#include "graphic/inc/texture.h"
+#include "source/graphic/inc/shader.h"
+#include "source/graphic/inc/texture.h"
 
 /*
  * This struct is used to represent a single attribute of a vertex like the

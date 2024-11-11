@@ -1,6 +1,6 @@
-#include "window/inc/opengl.h"
+#include "source/window/inc/opengl.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 

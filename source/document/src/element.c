@@ -1,16 +1,16 @@
-#include "document/inc/element.h"
+#include "source/document/inc/element.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
-#include "widget/inc/widget.h"
+#include "source/widget/inc/widget.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "style/inc/layout.h"
+#include "source/style/inc/layout.h"
 
 
 #include <stdlib.h>

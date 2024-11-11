@@ -1,12 +1,12 @@
-#include "graphic/inc/font.h"
+#include "source/graphic/inc/font.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "component/inc/table.h"
+#include "source/component/inc/table.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
-#include "document/inc/document.h"
+#include "source/document/inc/document.h"
 
 #include <stdlib.h>
 

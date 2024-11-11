@@ -1,7 +1,7 @@
 #ifndef _WUT_STYLE_STYLESHEET_TABLES_H
 #define _WUT_STYLE_STYLESHEET_TABLES_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 
 /*

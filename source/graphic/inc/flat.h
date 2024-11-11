@@ -1,17 +1,17 @@
 #ifndef _WUT_GRAPHIC_FLAT_H
 #define _WUT_GRAPHIC_FLAT_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "graphic/inc/texture.h"
-#include "graphic/inc/shader.h"
+#include "source/graphic/inc/texture.h"
+#include "source/graphic/inc/shader.h"
 
-#include "utility/inc/color.h"
+#include "source/utility/inc/color.h"
 
-#include "math/inc/polygon.h"
+#include "source/math/inc/polygon.h"
 
 #define WUT_FLAT_NAME_LIM	128
 

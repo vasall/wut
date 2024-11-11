@@ -1,20 +1,20 @@
 #ifndef _WUT_DOCUMENT_H
 #define _WUT_DOCUMENT_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "document/inc/element.h"
-#include "document/inc/loader.h"
+#include "source/document/inc/element.h"
+#include "source/document/inc/loader.h"
 
-#include "graphic/inc/batch.h"
-#include "graphic/inc/object.h"
-#include "graphic/inc/constructor.h"
-#include "graphic/inc/flat.h"
+#include "source/graphic/inc/batch.h"
+#include "source/graphic/inc/object.h"
+#include "source/graphic/inc/constructor.h"
+#include "source/graphic/inc/flat.h"
 
-#include "style/inc/class.h"
+#include "source/style/inc/class.h"
 
 #define WUT_CHANGE_STYLE        (1<<0)
 #define WUT_CHANGE_ELEMENT      (1<<1)

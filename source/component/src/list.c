@@ -1,8 +1,8 @@
-#include "component/inc/list.h"
+#include "source/component/inc/list.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdio.h>
 #include <stdlib.h>

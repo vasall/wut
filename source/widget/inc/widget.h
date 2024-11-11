@@ -1,10 +1,10 @@
 #ifndef _WUT_WIDGET_H
 #define _WUT_WIDGET_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "document/inc/element.h"
+#include "source/document/inc/element.h"
 
 enum wut_eWidgetType {
 	WUT_WIDGET_TEXT,

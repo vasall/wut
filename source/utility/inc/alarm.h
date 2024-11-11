@@ -1,7 +1,7 @@
 #ifndef _WUT_ALARM_H
 #define _WUT_ALARM_H
 
-#include "core/inc/define.h"
+#include "source/core/inc/define.h"
 
 
 #define WUT_ALARM_FILE "log.txt"

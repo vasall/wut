@@ -1,17 +1,17 @@
 #ifndef _WUT_GRAPHIC_CONTEXT_H
 #define _WUT_GRAPHIC_CONTEXT_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "graphic/inc/graphic.h"
-#include "graphic/inc/batch.h"
+#include "source/graphic/inc/graphic.h"
+#include "source/graphic/inc/batch.h"
 
-#include "widget/inc/view.h"
+#include "source/widget/inc/view.h"
 
-#include "component/inc/static_list.h"
+#include "source/component/inc/static_list.h"
 
 struct wut_Context {
 	/* Pointer to the window this context belongs to */

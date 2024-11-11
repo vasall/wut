@@ -1,11 +1,11 @@
 #ifndef _WUT_EVENT_LISTENER_H
 #define _WUT_EVENT_LISTENER_H
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
-#include "event/inc/event.h"
-#include "event/inc/event_type.h"
+#include "source/event/inc/event.h"
+#include "source/event/inc/event_type.h"
 
 #define WUT_LIS_NAME_LIMIT	128
 

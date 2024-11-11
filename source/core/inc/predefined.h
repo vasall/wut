@@ -1,9 +1,8 @@
 #ifndef _WUT_CORE_PREDEFINED_H
 #define _WUT_CORE_PREDEFINED_H
 
-#include "./define.h"
-#include "./import.h"
-
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 
 WUT_API char *_wut_prScrollbarVtxShd;

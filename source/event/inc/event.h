@@ -2,8 +2,8 @@
 #define _WUT_EVENT_H
 
 
-#include "core/inc/define.h"
-#include "core/inc/import.h"
+#include "source/core/inc/define.h"
+#include "source/core/inc/import.h"
 
 
 struct wut_Event;
@@ -11,14 +11,14 @@ struct wut_Event;
 /* The default event callback functions */
 typedef s8 (*wut_EventFunc)(struct wut_Event *, void *);
 
-#include "window/inc/window.h"
+#include "source/window/inc/window.h"
 
-#include "math/inc/vector.h"
+#include "source/math/inc/vector.h"
 
 /* Catch-all */
-#include "event/inc/event_default.h"
-#include "event/inc/event_listener.h"
-#include "event/inc/event_type.h"
+#include "source/event/inc/event_default.h"
+#include "source/event/inc/event_listener.h"
+#include "source/event/inc/event_type.h"
 
 
 #define WUT_EVT_PIPE_LIM	64

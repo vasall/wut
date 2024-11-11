@@ -1,12 +1,12 @@
-#include "graphic/inc/constructor.h"
+#include "source/graphic/inc/constructor.h"
 
-#include "utility/inc/alarm.h"
+#include "source/utility/inc/alarm.h"
 
-#include "graphic/inc/shader.h"
-#include "graphic/inc/texture.h"
-#include "graphic/inc/camera.h"
+#include "source/graphic/inc/shader.h"
+#include "source/graphic/inc/texture.h"
+#include "source/graphic/inc/camera.h"
 
-#include "system/inc/system.h"
+#include "source/system/inc/system.h"
 
 #include <stdlib.h>
 #include <stdint.h>

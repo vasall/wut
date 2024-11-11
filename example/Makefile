@@ -25,7 +25,7 @@ $(TARGET): $(OBJS)
 
 # Rule to build object files
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ -I../source
+	$(CC) $(CFLAGS) -c $< -o $@ -I../
 
 # Clean up build files
 clean:
