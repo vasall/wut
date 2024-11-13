@@ -1,9 +1,12 @@
 #include "source/document/inc/loader.h"
 
+#include "source/document/inc/tag.h"
+
 #include "source/utility/inc/alarm.h"
 #include "source/utility/inc/text_formatting.h"
 
 #include "source/component/inc/dictionary.h"
+#include "source/component/inc/string_object.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +46,19 @@ WUT_INTERN void ldr_reset_info(struct wut_ele_info *info)
 
         wut_ClearDictionary(&info->attributes);
 }
+
+
+WUT_INTERN void ldr_print(struct wut_ele_info *info)
+{
+        char swp[128];
+        wut_tag_name(info->tag, swp);
+
+        printf("Variant: %d, Tag: %s\n", info->variant, swp);
+        printf("Attributes:\n");
+        wut_PrintDictionary(&info->attributes);
+        printf("\n");
+}
+
 
 WUT_INTERN s16 ldr_find_attr(char *str, char **key, s16 *key_len,
                 char **value, s16 *value_len)
@@ -115,16 +131,15 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
 
         /*
          * Then read the tag.
-         */
-        
+         */ 
         ptr = tag;
-        while(*str && (*str != 0x20)) {
+        while(*str && (*str != 0x20) && (*str != 0x3E)) {
                 *ptr = *str;
                 ptr++;
                 str++;
         }
         *ptr = 0;
-        
+
         /* Retrieve the corresponding enum from the string */
         info->tag = wut_tag_get(tag);
 
@@ -157,6 +172,8 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
                 ptr += len;
         }
 }
+
+
 
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -282,6 +299,9 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
 
         char read_buf[MAX_LINE_LENGTH];
         s16 read;
+        s8 mode;
+
+        struct wut_String *text;
 
         struct wut_ele_info ele_info;
 
@@ -309,9 +329,9 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
 
         /* Reset the reading buffers */
         read = -1;
-
-        printf("Start reading:\n\n");
-
+        text = wut_CreateString(512);
+        mode = 0;
+        
         /* Reead the file line by line */
         while (fgets(line, sizeof(line), file)) {
                 ptr = line;
@@ -325,6 +345,7 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                         if(strncmp(ptr, "<", 1) == 0) {
                                 /* Enable reading to the read-buffer */
                                 read = 0;
+                                mode = 0;
                         }
 
                         /* 
@@ -332,9 +353,16 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                          * Seperating the read-buffer from the line-buffer
                          * allows reading across multiple lines.
                          */
-                        if(read >= 0) {
+                        if(read >= 0 && mode == 0) {
                                 read_buf[read] = *ptr;
                                 read++;
+                        }
+                        /*
+                         * Write the current character to the text-string.
+                         * This will be used when creating a text-element.
+                         */
+                        else if(read >= 0 && mode == 1) {
+                                wut_ExtendString(text, WUT_STRING_END, ptr, 1);
                         }
 
                         /*
@@ -356,8 +384,30 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                                 ldr_reset_info(&ele_info);
                                 ldr_parse_element(read_buf, &ele_info); 
 
+                                ldr_print(&ele_info);
+
                                 /* Disabled reading */
                                 read = -1;
+
+                                /* Opening */
+                                if(ele_info.variant == 1) {
+                                        /* Start reading the text */
+                                        if(ele_info.tag == WUT_TEXT) {
+                                                wut_ClearString(text);
+                                                mode = 1;
+                                                read = 0;
+                                        }
+                                }
+                                /* Closing */
+                                else if(ele_info.variant == 2) {
+                                        /* Stop reading the text */
+                                        if(ele_info.tag == WUT_TEXT) {
+                                                mode = 0;
+
+                                                printf(">> Text read: \"%s\"\n\n",
+                                                                wut_GetString(text));
+                                        }
+                                }
                         }
  
                         ptr++;

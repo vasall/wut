@@ -445,7 +445,6 @@ WUT_API struct wut_Document *wut_GetDocument(struct wut_Window *win)
 }
 
 
-
 WUT_API void wut_DumpWindowTree(void)
 {
 	struct wut_Window *mwin = wut_cor_get_main_window();

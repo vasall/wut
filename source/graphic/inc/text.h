@@ -10,6 +10,8 @@
 
 #include "source/style/inc/style.h"
 
+#include "source/component/inc/string_object.h"
+
 
 #define WUT_TEXT_WORDWRAP	WUT_KW_TEXT_WORDWRAP
 #define WUT_TEXT_NOWRAP		WUT_KW_TEXT_NOWRAP
@@ -20,7 +22,7 @@ struct wut_TextInfo {
 	/*
 	 * A pointer to the dedicated batch renderer.
 	 */
-	struct wut_Batch		*batch;
+	struct wut_Batch	*batch;
 
 	/*
 	 * A pointer to the font.
@@ -35,8 +37,9 @@ struct wut_TextInfo {
 	/*
 	 * The style used for the text.
 	 */
-	struct wut_Style		*style;
+	struct wut_Style	*style;
 };
+
 
 struct wut_TextElement {
 	s8	used;
@@ -54,6 +57,7 @@ struct wut_TextElement {
 	s16	position_x;
 	s16	position_y;
 };
+
 
 #define WUT_TEXT_ALLOC		32
 

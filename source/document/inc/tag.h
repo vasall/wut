@@ -11,8 +11,7 @@ enum wut_eTag {
         WUT_BUTTON	        =  3,
         WUT_INPUT	        =  4,
         WUT_IMAGE	        =  5,
-        WUT_VIEW		=  6,
-        WUT_CUSTOM	        =  7
+        WUT_VIEW		=  6
 };
 
 
@@ -26,5 +25,12 @@ enum wut_eTag {
 WUT_API enum wut_eTag wut_tag_get(char *str);
 
 
+/*
+ * Retrieve the corresponding name as a string for a tag.
+ *
+ * @tag: The tag enum
+ * @out: A string to write the name to
+ */
+WUT_API void wut_tag_name(enum wut_eTag tag, char *out);
 
 #endif /* _DOCUMENT_TAG_H */

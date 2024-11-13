@@ -140,9 +140,8 @@ WUT_API struct wut_String *wut_CombineStrings(struct wut_String *str1,
 }
 
 
-WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt)
+WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt, s16 len)
 {
-        s16 len;
         s16 overhang;
 
         if(!str || !txt || off < 0) {
@@ -150,7 +149,10 @@ WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt)
                 return -1;
         }
 
-        len = strlen(txt);
+        if(len == WUT_STRING_AUTO) {
+                len = strlen(txt);
+        }
+ 
         overhang = (off + len) - str->size;
 
         /* Scale the string buffer accordingly */
@@ -170,9 +172,8 @@ WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt)
 }
 
 
-WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt)
+WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt, s16 len)
 {
-        s16 len;
         s16 i;
 
         if(!str || !txt) {
@@ -184,7 +185,9 @@ WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt)
                 off = str->size;
         }
 
-        len = strlen(txt);
+        if(len == WUT_STRING_AUTO) {
+                len = strlen(txt);
+        }
 
         /* Scale the string buffer accordingly */
         if(str_ensure_fit(str, len) < 0) {
@@ -210,8 +213,8 @@ WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt)
 
 WUT_API s8 wut_CropString(struct wut_String *str, s16 start, s16 end)
 {
-        s16 len;
         s16 i;
+        s16 len;
 
         if(!str) {
                 WUT_ALARM(WUT_WARNING, "Input parameters invalid");

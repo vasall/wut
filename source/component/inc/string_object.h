@@ -8,6 +8,7 @@
 #define WUT_STRING_END                  -1
 #define WUT_STRING_START                0
 
+#define WUT_STRING_AUTO                 -1
 
 /*
  * NOTE:
@@ -97,10 +98,11 @@ WUT_API struct wut_String *wut_CombineStrings(struct wut_String *str1,
  * @str: Pointer to the string object
  * @off: The offset to write the new characters to
  * @txt: The new characters to write to the string
+ * @[len]: The size of the string in bytes
  *
  * Returns: 0 if successfull or -1 if an error occurred
  */
-WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt);
+WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt, s16 len);
 
 
 /*
@@ -110,10 +112,11 @@ WUT_API s8 wut_WriteString(struct wut_String *str, s16 off, char *txt);
  *
  * @str: Pointer to the string object
  * @off: The offset to place the new characters into in characters
+ * @[len]: The size of the string in bytes
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt);
+WUT_API s8 wut_ExtendString(struct wut_String *str, s16 off, char *txt,s16 len);
 
 
 /*
