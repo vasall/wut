@@ -73,10 +73,35 @@ WUT_XMOD char *wut_tfm_trim(char *str);
 
 
 /*
+ * Confirm that the given string only consists of the following types of
+ * characters:
+ *
+ *      - Letters (a..zA..Z)
+ *      - Numbers (0..1)
+ *      - Allowed special characters
+ *
+ * Everything else will be turned into a space.
+ *
+ * @str: Pointer to the string which will be updated to conform to standards
+ */
+WUT_XMOD void wut_tfm_conform(char *str);
+
+
+/*
+ * Reduce the seperating number of spaces between tokens to 1.
+ * This function will work on the given string and modify it.
+ *
+ * @str: The input string to reduce
+ */
+WUT_XMOD void wut_tfm_reduce(char *str);
+
+
+/*
  * Remove all spaces in a string.
  *
  * @str: The input string
  */
 WUT_XMOD void wut_tfm_strip(char *str);
+
 
 #endif /* _WUT_UTILITY_TEXT_FORMATTING_H */

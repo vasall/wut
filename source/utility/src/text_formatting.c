@@ -73,24 +73,64 @@ WUT_XMOD s8 wut_tfm_is_hexcode(char c)
 
 WUT_XMOD char *wut_tfm_trim(char *str)
 {
-    char *end;
+        char *end;
 
-    /* Trim leading space */
-    while (wut_tfm_is_space(*str)) str++;
+        /* Trim leading space */
+        while (wut_tfm_is_space(*str)) str++;
 
-    /* All spaces? */
-    if (*str == 0)
+        /* All spaces? */
+        if (*str == 0)
+                return str;
+
+        /* Trim trailing space */
+        end = str + strlen(str) - 1;
+        while (end > str && wut_tfm_is_space(*end)) end--;
+
+        /* Write new null terminator */
+        *(end + 1) = 0;
+
         return str;
-
-    /* Trim trailing space */
-    end = str + strlen(str) - 1;
-    while (end > str && wut_tfm_is_space(*end)) end--;
-
-    /* Write new null terminator */
-    *(end + 1) = 0;
-
-    return str;
 }
+
+
+WUT_XMOD void wut_tfm_conform(char *str)
+{
+        while(*str) {
+                if(*str < 0x20 || *str > 0x7E)
+                        *str = 0x20;
+
+                str++;
+        }
+}
+
+
+WUT_XMOD void wut_tfm_reduce(char *str)
+{
+        char *ptr = str;
+        s8 count = 0;
+
+        while(*ptr) {
+                /* If a space is detected */
+                if(*ptr == 0x20) {
+                        if(count < 1) {
+                                *str = *ptr;
+                                str++;
+                                count = 1;
+                        }
+                }
+                else {
+                        *str = *ptr;
+                        str++;
+
+                        count = 0;
+                }
+
+                ptr++;
+        }
+
+        *str = 0;
+}
+
 
 WUT_XMOD void wut_tfm_strip(char *str)
 {

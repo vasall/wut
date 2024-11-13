@@ -1,6 +1,7 @@
-<block name="main" class="container">
+<block name"main" class="container">
         <block name="a" class="one">
-                <image name="testimage" src="/Missing.png"></image>
+                <image name="testimage"
+                src="/Missing.png"></image>
         </block>
         <block name="b" class="one"></block>
         <block name="c" class="one"></block>

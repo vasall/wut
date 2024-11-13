@@ -3,11 +3,14 @@
 #include <string.h>
 
 #include "../wut.h"
+#include "../source/component/inc/string_object.h"
+
 
 #define STYLE_FILES     1
 char *style_paths[STYLE_FILES] = {
         "style.wts"
 };
+
 
 
 int main(void)
@@ -19,6 +22,8 @@ int main(void)
         struct wut_Context *ctx;
 
         struct wut_Element *ele;
+
+        char buf[512];
 
         printf("Initialize WUT framework...\n");
         if(wut_Init() < 0) {
