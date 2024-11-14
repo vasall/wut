@@ -28,6 +28,8 @@ WUT_XMOD struct wut_Textfield *wut_tfd_create(struct wut_Element *ele,
 		return NULL;
 	}
 
+        font = wut_GetFont(ele->document->window->context, "Roboto");
+
 	/* Configure the textfield */
 	txtf->element = ele;
 	strcpy(txtf->content, teststring);

@@ -174,6 +174,31 @@ WUT_XMOD s8 wut_ele_scroll(struct wut_Element *ele, s32 *val)
 	return ret;
 }
 
+
+WUT_INTERN void ele_link_classes(struct wut_Element *ele)
+{
+        wut_stl_link_classes(&ele->style, ele->document->class_table);
+}
+
+
+WUT_INTERN s8 ele_link_to_par(struct wut_Element *ele, void *data)
+{
+        struct wut_Element *parent = ele->parent;
+
+        WUT_IGNORE(data);
+
+        /* Copy over the different pointers */
+	ele->layer = parent->layer + 1;
+
+	/* Link the stylesheet */
+	wut_stl_link(&ele->style, &parent->style);
+
+        /* Resolve the classes */
+        ele_link_classes(ele);
+
+        return 0;
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -291,12 +316,13 @@ WUT_XMOD s8 wut_ele_hlf(struct wut_Element *ele, wut_ElementFunc prefnc,
 		return 0;
 
 	if(prefnc) {
-		if(prefnc(ele, data))
+		if(prefnc(ele, data)) {
 			return 1;
+                }
 	}
 
 
-	run = ele->firstborn;
+	run = ele->children;
 	while(run) {
 		next = run->right;
 
@@ -630,12 +656,6 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 }
 
 
-WUT_XMOD void wut_ele_link_classes(struct wut_Element *ele)
-{
-        wut_stl_link_classes(&ele->style, ele->document->class_table);
-}
-
-
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -644,26 +664,17 @@ WUT_XMOD void wut_ele_link_classes(struct wut_Element *ele)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *name,
-		enum wut_eTag type, void *data)
+WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc,
+                struct wut_ElementInfo *info)
 {
 	struct wut_Element *ele;
-	s8 name_len;
-
         static s32 element_counter = 0;
 
-	if(doc == NULL || name == NULL) {
-		WUT_ALARM(WUT_ERROR, "Input parameters invalid");
-		goto err_return;
-	}
-
-	name_len = strlen(name);
-	if(name_len > WUT_ELE_NAME_LIM) {
-		WUT_ALARM(WUT_ERROR, "Element name is invalid");
-		goto err_return;
-	}
-
-
+        if(!info) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                goto err_return;
+        }
+	
 	if(!(ele = wut_zalloc(sizeof(struct wut_Element)))) {
 		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for new element");
 		goto err_return;
@@ -674,21 +685,21 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
         ele->id = element_counter++;
 
 	/* Set the basic attributes for the element */
-	strcpy(ele->name, name);
-	ele->type = type;
+	strcpy(ele->name, wut_GetDictionary(&info->attrib, "name"));
+	ele->type = info->tag;
 
-	printf("Element \"%s\" has type %d\n", name, type);
+	printf("Element \"%s\" has type %d\n", ele->name, ele->type);
 
 	/* ...and reset the rest */
 	ele->layer = 0;
 	ele->document = doc;
-	ele->body = NULL;
+	ele->body = doc->body;
 	ele->parent = NULL;
 	ele->left = NULL;
 	ele->right = NULL;
 	ele->slot = -1;
 	ele->children_num = 0;
-	ele->firstborn = NULL;
+	ele->children = NULL;
 
 	/* Create the event handler */
 	if(!(ele->event_handler = wut_hdl_create())) {
@@ -702,9 +713,15 @@ WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *na
 		goto err_destroy_handler;
 	}
 
+        /* 
+         * If classes are already given in the attribute-dictionary, pass them
+         * on, directly.
+         */
+        wut_AddClasses(ele, wut_GetDictionary(&info->attrib, "class"));
+
 	/* Load a template, if there is one for the given type */
 	ele->widget = NULL;
-	if(wut_etm_load(ele, data) < 0) {
+	if(wut_etm_load(ele, &info->attrib) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to load the template for the element");
 		goto err_destroy_handler;
 	}
@@ -750,11 +767,11 @@ WUT_API s8 wut_AttachElement(struct wut_Element *parent,
 		goto err_return;
 	}
 
-	if(!parent->firstborn) {
-		parent->firstborn = ele;
+	if(!parent->children) {
+		parent->children = ele;
 	}
 	else {	
-		run = parent->firstborn;	
+		run = parent->children;	
 		while(run->right) {
 			run = run->right;
 		}
@@ -765,12 +782,12 @@ WUT_API s8 wut_AttachElement(struct wut_Element *parent,
 
 	parent->children_num++;
 
+        /*
+         * Finally link the element to the parent by copying over the references
+         * to the document and body. Also link the stylesheets together.
+         */
 	ele->parent = parent;
-	ele->body = parent->body;
-	ele->layer = parent->layer + 1;
-
-	/* Link the stylesheet */
-	wut_stl_link(&ele->style, &parent->style);
+        wut_ele_hlf(ele, &ele_link_to_par, NULL, NULL);
 
 	return 0;
 
@@ -796,7 +813,7 @@ WUT_API void wut_DetachElement(struct wut_Element *ele)
 	}
 
 	if(!ele->left)
-		par->firstborn = ele->right;
+		par->children = ele->right;
 	else
 		(ele->left)->right = ele->right;
 
@@ -816,8 +833,12 @@ WUT_API void wut_AddClasses(struct wut_Element *ele, char *names)
         /* Add class names to style struct */
         wut_stl_add_classes(&ele->style, names);
 
-        /* Link the classes in the style struct */
-        wut_ele_link_classes(ele);
+        /*
+         * Link the classes in the style struct. This will only work if the
+         * element has been atttached to the document. Otherwise, the classes
+         * will remain unresolved until the element is attached to a document.
+         */
+        ele_link_classes(ele);
 }
 
 

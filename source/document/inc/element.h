@@ -16,6 +16,9 @@ struct wut_Element;
 
 #include "source/math/inc/vector.h"
 
+#include "source/component/inc/dictionary.h"
+
+
 #define WUT_ELE_NAME_LIM	        126
 #define WUT_ELE_CHILDREN_LIM	        126
 
@@ -26,6 +29,12 @@ struct wut_Element;
 #define WUT_ELE_CLASSES                 8
 
 #define WUT_SCROLLBAR_WIDTH             10
+
+
+struct wut_ElementInfo {
+        enum wut_eTag           tag;
+        struct wut_Dictionary   attrib;
+};
 
 
 struct wut_Element {
@@ -56,9 +65,13 @@ struct wut_Element {
         /* The slot of the element in the parent children list */
         s8                      slot;
 
-        /* The children that are attached to this element */
+        /*
+         * The children attached to this element. Note that they are a linked
+         * list, so to iterate through, you have to use the right/left attribute
+         * for each child.
+         */
         u8                      children_num;
-        struct wut_Element      *firstborn;
+        struct wut_Element      *children;
 
         /* The type of element */
         enum wut_eTag           type;
@@ -298,16 +311,15 @@ WUT_XMOD void wut_ele_link_classes(struct wut_Element *ele);
  * Allocate and create a new element. Then depending on the given type, load
  * template styles.
  *
- * @doc: Pointer to the document
- * @name: The name of the element
- * @type: The type of element
- * @[data]: Optional data
+ * @doc: Pointer to the document this element belongs to
+ * @info: An info struct containing the tag-type and a dictionary containing the
+ *        attributes
  *  
  * Returns: Either a pointer to the newly created element or NULL if an error
  * 	    occurred
  */
-WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc, char *name,
-		enum wut_eTag type, void *data);
+WUT_API struct wut_Element *wut_CreateElement(struct wut_Document *doc,
+                struct wut_ElementInfo *info);
 
 
 /*

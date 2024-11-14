@@ -1,5 +1,7 @@
 #include "source/component/inc/dictionary.h"
 
+#include "source/utility/inc/alarm.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +20,7 @@ WUT_API void wut_ClearDictionary(struct wut_Dictionary *dic)
                 *dic->entries[0][i] = 0;
         }
 
+        dic->zero = 0;
         dic->number = 0;
 }
 
@@ -84,8 +87,12 @@ WUT_API char *wut_GetDictionary(struct wut_Dictionary *dic,
                 char *key)
 {
         s16 i;
+        char buf[512];
 
-        if(!dic) return NULL;
+        if(!dic || !key) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                return &dic->zero;
+        }
 
         for(i = 0; i < WUT_DIC_MAX_NUMBER; i++) {
                 if(strcmp(dic->entries[0][i], key) == 0) {
@@ -93,7 +100,37 @@ WUT_API char *wut_GetDictionary(struct wut_Dictionary *dic,
                 }
         }
 
-        return NULL;
+        sprintf(buf, "Requested key \"%s\" not in dictionary", key);
+        WUT_ALARM(WUT_WARNING, buf);
+
+        return &dic->zero;
+}
+
+
+WUT_API char *wut_PullDictionary(struct wut_Dictionary *dic,
+                char *key)
+{
+        s16 i;
+        char buf[512];
+
+        if(!dic || !key) {
+                WUT_ALARM(WUT_ERROR, "Input parameters invalid");
+                return &dic->zero;
+        }
+
+        for(i = 0; i < WUT_DIC_MAX_NUMBER; i++) {
+                if(strcmp(dic->entries[0][i], key) == 0) {
+                        *dic->entries[0][i] = 0;
+                        dic->number--;
+
+                        return dic->entries[1][i];
+                }
+        }
+
+        sprintf(buf, "Requested key \"%s\" not in dictionary", key);
+        WUT_ALARM(WUT_WARNING, buf);
+
+        return &dic->zero;
 }
 
 

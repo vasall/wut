@@ -44,6 +44,8 @@ int main(void)
         ctx = wut_GetContext(win);
         printf("Done\n");
 
+        wut_LoadFont(ctx, "Roboto", "RobotoRegular.png", "RobotoRegular.txt");
+
         for(i = 0; i < STYLE_FILES; i++) {
                 printf("Load style class from file \"%s\"...\n", style_paths[i]);
                 if(wut_LoadClasses(doc, style_paths[i]) < 0) {

@@ -7,6 +7,13 @@
 #define WUT_DIC_MAX_LENGTH      128
 
 struct wut_Dictionary {
+        /* 
+         * This is a quick hack. In case of the user requesting an entry that
+         * doesn't exist, we just return a pointer to this, which will always be
+         * zero. This is essential, as returning NULL can cause major trouble.
+         */
+        char zero;
+
         s16 number;
         char entries[2][WUT_DIC_MAX_NUMBER][WUT_DIC_MAX_LENGTH]; 
 };
@@ -47,6 +54,7 @@ WUT_API void wut_ResetDictionary(struct wut_Dictionary *dic,
 
 /*
  * Retrieve a value from the dictionary through the keyword.
+ * The keyword-value-pair will remain unchanged.
  *
  * @dic: Pointer to the dictionary
  * @key: The string containing the keyword
@@ -57,6 +65,21 @@ WUT_API void wut_ResetDictionary(struct wut_Dictionary *dic,
 WUT_API char *wut_GetDictionary(struct wut_Dictionary *dic,
                 char *key);
 
+
+/*
+ * Pull a keyword-value-pair from the dictionary and return the value.
+ * The entries will then be removed. Note, as the entrie will be removed, so
+ * please directly copy the contents into a different buffer to keep it safe, as
+ * the slot can be overwritten anytime.
+ *
+ * @dic: Pointer to the dictionary
+ * @key: The string containing the keyword
+ *
+ * Returns: A poointer to the interal value-string, or NULL if either the
+ *          keyword doesn't  exist or an error occurred
+ */
+WUT_API char *wut_PullDictionary(struct wut_Dictionary *dic,
+                char *key);
 
 /*
  * Print the contents of a dictionary in the console.

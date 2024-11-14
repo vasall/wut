@@ -216,15 +216,12 @@ WUT_XMOD struct wut_Element *wut_doc_hovered(struct wut_Document *doc,
  *
  * @doc: Pointer to the document
  * @parent: A pointer to the parent element
- * @name: The name of the element
- * @type: The type of the new element
- * @[data]: Optional data for the element
+ * @info: A info-construct to create the element from
  *
  * Returns: 0 on success or -1 if an error occurred
  */
 WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
-                struct wut_Element *parent, char *name,
-                enum wut_eTag type, void *data);
+                struct wut_Element *parent, struct wut_ElementInfo *info);
 
 
 /*

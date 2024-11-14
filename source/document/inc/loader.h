@@ -21,12 +21,12 @@
  *
  * @doc: Pointer to the document
  * @pth: Pointer to the file containing the element structure
- * @[atc]: The attachment element or NULL for body
+ * @[atmpnt]: The attachment element or NULL for body
  *
  * Returns: 0 on success or -1 if an error occurred
  */
 WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
-                struct wut_Element *ele);
+                struct wut_Element *atmpnt);
 
 /*
  * Load classes from a style file and add them to the class table.

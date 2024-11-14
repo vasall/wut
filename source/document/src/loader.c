@@ -27,36 +27,70 @@
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-struct wut_ele_info {
+struct ldr_ele_info {
         /* 0: undefined, 1: opening, 2: closing */
-        s8                      variant;   
+        s8                      var;   
 
-        /* The tag (ie. button, input, text, etc.) */
-        enum wut_eTag           tag;
-
-        /* The attributes */
-        struct wut_Dictionary   attributes;
+        /*
+         * The element info.
+         */
+        struct wut_ElementInfo  einfo;
 };
 
 
-WUT_INTERN void ldr_reset_info(struct wut_ele_info *info)
-{
-        info->variant = 0;
-        info->tag = WUT_UNDEF;
+struct wut_ldr_reader {
+        FILE *file;
+        char line[MAX_LINE_LENGTH];
+        char *ptr;
+};
 
-        wut_ClearDictionary(&info->attributes);
+
+WUT_INTERN void ldr_reset_info(struct ldr_ele_info *info)
+{
+        info->var = 0;
+
+        info->einfo.tag = WUT_UNDEF;
+        wut_ClearDictionary(&info->einfo.attrib);
 }
 
 
-WUT_INTERN void ldr_print(struct wut_ele_info *info)
+WUT_INTERN void ldr_print(struct ldr_ele_info *info)
 {
         char swp[128];
-        wut_tag_name(info->tag, swp);
+        wut_tag_name(info->einfo.tag, swp);
 
-        printf("Variant: %d, Tag: %s\n", info->variant, swp);
+        printf("Variant: %d, Tag: %s\n", info->var, swp);
         printf("Attributes:\n");
-        wut_PrintDictionary(&info->attributes);
+        wut_PrintDictionary(&info->einfo.attrib);
         printf("\n");
+}
+
+
+WUT_INTERN struct wut_ldr_reader ldr_new_reader(FILE *file)
+{
+        struct wut_ldr_reader rdr;
+
+        rdr.file = file;
+        *rdr.line = 0;
+        rdr.ptr = rdr.line;
+
+        return rdr;
+}
+
+
+WUT_INTERN s8 ldr_read_next(struct wut_ldr_reader *rdr, char *c)
+{
+        if(*(rdr->ptr) == 0) {
+                if(!fgets(rdr->line, MAX_LINE_LENGTH, rdr->file)) {
+                        return 0;
+                }
+
+                rdr->ptr = rdr->line;
+        }
+
+        *c = *(rdr->ptr);
+        rdr->ptr++;
+        return 1;
 }
 
 
@@ -98,10 +132,9 @@ expression_invalid:
 }
 
 
-WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
+WUT_INTERN void ldr_parse_element(char *str, struct ldr_ele_info *info)
 {
         char *ptr;
-        char *attr_start;
 
         s16 len;
         char *kptr;
@@ -120,13 +153,13 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
         /* Closing tag */
         if(strncmp(str, "</", 2) == 0) {
                 str += 2;
-                info->variant = 2;
+                info->var = 2;
         }
 
         /* Opening tag */
         else if(strncmp(str, "<", 1) == 0) {
                 str += 1;
-                info->variant = 1;                
+                info->var = 1;                
         }
 
         /*
@@ -141,7 +174,7 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
         *ptr = 0;
 
         /* Retrieve the corresponding enum from the string */
-        info->tag = wut_tag_get(tag);
+        info->einfo.tag = wut_tag_get(tag);
 
         /*
          * Finally extract the attributes.
@@ -167,12 +200,11 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
                 wut_tfm_trim(value);
 
                 /* Write keyword-value-pair to dictionary */
-                wut_SetDictionary(&info->attributes, key, value);
-                        
+                wut_SetDictionary(&info->einfo.attrib, key, value);
+
                 ptr += len;
         }
 }
-
 
 
 /*
@@ -183,119 +215,12 @@ WUT_INTERN void ldr_parse_element(char *str, struct wut_ele_info *info)
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  */
 
-#if 0
 WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
-                struct wut_Element *start)
+                struct wut_Element *atmpnt)
 {
         FILE *file;
-
-        char line[MAX_LINE_LENGTH];
-        char *ptr;
-
-        char tag[MAX_LINE_LENGTH];
-        char name[MAX_LINE_LENGTH];
-        char classes[MAX_LINE_LENGTH];
-
-        char swp[MAX_LINE_LENGTH];
-
-        char *tag_start;
-
-        enum wut_eTag tagt;
-
-        struct wut_Element *run = start;
-        struct wut_Element *ele;
-
-        /* If not starting element is given, use the body */
-        if(!run) {
-                run = doc->body;
-        }
-
-        /* Open the file */
-        if(!(file = fopen(pth, "r"))) {
-                char swp[512];
-                sprintf(swp, "Failed to open %s", pth);
-                WUT_ALARM(WUT_ERROR, swp);
-                return -1;
-        }
-
-        /* Reset the string buffers */
-        memset(tag, 0, sizeof(tag));
-        memset(name, 0, sizeof(name));
-        memset(classes, 0, sizeof(classes));
-
-        /* Reead the file line by line */
-        while (fgets(line, sizeof(line), file)) {
-                ptr = line;
-
-                /* Go through the line */
-                while(*ptr) {
-                        /* Check if the current position indicates a closing tag */
-                        if(strncmp(ptr, "</", 2) == 0) {
-                                ptr += 2;
-                                tag_start = ptr;
-
-                                while (*ptr && *ptr != ' ' && *ptr != '>' && *ptr != '/') {
-                                        ptr++;
-                                }
-
-                                strncpy(swp, tag_start, ptr - tag_start);
-
-                                printf("Closing tag \"%s\"\n", swp);
-
-                                if(strcmp(swp, tag) == 0) {
-                                        if(run->parent) {
-                                                run = run->parent;
-                                        }
-                                }
-                        }
-                        else if (*ptr == '<') {
-                                ptr++;
-
-                                *name = 0;
-                                *classes = 0;
-
-                                printf("Opening tag \"%s\"\n", tag);
-
-                                ptr = ldr_opening_ele(ptr, tag, name, classes);
-
-                                tagt = wut_ele_get(tag); 
-                                if(!(ele = wut_CreateElement(doc, name, tagt, NULL))) {
-                                        printf("Failed to create %s\n", name);
-                                        goto err_close_file;
-                                }
-
-                                /* Attach the element to the parent */
-                                wut_AttachElement(run, ele); 
-                                run = ele;
-
-                                /* Attach classes to the element */
-                                wut_AddClasses(ele, classes);
-
-
-                        }
-                        ptr++;
-                }
-        }
-
-        wut_doc_has_changed(doc, start, 0, 0);
-
-        fclose(file);
-        return 0;
-
-err_close_file:
-        fclose(file);
-        return -1;
-}
-#endif
-
-WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
-                struct wut_Element *start)
-{
-        FILE *file;
-
-
-        char *ptr;
-        char line[MAX_LINE_LENGTH];
+        struct wut_ldr_reader reader;
+        char c;
 
         char read_buf[MAX_LINE_LENGTH];
         s16 read;
@@ -303,20 +228,14 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
 
         struct wut_String *text;
 
-        struct wut_ele_info ele_info;
+        struct ldr_ele_info info;
 
-        char swp[MAX_LINE_LENGTH];
-
-        char *tag_start;
-
-        enum wut_eTag tagt;
-
-        struct wut_Element *run = start;
+        struct wut_Element *root = NULL;
+        struct wut_Element *run = NULL;
         struct wut_Element *ele;
 
-        /* If not starting element is given, use the body */
-        if(!run) {
-                run = doc->body;
+        if(atmpnt == NULL) {
+                atmpnt = doc->body;
         }
 
         /* Open the file */
@@ -327,103 +246,155 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                 return -1;
         }
 
+        /* Create a new reader */
+        reader = ldr_new_reader(file);
+
         /* Reset the reading buffers */
         read = -1;
         text = wut_CreateString(512);
         mode = 0;
-        
-        /* Reead the file line by line */
-        while (fgets(line, sizeof(line), file)) {
-                ptr = line;
 
-                /* Go through the line */
-                while(*ptr) {
-                        /* 
-                         * If the opening character for a tag is detected, we
-                         * start reading.
-                         */
-                        if(strncmp(ptr, "<", 1) == 0) {
-                                /* Enable reading to the read-buffer */
-                                read = 0;
-                                mode = 0;
-                        }
+        /* Read the file character by character */
+        while(ldr_read_next(&reader, &c)) {
+                /* 
+                 * If the opening character for a tag is detected, we
+                 * start reading.
+                 */
+                if(c == '<') {
+                        /* Enable reading the element-tag */
+                        read = 0;
+                        mode = 0;
+                }
 
-                        /* 
-                         * Write the current character to the read-buffer.
-                         * Seperating the read-buffer from the line-buffer
-                         * allows reading across multiple lines.
-                         */
-                        if(read >= 0 && mode == 0) {
-                                read_buf[read] = *ptr;
-                                read++;
-                        }
+                /* 
+                 * Write the current character to the read-buffer.
+                 * Seperating the read-buffer from the line-buffer
+                 * allows reading across multiple lines.
+                 */
+                if(read >= 0 && mode == 0) {
+                        read_buf[read] = c;
+                        read++;
+                }
+                /*
+                 * Write the current character to the text-string.
+                 * This will be used when creating a text-element.
+                 */
+                else if(read >= 0 && mode == 1) {
+                        wut_ExtendString(text, WUT_STRING_END, &c, 1);
+                }
+
+
+                /*
+                 * If the closing character for an element-tag is detected, we
+                 * stop reading.
+                 */
+                if(c == '>') {
                         /*
-                         * Write the current character to the text-string.
-                         * This will be used when creating a text-element.
+                         * Before we can parse the given string to
+                         * tag-info, we have to standardize it a bit.
                          */
-                        else if(read >= 0 && mode == 1) {
-                                wut_ExtendString(text, WUT_STRING_END, ptr, 1);
-                        }
+                        read_buf[read] = 0;
+                        wut_tfm_conform(read_buf);
+                        wut_tfm_reduce(read_buf);
 
                         /*
-                         * If the closing character for a tag is detected, we
-                         * stop reading.
+                         * Now we parse the string into the info-struct.
                          */
-                        if(strncmp(ptr, ">", 1) == 0) {
+                        ldr_reset_info(&info);
+                        ldr_parse_element(read_buf, &info); 
+
+                        ldr_print(&info);
+
+                        /* 
+                         * Generally disable reading. This can be overwritten
+                         * later when reading the text content for example.
+                         */
+                        read = -1;
+
+                        /* <OpeningTag> */
+                        if(info.var == 1) {
                                 /*
-                                 * Before we can parse the given string to
-                                 * tag-info, we have to standardize it a bit.
+                                 * Create a new element.
                                  */
-                                read_buf[read] = 0;
-                                wut_tfm_conform(read_buf);
-                                wut_tfm_reduce(read_buf);
-
-                                /*
-                                 * Now we parse the string.
-                                 */
-                                ldr_reset_info(&ele_info);
-                                ldr_parse_element(read_buf, &ele_info); 
-
-                                ldr_print(&ele_info);
-
-                                /* Disabled reading */
-                                read = -1;
-
-                                /* Opening */
-                                if(ele_info.variant == 1) {
-                                        /* Start reading the text */
-                                        if(ele_info.tag == WUT_TEXT) {
-                                                wut_ClearString(text);
-                                                mode = 1;
-                                                read = 0;
-                                        }
+                                if(!(ele = wut_CreateElement(doc, 
+                                                                &info.einfo))) {
+                                        printf("Failed to read!!\n");
+                                        fclose(file);
+                                        break;
                                 }
-                                /* Closing */
-                                else if(ele_info.variant == 2) {
+
+                                /*
+                                 * If this is the first element to be read,
+                                 * set it as the root for the branch.
+                                 */
+                                if(root == NULL) {
+                                        root = ele;
+                                        run = ele;
+                                }
+                                /*
+                                 * Otherwise just attach it to the parent.
+                                 */
+                                else {
+                                        wut_AttachElement(run, ele);
+                                        run = ele;
+                                }
+
+                                /* 
+                                 * Start reading the content for the
+                                 * text-element. This will even read
+                                 * over other element defines, until the
+                                 * text-ending is found.
+                                 */
+                                if(info.einfo.tag == WUT_TEXT) {
+                                        wut_ClearString(text);
+                                        mode = 1;
+                                        read = 0;
+                                }
+                        }
+                        /* </ClosingTag> */
+                        else if(info.var == 2) {
+                                /*
+                                 * If we're currently reading the content for a
+                                 * text-element, we have to keep going until we
+                                 * reach the end of the text-element. Even if
+                                 * there are other elements in the way. They
+                                 * will be just be read as text.
+                                 */
+                                if(mode == 1) {
                                         /* Stop reading the text */
-                                        if(ele_info.tag == WUT_TEXT) {
+                                        if(info.einfo.tag == WUT_TEXT) {
                                                 mode = 0;
 
-                                                printf(">> Text read: \"%s\"\n\n",
-                                                                wut_GetString(text));
+                                                /*
+                                                 * Here we have to add the read
+                                                 * text to the text-element.
+                                                 */
+                                                
+
+                                                /* Go back to the parent */
+                                                if(run->parent) {
+                                                        run = run->parent;
+                                                }
                                         }
                                 }
+                                else { 
+                                        /* Go back to the parent */
+                                        if(run->parent) {
+                                                run = run->parent;
+                                        }                                       
+                                }
                         }
- 
-                        ptr++;
                 }
         }
 
-        printf("Finished reading\n");
+        /* Finally attach the branch to the document-tree */
+        wut_AttachElement(atmpnt, root);
 
-        wut_doc_has_changed(doc, start, 0, 0);
+        /* ..and update the entire document */
+        wut_doc_has_changed(doc, NULL, 0, 0);
 
         fclose(file);
         return 0;
-
-err_close_file:
-        fclose(file);
-        return -1;
 }
 
 
@@ -508,6 +479,8 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                         }
                 }
         }
+
+        printf("Finished reading!!\n\n");
 
 
         wut_doc_has_changed(doc, NULL, 0, 0);

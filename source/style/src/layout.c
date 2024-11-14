@@ -40,7 +40,7 @@ WUT_XMOD void wut_lay_block(struct wut_Element *ele)
 
 
 	/* Go through all children */
-	run = ele->firstborn;
+	run = ele->children;
 	while(run) {
 		style = &run->style;
 
@@ -119,7 +119,7 @@ WUT_XMOD void wut_lay_row(struct wut_Element *ele)
 
 	struct wut_Style *style;
 
-	run = ele->firstborn;
+	run = ele->children;
 	while(run) {
 		style = &run->style;
 
@@ -178,7 +178,7 @@ WUT_XMOD void wut_lay_column(struct wut_Element *ele)
 
 	struct wut_Style *style;
 
-	run = ele->firstborn;
+	run = ele->children;
 	while(run) {
 		style = &run->style;
 

@@ -312,6 +312,7 @@ WUT_INTERN struct wut_Element *doc_common_parent(struct wut_Element *e1,
 WUT_XMOD struct wut_Document *wut_doc_create(struct wut_Window *win)
 {
         struct wut_Document *doc;
+        struct wut_ElementInfo body_info;
 
         /* Allocate memory for the document */
         if(!(doc = wut_zalloc(sizeof(struct wut_Document)))) {
@@ -326,13 +327,17 @@ WUT_XMOD struct wut_Document *wut_doc_create(struct wut_Window *win)
         /* Get a reference to the shape/size of the window */
         doc->shape_ref = &win->shape;
 
-        /* Create the body element */	
-        if(!(doc->body = wut_CreateElement(doc, "body", WUT_BODY, NULL))) {
+        /* Create the body element */
+        body_info.tag = WUT_BODY;
+        wut_SetDictionary(&body_info.attrib, "name", "body");
+
+        if(!(doc->body = wut_CreateElement(doc, &body_info))) {
                 WUT_ALARM(WUT_ERROR, "Failed to create body for document");
                 goto err_free_doc;
         }
 
         /* Set the attributes for the body element */
+        doc->body->document = doc;
         doc->body->body = doc->body;
         doc->body->parent = NULL;
         doc->body->layer = 0;
@@ -680,18 +685,21 @@ err_return:
 
 
 WUT_API struct wut_Element *wut_AddElement(struct wut_Document *doc,
-                struct wut_Element *parent, char *name,
-                enum wut_eTag type, void *data)
+                struct wut_Element *parent, struct wut_ElementInfo *info)
 {
         struct wut_Element *ele;
 
-        if(!doc || !parent || !name) {
+        if(!doc || !info) {
                 WUT_ALARM(WUT_ERROR, "Input parameters invalid");
                 goto err_return;
         }
 
+        if(!parent) {
+                parent = doc->body;
+        }
+
         /* Create new element */
-        if(!(ele = wut_CreateElement(doc, name, type, data))) {
+        if(!(ele = wut_CreateElement(doc, info))) {
                 WUT_ALARM(WUT_ERROR, "Failed to create new element for document");
                 goto err_return;
         }
