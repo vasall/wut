@@ -170,6 +170,13 @@ WUT_XMOD s8 wut_cls_find(struct wut_ClassSheet *ref,
                 enum wut_eSheetAttribId id, struct wut_SheetEntry *ret);
 
 /*
+ * Print all classes in the class sheet and their status.
+ *
+ * @ref: Pointer to the class sheet
+ */
+WUT_XMOD void wut_cls_print_sheet(struct wut_ClassSheet *ref);
+
+/*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
  *				APPLICATION-INTERFACE

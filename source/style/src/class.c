@@ -275,7 +275,7 @@ WUT_XMOD void wut_cls_link(struct wut_ClassTable *tbl,
         ref->mask = 0;
 
         for(i = 0; i < 8; i++) {
-                if(strlen(ref->names[i]) > 0 && ref->links[i] == NULL) {
+                if(strlen(ref->names[i]) > 0) {
                         if((cls = wut_cls_get(tbl, ref->names[i]))) {
                                 ref->links[i] = cls; 
                                 ref->mask |= cls->mask;
@@ -315,6 +315,27 @@ WUT_XMOD s8 wut_cls_find(struct wut_ClassSheet *ref,
         return 0;
 }
 
+
+WUT_XMOD void wut_cls_print_sheet(struct wut_ClassSheet *ref)
+{
+        s8 i;
+        char status[12];
+
+        for(i = 0; i < 8; i++) {
+                if(strlen(ref->names[i]) < 1)
+                        continue;
+
+                if(ref->links[i]) {
+                        strcpy(status, "Ok");
+                }
+                else {
+                        strcpy(status, "Unres.");
+                }
+
+                printf("\"%s\" (%s)\n", ref->names[i], status);
+        }
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -328,7 +349,7 @@ WUT_API void wut_PrintClass(struct wut_Class *cls)
         if(!cls)
                 return;
 
-        printf("%s:\n", cls->name);
+        printf("%s: %16lx\n", cls->name, cls->mask);
 
         wut_ApplyList(cls->attributes, &cls_cfnc_print, NULL);
 }
@@ -338,7 +359,7 @@ WUT_API void wut_PrintClasses(struct wut_ClassTable *tbl)
 {
         s32 i;
 
-        printf("Class Table (%d):\n", tbl->number);
+        printf("Class Table (%d)\n", tbl->number);
 
         for(i = 0; i < tbl->number; i++) {
                 if(tbl->list[i]) {

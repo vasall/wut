@@ -193,9 +193,6 @@ WUT_INTERN s8 ele_link_to_par(struct wut_Element *ele, void *data)
 	/* Link the stylesheet */
 	wut_stl_link(&ele->style, &parent->style);
 
-        /* Resolve the classes */
-        ele_link_classes(ele);
-
         return 0;
 }
 
@@ -873,6 +870,8 @@ WUT_API void wut_UpdateElementStyle(struct wut_Element *ele)
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
+
+        printf("Process element style for \"%s\":\n", ele->name);
 
         /* Then process the style */
 	pass.document_shape = ele->document->shape_ref;

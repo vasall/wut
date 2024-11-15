@@ -62,14 +62,25 @@ WUT_XMOD s8 wut_stl_get(struct wut_Style *style, enum wut_eSheetAttribId id,
 
 	run = style;
 	while(run) {
+                /* 
+                 * First check if the stylesheet contains the attribute.
+                 */
 		if(run->sheet.mask & (1<<id)) {
                 	return wut_sht_get(&run->sheet, id, ret);
 		}
 
+                /* 
+                 * Otherwise also check if one of the classes has the requested
+                 * attribute.
+                 */
                 if(run->classes.mask & (1<<id)) {
                         return wut_cls_find(&run->classes, id, ret);
                 }
 
+                /*
+                 * If neither one has the requested value, we check if the
+                 * parent has the requested attribute.
+                 */
 		run = run->ref;
 	}
 
@@ -431,6 +442,12 @@ WUT_API void wut_ModifyStyle(struct wut_Style *style, char *in)
 	 * Parse the input expressions and modify the stylesheet accordingly.
 	 */
 	wut_sht_parse(&style->sheet, in);
+}
+
+
+WUT_API void wut_DumpStylesheet(struct wut_Style *style)
+{
+        wut_sht_print(&style->sheet);
 }
 
 

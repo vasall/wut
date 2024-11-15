@@ -429,7 +429,7 @@ WUT_XMOD void wut_doc_update(struct wut_Document *doc)
                 doc->track_table.update_element = NULL;
                 return;
         }
-                
+
         /* First update the style */
         wut_ele_hlf(ele, &doc_cfnc_update_style, NULL, NULL);
 

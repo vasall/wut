@@ -70,9 +70,9 @@ int main(void)
         printf("----------------------------------------------------------\n");
         wut_PrintClasses(doc->class_table);
         printf("----------------------------------------------------------\n");
-        while(wut_Update()) {
 
-        }
+
+        while(wut_Update());
 
 err_close_window:
         wut_CloseWindow(win);
