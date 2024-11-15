@@ -196,6 +196,92 @@ WUT_INTERN s8 ele_link_to_par(struct wut_Element *ele, void *data)
         return 0;
 }
 
+
+WUT_INTERN void ele_ren_backgr(struct wut_Element *ele, struct wut_Batch *ren)
+{
+        s32 indices[4];
+	s32 v_index[3];
+	f32 color[4];
+
+	struct tempStruct_vtx {
+		f32 x;
+		f32 y;
+		f32 z;
+		s32 index[3];
+		s32 type;
+	} vdata;
+
+	s32 p0x;
+	s32 p0y;
+	s32 p1x;
+	s32 p1y;
+
+	p0x = ele->element_rect[0];
+	p0y = ele->element_rect[1];
+	p1x = ele->element_rect[0] + ele->element_rect[2];
+	p1y = ele->element_rect[1] + ele->element_rect[3];
+
+	/* Unioform: u_rect */
+	v_index[0] = wut_bat_push_uniform(ren, 1, ele->element_rect);
+
+	/* Uniform: u_color */
+	wut_GetColorFV(ele->style.infill_color, color);
+	v_index[2] = wut_bat_push_uniform(ren, 2, color);
+
+	/* Uniform: u_radius */
+	wut_bat_push_uniform(ren, 3, ele->style.radius_corner);
+
+	/* Uniform: u_bwidth */
+	wut_bat_push_uniform(ren, 4, &ele->style.border_width);
+
+	/* Uniform: u_bcolor */
+	wut_GetColorFV(ele->style.border_color, color);
+	wut_bat_push_uniform(ren, 5, color);
+
+	/* Uniform: u_limit */
+	if(ele->parent) {
+		v_index[1] = wut_bat_push_uniform(ren, 7, ele->parent->visible_out_rect);
+	}
+	else {
+		v_index[1] = -1;
+	}
+
+	vdata.z = (f32)ele->layer / 100.0;
+	vdata.index[0] = v_index[0];	/* The element rectangle */
+	vdata.index[1] = v_index[1];	/* The rendering zone */
+	vdata.index[2] = v_index[2];	/* The color to use */
+	vdata.type = WUT_RENTYPE_DEFAULT;
+
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p0y;
+	indices[0] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p0y;
+	indices[1] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+	vdata.x = (f32)p1x;
+	vdata.y = (f32)p1y;
+	indices[2] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+
+	vdata.x = (f32)p0x;
+	vdata.y = (f32)p1y;
+	indices[3] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+	wut_bat_push_index(ren, indices[0]);
+	wut_bat_push_index(ren, indices[2]);
+	wut_bat_push_index(ren, indices[3]);
+
+	wut_bat_push_index(ren, indices[0]);
+	wut_bat_push_index(ren, indices[1]);
+	wut_bat_push_index(ren, indices[2]);
+
+
+
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -358,98 +444,15 @@ WUT_XMOD void wut_ele_update(struct wut_Element *ele)
 
 WUT_XMOD void wut_ele_render(struct wut_Batch *ren, struct wut_Element *ele)
 {
-	s32 indices[4];
-	s32 v_index[3];
-	f32 color[4];
-
-	struct tempStruct_vtx {
-		f32 x;
-		f32 y;
-		f32 z;
-		s32 index[3];
-		s32 type;
-	} vdata;
-
-	s32 p0x;
-	s32 p0y;
-	s32 p1x;
-	s32 p1y;
-
-
 	/*
 	 * Return if the element is not visible.
 	 */
 	if(!(ele->info_flags & WUT_ELE_F_VISIBLE))
 		return;
 
-	p0x = ele->element_rect[0];
-	p0y = ele->element_rect[1];
-	p1x = ele->element_rect[0] + ele->element_rect[2];
-	p1y = ele->element_rect[1] + ele->element_rect[3];
-
-	/* Unioform: u_rect */
-	v_index[0] = wut_bat_push_uniform(ren, 1, ele->element_rect);
-
-	/* Uniform: u_color */
-	wut_GetColorFV(ele->style.infill_color, color);
-	v_index[2] = wut_bat_push_uniform(ren, 2, color);
-
-	/* Uniform: u_radius */
-	wut_bat_push_uniform(ren, 3, ele->style.radius_corner);
-
-	/* Uniform: u_bwidth */
-	wut_bat_push_uniform(ren, 4, &ele->style.border_width);
-
-	/* Uniform: u_bcolor */
-	wut_GetColorFV(ele->style.border_color, color);
-	wut_bat_push_uniform(ren, 5, color);
-
-	/* Uniform: u_limit */
-	if(ele->parent) {
-		v_index[1] = wut_bat_push_uniform(ren, 7, ele->parent->visible_out_rect);
-	}
-	else {
-		v_index[1] = -1;
-	}
-
-	vdata.z = (f32)ele->layer / 100.0;
-	vdata.index[0] = v_index[0];	/* The element rectangle */
-	vdata.index[1] = v_index[1];	/* The rendering zone */
-	vdata.index[2] = v_index[2];	/* The color to use */
-	vdata.type = WUT_RENTYPE_DEFAULT;
-
-	vdata.x = (f32)p0x;
-	vdata.y = (f32)p0y;
-	indices[0] = wut_bat_push_vertex(ren, (void *)&vdata);
-
-
-	vdata.x = (f32)p1x;
-	vdata.y = (f32)p0y;
-	indices[1] = wut_bat_push_vertex(ren, (void *)&vdata);
-
-	vdata.x = (f32)p1x;
-	vdata.y = (f32)p1y;
-	indices[2] = wut_bat_push_vertex(ren, (void *)&vdata);
-
-
-	vdata.x = (f32)p0x;
-	vdata.y = (f32)p1y;
-	indices[3] = wut_bat_push_vertex(ren, (void *)&vdata);
-
-	wut_bat_push_index(ren, indices[0]);
-	wut_bat_push_index(ren, indices[2]);
-	wut_bat_push_index(ren, indices[3]);
-
-	wut_bat_push_index(ren, indices[0]);
-	wut_bat_push_index(ren, indices[1]);
-	wut_bat_push_index(ren, indices[2]);
-
-#if 0
-	printf("Render \"%s\": [%d, %d, %d, %d]\n", 
-			ele->name,
-			p0x, p0y,
-			p1x, p1y);
-#endif
+        if(ele->type != WUT_IMAGE) {
+                ele_ren_backgr(ele, ren);
+        }
 
 	/* If the element has a widget, render that aswell */
 	if(ele->widget) {
@@ -870,8 +873,6 @@ WUT_API void wut_UpdateElementStyle(struct wut_Element *ele)
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		return;
 	}
-
-        printf("Process element style for \"%s\":\n", ele->name);
 
         /* Then process the style */
 	pass.document_shape = ele->document->shape_ref;

@@ -100,9 +100,6 @@ WUT_API char *wut_GetDictionary(struct wut_Dictionary *dic,
                 }
         }
 
-        sprintf(buf, "Requested key \"%s\" not in dictionary", key);
-        WUT_ALARM(WUT_WARNING, buf);
-
         return &dic->zero;
 }
 

@@ -35,3 +35,8 @@
         infill_mode: color;
         infill_color: #00ff00;
 }
+
+.img {
+        width: 100px;
+        height: 100px;
+}

@@ -44,6 +44,7 @@ int main(void)
         ctx = wut_GetContext(win);
         printf("Done\n");
 
+        wut_LoadTexture(ctx, "Missing", "Missing.png");
         wut_LoadFont(ctx, "Roboto", "RobotoRegular.png", "RobotoRegular.txt");
 
         for(i = 0; i < STYLE_FILES; i++) {
@@ -71,6 +72,8 @@ int main(void)
         wut_PrintClasses(doc->class_table);
         printf("----------------------------------------------------------\n");
 
+
+        wut_DumpStylesheet(&doc->body->style);
 
         while(wut_Update());
 

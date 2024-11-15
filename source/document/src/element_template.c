@@ -26,6 +26,8 @@ WUT_INTERN s8 wut_etm_load_body(struct wut_Element *ele, struct wut_Dictionary *
 
 	WUT_IGNORE(data);
 
+        printf("Load body!\n");
+
 	/*
 	 * DISPLAY
 	 */
@@ -77,7 +79,7 @@ WUT_INTERN s8 wut_etm_load_body(struct wut_Element *ele, struct wut_Dictionary *
 	 * INFILL
 	 */
 	wut_sht_parse(sheet, "infill_mode: color;");
-	wut_sht_parse(sheet, "infill_color: #B00B1E;");
+	wut_sht_parse(sheet, "infill_color: #FFFFFF;");
 
 	/*
 	 * LAYOUT
@@ -116,86 +118,6 @@ WUT_INTERN s8 wut_etm_load_block(struct wut_Element *ele, struct wut_Dictionary 
 	struct wut_Stylesheet *sheet = &style->sheet;
 
 	WUT_IGNORE(data);
-
-#if 0
-	/*
-	 * DISPLAY
-	 */
-	wut_sht_parse(sheet, "display_mode: visible;");
-
-	/*
-	 * SIZE
-	 */
-	wut_sht_parse(sheet, "width: 100pct;");
-	wut_sht_parse(sheet, "height: 100pct;");
-
-	/*
-	 * REFERENCE
-	 */
-	wut_sht_parse(sheet, "reference_mode: relative;");
-
-	/*
-	 * SPACING
-	 */
-	wut_sht_parse(sheet, "spacing_top: 0;");
-	wut_sht_parse(sheet, "spacing_right: 0;");
-	wut_sht_parse(sheet, "spacing_bottom: 0;");
-	wut_sht_parse(sheet, "spacing_left: 0;");
-
-	/*
-	 * PADDING
-	 */
-	wut_sht_parse(sheet, "padding_top: 0;");
-	wut_sht_parse(sheet, "padding_right: 0;");
-	wut_sht_parse(sheet, "padding_bottom: 0;");
-	wut_sht_parse(sheet, "padding_left: 0;");
-
-	/*
-	 * BORDER
-	 */
-	wut_sht_parse(sheet, "border_mode: none;");
-	wut_sht_parse(sheet, "border_width: 0;");
-	wut_sht_parse(sheet, "border_color: #000000;");
-
-	/*
-	 * RADIUS
-	 */
-	wut_sht_parse(sheet, "radius_top_left: 0;");
-	wut_sht_parse(sheet, "radius_top_right: 0;");
-	wut_sht_parse(sheet, "radius_bottom_right: 0;");
-	wut_sht_parse(sheet, "radius_bottom_left: 0;");
-
-	/*
-	 * INFILL
-	 */
-	wut_sht_parse(sheet, "infill_mode: color;");
-	wut_sht_parse(sheet, "infill_color: #B00B1E;");
-
-	/*
-	 * LAYOUT
-	 */
-	wut_sht_parse(sheet, "layout_mode: block;");
-
-	/*
-	 * ALIGNMENT
-	 */
-	wut_sht_parse(sheet, "align_v: top;");
-	wut_sht_parse(sheet, "align_h: left;");
-
-	/*
-	 * SCROLLBAR
-	 */
-	wut_sht_parse(sheet, "scrollbar_mode: auto;");
-
-	/*
-	 * TEXT
-	 */
-	wut_sht_parse(sheet, "text_size: 12px;");
-	wut_sht_parse(sheet, "text_color: #000000;");
-	wut_sht_parse(sheet, "text_mass: 50;");
-	wut_sht_parse(sheet, "text_options: none;");
-	wut_sht_parse(sheet, "text_wrap_mode: WORDWRAP;");
-#endif
 
 	return 0;
 }
@@ -238,6 +160,8 @@ WUT_INTERN s8 wut_etm_load_image(struct wut_Element *ele, struct wut_Dictionary 
 	struct wut_Style *style = &ele->style;
 	struct wut_Stylesheet *sheet = &style->sheet;
 
+        struct wut_Texture *tex;
+
 	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
 
@@ -247,82 +171,22 @@ WUT_INTERN s8 wut_etm_load_image(struct wut_Element *ele, struct wut_Dictionary 
 	wut_sht_parse(sheet, "display_mode: visible;");
 
 	/*
-	 * SIZE
-	 */
-	wut_sht_parse(sheet, "width: 100pct;");
-	wut_sht_parse(sheet, "height: 100pct;");
-
-	/*
 	 * REFERENCE
 	 */
-	wut_sht_parse(sheet, "reference_mode: relative;");
-
-	/*
-	 * SPACING
-	 */
-	wut_sht_parse(sheet, "spacing_top: 0;");
-	wut_sht_parse(sheet, "spacing_right: 0;");
-	wut_sht_parse(sheet, "spacing_bottom: 0;");
-	wut_sht_parse(sheet, "spacing_left: 0;");
-
-	/*
-	 * PADDING
-	 */
-	wut_sht_parse(sheet, "padding_top: 0;");
-	wut_sht_parse(sheet, "padding_right: 0;");
-	wut_sht_parse(sheet, "padding_bottom: 0;");
-	wut_sht_parse(sheet, "padding_left: 0;");
-
-	/*
-	 * BORDER
-	 */
-	wut_sht_parse(sheet, "border_mode: none;");
-	wut_sht_parse(sheet, "border_width: 0;");
-	wut_sht_parse(sheet, "border_color: #000000;");
-
-	/*
-	 * RADIUS
-	 */
-	wut_sht_parse(sheet, "radius_top_left: 0;");
-	wut_sht_parse(sheet, "radius_top_right: 0;");
-	wut_sht_parse(sheet, "radius_bottom_right: 0;");
-	wut_sht_parse(sheet, "radius_bottom_left: 0;");
+	wut_sht_parse(sheet, "reference_mode: absolute;");
 
 	/*
 	 * INFILL
 	 */
 	wut_sht_parse(sheet, "infill_mode: color;");
-	wut_sht_parse(sheet, "infill_color: #B00B1E;");
+	wut_sht_parse(sheet, "infill_color: #FFD046;");
 
-	/*
-	 * LAYOUT
-	 */
-	wut_sht_parse(sheet, "layout_mode: block;");
-
-	/*
-	 * ALIGNMENT
-	 */
-	wut_sht_parse(sheet, "align_v: top;");
-	wut_sht_parse(sheet, "align_h: left;");
-
-	/*
-	 * SCROLLBAR
-	 */
-	wut_sht_parse(sheet, "scrollbar_mode: auto;");
-
-	/*
-	 * TEXT
-	 */
-	wut_sht_parse(sheet, "text_size: 12px;");
-	wut_sht_parse(sheet, "text_color: #000000;");
-	wut_sht_parse(sheet, "text_mass: 50;");
-	wut_sht_parse(sheet, "text_options: none;");
-	wut_sht_parse(sheet, "text_wrap_mode: WORDWRAP;");
 
 	/*
 	 * Create and initialize the Image-Widget.
 	 */
-	if(!(ele->widget = wut_CreateWidget(ele, WUT_WIDGET_IMAGE, data))) {
+        tex = wut_GetTexture(ele->document->context, wut_GetDictionary(data, "rel"));
+	if(!(ele->widget = wut_CreateWidget(ele, WUT_WIDGET_IMAGE, tex))) {
 		return -1;
 	}
 

@@ -139,6 +139,7 @@ WUT_INTERN void wgt_render_text(struct wut_Widget *w)
 WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 {
 	struct wut_Element *ele;
+        struct wut_Context *ctx;
 	struct wut_Texture *tex;
 	struct wut_Batch *ren;
 
@@ -161,13 +162,14 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 
 
 	ele = w->element;
+        ctx = ele->document->context;
 	tex = w->ref;
-	ren = wut_ContextGetBatch(ele->document->context, tex->batch_id);
+	ren = wut_ContextGetBatch(ctx, tex->batch_id);
 		
-	p0x = ele->inner_rect[0];
-	p0y = ele->inner_rect[1];
-	p1x = ele->inner_rect[0] + ele->inner_rect[2];
-	p1y = ele->inner_rect[1] + ele->inner_rect[3];
+	p0x = ele->element_rect[0];
+	p0y = ele->element_rect[1];
+	p1x = ele->element_rect[0] + ele->element_rect[2];
+	p1y = ele->element_rect[1] + ele->element_rect[3];
 
 	/* Uniform: u_rect */
 	v_index[0] = wut_bat_push_uniform(ren, 1, ele->inner_rect);
@@ -177,42 +179,51 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 
 	/* Uniform: u_limit */
 	if(ele->parent) {
-		v_index[1] = wut_bat_push_uniform(ren, 3, ele->parent->inner_rect);
+		v_index[1] = wut_bat_push_uniform(ren, 3, ele->parent->content_rect);
 	}
 	else {
 		v_index[1] = -1;
 	}
-		
-	vdata.z = (f32)ele->layer / 100.0;
+
+        printf("Render image\n");
+
+	vdata.z = (f32)ele->layer;
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
 	vdata.index[2] = v_index[2];
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
-	vdata.u = 0;
-	vdata.v = 1;
+	vdata.u = 0.0;
+	vdata.v = 1.0;
 	indices[0] = wut_bat_push_vertex(ren, (void *)&vdata);
 
 
+        printf("%d, %d\n", p0x, p0y);
+
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
-	vdata.u = 1;
-	vdata.v = 1;
+	vdata.u = 1.0;
+	vdata.v = 1.0;
 	indices[1] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+        printf("%d, %d\n", p1x, p0y);
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
-	vdata.u = 1;
-	vdata.v = 0;
+	vdata.u = 1.0;
+	vdata.v = 0.0;
 	indices[2] = wut_bat_push_vertex(ren, (void *)&vdata);
 
+        printf("%d, %d\n", p1x, p1y);
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
-	vdata.u = 0;
-	vdata.v = 0;
+	vdata.u = 0.0;
+	vdata.v = 0.0;
 	indices[3] = wut_bat_push_vertex(ren, (void *)&vdata);
+
+        printf("%d, %d\n", p0x, p1y);
 
 	wut_bat_push_index(ren, indices[0]);
 	wut_bat_push_index(ren, indices[2]);

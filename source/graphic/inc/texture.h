@@ -1,5 +1,5 @@
-#ifndef _WUT_GRAPHICTEXTURE_H
-#define _WUT_GRAPHICTEXTURE_H
+#ifndef _WUT_GRAPHIC_TEXTURE_H
+#define _WUT_GRAPHIC_TEXTURE_H
 
 #include "source/core/inc/define.h"
 #include "source/core/inc/import.h"
@@ -17,26 +17,26 @@
 
 struct wut_Texture {
 	/* The name of the texture */
-	char name[WUT_TEXTURE_NAME_LIM];
+	char                    name[WUT_TEXTURE_NAME_LIM];
 	
 	/* The format used for the pixel data */
-	GLenum format;
+	GLenum                  format;
 
 	/* The size of the texture in pixels */
-	u16 width;
-	u16 height;
+	u16                     width;
+	u16                     height;
 
 	/* The texture handle used by OpenGL */
-	u32 texture;
+	u32                     gl_texture;
 
 	/* Reference to the context */
-	struct wut_Context *context;
+	struct wut_Context      *context;
 
 	/* The batch id */
-	s16 batch_id;
+	s16                     batch_id;
 
 	/* The slot in the texture list */
-	s16 texture_slot;
+	s16                     texture_slot;
 };
 
 
@@ -61,7 +61,7 @@ WUT_API void wut_CloseTextureTable(struct wut_Context *ctx);
 /*
  * Create a new texture from raw pixel data.
  * Especially for the format, see:
- * https:/registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml
+ * https:/registry.khronos.org/OpenGL-Refpages/gl4/html/glTexTexture2D.xhtml
  *
  * @ctx: Pointer to the context
  * @name: The name of the new texture
@@ -154,4 +154,4 @@ WUT_API void wut_UnuseTexture(void);
 
 
 
-#endif /* _WUT_GRAPHICTEXTURE_H */
+#endif /* _WUT_GRAPHIC_TEXTURE_H */

@@ -316,8 +316,7 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                                 /*
                                  * Create a new element.
                                  */
-                                if(!(ele = wut_CreateElement(doc, 
-                                                                &info.einfo))) {
+                                if(!(ele = wut_CreateElement(doc, &info.einfo))) {
                                         printf("Failed to read!!\n");
                                         fclose(file);
                                         break;
@@ -479,9 +478,6 @@ WUT_API s8 wut_LoadClasses(struct wut_Document *doc, char *pth)
                         }
                 }
         }
-
-        printf("Finished reading!!\n\n");
-
 
         wut_doc_has_changed(doc, NULL, 0, 0);
 

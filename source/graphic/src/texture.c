@@ -29,12 +29,12 @@ WUT_INTERN struct wut_Texture *tex_create(char *name, u16 w, u16 h,
 	tex->width = w;
 	tex->height = h;
 
-	glGenTextures(1, &tex->texture);
-	glBindTexture(GL_TEXTURE_2D, tex->texture);
+	glGenTextures(1, &tex->gl_texture);
+	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);
 
 	/* TODO: Take format from PNG */
 #if 0
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+	glTexTexture2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -91,7 +91,7 @@ err_return:
 
 WUT_INTERN void tex_destroy(struct wut_Texture *tex)
 {
-	glDeleteTextures(1, &tex->texture);
+	glDeleteTextures(1, &tex->gl_texture);
 	wut_free(tex);
 }
 
@@ -318,14 +318,14 @@ WUT_API s8 wut_ResizeTexture(struct wut_Texture *tex, u16 w, u16 h, u8 *px)
 	/*
 	 * Destroy the old texture.
 	 */
-	glDeleteTextures(1, &tex->texture);
+	glDeleteTextures(1, &tex->gl_texture);
 
 	/*
 	 * Update attributes.
 	 */
 	tex->width = w;
 	tex->height = h;
-	tex->texture = newTex;
+	tex->gl_texture = newTex;
 
 	return 0;
 
@@ -343,7 +343,7 @@ WUT_API s8 wut_SetTexture(struct wut_Texture *tex, u16 x, u16 y, u16 w, u16 h,
 		return -1;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, tex->texture);
+	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
@@ -417,7 +417,7 @@ WUT_API void wut_UseTexture(struct wut_Texture *tex)
 	}
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex->texture);
+	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);
 }
 
 
