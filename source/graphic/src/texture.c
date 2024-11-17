@@ -32,6 +32,11 @@ WUT_INTERN struct wut_Texture *tex_create(char *name, u16 w, u16 h,
 	glGenTextures(1, &tex->gl_texture);
 	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);
 
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR  );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR  );
+
 	/* TODO: Take format from PNG */
 #if 0
 	glTexTexture2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
@@ -40,13 +45,9 @@ WUT_INTERN struct wut_Texture *tex_create(char *name, u16 w, u16 h,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #else
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, w, h, 0, GL_RED,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
 
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_REPEAT  );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_REPEAT  );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR  );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR  );
 
 
 #endif
@@ -415,6 +416,8 @@ WUT_API void wut_UseTexture(struct wut_Texture *tex)
 	if(!tex) {
 		return;
 	}
+
+        printf("Use texture %s\n", tex->name);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);

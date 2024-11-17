@@ -31,6 +31,8 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 		goto err_return;
 	}
 
+	printf("Create window!\n");
+
 	/* Create the SDL window */
 	if(!(hdl = SDL_CreateWindow(name, 0, 0, w, h, SDL_WINDOW_OPENGL))) {
 		WUT_ALARM(WUT_ERROR, "Failed to create SDL window");
@@ -44,9 +46,9 @@ WUT_INTERN struct wut_Window *win_create(char *name, s16 w, s16 h)
 	win->id = SDL_GetWindowID(hdl);
 	strcpy(win->name, name);
         
-        wut_irect_clr(win->shape);
-        win->shape[2] = w;
-        win->shape[3] = h;
+	wut_irect_clr(win->shape);
+	win->shape[2] = w;
+	win->shape[3] = h;
 
 	win->info = WUT_WIN_INFO_VISIBLE;
 	win->handle = hdl; 
@@ -217,7 +219,7 @@ WUT_INTERN s8 win_cfnc_render(struct wut_Window *win, void *data)
 	/* Swap buffer */
 	SDL_GL_SwapWindow(win->handle);
 
-        return 0;
+	return 0;
 }
 
 

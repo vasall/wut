@@ -175,6 +175,8 @@ WUT_API struct wut_Context *wut_CreateContext(struct wut_Window *win)
 	if(!(ctx->batches = wut_CreateStatList(sizeof(struct wut_Batch *), 10)))
 		goto err_close_obj;
 
+	printf("Create OpenGL context!\n");
+
 	/*
 	 * Create the underlying OpenGL-context.
 	 */
@@ -191,8 +193,10 @@ WUT_API struct wut_Context *wut_CreateContext(struct wut_Window *win)
 
 	glClearColor(1, 1, 1, 1);
 
+	/*
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+	*/
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(gl_callback, 0);

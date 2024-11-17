@@ -45,6 +45,8 @@ int main(void)
         printf("Done\n");
 
         wut_LoadTexture(ctx, "Missing", "Missing.png");
+        wut_LoadTexture(ctx, "Blue", "Blue.png");
+
         wut_LoadFont(ctx, "Roboto", "RobotoRegular.png", "RobotoRegular.txt");
 
         for(i = 0; i < STYLE_FILES; i++) {

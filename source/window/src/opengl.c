@@ -7,13 +7,15 @@
 
 WUT_API s8 wut_gl_init(void)
 {
+	printf("Initialize OpenGL!\n");
+
 	/* 
 	 * Request opengl 4.6 context.
 	 * SDL doesn't have the ability to choose which profile at this time of writing,
 	 * but it should default to the core profile.
 	 */
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 #if 0

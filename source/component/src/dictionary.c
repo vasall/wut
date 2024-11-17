@@ -94,6 +94,8 @@ WUT_API char *wut_GetDictionary(struct wut_Dictionary *dic,
                 return &dic->zero;
         }
 
+        printf("Get value for \"%s\"\n", key);
+
         for(i = 0; i < WUT_DIC_MAX_NUMBER; i++) {
                 if(strcmp(dic->entries[0][i], key) == 0) {
                         return dic->entries[1][i];

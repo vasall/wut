@@ -1,3 +1,1 @@
-<block name="main" class="container">
-        <image rel="Missing" class="img"></image>
-</block>
+<image rel="Blue" class="img"></image>

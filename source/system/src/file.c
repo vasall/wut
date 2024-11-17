@@ -187,41 +187,60 @@ WUT_INTERN GLenum wut_fs_map_format(SDL_PixelFormatEnum pixelFormat)
 
 WUT_API s8 wut_fs_image(const char *pth, struct wut_fs_r_image *out)
 {
-	SDL_Surface *surf;
+	SDL_Surface *in_surf;
+	SDL_Surface *out_surf;
 	u8 *buf;
 	u64 size;
 	
+	s32 x;
+	s32 y;
+	u32 px;
+	s8 step;
+
+
 	if(!pth || !out) {
 		WUT_ALARM(WUT_WARNING, "Input parameters invalid");
 		goto err_return;
 	}
 
 
-	if(!(surf = IMG_Load(pth))) {
+	if(!(in_surf = IMG_Load(pth))) {
 		WUT_ALARM(WUT_ERROR, "Failed to open and read file");
 		goto err_return;
 	}
 
-
-	size = surf->pitch * surf->h;
-	if(!(buf = wut_malloc(size))) {
-		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for image");
-		goto err_free_surface;
+	if(!(out_surf = SDL_ConvertSurfaceFormat(in_surf, SDL_PIXELFORMAT_RGBA32, 0))) {
+		printf("Failed to convert surface\n");
+		goto err_free_in_surface;
 	}
 
-	memcpy(buf, surf->pixels, size);
+	size = out_surf->pitch * out_surf->h;
+	if(!(buf = wut_malloc(size))) {
+		WUT_ALARM(WUT_ERROR, "Failed to allocate memory for image");
+		goto err_free_out_surface;
+	}
 
-	out->w = surf->w;
-	out->h = surf->h;
+	memcpy(buf, out_surf->pixels, size);
+
+	out->w = out_surf->w;
+	out->h = out_surf->h;
 	out->format = GL_RGBA;
 	out->data = buf;
 
-	SDL_FreeSurface(surf);
+	printf("Old Pitch: %d\n", in_surf->pitch);
+	printf("New Pitch: %d\n", out_surf->pitch);
+
+	SDL_FreeSurface(in_surf);
+	SDL_FreeSurface(out_surf);
 
 	return 0;
 
-err_free_surface:
-	SDL_FreeSurface(surf);
+
+err_free_out_surface:
+	SDL_FreeSurface(out_surf);
+
+err_free_in_surface:
+	SDL_FreeSurface(in_surf);
 
 err_return:
 	WUT_ALARM(WUT_ERROR, "Failed to load PNG file");

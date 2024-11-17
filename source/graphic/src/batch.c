@@ -450,6 +450,8 @@ WUT_API void wut_bat_flush(struct wut_Batch *ren)
 		ren->pre_fnc(ren, ren->pre_fnc_data);
 	}
 
+        printf("Flush batch renderer\n");
+
 	/* Activate the relevant shader */
 	wut_UseShader(ren->shader);
 

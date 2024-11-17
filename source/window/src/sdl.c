@@ -15,6 +15,8 @@ WUT_API s8 wut_sdl_init(void)
 {
 	s32 imgFlags = IMG_INIT_PNG;
 
+	printf("Initialize SDL!\n");
+
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		WUT_ALARM(WUT_ERROR, "Failed to initialize SDL");
 		WUT_ALARM(WUT_ERROR, SDL_GetError());
