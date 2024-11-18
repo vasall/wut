@@ -13,6 +13,8 @@
 
 #include <stdlib.h>
 
+#define WUT_WGT_DEBUG   0
+
 /*
  * 
  * 		CREATE
@@ -185,9 +187,7 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 		v_index[1] = -1;
 	}
 
-        printf("Render image\n");
-
-	vdata.z = (f32)ele->layer;
+	vdata.z = (f32)(ele->layer/100.0);
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
 	vdata.index[2] = v_index[2];
@@ -199,7 +199,9 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 	indices[0] = wut_bat_push_vertex(ren, (void *)&vdata);
 
 
+#if WUT_WGT_DEBUG
         printf("%d, %d\n", p0x, p0y);
+#endif
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p0y;
@@ -207,7 +209,9 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 	vdata.v = 1.0;
 	indices[1] = wut_bat_push_vertex(ren, (void *)&vdata);
 
+#if WUT_WGT_DEBUG
         printf("%d, %d\n", p1x, p0y);
+#endif
 
 	vdata.x = (f32)p1x;
 	vdata.y = (f32)p1y;
@@ -215,7 +219,9 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 	vdata.v = 0.0;
 	indices[2] = wut_bat_push_vertex(ren, (void *)&vdata);
 
+#if WUT_WGT_DEBUG
         printf("%d, %d\n", p1x, p1y);
+#endif
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p1y;
@@ -223,7 +229,9 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 	vdata.v = 0.0;
 	indices[3] = wut_bat_push_vertex(ren, (void *)&vdata);
 
+#if WUT_WGT_DEBUG
         printf("%d, %d\n", p0x, p1y);
+#endif
 
 	wut_bat_push_index(ren, indices[0]);
 	wut_bat_push_index(ren, indices[2]);

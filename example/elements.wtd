@@ -1,1 +1,12 @@
-<image rel="Blue" class="img"></image>
+<block class="one">
+        <image rel="Gray" class="img">
+        </image>
+</block>
+
+
+        <image rel="Missing" class="img">
+        </image>
+
+<block class="one">
+</block>
+

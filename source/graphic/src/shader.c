@@ -460,8 +460,6 @@ WUT_API void wut_UseShader(struct wut_Shader *shd)
 		return;
 	}
 
-        printf("Use shader %s\n", shd->name);
-
 	/* First activate the shader */
 	glUseProgram(shd->program);
 } 

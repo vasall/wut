@@ -230,12 +230,14 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
 
         struct ldr_ele_info info;
 
-        struct wut_Element *root = NULL;
         struct wut_Element *run = NULL;
         struct wut_Element *ele;
 
         if(atmpnt == NULL) {
-                atmpnt = doc->body;
+                run = doc->body;
+        }
+        else {
+                run = atmpnt;
         }
 
         /* Open the file */
@@ -322,21 +324,8 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                                         break;
                                 }
 
-                                /*
-                                 * If this is the first element to be read,
-                                 * set it as the root for the branch.
-                                 */
-                                if(root == NULL) {
-                                        root = ele;
-                                        run = ele;
-                                }
-                                /*
-                                 * Otherwise just attach it to the parent.
-                                 */
-                                else {
-                                        wut_AttachElement(run, ele);
-                                        run = ele;
-                                }
+                                wut_AttachElement(run, ele);
+                                run = ele;
 
                                 /* 
                                  * Start reading the content for the
@@ -371,23 +360,16 @@ WUT_API s8 wut_LoadElements(struct wut_Document *doc, char *pth,
                                                 
 
                                                 /* Go back to the parent */
-                                                if(run->parent) {
-                                                        run = run->parent;
-                                                }
+                                                run = run->parent;
                                         }
                                 }
                                 else { 
                                         /* Go back to the parent */
-                                        if(run->parent) {
-                                                run = run->parent;
-                                        }                                       
+                                        run = run->parent;                       
                                 }
                         }
                 }
         }
-
-        /* Finally attach the branch to the document-tree */
-        wut_AttachElement(atmpnt, root);
 
         /* ..and update the entire document */
         wut_doc_has_changed(doc, NULL, 0, 0);

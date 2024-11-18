@@ -417,8 +417,6 @@ WUT_API void wut_UseTexture(struct wut_Texture *tex)
 		return;
 	}
 
-        printf("Use texture %s\n", tex->name);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex->gl_texture);
 }

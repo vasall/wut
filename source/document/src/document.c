@@ -463,6 +463,9 @@ WUT_API void wut_doc_render(struct wut_Document *doc)
                 return;
         }
 
+        /*
+         * Render the elements.
+         */
         ren = wut_ContextGetBatch(doc->context, doc->batch_id);
 
         wut_ele_hlf(doc->body,
@@ -470,6 +473,9 @@ WUT_API void wut_doc_render(struct wut_Document *doc)
                         NULL,
                         ren);
 
+        /*
+         * Then render the scrollbar.
+         */
         ren = wut_ContextGetBatch(doc->context, doc->scroll_id);
 
         wut_ele_hlf(doc->body,

@@ -46,6 +46,7 @@ int main(void)
 
         wut_LoadTexture(ctx, "Missing", "Missing.png");
         wut_LoadTexture(ctx, "Blue", "Blue.png");
+        wut_LoadTexture(ctx, "Gray", "Untitled.png");
 
         wut_LoadFont(ctx, "Roboto", "RobotoRegular.png", "RobotoRegular.txt");
 

@@ -17,7 +17,7 @@
 
 .one {
         width: 110pct;
-        height: 200px;
+        height: 300px;
 
         spacing_top: 100px;
 
@@ -37,6 +37,8 @@
 }
 
 .img {
-        width: 400px;
-        height: 400px;
+        spacing_top: 0;
+
+        width: 900px;
+        height: 100px;
 }

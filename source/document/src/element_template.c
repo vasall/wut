@@ -26,8 +26,6 @@ WUT_INTERN s8 wut_etm_load_body(struct wut_Element *ele, struct wut_Dictionary *
 
 	WUT_IGNORE(data);
 
-        printf("Load body!\n");
-
 	/*
 	 * DISPLAY
 	 */
@@ -164,23 +162,6 @@ WUT_INTERN s8 wut_etm_load_image(struct wut_Element *ele, struct wut_Dictionary 
 
 	WUT_IGNORE(ele);
 	WUT_IGNORE(data);
-
-	/*
-	 * DISPLAY
-	 */
-	wut_sht_parse(sheet, "display_mode: visible;");
-
-	/*
-	 * REFERENCE
-	 */
-	wut_sht_parse(sheet, "reference_mode: absolute;");
-
-	/*
-	 * INFILL
-	 */
-	wut_sht_parse(sheet, "infill_mode: color;");
-	wut_sht_parse(sheet, "infill_color: #FFD046;");
-
 
 	/*
 	 * Create and initialize the Image-Widget.
