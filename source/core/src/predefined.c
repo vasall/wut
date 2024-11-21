@@ -192,7 +192,7 @@ char *_wut_prBlockVtxShd =
 "			break;"
 "	}"
 ""
-"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
+"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, in_position.z);"
 "}";
 
 char *_wut_prBlockFragShd = 

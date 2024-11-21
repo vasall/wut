@@ -463,15 +463,6 @@ WUT_API void wut_doc_render(struct wut_Document *doc)
                 return;
         }
 
-        /*
-         * Render the elements.
-         */
-        ren = wut_ContextGetBatch(doc->context, doc->batch_id);
-
-        wut_ele_hlf(doc->body,
-                        &doc_cfnc_render_ui,
-                        NULL,
-                        ren);
 
         /*
          * Then render the scrollbar.
@@ -482,6 +473,17 @@ WUT_API void wut_doc_render(struct wut_Document *doc)
                         &doc_cfnc_render_ui_post,
                         NULL,
                         ren);
+
+        /*
+         * Render the elements.
+         */
+        ren = wut_ContextGetBatch(doc->context, doc->batch_id);
+
+        wut_ele_hlf(doc->body,
+                        &doc_cfnc_render_ui,
+                        NULL,
+                        ren);
+
 
 }
 
