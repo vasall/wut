@@ -32,7 +32,7 @@ WUT_INTERN s8 shd_new_shader(u32 type, const char *src, u32 *shd_out)
 	if(!success) {
 		glGetShaderInfoLog(shd, 512, NULL, info_log);
 		WUT_ALARM(WUT_ERROR, info_log);
-		WUT_ALARM(WUT_ERROR, "Failed to compile vertex shader");
+		WUT_ALARM(WUT_ERROR, "Failed to compile shader");
 
 		glDeleteShader(shd);
 		return -1;
@@ -170,11 +170,15 @@ WUT_INTERN struct wut_Shader *shd_create(char *name, const char *v_src,
 	/*
 	 * Create and compile the vertex- and fragment-shader.
 	 */
-	if(shd_new_shader(GL_VERTEX_SHADER, v_src, &vshader) < 0)
-		goto err_free_shader;
+	if(shd_new_shader(GL_VERTEX_SHADER, v_src, &vshader) < 0) {
+                printf("Failed to compile vertex shader\n");
+                goto err_free_shader;
+        }
 
-	if(shd_new_shader(GL_FRAGMENT_SHADER, f_src, &fshader) < 0)
-		goto err_delete_vshader;
+	if(shd_new_shader(GL_FRAGMENT_SHADER, f_src, &fshader) < 0) {
+		printf("Failed to compile fragment shader\n");
+                goto err_delete_vshader;
+        }
 
 
 	/*

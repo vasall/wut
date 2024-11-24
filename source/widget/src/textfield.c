@@ -22,13 +22,13 @@ WUT_XMOD struct wut_Textfield *wut_tfd_create(struct wut_Element *ele,
 {
 	struct wut_Textfield *txtf;
 	struct wut_TextInfo info;
-	char *teststring = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut l";
+	char *teststring = "ABCDEF";
 
 	if(!(txtf = wut_malloc(sizeof(struct wut_Textfield)))) {
 		return NULL;
 	}
 
-        font = wut_GetFont(ele->document->window->context, "Roboto");
+        font = wut_GetFont(ele->document->window->context, "Here");
 
 	/* Configure the textfield */
 	txtf->element = ele;
@@ -71,5 +71,12 @@ WUT_XMOD void wut_tfd_update(struct wut_Textfield *txtf)
 
 WUT_XMOD void wut_tfd_render(struct wut_Textfield *txtf)
 {
-	wut_txt_send(txtf->tbuffer);
+        struct wut_Element *par = txtf->element->parent;
+
+        if(par) {
+        	wut_txt_send(txtf->tbuffer, 1, txtf->element->visible_out_rect);
+        }
+        else {
+                wut_txt_send(txtf->tbuffer, 0, NULL);
+        }
 }

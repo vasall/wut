@@ -241,7 +241,7 @@ WUT_API s8 wut_fs_image(const char *pth, struct wut_fs_r_image *out)
                 WUT_ALARM(WUT_ERROR, "Failed to open and read file");
                 goto err_return;
         }
-
+                
         /* First convert the loaded image to RGBA-format */
         if(!(out_surf = SDL_ConvertSurfaceFormat(in_surf, SDL_PIXELFORMAT_RGBA32, 0))) {
                 printf("Failed to convert surface\n");

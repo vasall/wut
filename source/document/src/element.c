@@ -16,6 +16,9 @@
 #include <stdlib.h>
 
 
+#define WUT_DBG_PRINT   0
+
+
 WUT_INTERN void ele_update_offset(struct wut_Element *ele)
 {
 	struct wut_Element *par = ele->parent;
@@ -246,11 +249,15 @@ WUT_INTERN void ele_ren_backgr(struct wut_Element *ele, struct wut_Batch *ren)
 		v_index[1] = -1;
 	}
 
-	vdata.z = (f32)ele->layer / 100.0;
+	vdata.z = 1;
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
 	vdata.index[2] = v_index[2];	/* The color to use */
 	vdata.type = WUT_RENTYPE_DEFAULT;
+
+#if WUT_DBG_PRINT
+        printf("Render backgr for %s at z: %f\n", ele->name, vdata.z);
+#endif
 
 	vdata.x = (f32)p0x;
 	vdata.y = (f32)p0y;
@@ -538,12 +545,15 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
 		        s_index[1] = -1;
 	        }               
 
-		vdata.z = (f32)ele->layer / 100.0;
+		vdata.z = 1.0;
 		vdata.index[0] = s_index[0];
 		vdata.index[1] = s_index[1];
 		vdata.index[2] = s_index[2];
 		vdata.type = WUT_RENTYPE_SCROLL_V;
 
+#if WUT_DBG_PRINT
+                printf("Render vscroll for %s at z: %f\n", ele->name, vdata.z);
+#endif
 
 		vdata.x = (f32)p0x;
 		vdata.y = (f32)p0y;
@@ -620,12 +630,15 @@ WUT_XMOD void wut_ele_ren_scrollbar(struct wut_Batch *ren, struct wut_Element *e
                                 ele->content_rect[2]));
 		s_index[2] = wut_bat_push_uniform(ren, 4, scroll);
 
-		vdata.z = (f32)ele->layer / 100.0;
+		vdata.z = 1.0;
 		vdata.index[0] = s_index[0];
 		vdata.index[1] = -1;
 		vdata.index[2] = s_index[2];
 		vdata.type = WUT_RENTYPE_SCROLL_H;
 
+#if WUT_DBG_PRINT
+                printf("Render hscroll for %s at z: %f\n", ele->name, vdata.z);
+#endif
 
 		vdata.x = (f32)p0x;
 		vdata.y = (f32)p0y;

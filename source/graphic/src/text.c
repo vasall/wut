@@ -6,6 +6,8 @@
 
 #include "source/utility/inc/alarm.h"
 
+#define TEXTFIELD_DEBUG 0
+
 
 WUT_INTERN s8 text_resize(struct wut_TextBuffer *tbuf, s16 len)
 {
@@ -184,6 +186,9 @@ WUT_XMOD s8 wut_txt_push(struct wut_TextBuffer *tbuf, s16 off, s16 len,
 			ele->character = c;
 			ele->glyph = wut_GetGlyphIndex(tbuf->info.font, c);
 
+                        printf("For character %c get index %d\n", ele->character,
+                                        ele->glyph);
+
 			/* If no previous elements, this will become the head */
 			if(rlast < 0) {
 				tbuf->head = slots[i];
@@ -282,7 +287,7 @@ WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 	struct wut_Font *font;
 	s16 tmp;
 		
-	/* The curbatcht offset for placement */
+	/* The current offset for placement */
 	s16 line[2] = {0, 0};
 
 	s16 run;
@@ -442,15 +447,17 @@ WUT_XMOD void wut_txt_process(struct wut_TextBuffer *tbuf)
 }
 
 
-WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
+WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf, s8 opt, wut_iRect lim)
 {
 	struct wut_Batch *batch;
 	struct wut_TextElement *ele;
-	struct wut_FontGlyph *glyph;
+        struct wut_FontGlyph *glyph;
 	struct wut_Style *tstyle;
 
 
 	s16 run;
+
+        s32 lim_idx;
 
 	s32 idx[4];
 	struct vertex {
@@ -459,6 +466,7 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 		f32 vertex_z;
 		f32 texture_u;
 		f32 texture_v;
+                s32 index;
 	} vtx[4];
 
 
@@ -470,10 +478,26 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 	batch = tbuf->info.batch;
 	run = tbuf->head;
 
+        /* Push the uniform for the limits */
+        if(opt) {
+                lim_idx = wut_bat_push_uniform(batch, 7, lim);
+        }
+        else {
+                lim_idx = -1;
+        }
+
+        printf("Use debug option %d\n", TEXTFIELD_DEBUG);
+
 	while(run >= 0) {
 		ele = &tbuf->elements[run];
 		glyph = wut_GetGlyphByIndex(tbuf->info.font, ele->glyph);
 		tstyle = tbuf->info.style;
+
+                printf("Process %c(0x%2x) with position %f/%f\n",
+                                ele->character,
+                                ele->character,
+                                glyph->tex_coord_x,
+                                glyph->tex_coord_y);
 
 		/* bottom left */
 #if TEXTFIELD_DEBUG
@@ -485,6 +509,7 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 		vtx[0].vertex_z = 0.0f;
 		vtx[0].texture_u = glyph->tex_coord_x - tbuf->tex_spread;
 		vtx[0].texture_v = glyph->tex_coord_y + glyph->tex_height + tbuf->tex_spread;
+                vtx[0].index = lim_idx;
 
 		/* bottom right */
 #if TEXTFIELD_DEBUG
@@ -497,6 +522,7 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 		vtx[1].vertex_z = 0.0f;
 		vtx[1].texture_u = glyph->tex_coord_x + glyph->tex_width + tbuf->tex_spread;
 		vtx[1].texture_v = glyph->tex_coord_y + glyph->tex_height + tbuf->tex_spread;
+                vtx[1].index = lim_idx;
 
 		/* top right */
 #if TEXTFIELD_DEBUG
@@ -510,6 +536,7 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 		vtx[2].vertex_z = 0.0f;
 		vtx[2].texture_u = glyph->tex_coord_x + glyph->tex_width + tbuf->tex_spread;
 		vtx[2].texture_v = glyph->tex_coord_y - tbuf->tex_spread;
+                vtx[2].index = lim_idx;
 
 		/* top left */
 #if TEXTFIELD_DEBUG
@@ -522,6 +549,7 @@ WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf)
 		vtx[3].vertex_z = 0.0f;
 		vtx[3].texture_u = glyph->tex_coord_x - tbuf->tex_spread;
 		vtx[3].texture_v = glyph->tex_coord_y - tbuf->tex_spread;
+                vtx[3].index = lim_idx;
 
 
 		idx[0] = wut_bat_push_vertex(batch, (void *)&vtx[0]);

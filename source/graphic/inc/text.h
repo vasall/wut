@@ -130,10 +130,12 @@ WUT_XMOD void wut_txt_remove(struct wut_TextBuffer *tbuf, s16 off, s16 len);
  * Copy the character elements to the batch renderer.
  *
  * @tbuf: Pointer to the text buffer
+ * @opt: This flag indicates if the given limits should be used or not
+ * @lim: The limits are passed onto the shader and limit the space to be drawn
  *
  * Returns: 0 on success or -1 if an error occurred
  */
-WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf);
+WUT_XMOD s8 wut_txt_send(struct wut_TextBuffer *tbuf, s8 opt, wut_iRect lim);
 
 
 /*

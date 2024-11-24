@@ -1,44 +1,6 @@
-.container {
-        spacing_top: 2.5pct;
-        spacing_left: 10pct;
-
-        width: 80pct;
-        height: 100pct;
-
-        infill_mode: color;
-        infill_color: #ffffff;
-
-        radius_top_left: 10px;
-        radius_top_right: 10px;
-        radius_bottom_right: 10px;
-        radius_bottom_left: 10px;
-
-}
-
-.one {
-        width: 110pct;
-        height: 300px;
-
-        spacing_top: 100px;
-
-        infill_mode: color;
-        infill_color: #0000ff;
-}
-
-
-.two {
-        width: 80pct;
-        height: 200px;
-
-        spacing_top: 100px;
-
-        infill_mode: color;
-        infill_color: #00ff00;
-}
-
-.img {
-        spacing_top: 0;
-
+.test {
         width: 900px;
-        height: 100px;
+        height: 600px;
+
+        spacing_top: 100px;
 }

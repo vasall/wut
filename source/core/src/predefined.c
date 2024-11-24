@@ -61,7 +61,7 @@ char *_wut_prScrollbarVtxShd =
 "			break;"
 "	}"
 ""
-"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
+"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, in_position.z);"
 "}";
 
 char *_wut_prScrollbarFragShd = 
@@ -309,7 +309,7 @@ char *_wut_prTextureVtxShd =
 "	fs_radius = lradius;"
 "	fs_uv = in_uv;"
 ""
-"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, 1);"
+"	gl_Position = vec4((in_position.x - lframe.x) / lframe.x, (lframe.y - in_position.y) / lframe.y, 1, in_position.z);"
 "}";
 
 char *_wut_prTextureFragShd = 
@@ -358,56 +358,72 @@ char *_wut_prTextureFragShd =
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
- *		DEFAULT FONT SHADER
+ *		DEFAULT TEXT SHADER
  *
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 */
 
 
 char *_wut_prTextVtxShd =
-"#version 420 core\n\
-layout(location=0) in vec3 in_pos;\n\
-layout(location=1) in vec2 in_uv;\n\
-\n\
-out vec2 fs_uv;\n\
-out vec3 fs_color;\n\
-\n\
-uniform ivec2   u_frame;\n\
-\n\
-\n\
-void main() {\n\
-\n\
-	vec2 lframe = u_frame * 0.5;\n\
-	gl_Position = vec4((in_pos.x - lframe.x) / lframe.x, (lframe.y - in_pos.y) / lframe.y, 1, 1);\n\
-\n\
-    fs_uv      = vec2(in_uv.x, 1.0 - in_uv.y);\n\
-	fs_color   = vec3(1.0, 1.0, 1.0);\n\
-\n\
-\n\
-}\n";
+"#version 420 core\n"
+"layout(location=0) in vec3 in_pos;"
+"layout(location=1) in vec2 in_uv;"
+"layout(location=2) in int  in_index;"
+""
+"uniform ivec2      u_frame;"
+"uniform ivec4      u_limit[200];"
+""
+"flat out vec2   fs_frame;"
+"out vec2        fs_uv;"
+"out vec3        fs_color;"
+"flat out vec4   fs_limits;"
+""
+"void main() {"
+"	vec2 lframe = u_frame * 0.5;"
+"    ivec4 llimits = ivec4(0, 0, u_frame.x, u_frame.y);"
+""
+"	if(in_index != -1) {"
+"        llimits = u_limit[in_index];"
+"	}"
+""
+"	fs_frame = u_frame;"
+"	gl_Position = vec4((in_pos.x - lframe.x) / lframe.x, (lframe.y - in_pos.y) / lframe.y, 1, 1);"
+"	fs_limits = vec4(llimits.y, llimits.x+llimits.z, llimits.y+llimits.w, llimits.x);"
+""
+"    fs_uv      = vec2(in_uv.x, in_uv.y);"
+"	fs_color   = vec3(1.0, 1.0, 1.0);"
+"}";
 
 
 char *_wut_prTextFragShd =
-"#version 420 core\n\
-\n\
-precision mediump float;\n\
-\n\
-in vec2 fs_uv;\n\
-in vec3 fs_color;\n\
-\n\
-uniform sampler2D ourTexture;\n\
-\n\
-out vec4 color;\n\
-\n\
-void main() {\n\
-    float signed_distance = texture( ourTexture, fs_uv ).r;\
-\n\
-    if(signed_distance >= 0.492) {\
-        color.rgb = vec3(0, 0, 0);\
-        color.a   = 1.0;\
-    }\
-    else {\
-        color.rgb = vec3(1, 1, 1);\
-        color.a   = 0.0;\
-    }\
-}\n";
+"#version 420 core\n"
+""
+"precision mediump float;"
+""
+"flat in vec2 fs_frame;"
+"in vec2 fs_uv;"
+"in vec3 fs_color;"
+"flat in vec4 fs_limits;"
+""
+"uniform sampler2D ourTexture;"
+""
+"out vec4 color;"
+""
+"void main() {"
+"	vec2 loc = vec2(gl_FragCoord.x, fs_frame.y - gl_FragCoord.y);"
+"    float signed_distance = texture( ourTexture, fs_uv ).r;"
+""
+"	if(1>2) {"
+"		discard;"
+"	}"
+"   else {"
+"        if(signed_distance >= 0.492) {"
+"            color.rgb = vec3(0, 0, 0);"
+"            color.a   = 1.0;"
+"        }"
+"        else {"
+"            color.rgb = vec3(1, 1, 1);"
+"            color.a   = 1.0;"
+"        }"
+"    }"
+"}";

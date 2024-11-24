@@ -87,6 +87,8 @@ struct wut_Batch {
 	struct wut_Shader *shader;
 	struct wut_Texture *texture;
 
+        u8 ord;
+
 	u32 vao;
 	u32 vbo;
 	u32 ibo;
@@ -139,7 +141,7 @@ WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
 		struct wut_Texture *tex,s32 attribnum,
 		struct wut_VertexAttrib *attribs, s32 vtx_cap,
 		s32 idx_cap, s32 uninum, struct wut_UniformTemp *unis,
-		wut_BatchFunc pre, void *pre_data);
+		wut_BatchFunc pre, void *pre_data, s8 ord);
 
 
 /*
@@ -213,6 +215,6 @@ WUT_XMOD void wut_bat_reset_uniform(struct wut_Batch *ren, s32 slot);
  *
  * @ren: Pointer to the batch renderer
  */
-WUT_XMOD void wut_bat_flush(struct wut_Batch *ren);
+WUT_XMOD void wut_bat_flush(struct wut_Batch *ren, s8 ord);
 
 #endif /* _WUT_GRAPHIC_BATCHING_BATCH_H */

@@ -133,7 +133,9 @@ WUT_INTERN s8 ctx_cfnc_render_batch(void *ptr,  s16 idx, void *p)
 	WUT_IGNORE(idx);
 	WUT_IGNORE(p);
 
-	wut_bat_flush(ren);
+        if(ren || 1) {
+	        wut_bat_flush(ren, *(s8 *)p);
+        }
 
 	return 0;
 }
@@ -342,10 +344,16 @@ WUT_API struct wut_Batch *wut_ContextGetBatch(struct wut_Context *ctx, s16 id)
 
 WUT_API void wut_ContextRenderBatches(struct wut_Context *ctx)
 {
+        s8 ord;
+
 	if(!ctx)
 		return;
 
-	wut_ApplyStatList(ctx->batches, &ctx_cfnc_render_batch, NULL);		
+        ord = 1;
+	wut_ApplyStatList(ctx->batches, &ctx_cfnc_render_batch, &ord);
+
+        ord = 0;
+	wut_ApplyStatList(ctx->batches, &ctx_cfnc_render_batch, &ord);
 }
 
 

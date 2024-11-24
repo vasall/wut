@@ -1,10 +1,4 @@
-<block class="one">
-        <image rel="Gray" class="img">
-        </image>
-</block>
 
-<block class="one">
-        <image rel="Missing" class="img">
-        </image>
+<block class="test">
+        <text>Hallo Welt!</text>
 </block>
-

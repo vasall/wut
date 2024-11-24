@@ -187,7 +187,7 @@ WUT_INTERN void wgt_render_image(struct wut_Widget *w)
 		v_index[1] = -1;
 	}
 
-	vdata.z = ((f32)ele->layer/100.0);
+	vdata.z = 1.0;
 	vdata.index[0] = v_index[0];	/* The element rectangle */
 	vdata.index[1] = v_index[1];	/* The rendering zone */
 	vdata.index[2] = v_index[2];

@@ -47,9 +47,6 @@ WUT_INTERN struct wut_Texture *tex_create(char *name, u16 w, u16 h,
 #else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
 			GL_UNSIGNED_BYTE, px);
-
-
-
 #endif
 
 
@@ -138,7 +135,8 @@ WUT_INTERN s8 tex_create_batch(struct wut_Texture *tex)
 			4,		/* Number of uniform buffers */
 			uniforms,	/* List of all uniforms */
 			&tex_batch_cfnc_push,
-			tex->context->window->document->shape_ref
+			tex->context->window->document->shape_ref,
+                        1
 			);
 
 	if(!ren)

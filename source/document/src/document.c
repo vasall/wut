@@ -230,7 +230,8 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
                         8,		        /* Number of uniform buffers */
                         block_uniforms,	        /* List of all uniforms */
                         &doc_batch_cfnc_push,
-                        doc->shape_ref
+                        doc->shape_ref,
+                        1
                         );
 
         if(!ren) {
@@ -258,7 +259,8 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
                         6,		        /* Number of uniform buffers */
                         scroll_uniforms,	/* List of all uniforms */
                         &doc_batch_cfnc_push,
-                        doc->shape_ref
+                        doc->shape_ref,
+                        0
                         );
 
         if(!ren) {

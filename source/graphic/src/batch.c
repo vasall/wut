@@ -239,7 +239,7 @@ WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
 		struct wut_Texture *tex, s32 attribnum,
 		struct wut_VertexAttrib *attribs, s32 vtx_cap,
 		s32 idx_cap, s32 uninum, struct wut_UniformTemp *unis,
-		wut_BatchFunc pre, void *pre_data)
+		wut_BatchFunc pre, void *pre_data, s8 ord)
 {
 	struct wut_Batch *ren;
 
@@ -255,6 +255,8 @@ WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
 	for(i = 0; i < attribnum; i++) {
 		vsize += (bat_sizeof_GLenum(attribs[i].type) * attribs[i].number);
 	}
+
+        ren->ord = ord;
 
 
 	/* create the vertex array object */
@@ -334,12 +336,17 @@ WUT_API struct wut_Batch *wut_bat_create(struct wut_Shader *shd,
 
 		/* configure uniform data */
 		for(i = 0; i < uninum; i++) {
-			ren->uniforms[i].slot = glGetUniformLocation(shd->program, unis[i].name);
+			printf("%d (%d): Get uniform %s\n", i, uninum, unis[i].name);
+                        glGetUniformLocation(shd->program, unis[i].name);
+                        printf("Just checking\n");
+                        ren->uniforms[i].slot = glGetUniformLocation(shd->program, unis[i].name);
+                        printf("Slot: %d\n", ren->uniforms[i].slot);
 			ren->uniforms[i].type = unis[i].type;
 			ren->uniforms[i].size = bat_sizeof_UniformType(unis[i].type);
 			ren->uniforms[i].number = 0;
 			ren->uniforms[i].limit = unis[i].limit;
-			if(!(ren->uniforms[i].data = wut_malloc(ren->uniforms[i].size * unis[i].limit))) {
+			if(!(ren->uniforms[i].data = wut_malloc(ren->uniforms[i].size *
+                                                        unis[i].limit))) {
 				goto err_free_uniforms;
 			}
 			ren->uniforms[i].flags = unis[i].flags;
@@ -438,13 +445,16 @@ WUT_API void wut_bat_reset_uniform(struct wut_Batch *ren, s32 index)
 }
 
 
-WUT_API void wut_bat_flush(struct wut_Batch *ren)
+WUT_API void wut_bat_flush(struct wut_Batch *ren, s8 ord)
 {
 	s32 i;
 
-	if (ren->vertex_count == 0) {
+	if(ren->vertex_count == 0) {
 		return;
 	}
+
+        if(ren->ord != ord)
+                return;
 
 	if(ren->pre_fnc) {
 		ren->pre_fnc(ren, ren->pre_fnc_data);

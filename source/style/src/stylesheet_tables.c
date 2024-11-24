@@ -51,7 +51,8 @@ const struct wut_SheetAttrib wut_c_sheet_attribs[WUT_SHEET_ATTRIBS] = {
         {WUT_SHEET_KEYWORD,    8,	164},	/* 29 text_options 	    */
         {WUT_SHEET_KEYWORD,    9,	165},	/* 30 text_wrap_mode 	    */
         {WUT_SHEET_FLEX,       0,	166},	/* 31 text_spacing          */
-        {WUT_SHEET_FLEX,       0,	174}	/* 32 line_height 	    */
+        {WUT_SHEET_FLEX,       0,	174},	/* 32 line_height 	    */
+        {WUT_SHEET_KEYWORD,   10,       182}    /* 33 image_mode            */
 };
 
 
@@ -75,7 +76,8 @@ struct wut_SheetAttribIdEntry wut_c_sheet_attr_row1[] = {
 };
 struct wut_SheetAttribIdEntry wut_c_sheet_attr_row2[] = {
         {0x02, WUT_SHEET_SCROLLBAR_MODE},
-        {0xD2, WUT_SHEET_LINE_HEIGHT}
+        {0xD2, WUT_SHEET_LINE_HEIGHT},
+        {0x32, WUT_SHEET_IMAGE_MODE}
 };
 struct wut_SheetAttribIdEntry wut_c_sheet_attr_row3[] = {
         {0x3B, WUT_SHEET_WIDTH},
@@ -111,7 +113,7 @@ struct wut_SheetAttribIdEntry wut_c_sheet_attr_row7[] = {
 const struct wut_SheetAttribIdTable wut_c_sheet_ids[WUT_SHEET_ROWS] = {
         {wut_c_sheet_attr_row0, 5},
         {wut_c_sheet_attr_row1, 5},
-        {wut_c_sheet_attr_row2, 2},
+        {wut_c_sheet_attr_row2, 3},
         {wut_c_sheet_attr_row3, 6},
         {wut_c_sheet_attr_row4, 3},
         {wut_c_sheet_attr_row5, 2},
@@ -168,18 +170,24 @@ struct wut_sheet_kw wut_c_sheet_kw_row9[] = {
         {"nowrap",		WUT_KW_TEXT_NOWRAP},
         {"letterwrap",		WUT_KW_TEXT_LETTERWRAP}
 };
+struct wut_sheet_kw wut_c_sheet_kw_row10[] = {
+        {"fill",                WUT_KW_IMAGE_FILL},
+        {"fit",                 WUT_KW_IMAGE_FIT},
+        {"repeat",              WUT_KW_IMAGE_REPEAT}
+};
 
 const struct wut_sheet_kw_table wut_c_sheet_keywords[WUT_SHEET_KW_ROWS] = {
-        {wut_c_sheet_kw_row0, 2},
-        {wut_c_sheet_kw_row1, 2},
-        {wut_c_sheet_kw_row2, 3},
-        {wut_c_sheet_kw_row3, 3},
-        {wut_c_sheet_kw_row4, 4},
-        {wut_c_sheet_kw_row5, 3},
-        {wut_c_sheet_kw_row6, 3},
-        {wut_c_sheet_kw_row7, 4},
-        {wut_c_sheet_kw_row8, 1},
-        {wut_c_sheet_kw_row9, 3}
+        {wut_c_sheet_kw_row0,  2},      /* DISPLAY_MODE                 */
+        {wut_c_sheet_kw_row1,  2},      /* REFERENCE_MODE               */
+        {wut_c_sheet_kw_row2,  3},      /* BORDER_MODE                  */
+        {wut_c_sheet_kw_row3,  3},      /* INFILL_MODE                  */
+        {wut_c_sheet_kw_row4,  4},      /* LAYOUT_MODE                  */
+        {wut_c_sheet_kw_row5,  3},      /* ALIGN_V                      */
+        {wut_c_sheet_kw_row6,  3},      /* ALIGN_H                      */
+        {wut_c_sheet_kw_row7,  4},      /* SCROLLBAR_MODE               */
+        {wut_c_sheet_kw_row8,  1},      /* TEXT_OPTIONS                 */
+        {wut_c_sheet_kw_row9,  3},      /* TEXT_WRAP_MODE               */
+        {wut_c_sheet_kw_row10, 3}       /* IMAGE_MODE                   */
 };
 
 
@@ -232,5 +240,7 @@ const char *wut_sheet_attr_name[WUT_SHEET_ATTRIBS] = {
         "text_options",
         "text_wrap_mode",
         "text_spacing",
-        "line_height"
+        "line_height",
+
+        "image_mode"
 };
