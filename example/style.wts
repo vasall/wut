@@ -3,4 +3,17 @@
         height: 600px;
 
         spacing_top: 100px;
+
+        infill_mode: color;
+        infill_color: #ff0000;
+}
+
+.one {
+        width: 300px;
+        height: 300px;
+        
+        spacing_top: 20px;
+        spacing_left: 20px;
+
+        infill_color: #ffff00;
 }

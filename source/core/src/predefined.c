@@ -422,7 +422,7 @@ char *_wut_prTextFragShd =
 "            color.a   = 1.0;"
 "        }"
 "        else {"
-"            color.rgb = vec3(1, 1, 1);"
+"            color.rgb = vec3(0, 0, 0);"
 "            color.a   = 1.0;"
 "        }"
 "    }"

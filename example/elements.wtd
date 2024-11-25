@@ -1,4 +1,7 @@
-
-<block class="test">
-        <text>Hallo Welt!</text>
+<block name="container" class="test">
+        <block name="A" class="one"></block>
+        <block name="B" class="one"></block>
+        <block name="C" class="one"></block>
+        <block name="D" class="one"></block>
+        <block name="E" class="one"></block>
 </block>

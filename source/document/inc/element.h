@@ -149,12 +149,14 @@ struct wut_Element {
          *
          * 0: Vertical scrollbar is enabled
          * 1: Horizontal scrollbar is enabled
-         * 2: Verical scrollbar is visible
-         * 3: Horizontal scrollbar is visible
-         * 4: Vertical scrollbar is active (hovered or dragged)
-         * 5: Horizontal scrollbar is active (hovered or dragged)
+         * 2: Verical scrollbar is visible (forced by style)
+         * 3: Horizontal scrollbar is visible (forced by style)
+         * 4: Vertical scrollbar is visible (via proximity)
+         * 5: Horizontal scrollbar is visible (via proximity)
+         * 6: Vertical scrollbar is active (hovered or dragged)
+         * 7: Horizontal scrollbar is active (hovered or dragged)
          */
-        s32                     scrollbar_flags;
+        u8                     scrollbar_flags;
         u64                     scrollbar_time; 
 
         struct wut_EventHandler *event_handler;
@@ -237,6 +239,21 @@ WUT_XMOD s8 wut_ele_compare(struct wut_Element *in1, struct wut_Element *in2);
  */
 WUT_XMOD s8 wut_ele_hlf(struct wut_Element *ele, wut_ElementFunc prefnc,
 		wut_ElementFunc postfnc, void *data);
+
+
+/*
+ * Starting from <ele> going up layer by layer applying the given functon to the
+ * element, until either the body element is reached or the callback function
+ * returns 1.
+ *
+ * @ele: Pointer to the starting element
+ * @fnc: The callback function
+ * @data: A pointer which will be passed onto every function call
+ *
+ * Returns: 0 on success or -1 if an error occurred
+ */
+WUT_XMOD s8 wut_ele_rise(struct wut_Element *ele, wut_ElementFunc fnc,
+                void *data);
 
 
 /*

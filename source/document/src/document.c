@@ -163,6 +163,39 @@ WUT_INTERN void doc_batch_cfnc_push(struct wut_Batch *ren, void *data)
         wut_bat_push_uniform(ren, 0, frame);
 }
 
+
+WUT_INTERN s8 doc_cfnc_check_scrollbar(struct wut_Element *ele, void *data)
+{
+        struct wut_DocumentTrackPass *pass =
+                (struct wut_DocumentTrackPass *)data;
+
+        /* Both scrollbars have been discovered */
+        if(pass->mask == ((1<<0)|(1<<1)))
+                return 1;
+
+        /*
+         * Vertical scrollbar
+         */
+        if(!(pass->mask & (1<<0))) {
+                if(ele->scrollbar_flags & (1<<0)) {
+                        pass->ele_v = ele;
+                        pass->mask |= (1<<0);
+                }
+        }
+
+        /*
+         * Horizontal scrollbar
+         */
+        if(!(pass->mask & (1<<1))) {
+                if(ele->scrollbar_flags & (1<<1)) {
+                        pass->ele_h = ele;
+                        pass->mask |= (1<<1);
+                }
+        }
+
+        return 0;
+}
+
 /*
  * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
  *
@@ -178,6 +211,9 @@ WUT_INTERN void doc_reset_track_table(struct wut_Document *doc)
 
         doc->track_table.selected = NULL;
         doc->track_table.hovered = NULL;
+
+        doc->track_table.scroll_v = doc->body;
+        doc->track_table.scroll_h = doc->body;
 }
 
 
@@ -202,7 +238,7 @@ WUT_INTERN s8 doc_create_batch(struct wut_Document *doc)
                 {"u_scroll", WUT_UNI_2IV, 200, WUT_UNI_F_DEFAULT},  /* 6 */
                 {"u_limit", WUT_UNI_4IV, 200, WUT_UNI_F_DEFAULT}    /* 7 */
         };
- 
+
         struct wut_VertexAttrib v_scroll_attributes[] = {
                 {3, GL_FLOAT},		/* position */
                 {3, GL_INT},		/* 0: shape, 1: limits, 2: everything else */
@@ -503,7 +539,7 @@ WUT_XMOD void wut_doc_has_changed(struct wut_Document *doc,
         if(ele) {
                 /* and an element is already set, then get the common parent */
                 if(uele) {
-                       uele = doc_common_parent(uele, ele); 
+                        uele = doc_common_parent(uele, ele); 
                 }
                 /* and no element is set, just use the given one */
                 else {
@@ -525,95 +561,102 @@ WUT_XMOD s8 wut_doc_track_move(struct wut_Document *doc,
 {
         struct wut_Element *cele_hover = doc->track_table.hovered;
         struct wut_Window *win = doc->window;
-        
+
         wut_iVec2 cpos;
 
         wut_ivec2_cpy(cpos, pos);
 
-	/*
-	 * Check if the hovered element has changed.
-	 */
-	if(!wut_ele_compare(cele_hover, ele)) {
-		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(cele_hover, WUT_ELE_F_HOVERED, 0);
-		wut_ele_mod_info(ele, WUT_ELE_F_HOVERED, 1);
+        /*
+         * Check if the hovered element has changed.
+         */
+        if(!wut_ele_compare(cele_hover, ele)) {
+                /* If that is the case, first modify the element flags */
+                wut_ele_mod_info(cele_hover, WUT_ELE_F_HOVERED, 0);
+                wut_ele_mod_info(ele, WUT_ELE_F_HOVERED, 1);
 
-		/* Then link the new element */
-		doc->track_table.hovered = ele;
+                /* Then link the new element */
+                doc->track_table.hovered = ele;
 
-		/* Lastly trigger the events */
-		if(cele_hover) {
-			wut_evt_trigger_raw(
-					WUT_EVT_ELEMENTLEAVE,
-					win,
-					cele_hover
-					);
-		}
+                /* Lastly trigger the events */
+                if(cele_hover) {
+                        wut_evt_trigger_raw(
+                                        WUT_EVT_ELEMENTLEAVE,
+                                        win,
+                                        cele_hover
+                                        );
+                }
 
                 /* 
                  * Check if we even move into another element as this function
                  * also also called if the user leaves the window.
                  */
                 if(ele) {
-        		wut_evt_trigger_raw(
-		        		WUT_EVT_ELEMENTENTER,
-		        		win,
-		        		ele
-		        		);
+                        wut_evt_trigger_raw(
+                                        WUT_EVT_ELEMENTENTER,
+                                        win,
+                                        ele
+                                        );
                 }
-	}
 
-	return 1;
+                wut_doc_track_scroll(doc, ele);
+        }
+
+        return 1;
 }
 
 
 WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
-                struct wut_Element *ele, wut_iVec2 pos)
+                struct wut_Element *ele)
 {
-        struct wut_Element *cele_hover = doc->track_table.hovered;
-        struct wut_Window *win = doc->window;
+        struct wut_DocumentTrackPass pass;
 
-        /* 
-         * Because all elements have been moved, we have to recheck the hovered
-         * element.
+        struct wut_Element *track_v;
+        struct wut_Element *track_h;
+
+        pass.mask = 0;
+        pass.ele_v = NULL;
+        pass.ele_h = NULL;
+
+        wut_ele_rise(ele, &doc_cfnc_check_scrollbar, &pass);
+
+        track_v = doc->track_table.scroll_v;
+        track_h = doc->track_table.scroll_h;
+
+        printf("Check v: \"%s\", h: \"%s\"\n",
+                        track_v->name,
+                        track_h->name);
+
+        /*
+         * Vertical scrollbar
          */
-        ele = wut_doc_hovered(doc, pos);
-
-	/*
-	 * Check if the hovered element has changed.
-	 */
-	if(!wut_ele_compare(cele_hover, ele)) {
-		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(cele_hover, WUT_ELE_F_HOVERED, 0);
-		wut_ele_mod_info(ele, WUT_ELE_F_HOVERED, 1);
-
-		/* Then link the new element */
-		doc->track_table.hovered = ele;
-
-		/* Lastly trigger the events */
-		if(cele_hover) {
-			wut_evt_trigger_raw(
-					WUT_EVT_ELEMENTLEAVE,
-					win,
-					cele_hover
-					);
-		}
-
-                /* 
-                 * Check if we even move into another element as this function
-                 * also also called if the user leaves the window.
-                 */
-                if(ele) {
-        		wut_evt_trigger_raw(
-		        		WUT_EVT_ELEMENTENTER,
-		        		win,
-		        		ele
-		        		);
+        if(!wut_ele_compare(track_v, pass.ele_v)) {
+                if(track_v) {
+                        track_v->scrollbar_flags &= ~(1<<2);
                 }
-	}
+                pass.ele_v->scrollbar_flags |= (1<<2);
+                doc->track_table.scroll_v = pass.ele_v;
+                printf("Updated v-scrollbar to \"%s\"\n", 
+                                doc->track_table.scroll_v->name);
+                
+                wut_doc_has_changed(doc, doc->track_table.scroll_v, 0, 0);
+        }
 
-	return 1;
+        /*
+         * Horizontal scrollbar
+         */
+        if(!wut_ele_compare(track_h, pass.ele_h)) {
+                if(track_h) {
+                        track_h->scrollbar_flags &= ~(1<<3);
+                }
+                pass.ele_h->scrollbar_flags |= (1<<3);
+                doc->track_table.scroll_h = pass.ele_h;
+                printf("Updated h-scrollbar to \"%s\"\n", 
+                                doc->track_table.scroll_h->name);
 
+                wut_doc_has_changed(doc, doc->track_table.scroll_h, 0, 0);
+        }
+
+        return 0;
 }
 
 
@@ -623,38 +666,38 @@ WUT_XMOD s8 wut_doc_track_click(struct wut_Document *doc,
         struct wut_Element *cele_selected = doc->track_table.selected;
         struct wut_Window *win = doc->window;
 
-	/*
-	 * Check if the selected element has changed.
-	 */
-	if(!wut_ele_compare(cele_selected, ele)) {
-		/* If that is the case, first modify the element flags */
-		wut_ele_mod_info(cele_selected, WUT_ELE_F_SELECTED, 0);
-		wut_ele_mod_info(ele, WUT_ELE_F_SELECTED, 1);
+        /*
+         * Check if the selected element has changed.
+         */
+        if(!wut_ele_compare(cele_selected, ele)) {
+                /* If that is the case, first modify the element flags */
+                wut_ele_mod_info(cele_selected, WUT_ELE_F_SELECTED, 0);
+                wut_ele_mod_info(ele, WUT_ELE_F_SELECTED, 1);
 
-		/* Then link the new element */
-		doc->track_table.selected = ele;
+                /* Then link the new element */
+                doc->track_table.selected = ele;
 
-		/* Lastly trigger the events */
-		if(cele_selected) {
-			wut_evt_trigger_raw(
-					WUT_EVT_ELEMENTUNSELECT,
-					win,
-					cele_selected
-					);
-		}
-
-                if(ele) {
-	        	wut_evt_trigger_raw(
-	        			WUT_EVT_ELEMENTSELECT,
-	        			win,
-	        			ele
-	        			);
+                /* Lastly trigger the events */
+                if(cele_selected) {
+                        wut_evt_trigger_raw(
+                                        WUT_EVT_ELEMENTUNSELECT,
+                                        win,
+                                        cele_selected
+                                        );
                 }
 
-		return 1;
-	}
+                if(ele) {
+                        wut_evt_trigger_raw(
+                                        WUT_EVT_ELEMENTSELECT,
+                                        win,
+                                        ele
+                                        );
+                }
 
-	return 0;
+                return 1;
+        }
+
+        return 0;
 }
 
 

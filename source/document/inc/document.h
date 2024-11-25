@@ -26,6 +26,13 @@
 #define WUT_HIGH                3
 #define WUT_VERYHIGH            4
 
+struct wut_DocumentTrackPass {
+        s8 mask;
+
+        struct wut_Element *ele_v;
+        struct wut_Element *ele_h;
+};
+
 struct wut_DocumentTrackTable {
         /* 
          * This flag indicates if the document has changed, and the element to
@@ -40,6 +47,10 @@ struct wut_DocumentTrackTable {
          */
         struct wut_Element		*selected;
         struct wut_Element		*hovered;
+
+
+        struct wut_Element              *scroll_v;
+        struct wut_Element              *scroll_h;
 };
 
 struct wut_Document {
@@ -166,7 +177,10 @@ WUT_XMOD s8 wut_doc_track_move(struct wut_Document *doc,
 
 /*
  * TODO: Update comment
- * Update the element with the closes scrollbar in the tracking table.
+ * Update the element with the closes scrollbar in the tracking table for both
+ * vertical and horizontal scrolling, every time the mouse is moved. This
+ * enables us to just use the tracked elements when the event occurs. It also
+ * handles which scrollbars are visible.
  *
  * @doc: Pointer to the document
  * @ele: The element the cursor is currently hovering
@@ -174,7 +188,7 @@ WUT_XMOD s8 wut_doc_track_move(struct wut_Document *doc,
  * Returns: 1 if something happened, 0 if not
  */
 WUT_XMOD s8 wut_doc_track_scroll(struct wut_Document *doc,
-                struct wut_Element *ele, wut_iVec2 pos);
+                struct wut_Element *ele);
 
 
 /*
